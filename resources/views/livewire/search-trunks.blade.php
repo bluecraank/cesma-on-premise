@@ -40,7 +40,7 @@
                         <td style="width:150px;">
                             <div class="has-text-centered">
                                 <button onclick='refreshTrunksModal({{ $device->id }})'
-                                    class="button is-info is-small"><i class="fa fa-recycle"></i></button>
+                                    class="button is-info is-small"><i class="fa-solid fa-arrows-rotate"></i></button>
                             </div>
                         </td>
                     </tr>

@@ -8,7 +8,7 @@
                 <p class="menu-label">Aktion</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="/perform-ssh" class="execute">
+                        <a href="{{ route('perform-ssh') }}" class="execute">
                             <span class="icon"><i class="fa fa-terminal"></i></span> Befehl ausführen
                         </a>
                     </li>
@@ -17,22 +17,22 @@
                 <p class="menu-label">Verwaltung</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="/switch" class="switch">
+                        <a href="{{ route('dashboard') }}" class="switch">
                             <span class="icon"><i class="fa fa-bars-progress"></i></span> Switch
                         </a>
                     </li>
                     <li>
-                        <a href="/vlans" class="vlan">
+                        <a href="{{ route('vlans') }}" class="vlan">
                             <span class="icon"><i class="fa fa-ethernet"></i></span> VLAN
                         </a>
                     </li>
                     <li>
-                        <a href="/trunks" class="trunk">
+                        <a href="{{ route('trunks') }}" class="trunk">
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
                         </a>
                     </li>
                     <li>
-                        <a href="/locations" class="location">
+                        <a href="{{ route('locations') }}" class="location">
                             <span class="icon"><i class="fa fa-location-dot"></i></span> Standort
                         </a>
                     </li>
@@ -41,7 +41,7 @@
                 <p class="menu-label">Benutzer</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="/settings" class="settings">
+                        <a href="{{ route('user-settings') }}" class="settings">
                             <span class="icon"><i class="fa fa-user-gear"></i></span> Einstellungen
                         </a>
                     </li>
@@ -50,24 +50,25 @@
                 <p class="menu-label">System</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="/log" class="log">
+                        <a href="{{ route('logs') }}" class="log">
                             <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Log
                         </a>
                     </li>
                     <li>
-                    <a class="" href="{{ route('logout') }}"
+                        <a class="" href="{{ route('logout') }}"
                         onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">
-                        {{ __('Logout') }}
-                    </a>
+                        document.getElementById('logout-form').submit();">
+                            <span class="icon"><i class="fa-solid fa-power-off"></i></span> Abmelden
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </li>
                 </ul>
 
-                Log in as: {{ Auth::user()->name }}
+
+                <p class="has-text-centered menu-label is-username-info">cesma v1.0.0</p>
             </div>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-            </form>
 
         </div>
     </aside>
