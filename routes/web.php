@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\VlanController;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +23,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [SwitchController::class, 'overview']);
     Route::get('/trunks', [SwitchController::class, 'trunks']);
     Route::get('/vlans', [VlanController::class, 'overview']);
+    Route::get('/locations', [LocationController::class, 'overview']);
 });
 
 // Login

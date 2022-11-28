@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class SwitchController extends Controller
 {
+    
+    // Auch unter Livewire/SearchSwitch.php
     function overview() {
         $devices = Device::all();
         $https = 'http://';

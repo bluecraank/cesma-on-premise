@@ -7,6 +7,7 @@ use App\Models\Vlan;
 
 class VlanController extends Controller
 {
+    // Auch unter Livewire/SearchVlans.php
     function overview() {
         $vlans = Vlan::all();
 
