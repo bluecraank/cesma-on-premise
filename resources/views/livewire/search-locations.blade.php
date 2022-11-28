@@ -8,7 +8,7 @@
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a location">
+                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a locationx">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>

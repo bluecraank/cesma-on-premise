@@ -41,3 +41,9 @@
     width: 500px;
     transform: translate(-50%, -50%);
 }
+
+.ms-container .content {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
