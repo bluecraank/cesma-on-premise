@@ -1,4 +1,3 @@
-<x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">Dashboard</h1>
 
@@ -9,14 +8,14 @@
         <div class="is-pulled-right">
             <div class="field">
                 <div class="control has-icons-right">
-                    <input class="input" type="text" placeholder="Find a device">
+                    <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a device">
                     <span class="icon is-small is-right">
                         <i class="fas fa-search fa-xs"></i>
                     </span>
                 </div>
             </div>
         </div>
-
+        
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">
             <thead>
                 <tr>
@@ -36,7 +35,7 @@
                         <td>{{ $device->location_as_text }}</td>
                         <td style="width:150px;">
                             <div class="has-text-centered">
-                                <a href="{{ $https }}://{{ $device->hostname }}" target="_blank">
+                                <a href="{{ $https }}{{ $device->hostname }}" target="_blank">
                                     <button class="is-small button is-primary">
                                         <i class="fa fa-arrow-up-right-from-square"></i>
                                     </button>
@@ -52,4 +51,3 @@
                 @endforeach
         </table>
     </div>
-</x-layouts>

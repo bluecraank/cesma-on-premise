@@ -1,12 +1,16 @@
 <x-layouts.header />
     <body>
         <div class="columns is-gapless">
-            <x-layouts.menu />
+            @if(!Route::is('login'))
+                <x-layouts.menu />
+            @endif
             <div class="column">
                 <div class="container is-fluid mt-6">
                     {{ $slot }}
-                </div>s
+                </div>
             </div>
         </div>
     </body>
-<x-layouts.footer />
+@if(!Route::is('login'))
+    <x-layouts.footer />
+@endif

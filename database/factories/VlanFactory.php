@@ -17,7 +17,9 @@ class VlanFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => fake()->md5(),
+            'location' => fake()->numberBetween(0,20),
+            'vid' => fake()->numberBetween(100,500),
         ];
     }
 }

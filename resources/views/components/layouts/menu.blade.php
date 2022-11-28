@@ -55,12 +55,20 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/logout" class="logout">
-                            <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Abmelden
-                        </a>
+                    <a class="" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                        {{ __('Logout') }}
+                    </a>
                     </li>
                 </ul>
+
+                Log in as: {{ Auth::user()->name }}
             </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+            </form>
+
         </div>
     </aside>
 </div>

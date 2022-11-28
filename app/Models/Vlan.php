@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Vlan extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'id',
+        'location',
+    ];
 }

@@ -8,5 +8,6 @@
     <link rel="stylesheet" href="bulma.min.css">
     <link rel="stylesheet" href="cesma.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    @livewireStyles
     <title> | Cesma</title>
 </head>
