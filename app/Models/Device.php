@@ -17,6 +17,7 @@ class Device extends Model
         'number',
         'details',
         'password',
+        'data',
     ];
 
     /**

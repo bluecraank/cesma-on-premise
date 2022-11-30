@@ -2,7 +2,7 @@
         <h1 class="title is-pulled-left">Dashboard</h1>
 
         <div class="is-pulled-right ml-4">
-            <button class="button is-success">Create</button>
+            <button onclick="$('.modal-new-switch').show()" class="button is-success">Create</button>
         </div>
 
         <div class="is-pulled-right">
@@ -32,7 +32,7 @@
                         <td>{{ $device->name }}</td>
                         <td>{{ $device->hostname }}</td>
                         <td>{{ $device->model }}</td>
-                        <td>{{ $device->location_as_text }}</td>
+                        <td>{{ $device->pw }}</td>
                         <td style="width:150px;">
                             <div class="has-text-centered">
                                 <a href="{{ $https }}{{ $device->hostname }}" target="_blank">
