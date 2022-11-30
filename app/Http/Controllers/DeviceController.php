@@ -57,7 +57,7 @@ class DeviceController extends Controller
         if(filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
         }
-        
+        $hostname = "api.github.com";
         // Encrypt password before store
         $encrypted_pw = EncryptionController::encrypt($request->all()['password']);
         $request->merge(['password' => $encrypted_pw]);
