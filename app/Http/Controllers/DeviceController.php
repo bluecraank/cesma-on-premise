@@ -44,20 +44,20 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:devices|max:100',
-            'hostname' => 'required|unique:devices|max:100',
-            'building' => 'required|integer',
-            'location' => 'required|integer',
-            'number' => 'required|integer',
-        ])->validate();
+        //$validator = Validator::make($request->all(), [
+        //   'name' => 'required|unique:devices|max:100',
+        //    'hostname' => 'required|unique:devices|max:100',
+        //    'building' => 'required|integer',
+        //    'location' => 'required|integer',
+        //    'number' => 'required|integer',
+        //])->validate();
 
         // Get hostname from device else use ip
         $hostname = $request->input('hostname');
         if(filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
         }
-        $hostname = "api.github.com";
+
         // Encrypt password before store
         $encrypted_pw = EncryptionController::encrypt($request->all()['password']);
         $request->merge(['password' => $encrypted_pw]);

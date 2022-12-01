@@ -19,19 +19,17 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Start, Switchübersicht
-
-
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'overview'])->name('dashboard');
-    Route::post('/switch/create', [DeviceController::class, 'store']);
-
     Route::get('/trunks', [DeviceController::class, 'trunks'])->name('trunks');
     Route::get('/vlans', [VlanController::class, 'overview'])->name('vlans');
     Route::get('/locations', [LocationController::class, 'overview'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [SSHController::class, 'overview'])->name('user-settings');
     Route::get('/logs', [SSHController::class, 'overview'])->name('logs');
+
+    // Create new device
+    Route::post('/switch/create', [DeviceController::class, 'store']);
 });
 
 // Login

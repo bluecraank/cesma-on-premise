@@ -9,12 +9,13 @@ use Illuminate\Http\Client\Pool;
 class ApiRequestController extends Controller
 {
     static function login(string $api_password, string $api_url) {
-        $url = env('APP_HTTPS') . $api_url . '.de/api/v1/login-sessions';
+        $url = env('APP_HTTPS') . $api_url . '/rest/v7/login-sessions';
 
+        echo $url;
         // Only for testing
-        Http::fake([
-            $api_url.'.de/*' => Http::response(['cookie' => 'djasd9asdub123kdkj'], 200, ['Headers']),
-        ]);
+        //Http::fake([
+        //    $api_url.'.de/*' => Http::response(['cookie' => 'djasd9asdub123kdkj'], 200, ['Headers']),
+        //]);
 
         // Try to login
         try {
@@ -35,6 +36,7 @@ class ApiRequestController extends Controller
             return false;
 
         } catch (\Exception $e) {
+            echo $e;
             return false;
         }
     }
@@ -43,9 +45,9 @@ class ApiRequestController extends Controller
         $url = env('APP_HTTPS') . $api_url . '.de/api/v1/login-sessions';
 
         // Only for testing
-        Http::fake([
-            $api_url.'.de/*' => Http::response(['data' => 'djasd9asdub123kdkj'], 200, ['Headers']),
-        ]);
+        //Http::fake([
+        //    $api_url.'.de/*' => Http::response(['data' => 'djasd9asdub123kdkj'], 200, ['Headers']),
+        //]);
 
         // Try to get data from device
         try {
