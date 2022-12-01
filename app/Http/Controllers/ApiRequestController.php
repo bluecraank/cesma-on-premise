@@ -8,23 +8,18 @@ use Illuminate\Http\Client\Pool;
 
 class ApiRequestController extends Controller
 {
-    static function login(string $api_password, string $api_url) {
-        $url = env('APP_HTTPS') . $api_url . '/rest/v7/login-sessions';
-
-        echo $url;
-        // Only for testing
-        //Http::fake([
-        //    $api_url.'.de/*' => Http::response(['cookie' => 'djasd9asdub123kdkj'], 200, ['Headers']),
-        //]);
+    static function login(string $api_password, string $hostname) {
+        $url = env('APP_HTTPS') . $hostname . '/rest/v7/login-sessions';
 
         // Try to login
         try {
             // Post request to login
+            $api_password = EncryptionController::decrypt($api_password);
+
             $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
             ])->retry(2,200)->post($url, [
-                'userName' => env('API_API_USERNAME'),
+                'userName' => env('APP_API_USERNAME'),
                 'password' => $api_password,
             ]);
 
@@ -36,36 +31,38 @@ class ApiRequestController extends Controller
             return false;
 
         } catch (\Exception $e) {
-            echo $e;
+            //echo "Login failed: ".$e->getMessage();
             return false;
         }
     }
 
-    static function getData($cookie, $api_url) {
-        $url = env('APP_HTTPS') . $api_url . '.de/api/v1/login-sessions';
-
-        // Only for testing
-        //Http::fake([
-        //    $api_url.'.de/*' => Http::response(['data' => 'djasd9asdub123kdkj'], 200, ['Headers']),
-        //]);
+    static function getData($cookie, $hostname) {
+        $url = env('APP_HTTPS') . $hostname . '/rest/v7/';
 
         // Try to get data from device
         try {
 
             // Get data from device
-            $responses = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Cookie' => $cookie,
-            ])->pool(fn (Pool $pool) => [
-                $pool->as('vlanData')->get($url . '/vlans'),
-                $pool->as('portStatistic')->get($url . '/port-statistics'),
-                $pool->as('vlanPort')->get($url . '/vlan-ports'),
-                $pool->as('sysStatus')->get($url . '/system/status'),
+            $responses = Http::pool(fn (Pool $pool) => [
+                $pool->as('vlanData')->withHeaders([
+                'Cookie' => "$cookie",
+                ])->get($url . 'vlans'),
+
+                $pool->as('portStatistic')->withHeaders([
+                'Cookie' => "$cookie",
+                ])->get($url . 'port-statistics'),
+
+                $pool->as('vlanPort')->withHeaders([
+                    'Cookie' => "$cookie",
+                ])->get($url . 'vlans-ports'),
+
+                $pool->as('sysStatus')->withHeaders([
+                'Cookie' => "$cookie",
+                ])->get($url . 'system/status'),
             ]);
-            
+
             // Return data
-            if($responses['vlanData']->successful() AND $responses['portStatistic']->successful() AND $responses['vlanPort']->successful() AND $responses['sysStatus']->successful()) {
+            if($responses['portStatistic']->successful() AND $responses['vlanPort']->successful() AND $responses['sysStatus']->successful()) {
                 return [
                     'vlan_data' => $responses['vlanData']->json(),
                     'portstats_data' => $responses['portStatistic']->json(),
@@ -77,7 +74,17 @@ class ApiRequestController extends Controller
             return false;
 
         } catch (\Exception $e) {
+            //echo "Get data failed ".$e->getMessage();
             return false;
         }
+    }
+
+    static function logout($cookie, $hostname) {
+        $url = env('APP_HTTPS') . $hostname . '/rest/v7/'; 
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Cookie' => "$cookie",
+        ])->delete($url . 'login-sessions');
     }
 }

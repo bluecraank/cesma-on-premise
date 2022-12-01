@@ -71,12 +71,14 @@ class DeviceController extends Controller
 
         // Get data from device
         if(!$switch_data = ApiRequestController::getData($auth_cookie, $hostname)) {
+            ApiRequestController::logout($auth_cookie, $hostname);
             //return redirect()->back()->with('error', 'Could not get data from device');
             return false;
         }
     
         // Merge data from device with requests
         var_dump($switch_data);
+        ApiRequestController::logout($auth_cookie, $hostname);
         $request->merge(['data' => json_encode($switch_data, true)]);
         
 
