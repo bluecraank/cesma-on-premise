@@ -148,17 +148,16 @@ function comparer(index) {
 function getCellValue(row, index){ return $(row).find('td').eq(index).text() }
 
 
-function editSwitchModal(data) {
+function editSwitchModal(id, name, hostname, location, building, details, number) {
 
     let modal = $('.modal-edit-switch');
-    modal.find('.switch-id').val(data.id);
-    modal.find('.switch-name').val(data.name);
-    modal.find('.switch-numbering').val(data.numbering);
-    modal.find('.switch-fqdn').val(data.fqdn);
-    modal.find('.switch-ip').val(data.ip);
-    modal.find('.switch-location').val(data.location);
-    modal.find('.switch-building').val(data.building);
-    modal.find('.switch-details').val(data.location_details);
+    modal.find('.switch-id').val(id);
+    modal.find('.switch-name').val(name);
+    modal.find('.switch-numbering').val(number);
+    modal.find('.switch-fqdn').val(hostname);
+    modal.find('.switch-location').val(location);
+    modal.find('.switch-building').val(building);
+    modal.find('.switch-details').val(details);
     modal.show()
 }
 

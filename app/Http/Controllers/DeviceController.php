@@ -86,17 +86,18 @@ class DeviceController extends Controller
     
         // Merge data from device with requests
         ApiRequestController::logout($auth_cookie, $hostname);
-        $request->merge(['data' => json_encode($device_data, true)]);
-        
-        if($validator) {
-        //if($validator AND Device::create($request->all())) {
-            ddd($device_data);
-            VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
+        $request->merge(['vlan_data' => json_encode($device_data['vlan_data'], true)]);
+        $request->merge(['port_data' => json_encode($device_data['ports_data'], true)]);
+        $request->merge(['port_statistic_data' => json_encode($device_data['portstats_data'], true)]);
+        $request->merge(['vlan_port_data' => json_encode($device_data['vlanport_data'], true)]);
+        $request->merge(['system_data' => json_encode($device_data['sysstatus_data'], true)]);
 
-            //return redirect()->back()->with('success', 'Device added');
+        if($validator AND Device::create($request->all())) {
+            VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
+            return redirect()->back()->with('success', 'Device added');
         }
 
-        //return redirect('/')->withErrors($validator);
+        return redirect('/')->withErrors($validator);
     }
 
     /**
@@ -130,7 +131,16 @@ class DeviceController extends Controller
      */
     public function update(UpdateDeviceRequest $request, Device $device)
     {
-        //
+        if($request->input('password') != "__HIDDEN__" AND $request->input('password') != "") {
+            $encrypted_pw = EncryptionController::encrypt($request->input('password'));
+            $request->merge(['password' => $encrypted_pw]);
+        }
+        
+        if($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
+            return redirect()->back()->with('success', 'Device updated');
+        }
+
+        return redirect()->back()->withErrors(['error' => 'Could not update device']);
     }
 
     /**

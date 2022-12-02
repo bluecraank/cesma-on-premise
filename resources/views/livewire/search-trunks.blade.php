@@ -44,9 +44,12 @@
             @foreach ($devices as $device)
             @php
             $trunks = array();
-            foreach(json_decode($device->data, true)['trunks'] as $trunk)
+            foreach(json_decode($device->port_data, true)['port_element'] as $trunk)
             {
-            $trunks[] = $trunk['id'];
+                if(str_contains($trunk['id'], 'Trk'))
+                {
+                    array_push($trunks, $trunk['id']);
+                }
             }
             @endphp
             <tr>

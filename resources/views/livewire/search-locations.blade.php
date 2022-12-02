@@ -43,7 +43,7 @@
         <tbody>
             @foreach ($locations as $location)
             <tr>
-                <td>{{ $location->name }} ({{ $location->id-1 }})</td>
+                <td>{{ $location->name }}</td>
                 <td>{{ $location->buildings }}</td>
                 <td style="width:150px;">
                     <div class="has-text-centered">

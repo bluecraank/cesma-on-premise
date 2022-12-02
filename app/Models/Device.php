@@ -17,7 +17,11 @@ class Device extends Model
         'number',
         'details',
         'password',
-        'data',
+        'vlan_data',
+        'port_statistic_data',
+        'vlan_port_data',
+        'system_data',
+        'port_data',
     ];
 
     /**

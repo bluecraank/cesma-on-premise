@@ -17,7 +17,8 @@ class BuildingFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => "Stellmacherstraße 11",
+            'location_id' => 1,
         ];
     }
 }

@@ -18,7 +18,11 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('hostname')->unique();
             $table->string('password');
-            $table->text('data');
+            $table->json('vlan_data');
+            $table->json('port_data');
+            $table->json('port_statistic_data');
+            $table->json('vlan_port_data');
+            $table->json('system_data');
             $table->integer('building');
             $table->integer('location');
             $table->string('details');

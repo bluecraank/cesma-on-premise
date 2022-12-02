@@ -47,8 +47,8 @@
             <tr>
                 <td>{{ $device->name }}</td>
                 <td>{{ $device->hostname }}</td>
-                <td>{{ json_decode($device->data, true)['sysstatus_data']['product_model'] }}</td>
-                <td>{{ $locations->get($device->location)->name }} ({{ $device->location }})</td>
+                <td>{{ json_decode($device->system_data, true)['product_model'] }}</td>
+                <td>{{ $locations->find($device->location)->name }}</td>
                 <td style="width:150px;">
                     <div class="has-text-centered">
                         <a href="{{ $https }}{{ $device->hostname }}" target="_blank">
@@ -57,7 +57,7 @@
                             </button>
                         </a>
 
-                        <button onclick='editSwitchModal({{ $device->id }})' class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                        <button onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}' )" class="button is-info is-small"><i class="fa fa-gear"></i></button>
                         <button onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                     </div>
                 </td>
