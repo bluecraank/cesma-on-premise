@@ -162,33 +162,39 @@ function editSwitchModal(data) {
     modal.show()
 }
 
-
-function deleteBuildingModal(data) {
-    let modal = $('.modal-delete-building');
-    modal.find('.building-id').val(data.bid);
-    modal.find('.building-name').val(data.building_name);
-    modal.show()
-}
-
-function deleteSwitchModal(data) {
+function deleteSwitchModal(id, name) {
     let modal = $('.modal-delete-switch');
-    modal.find('.switch-id').val(data.id);
-    modal.find('.switch-name').val(data.name);
+    modal.find('.switch-id').val(id);
+    modal.find('.switch-name').val(name);
     modal.show()
 }
 
-function deleteVlanModal(data) {
+function editBuildingModal(id, name) {
+    let modal = $('.modal-edit-building');
+    modal.find('.building-id').val(id);
+    modal.find('.building-name').val(name);
+    modal.show()
+}
+
+function deleteBuildingModal(id, name) {
+    let modal = $('.modal-delete-building');
+    modal.find('.building-id').val(id);
+    modal.find('.building-name').val(name);
+    modal.show()
+}
+
+function deleteVlanModal(id, name) {
     let modal = $('.modal-delete-vlan');
-    modal.find('.vlan-id').val(data.id);
-    modal.find('.vlan-name').val(data.vname);
+    modal.find('.vlan-id').val(id);
+    modal.find('.vlan-name').val(name);
     modal.show()
 }
 
-function editVlanModal(data) {
+function editVlanModal(id, name, description) {
     let modal = $('.modal-edit-vlan');
-    modal.find('.vlan-id').val(data.id);
-    modal.find('.vlan-name').val(data.vname);
-    modal.find('.vlan-desc').val(data.vdesc);
+    modal.find('.vlan-id').val(id);
+    modal.find('.vlan-name').val(name);
+    modal.find('.vlan-desc').val(description);
     modal.show()
 }
 

@@ -11,11 +11,6 @@ class SearchLocations extends Component
 {
     use AuthorizesRequests;
 
-    public function mount()
-    {
-        $this->authorize();
-    }
-
     public $searchTerm;
     public function render()
     {

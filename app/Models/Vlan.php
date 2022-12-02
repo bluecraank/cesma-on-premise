@@ -11,7 +11,8 @@ class Vlan extends Model
 
     protected $fillable = [
         'name',
-        'id',
-        'location',
+        'vid',
+        'description',
+        'location_id',
     ];
 }

@@ -4,7 +4,6 @@
 <div class="modal modal-new-switch">
     <form action="/switch/create" method="post">
         @csrf
-        <input type="hidden" value="AddSwitch" name="form">
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">
@@ -31,29 +30,20 @@
                 </div>
 
                 <div class="field">
-                    <label class="label">Firmware</label>
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            <select required name="switch-firmware">
-                                <option selected value="">Bitte wählen...</option>
-                                <option value="AOS">ArubaOS (z.B 2930F)</option>
-                                <!-- <option value="AOS-CX">ArubaOS-CX (z.B 6100)</option> -->
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field">
                     <label class="label">Standort</label>
                     <div class="control">
                         <div class="select">
                             <select required name="location">
-                             <option value="1">Norden</option>
+                            @foreach($locations as $location)
+                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                            @endforeach
                             </select>
                         </div>
                         <div class="select">
                             <select required name="building">
-                            <option value="1">Gebäude 1</option>
+                            @foreach($buildings as $building)
+                                <option value="{{ $building->id }}">{{ $building->name }}</option>
+                            @endforeach
                             </select>
                         </div>
                         <input class="input" name="details" style="display: inline-block;width:200px"
@@ -64,8 +54,37 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button name="submitT" type="submit" class="button is-success">Erstellen</button>
+                <button class="button is-success">Erstellen</button>
                 <button onclick="$('.modal-new-switch').hide();return false;" type="button"
+                    class="button">Abbrechen</button>
+            </footer>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-delete-switch">
+    <form action="/switch/delete" method="post">
+        <input type="hidden" name="_method" value="delete" />
+        @csrf
+        <div class="modal-background"></div>
+        <div style="margin-top: 40px" class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Switch löschen</p>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Möchtest du wirklich diesen Switch löschen?</label>
+                    <div class="control">
+                        <input class="switch-id" name="id" type="hidden" value="">
+                        <input class="switch-name" name="name" type="hidden" value="">
+                        <input class="input switch-name" disabled type="text" value="">
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-danger">Switch
+                    löschen</button>
+                <button onclick="$('.modal-delete-switch').hide();return false;" type="button"
                     class="button">Abbrechen</button>
             </footer>
         </div>

@@ -13,7 +13,7 @@ class UpdateVlanRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,9 @@ class UpdateVlanRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|string',
+            'id' => 'required|integer',
+            'description' => 'required|string',
         ];
     }
 }

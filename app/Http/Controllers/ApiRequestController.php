@@ -59,6 +59,10 @@ class ApiRequestController extends Controller
                 $pool->as('sysStatus')->withHeaders([
                 'Cookie' => "$cookie",
                 ])->get($url . 'system/status'),
+        
+                $pool->as('ports')->withHeaders([
+                    'Cookie' => "$cookie",
+                    ])->get($url . 'ports'),
             ]);
 
             // Return data
@@ -68,6 +72,7 @@ class ApiRequestController extends Controller
                     'portstats_data' => $responses['portStatistic']->json(),
                     'vlanport_data' => $responses['vlanPort']->json(),
                     'sysstatus_data' => $responses['sysStatus']->json(),
+                    'ports_data' => $responses['ports']->json(),
                 ];
             }
             
