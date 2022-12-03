@@ -81,7 +81,14 @@ class BuildingController extends Controller
      */
     public function update(UpdateBuildingRequest $request, Building $building)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:buildings|max:100',
+         ])->validate();
+
+         if($validator AND $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
+            return redirect()->back()->with('success', 'Building updated successfully');
+         } 
+            return redirect()->back()->withErrors(['error' => 'Building could not be updated']);
     }
 
     /**

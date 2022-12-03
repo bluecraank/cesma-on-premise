@@ -35,20 +35,20 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
-                <th>Standort</th>
                 <th>Gebäude</th>
+                <th>Standort</th>
                 <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($locations as $location)
+            @foreach ($buildings as $building)
             <tr>
-                <td>{{ $location->name }}</td>
-                <td>{{ $location->buildings }}</td>
+                <td>{{ $building->name }}</td>
+                <td>{{ $locations[$building->location_id]->name }}</td>
                 <td style="width:150px;">
                     <div class="has-text-centered">
-                        <button onclick="editBuildingModal('{{ $location->id }}', '{{ $location->name }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
-                        <button onclick="deleteBuildingModal('{{ $location->id }}', '{{ $location->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                        <button onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                        <button onclick="deleteBuildingModal('{{ $building->id }}', '{{ $building->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>

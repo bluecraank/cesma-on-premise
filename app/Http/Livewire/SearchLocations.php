@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Location;
+use App\Models\Building;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
@@ -16,7 +17,8 @@ class SearchLocations extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         return view('livewire.search-locations',[
-            'locations' => Location::where('name','like', $searchTerm)->get(),
+            'buildings' => Building::where('name','like', $searchTerm)->get(),
+            'locations' => Location::all()->keyBy('id'),
         ]);
     }
 }

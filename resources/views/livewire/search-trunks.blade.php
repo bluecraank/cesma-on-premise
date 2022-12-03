@@ -18,7 +18,7 @@
     <h1 class="title is-pulled-left">Trunks</h1>
 
     <div class="is-pulled-right ml-4">
-        <button class="button is-success">Create</button>
+        
     </div>
 
     <div class="is-pulled-right">
@@ -37,7 +37,6 @@
             <tr>
                 <th>Switch</th>
                 <th>Trunks</th>
-                <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
         </thead>
         <tbody>
@@ -55,11 +54,6 @@
             <tr>
                 <td>{{ $device->name }}</td>
                 <td>{{ implode(', ', $trunks) }}</td>
-                <td style="width:150px;">
-                    <div class="has-text-centered">
-                        <button onclick='refreshTrunksModal({{ $device->id }})' class="button is-info is-small"><i class="fa-solid fa-arrows-rotate"></i></button>
-                    </div>
-                </td>
             </tr>
             @endforeach
     </table>

@@ -45,5 +45,26 @@
 .ms-container .content {
     margin-bottom: 5px;
     font-weight: bold;
-  }
-  
+}
+
+
+.is-offline {
+    color: red;
+}
+
+.is-online {
+    color: green;
+}
+
+.location_dot {
+    font-size: 22px;
+    margin-top: 5px;
+    margin-left: 3px;
+    margin-right: 10px;
+}
+
+.online_status {
+    vertical-align: middle;
+    margin-bottom: 5px;
+    font-size: 22px;
+}

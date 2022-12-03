@@ -182,13 +182,6 @@ function deleteBuildingModal(id, name) {
     modal.show()
 }
 
-function deleteVlanModal(id, name) {
-    let modal = $('.modal-delete-vlan');
-    modal.find('.vlan-id').val(id);
-    modal.find('.vlan-name').val(name);
-    modal.show()
-}
-
 function editVlanModal(id, name, description) {
     let modal = $('.modal-edit-vlan');
     modal.find('.vlan-id').val(id);
@@ -197,21 +190,12 @@ function editVlanModal(id, name, description) {
     modal.show()
 }
 
-// Live Switch Info Getter
-$('select[name="port-switch-id"]').on('change', function() {
-    let value = $('select[name="port-switch-id"]').val()
-    let foormData = new FormData();
-    foormData.append("port-switch-id", value);
-    fetch(
-        '/api/v1/switch/livedata',
-        {
-            method: 'POST',
-            body: foormData
-        }
-    ).then((resp) => resp.json()).then(response => {
-        $(".live-body").html(response.output);
-    });
-});
+function deleteVlanModal(id, name) {
+    let modal = $('.modal-delete-vlan');
+    modal.find('.vlan-id').val(id);
+    modal.find('.vlan-name').val(name);
+    modal.show()
+}
 
 // Verbotene Befehle Funktion
 function add_blacklist_command() {

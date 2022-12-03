@@ -19,7 +19,8 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function overview() {
+    function overview()
+    {
         $devices = Device::all();
         $locations = Location::all();
         $buildings = Building::all();
@@ -52,7 +53,7 @@ class DeviceController extends Controller
     public function store(StoreDeviceRequest $request)
     {
         $validator = Validator::make($request->all(), [
-           'name' => 'required|unique:devices|max:100',
+            'name' => 'required|unique:devices|max:100',
             'hostname' => 'required|unique:devices|max:100',
             'building' => 'required|integer',
             'location' => 'required|integer',
@@ -62,7 +63,7 @@ class DeviceController extends Controller
 
         // Get hostname from device else use ip
         $hostname = $request->input('hostname');
-        if(filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        if (filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
         }
 
@@ -72,18 +73,18 @@ class DeviceController extends Controller
         $request->merge(['hostname' => $hostname]);
 
         // Get login cookie
-        if(!$auth_cookie = ApiRequestController::login($encrypted_pw, $hostname)) {
+        if (!$auth_cookie = ApiRequestController::login($encrypted_pw, $hostname)) {
             return redirect()->back()->withErrors(['error' => 'Could not login to device']);
             //return false;
         }
 
         // Get data from device
-        if(!$device_data = ApiRequestController::getData($auth_cookie, $hostname)) {
+        if (!$device_data = ApiRequestController::getData($auth_cookie, $hostname)) {
             ApiRequestController::logout($auth_cookie, $hostname);
             return redirect()->back()->withErrors(['error' => 'Could not get data from device']);
             //return false;
         }
-    
+
         // Merge data from device with requests
         ApiRequestController::logout($auth_cookie, $hostname);
         $request->merge(['vlan_data' => json_encode($device_data['vlan_data'], true)]);
@@ -92,7 +93,7 @@ class DeviceController extends Controller
         $request->merge(['vlan_port_data' => json_encode($device_data['vlanport_data'], true)]);
         $request->merge(['system_data' => json_encode($device_data['sysstatus_data'], true)]);
 
-        if($validator AND Device::create($request->all())) {
+        if ($validator and Device::create($request->all())) {
             VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
             return redirect()->back()->with('success', 'Device added');
         }
@@ -131,12 +132,12 @@ class DeviceController extends Controller
      */
     public function update(UpdateDeviceRequest $request, Device $device)
     {
-        if($request->input('password') != "__HIDDEN__" AND $request->input('password') != "") {
+        if ($request->input('password') != "__HIDDEN__" and $request->input('password') != "") {
             $encrypted_pw = EncryptionController::encrypt($request->input('password'));
             $request->merge(['password' => $encrypted_pw]);
         }
-        
-        if($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
+
+        if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
             return redirect()->back()->with('success', 'Device updated');
         }
 
@@ -152,17 +153,165 @@ class DeviceController extends Controller
     public function destroy(Request $device)
     {
         $find = Device::find($device->input('id'));
-        if($find->delete()) {
+        if ($find->delete()) {
             return redirect()->back()->with('success', 'Device deleted');
         }
         return redirect()->back()->with('error', 'Could not delete device');
     }
 
-    function trunks() {
+    function trunks()
+    {
         $devices = Device::all();
 
         return view('device.trunks', compact(
             'devices',
         ));
+    }
+
+    function refresh(Request $request)
+    {
+        $device = Device::find($request->input('id'));
+
+        // Get login cookie
+
+        if (!$auth_cookie = ApiRequestController::login($device->password, $device->hostname)) {
+            return redirect()->back()->withErrors(['error' => 'Could not login to device']);
+            //return false;
+        }
+
+        // Get data from device
+        if (!$device_data = ApiRequestController::getData($auth_cookie, $device->hostname)) {
+            ApiRequestController::logout($auth_cookie, $device->hostname);
+            return redirect()->back()->withErrors(['error' => 'Could not get data from device']);
+        }
+
+        ApiRequestController::logout($auth_cookie, $device->hostname);
+        if(Device::whereId($request->input('id'))->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+            return redirect()->back()->with('success', 'Device updated');
+        }
+
+        return redirect()->back()->withErrors(['error' => 'Could not login to device']);
+    }
+
+    function live($id)
+    {
+        $device = Device::find($id);
+
+        if ($device) {
+
+            $device->count_vlans = count(json_decode($device->vlan_data)->vlan_element);
+            $device->count_trunks = 0;
+
+            $device->format_time = $this->relativeTime(strtotime($device->updated_at));
+
+            $device->ports = json_decode($device->port_data)->port_element;
+
+            $vlan_ports = json_decode($device->vlan_port_data)->vlan_port_element;
+
+            $port_statistic_raw = json_decode($device->port_statistic_data, true)['port_statistics_element'];
+
+            $system = json_decode($device->system_data);
+            //ddd($system);
+            $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
+
+            // Correct port_statistic array
+            foreach ($port_statistic_raw as $key => $value) {
+                $port_statistic[$value['id']] = $value;
+                unset($port_statistic_raw[$key]);
+            }
+
+            // Get trunks
+            $trunks = [];
+            $tagged = [];
+            $untagged = [];
+            $ports_online = 0;
+            $count_ports = 0;
+
+            foreach ($device->ports as $port) {
+                $untagged[$port->id] = "";
+                $tagged[$port->id] = [];
+
+
+                if (str_contains($port->id, 'Trk')) {
+                    $device->count_trunks++;
+                } else {
+                    $count_ports++;
+                }
+
+                if ($port->trunk_group != "") {
+                    $trunks[$port->trunk_group][] = $port->id;
+                    $untagged[$port->id] = "Member of " . $port->trunk_group;
+                }
+
+                if($port->is_port_up == "true" and !str_contains($port->id, 'Trk')) {
+                    $ports_online++;
+                } 
+
+            }
+
+            //ddd($vlan_ports);
+
+            // Get tagged, untagged
+            foreach ($vlan_ports as $vlan_port) {
+                if ($vlan_port->port_mode == "POM_UNTAGGED" and !str_contains($vlan_port->port_id, "Trk")) {
+                    $untagged[$vlan_port->port_id] = "VLAN " . $vlan_port->vlan_id;
+                } elseif ($vlan_port->port_mode == "POM_TAGGED_STATIC" and !str_contains($vlan_port->port_id, "Trk")) {
+                    $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
+                } elseif ($vlan_port->port_mode == "POM_TAGGED_STATIC" and str_contains($vlan_port->port_id, "Trk")) {
+                    $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
+                }
+            }
+
+            $status = $this->isOnline($device->hostname);
+            //ddd($device->ports);
+
+            return view('device.live', compact(
+                'device',
+                'tagged',
+                'untagged',
+                'trunks',
+                'port_statistic',
+                'status',
+                'system',
+                'ports_online',
+                'count_ports'
+            ));
+        }
+
+        return redirect()->back()->withErrors(['error' => 'Could not find device']);
+    }
+
+    public function relativeTime($time)
+    {
+        $d[0] = array(1, "s");
+        $d[1] = array(60, "m");
+        $d[2] = array(3600, "h");
+        $d[3] = array(86400, "d");
+        $w = array();
+        $return = "";
+        $now = time();
+        $diff = ($now - $time);
+        $secondsLeft = $diff;
+        for ($i = 3; $i > -1; $i--) {
+            $w[$i] = intval($secondsLeft / $d[$i][0]);
+            $secondsLeft -= ($w[$i] * $d[$i][0]);
+            if ($w[$i] != 0) $return .= abs($w[$i]) . "" . $d[$i][1] . (($w[$i] > 1) ? '' : '') . " ";
+        }
+        return ($diff > 0) ? $return = "vor " . $return : $return = "Jetzt gerade";
+    }
+
+    public function isOnline($hostname)
+    {
+        try {
+            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 1)) {
+                fclose($fp);
+                return "is-online";
+            }
+            fclose($fp);
+
+            return "is-offline";
+        } catch (\Exception $e) {
+            return "is-offline";
+        }
     }
 }

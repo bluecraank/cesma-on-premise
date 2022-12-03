@@ -64,7 +64,7 @@ class ApiRequestController extends Controller
                     'Cookie' => "$cookie",
                     ])->get($url . 'ports'),
             ]);
-
+            
             // Return data
             if($responses['portStatistic']->successful() AND $responses['vlanPort']->successful() AND $responses['sysStatus']->successful()) {
                 return [

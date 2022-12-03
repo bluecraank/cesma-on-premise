@@ -49,12 +49,14 @@
                 <td>{{ $device->hostname }}</td>
                 <td>{{ json_decode($device->system_data, true)['product_model'] }}</td>
                 <td>{{ $locations->find($device->location)->name }}</td>
-                <td style="width:150px;">
+                <td style="width:250px;">
                     <div class="has-text-centered">
-                        <a href="{{ $https }}{{ $device->hostname }}" target="_blank">
-                            <button class="is-small button is-primary">
-                                <i class="fa fa-arrow-up-right-from-square"></i>
-                            </button>
+                        <a class="button is-link is-small" href="/switch/live/{{ $device->id }}">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+
+                        <a class="button is-small is-primary" href="{{ $https }}{{ $device->hostname }}" target="_blank">
+                            <i class="fa fa-arrow-up-right-from-square"></i>
                         </a>
 
                         <button onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}' )" class="button is-info is-small"><i class="fa fa-gear"></i></button>

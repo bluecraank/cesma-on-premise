@@ -28,6 +28,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [SSHController::class, 'overview'])->name('user-settings');
     Route::get('/logs', [SSHController::class, 'overview'])->name('logs');
+    Route::get('/switch/live/{id}', [DeviceController::class, 'live'])->name('live');
 
     // Create new device
     Route::post('/switch/create', [DeviceController::class, 'store']);
@@ -42,6 +43,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);
+    Route::put('/switch/refresh', [DeviceController::class, 'refresh']);
+
     Route::put('/building/update', [BuildingController::class, 'update']);
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
