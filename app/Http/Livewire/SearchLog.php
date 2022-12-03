@@ -12,7 +12,7 @@ class SearchLog extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         return view('livewire.search-log',[
-            'logs' => Log::where('user','like', $searchTerm)->orWhere('data', 'like', $searchTerm)->orWhere('message', 'like', $searchTerm)->get()
+            'logs' => Log::where('user','like', $searchTerm)->orWhere('data', 'like', $searchTerm)->orWhere('message', 'like', $searchTerm)->get()->sortByDesc('created_at'),
         ]);
     }
 }

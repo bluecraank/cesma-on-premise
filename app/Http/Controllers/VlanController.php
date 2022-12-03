@@ -15,7 +15,7 @@ class VlanController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $vlans = Vlan::all();
+        $vlans = Vlan::all()->sortBy('vid');
 
         return view('vlan.overview', compact(
             'vlans'

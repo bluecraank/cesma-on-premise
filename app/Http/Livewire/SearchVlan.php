@@ -12,7 +12,7 @@ class SearchVlan extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         return view('livewire.search-vlan',[
-            'vlans' => Vlan::where('name','like', $searchTerm)->get()
+            'vlans' => Vlan::where('name','like', $searchTerm)->get()->sortBy('vid'),
         ]);
     }
 }

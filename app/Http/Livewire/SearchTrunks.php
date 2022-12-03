@@ -12,7 +12,7 @@ class SearchTrunks extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         return view('livewire.search-trunks',[
-            'devices' => Device::where('name','like', $searchTerm)->get()
+            'devices' => Device::where('name','like', $searchTerm)->get()->sortBy('name'),
         ]);
     }
 }

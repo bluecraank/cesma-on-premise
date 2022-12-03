@@ -17,7 +17,7 @@ class SearchLocations extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         return view('livewire.search-locations',[
-            'buildings' => Building::where('name','like', $searchTerm)->get(),
+            'buildings' => Building::where('name','like', $searchTerm)->get()->sortBy('name'),
             'locations' => Location::all()->keyBy('id'),
         ]);
     }

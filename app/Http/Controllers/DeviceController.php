@@ -21,7 +21,7 @@ class DeviceController extends Controller
      */
     function overview()
     {
-        $devices = Device::all();
+        $devices = Device::all()->sortBy('name');
         $locations = Location::all();
         $buildings = Building::all();
         $https = 'http://';
@@ -285,7 +285,7 @@ class DeviceController extends Controller
 
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
-    
+
     public function relativeTime($time)
     {
         $d[0] = array(1, "s");
