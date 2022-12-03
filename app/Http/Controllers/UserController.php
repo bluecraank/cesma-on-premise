@@ -39,6 +39,7 @@ class UserController extends Controller
         $user->role = 2;
         $user->password = Hash::make($request->password);
         $user->save();
+        LogController::log('User erstellt', '{"name": "' . $user->name . '", "email": "' . $user->email . '"}');
 
         return redirect()->back()->with('success', 'User created successfully!');
     }
@@ -78,6 +79,8 @@ class UserController extends Controller
 
         $user = User::find($request->input('id'));
         $user->delete();
+        LogController::log('User gelöscht', '{"name": "' . $user->name . '", "id": "' . $user->id . '", "email": "' . $user->email . '"}');
+
         return redirect()->back()->with('success', 'User deleted!');
 
     }

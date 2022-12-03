@@ -67,6 +67,9 @@ class SSHController extends Controller
                     $return->output = $output;
                 }
 
+                LogController::log('SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
+
+
                 return json_encode($return, true);
             }
 
@@ -74,6 +77,8 @@ class SSHController extends Controller
             $return->output = 'Not connected';
             return json_encode($return, true);
         }
+
+        LogController::log('Blocked SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
 
         $return->output = "Command not allowed";
         $return->status = 'xmark';

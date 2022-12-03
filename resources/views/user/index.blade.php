@@ -64,13 +64,31 @@
             <div class="control">
               <div class="select is-small">
                 <select name="theme">
-                  <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme'] == 'light') ? 'selected' : '' @endphp value="light">Light</option>
-                  <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme'] == 'dark') ? 'selected' : '' @endphp value="dark">Dark</option> 
+                  <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme']=='light' ) ? 'selected' : '' @endphp value="light">Light</option>
+                  <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme']=='dark' ) ? 'selected' : '' @endphp value="dark">Dark</option>
                 </select>
               </div>
             </div>
           </div>
 
+
+          <div class="field">
+            <label class="label is-small">Privatekey:</label>
+            <div class="file is-small">
+              <label class="file-label is-small">
+                <input class="file-input is-small" type="file" name="resume">
+                <span class="file-cta is-small">
+                  <span class="file-icon is-small">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label is-small">
+                    Choose a file…
+                  </span>
+                </span>
+              </label>
+            </div>
+            <p class="help is-warning">Nur RSA-Privatekeys werden unterstützt.</p>
+          </div>
         </div>
       </div>
 

@@ -94,6 +94,7 @@ class DeviceController extends Controller
         $request->merge(['system_data' => json_encode($device_data['sysstatus_data'], true)]);
 
         if ($validator and Device::create($request->all())) {
+            LogController::log('Switch erstellt', '{"name": "' . $request->input('name') . '", "hostname": "' . $request->input('hostname') . '"}');
             VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
             return redirect()->back()->with('success', 'Device added');
         }
@@ -138,6 +139,8 @@ class DeviceController extends Controller
         }
 
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
+            LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
+
             return redirect()->back()->with('success', 'Device updated');
         }
 
@@ -154,6 +157,8 @@ class DeviceController extends Controller
     {
         $find = Device::find($device->input('id'));
         if ($find->delete()) {
+            LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
+
             return redirect()->back()->with('success', 'Device deleted');
         }
         return redirect()->back()->with('error', 'Could not delete device');
@@ -280,19 +285,7 @@ class DeviceController extends Controller
 
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
-
-    function performSSH(Request $request)
-    {
-        $device = Device::find($request->input('id'));
-
-        $ssh = new SSH2($device->hostname);
-        if (!$ssh->login($device->username, $device->password)) {
-            return (['error' => 'Could not login to device']);
-        }
-
-        return (['success', 'Command sent']);
-    }
-
+    
     public function relativeTime($time)
     {
         $d[0] = array(1, "s");

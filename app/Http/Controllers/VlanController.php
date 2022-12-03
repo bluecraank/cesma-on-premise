@@ -86,6 +86,9 @@ class VlanController extends Controller
     public function update(UpdateVlanRequest $request, Vlan $vlan)
     {
         if(Vlan::whereId($request['id'])->update($request->validated())) {
+            $vlanD = Vlan::whereId($request['id'])->first();
+            LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '"}');
+
             return redirect()->back()->with('success', 'VLAN updated successfully');
         }
             return redirect()->back()->withErrors(['error' => 'VLAN could not be updated']);
@@ -101,6 +104,8 @@ class VlanController extends Controller
     {
         $find = Vlan::find($vlan->id);
         if($find->delete()) {
+            LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '", "description": "' . $find->description . '"}');
+
             return redirect()->back()->with('success', 'VLAN deleted');
         }
         return redirect()->back()->withErrors(['error' => 'Could not delete VLAN']);

@@ -1,4 +1,5 @@
 <x-layouts.main>
+<div class="box">
 <div class="columns">
     <div class="column is-4">
       <h1 class="title">Befehl ausführen</h1>
@@ -144,5 +145,6 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </x-layouts>

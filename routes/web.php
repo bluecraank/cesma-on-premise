@@ -7,6 +7,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LogController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/user-management', [UserController::class, 'management'])->name('user-management');
-    Route::get('/logs', [SSHController::class, 'overview'])->name('logs');
+    Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/switch/live/{id}', [DeviceController::class, 'live'])->name('live');
 
     // Perform SSH

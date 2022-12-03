@@ -45,6 +45,8 @@ class BuildingController extends Controller
          ])->validate();
 
          if($validator AND Building::create($request->all())) {
+            LogController::log('Gebäude erstellt', '{"name": "' . $request->name . '", "location_id": "' . $request->location_id . '"}');
+
             return redirect()->back()->with('success', 'Building created successfully');
          } 
             return redirect()->back()->withErrors(['error' => 'Building could not be created']);
@@ -86,6 +88,8 @@ class BuildingController extends Controller
          ])->validate();
 
          if($validator AND $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
+            LogController::log('Gebäude aktualisiert', '{"name": "' . $request->name . '"}');
+
             return redirect()->back()->with('success', 'Building updated successfully');
          } 
             return redirect()->back()->withErrors(['error' => 'Building could not be updated']);
@@ -101,6 +105,8 @@ class BuildingController extends Controller
     {
         $find = Building::find($building->input('id'));
         if($find->delete()) {
+            LogController::log('Gebäude gelöscht', '{"name": "' . $building->name . '"}');
+
             return redirect()->back()->with('success', 'Building deleted');
         }
         return redirect()->back()->with('error', 'Could not delete building');
