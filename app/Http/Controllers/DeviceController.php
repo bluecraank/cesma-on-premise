@@ -24,7 +24,7 @@ class DeviceController extends Controller
         $devices = Device::all()->sortBy('name');
         $locations = Location::all();
         $buildings = Building::all();
-        $https = 'http://';
+        $https = env('APP_HTTPS');
 
         return view('device.overview', compact(
             'devices',
