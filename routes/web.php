@@ -28,6 +28,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
+    Route::get('/user-management', [UserController::class, 'management'])->name('user-management');
     Route::get('/logs', [SSHController::class, 'overview'])->name('logs');
     Route::get('/switch/live/{id}', [DeviceController::class, 'live'])->name('live');
 
@@ -38,12 +39,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/switch/create', [DeviceController::class, 'store']);
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
+    Route::post('/vlan/create', [VlanController::class, 'store']);
+    Route::post('/user/create', [UserController::class, 'store']);
 
     // Delete routes
     Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
     Route::delete('/building/delete', [BuildingController::class, 'destroy']);
     Route::delete('/location/delete', [LocationController::class, 'destroy']);
     Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
+    Route::delete('/user/delete', [UserController::class, 'destroy']);
 
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);

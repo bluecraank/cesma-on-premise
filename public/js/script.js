@@ -180,6 +180,13 @@ function deleteVlanModal(id, name) {
     modal.show()
 }
 
+function deleteUserModal(id, name) {
+    let modal = $('.modal-delete-user');
+    modal.find('.user-id').val(id);
+    modal.find('.user-name').val(name);
+    modal.show()
+}
+
 // Verbotene Befehle Funktion
 function add_blacklist_command() {
     var inputText = $('input[name="blacklist_new_command"]').val();

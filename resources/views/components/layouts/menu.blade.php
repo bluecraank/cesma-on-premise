@@ -50,13 +50,17 @@
                 <p class="menu-label">System</p>
                 <ul class="menu-list">
                     <li>
+                        <a href="{{ route('user-management') }}" class="settings">
+                            <span class="icon"><i class="fa fa-gear"></i></span> Benutzer
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('logs') }}" class="log">
                             <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Log
                         </a>
                     </li>
                     <li>
-                        <a class="" href="{{ route('logout') }}"
-                        onclick="event.preventDefault();
+                        <a class="" href="{{ route('logout') }}" onclick="event.preventDefault();
                         document.getElementById('logout-form').submit();">
                             <span class="icon"><i class="fa-solid fa-power-off"></i></span> Abmelden
                         </a>
