@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SSHController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/perform-ssh/{switch}', function (Request $request, $switch) {
-    return $switch;
+Route::middleware('auth:api')->post('/switch/perform-ssh', function (Request $request) {
+    return "tEST";
 });

@@ -53,69 +53,52 @@ $('#fulltextsearch').on('input', function(){
 $( "button[name='executeSwitchCommand'" ).click(async function() {
    if($("select[name='execute-switch-select']").val() && $("input[name='execute-passphrase']").val() && $("textarea[name='execute-command']").val()) {
 
-        var formData = {
-            type: "EXECUTE",
-            command: $("textarea[name='execute-command']").val(),
-            passphrase: $("input[name='execute-passphrase']").val(),
-            which_switch: $("input[name='which_switch']").val()
-        };
+        let command = $("textarea[name='execute-command']").val();
+        let passphrase = $("input[name='execute-passphrase']").val();
+        let which_switch = $("input[name='which_switch']").val();
+        let token = $("input[name='_token']").val();
       
-        if(formData['which_switch'] == "every-switch") {
-            which_switch_value = $("select[name='execute-switch-select']").children().map(function() {return $(this).val();}).get();
-        } else if(formData['which_switch'] == "specific-switch") {
-            which_switch_value = $("select[name='execute-switch-select']").val();
+        if(which_switch == "every-switch") {
+            switches = $("select[name='execute-switch-select']").children().map(function() { return {'id': $(this).val(), 'name': $(this).text()} }).get();
+        } else if(which_switch == "specific-switch") {
+            switches = $("select[name='execute-switch-select']").val();
+            $.each(switches, function(index, value) {
+                switches[index] = {id: value, name: $("select[name='execute-switch-select'] option[value='"+value+"']").text()};
+            });
         } else {
-            ajaxResult = []
-            slocation = $("select[name='execute-switch-select-loc']").val();
-            $.ajax({
-                type: "POST", 
-                url: "/api/v1/switch/bylocation",
-                data: {location: slocation},
-                dataType: "json",
-                async: false,
-                success: function(data)
-                { 
-                   ajaxResult = data;
-                }
-            }).responseText;
-            which_switch_value = ajaxResult;
+            let location = $("select[name='execute-switch-select-loc']").val();
+            switches = $("select[name='execute-switch-select']").children().map(function() { if($(this).attr('data-location') == location) {return {'id': $(this).val(), 'name': $(this).text()} }}).get();
         }
+        
         $(".output-buttons").children().remove();
         $(".outputs").children().remove();
-        getExecuteOutput(which_switch_value, formData);
+        
+        execute(switches, command, passphrase, which_switch, token);
     }   
 });
 
-async function getExecuteOutput(which_switch_value, formData) {
-    console.log(which_switch_value);
-    $.each(which_switch_value, async function( index, value ) {
-        if(formData['which_switch'] == "specific-location") {
-            formData['value'] = value['id'];
-            var host = value['name'] 
-        } else {
-            formData['value'] = value;
-            var host = $("select[name='execute-switch-select'] option[value='"+formData.value+"'").text();
-        }
+async function execute(switches, command, passphrase, type, token) {
 
-        //$("#results tbody").append(`<tr data-id="${value}"><td>${host}</td><td class="second" style="word-wrap: break-word;max-width: 450px;">Awaiting...</td><td class="third has-text-centered"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></td></tr>`);
-        $(".output-buttons").append(`<button class='is-loading button' data-id='${formData.value}'>${host}</button>`);
-        let foormData = new FormData();
-        foormData.append("command", formData.command);
-        foormData.append("passphrase", formData.passphrase);
-        foormData.append("id", formData.value);
+    $.each(switches, async function(index, value) {
+        $(".output-buttons").append(`<button class='is-loading button' data-id='${value.id}'>${value.name}</button>`);
+        
+        let formData = new FormData();
+        formData.append("command", command);
+        formData.append("passphrase", passphrase);
+        formData.append("id", value.id);
+        formData.append("_token", token);
 
         fetch(
-            '/api/v1/switch/command',
+            '/switch/perform-ssh',
             {
                 method: 'POST',
-                body: foormData
+                body: formData
             }
         ).then((resp) => resp.json()).then(response => {
-            //$("tr[data-id='"+value+"'] td.third").html(`<i class="fa fa-${response.status}"></i>`); 
-            //$("tr[data-id='"+value+"'] td.second").html(response.output);
+            console.log(response.id);
             $(".outputs").append(`<div class='is-hidden' data-id='${response.id}'><pre>${response.output}</pre></div>`)
             $(`.output-buttons button[data-id='${response.id}']`).removeClass("is-loading");
-            $(`.output-buttons button[data-id='${response.id}']`).html(`${host} &nbsp; <i class="fa fa-${response.status}"></i>`)
+            $(`.output-buttons button[data-id='${response.id}']`).html(`${value.name} &nbsp; <i class="fa fa-${response.status}"></i>`)
         });
     });
 }

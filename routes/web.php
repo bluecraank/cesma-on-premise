@@ -6,6 +6,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
+use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -26,11 +27,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
-    Route::get('/user-settings', [SSHController::class, 'overview'])->name('user-settings');
+    Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/logs', [SSHController::class, 'overview'])->name('logs');
     Route::get('/switch/live/{id}', [DeviceController::class, 'live'])->name('live');
 
-    // Create new device
+    // Perform SSH
+    Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
+    
+    // Create routes
     Route::post('/switch/create', [DeviceController::class, 'store']);
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
@@ -44,10 +48,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);
     Route::put('/switch/refresh', [DeviceController::class, 'refresh']);
-
     Route::put('/building/update', [BuildingController::class, 'update']);
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
+    Route::put('/user/update', [UserController::class, 'update']);
     
 });
 

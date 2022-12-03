@@ -3,6 +3,7 @@
     <div class="column is-4">
       <h1 class="title">Befehl ausführen</h1>
       <form action="" method="post" id="executeForm">
+        @csrf
         <div style="margin-top: 25px;">
           <div class="mt-5 field">
             <label class="label">Switch wählen</label>
@@ -17,8 +18,9 @@
           <div class="mt-5 field">
             <div class="execute-switch-select">
               <select multiple="multiple" id="switch-select-ms" name="execute-switch-select">
-                <option value="">Test</option>
-                <option value="">Test 2</option>
+                @foreach ($devices as $device)
+                  <option data-location="{{ $device->location }}" value="{{ $device->id }}">{{ $device->name }}</option>
+                @endforeach
               </select>
             </div>
   
@@ -26,7 +28,9 @@
               <div class="location-select control has-icons-left is-hidden">
                 <div class="select is-fullwidth">
                   <select required name="execute-switch-select-loc">
-                    <option value="">rws</option>
+                    @foreach ($locations as $location)
+                      <option value="{{ $location->id }}">{{ $location->name }}</option>
+                    @endforeach
                     </select>
                 </div>
                 <div class="icon is-small is-left">

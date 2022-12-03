@@ -281,6 +281,18 @@ class DeviceController extends Controller
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
 
+    function performSSH(Request $request)
+    {
+        $device = Device::find($request->input('id'));
+
+        $ssh = new SSH2($device->hostname);
+        if (!$ssh->login($device->username, $device->password)) {
+            return (['error' => 'Could not login to device']);
+        }
+
+        return (['success', 'Command sent']);
+    }
+
     public function relativeTime($time)
     {
         $d[0] = array(1, "s");
