@@ -63,7 +63,7 @@
             </div>
             <textarea required="true" spellcheck="false" required name="execute-command" class="textarea"
               placeholder="Kommando..."></textarea>
-            <p class="help is-danger">Bitte beachte, dass eingegebene Kommandos nicht überprüft werden.</p>
+            <p class="help is-danger">Bitte beachte, dass eingegebene Befehle nicht überprüft werden.</p>
           </div>
           <div class="mt-5 field">
             <label class="label">Passphrase</label>
@@ -95,10 +95,6 @@
                   <td>{trunks}</td>
                   <td>Ersetzt {trunks} durch die Trunks vom jeweiligen Switch.</td>
                 </tr>
-                <!-- <tr>
-                  <td>{vlans}</td>
-                  <td>Ersetzt {vlans} durch die am Standort vorhandenen VLANs.</td>
-                </tr> -->
                 <tr>
                   <td></td>
                   <td>Kann die Wildcard nicht ersetzt werden, wird der Switch übersprungen.</td>
