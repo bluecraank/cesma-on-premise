@@ -5,12 +5,21 @@ namespace App\Http\Livewire;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
+use App\Traits\WithLogin;
+
 
 use Livewire\Component;
 
 class SearchSwitch extends Component
 {
-    public $searchTerm;
+    use WithLogin;
+
+    public $searchTerm = "";
+
+    public function mount() {
+        $this->checkLogin();
+    } 
+
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';

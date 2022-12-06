@@ -6,13 +6,19 @@ use Livewire\Component;
 use App\Models\Location;
 use App\Models\Building;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Traits\WithLogin;
 
 
 class SearchLocations extends Component
 {
-    use AuthorizesRequests;
+    use WithLogin;
 
-    public $searchTerm;
+    public $searchTerm = "";
+
+    public function mount() {
+        $this->checkLogin();
+    } 
+
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';

@@ -4,10 +4,19 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Log;
+use App\Traits\WithLogin;
+
 
 class SearchLog extends Component
 {
-    public $searchTerm;
+    use WithLogin;
+
+    public $searchTerm = "";
+
+    public function mount() {
+        $this->checkLogin();
+    } 
+
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
