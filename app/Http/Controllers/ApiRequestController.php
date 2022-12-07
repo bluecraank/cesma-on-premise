@@ -80,7 +80,6 @@ class ApiRequestController extends Controller
             return false;
 
         } catch (\Exception $e) {
-            //echo "Get data failed ".$e->getMessage();
             return false;
         }
     }
