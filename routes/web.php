@@ -49,6 +49,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/location/delete', [LocationController::class, 'destroy']);
     Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
     Route::delete('/user/delete', [UserController::class, 'destroy']);
+    Route::delete('/user/delete-privatekey', [UserController::class, 'deletePrivatekey']);
 
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);
@@ -57,6 +58,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
     Route::put('/user/update', [UserController::class, 'update']);
+    Route::put('/user/privatekey', [UserController::class, 'setPrivatekey']);
     
 });
 

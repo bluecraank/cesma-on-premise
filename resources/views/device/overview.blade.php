@@ -13,19 +13,19 @@
                 <div class="field">
                     <label class="label">Bezeichner</label>
                     <div class="control">
-                        <input required class="input" name="name" type="text" placeholder="Name des Switch">
+                        <input required class="input" name="name" type="text" placeholder="Name">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Hostname / IP</label>
                     <div class="control">
-                        <input class="input" name="hostname" type="text" placeholder="Hostname / IP des Switch">
+                        <input class="input" name="hostname" type="text" placeholder="Hostname / IP">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Passwort</label>
+                    <label class="label">Passwort für API</label>
                     <div class="control">
-                        <input required class="input" name="password" type="password" placeholder="Passwort des Switch">
+                        <input required class="input" name="password" type="password" placeholder="Passwort für API">
                     </div>
                 </div>
 
@@ -74,20 +74,20 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Switch Name</label>
+                    <label class="label">Bezeichner</label>
                     <div class="control">
                         <input type="hidden" class="switch-id" name="id" value="">
                         <input class="input switch-name" name="name" type="text" value="" placeholder="Name">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Switch FQDN / IP</label>
+                    <label class="label">Hostame oder IP</label>
                     <div class="control">
-                        <input class="input switch-fqdn" name="hostname" type="text" value="" placeholder="FQDN">
+                        <input class="input switch-fqdn" name="hostname" type="text" value="" placeholder="Hostname oder IP">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Switch WebGUI Password</label>
+                    <label class="label">Passwort für API</label>
                     <div class="control">
                         <input class="input switch-password" name="password" type="password" value="__hidden__"
                             placeholder="WebGUI Password">
@@ -111,7 +111,7 @@
                             </select>
                         </div>
                         <input class="input switch-details" name="details"
-                            style="display: inline-block;width:200px" type="text" placeholder="Abteilung">
+                            style="display: inline-block;width:200px" type="text" placeholder="z.B Abteilung">
                         <input class="input switch-numbering" name="number"
                             style="display: inline-block;width:40px" type="text" placeholder="1">
                     </div>

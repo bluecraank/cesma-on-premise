@@ -16,7 +16,6 @@
 
 .menu {
     border-right: 1px solid #4e5d6c;
-    /* background: #2b3e50; */
     width: 210px;
     position: fixed;
     min-height: 100vh;
@@ -71,4 +70,8 @@
 
 .is-blue {
     background-color: rgb(7, 148, 204) !important;
+}
+
+aside.menu {
+    overflow-y: scroll;
 }

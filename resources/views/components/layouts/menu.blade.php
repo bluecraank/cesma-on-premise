@@ -8,7 +8,7 @@
                 <p class="menu-label">Aktion</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('perform-ssh') }}" class="execute">
+                        <a href="{{ route('perform-ssh') }}" class="execute {{ (request()->is('perform-ssh')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-terminal"></i></span> Befehl ausführen
                         </a>
                     </li>
@@ -17,22 +17,17 @@
                 <p class="menu-label">Verwaltung</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('dashboard') }}" class="switch">
+                        <a href="{{ route('dashboard') }}" class="{{ (request()->is('/')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-bars-progress"></i></span> Switch
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('vlans') }}" class="vlan">
+                        <a href="{{ route('vlans') }}" class="{{ (request()->is('vlans')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-ethernet"></i></span> VLAN
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('trunks') }}" class="trunk">
-                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('locations') }}" class="location">
+                        <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-location-dot"></i></span> Standort
                         </a>
                     </li>
@@ -41,13 +36,8 @@
                 <p class="menu-label">Daten</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('trunks') }}" class="trunk">
+                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('trunks') }}" class="firmware">
-                            <span class="icon"><i class="fa-sharp fa-solid fa-microchip"></i></span> Firmware
                         </a>
                     </li>
                 </ul>
@@ -55,7 +45,7 @@
                 <p class="menu-label">Benutzer</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('user-settings') }}" class="settings">
+                        <a href="{{ route('user-settings') }}" class="{{ (request()->is('user-settings')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-user-gear"></i></span> Einstellungen
                         </a>
                     </li>
@@ -64,12 +54,12 @@
                 <p class="menu-label">System</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('user-management') }}" class="settings">
+                        <a href="{{ route('user-management') }}" class="{{ (request()->is('user-management')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-gear"></i></span> Benutzer
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('logs') }}" class="log">
+                        <a href="{{ route('logs') }}" class="{{ (request()->is('logs')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Log
                         </a>
                     </li>

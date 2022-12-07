@@ -23,11 +23,12 @@ class SearchSwitch extends Component
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
+        $https = config('app.https', 'http://');
         return view('livewire.search-switch',[
             'devices' => Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('name'),
             'locations' => Location::all()->keyBy('id'),
             'buildings' => Building::all()->keyBy('id'),
-            'https' => env('APP_HTTPS')
+            'https' => $https
         ]);
     }
 }

@@ -13,7 +13,13 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('user.index', compact('users'));
+        $key = Auth::user()->privatekey;
+        if($key) {
+            $privatekey = true;
+        } else {
+            $privatekey = false;
+        }
+        return view('user.index', compact('users', 'privatekey'));
     }
 
     public function management()
@@ -67,6 +73,14 @@ class UserController extends Controller
             }
         }
 
+        $key = $request->input('privatekey');
+        $passphrase = $request->input('passphrase');
+        if (!empty($key)) {
+            $user = User::find(Auth::user()->id);
+            $user->privatekey = EncryptionController::encryptKey($key, $passphrase);
+            $user->save();
+        }
+
         return redirect()->back()->with('success', 'User updated!');
 
     }
@@ -83,5 +97,35 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'User deleted!');
 
+    }
+
+    function setPrivatekey(Request $request) {
+        $user = User::find(Auth::user()->id);
+        $privatekey = $request->input('privatekey');
+        $passphrase = $request->input('passphrase');
+
+        $validator = Validator::make($request->all(), [
+            'privatekey' => 'required|min:100|starts_with:-----BEGIN RSA PRIVATE KEY-----|ends_with:-----END RSA PRIVATE KEY-----',
+            'passphrase' => 'required|min:8|max:50',
+        ])->validate();
+
+        $key = EncryptionController::encryptKey($privatekey, $passphrase);
+        $user->privatekey = $key;
+
+        if($user->save()) {
+            return redirect()->back()->with('success', 'Private Key gespeichert!');
+        } else {
+            return redirect()->back()->withErrors(['error' => 'Fehler beim Speichern des Private Keys.']);
+        }
+    }
+
+    function deletePrivatekey() {
+        $user = User::find(Auth::user()->id);
+        $user->privatekey = null;
+        if($user->save()) {
+            return redirect()->back()->with('success', 'Private Key gelöscht!');
+        } else {
+            return redirect()->back()->withErrors(['error' => 'Fehler beim Löschen des Private Keys.']);
+        }
     }
 }

@@ -2,7 +2,7 @@
     <h1 class="title is-pulled-left">Userverwaltung</h1>
 
     <div class="is-pulled-right ml-4">
-        <button onclick="$('.modal-new-user').show()" class="button is-success">Create</button>
+        <button onclick="$('.modal-new-user').show()" class="button is-success"><i class="fa-solid fa-plus"></i></button>
     </div>
 
     <div class="is-pulled-right">

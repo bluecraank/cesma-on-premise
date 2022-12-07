@@ -2,7 +2,7 @@
     <h1 class="title is-pulled-left">VLANs</h1>
 
     <div class="is-pulled-right ml-4">
-        <button class="button is-success">Create</button>
+        <button class="button is-success"><i class="fa-solid fa-plus"></i></button>
     </div>
 
 

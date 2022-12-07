@@ -16,6 +16,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'Cesma'),
+    'api_username' => env('APP_API_USERNAME', 'admin'),
+    'ssh_private_key' => env('APP_SSH_PRIVATE_KEY', 'false'),
+    'https' => env('APP_HTTPS', 'http://'),
 
     /*
     |--------------------------------------------------------------------------

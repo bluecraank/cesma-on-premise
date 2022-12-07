@@ -8,7 +8,7 @@
         <div style="margin-top: 25px;">
           <div class="mt-5 field">
             <label class="label">Switch wählen</label>
-            <div class="select is-fullwidth">
+            <div class="select is-fullwidth is-small">
               <select name="execute-specify-switch" id="">
                 <option value="every-switch">Alle Switches</option>
                 <option selected value="specific-switch">Switch wählen</option>
@@ -27,7 +27,7 @@
   
             <div class="field">
               <div class="location-select control has-icons-left is-hidden">
-                <div class="select is-fullwidth">
+                <div class="select is-fullwidth is-small">
                   <select required name="execute-switch-select-loc">
                     @foreach ($locations as $location)
                       <option value="{{ $location->id }}">{{ $location->name }}</option>
@@ -66,7 +66,7 @@
             <p class="help is-danger">Bitte beachte, dass eingegebene Befehle nicht überprüft werden.</p>
           </div>
           <div class="mt-5 field">
-            <label class="label">Passphrase</label>
+            <label class="label">{{ $require_private_key_text }}</label>
             <p class="control has-icons-left">
               <input required="true" class="input" type="password" required name="execute-passphrase" placeholder="Passphrase">
               <span class="icon is-small is-left">

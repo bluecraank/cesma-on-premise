@@ -53,3 +53,7 @@ textarea::placeholder, input::placeholder {
 .outputs pre {
     background: #1f2d3b;
 }
+
+aside.menu{
+    background: #2b3e50 !important;
+}

@@ -14,8 +14,9 @@ class SSHController extends Controller
     {
         $devices = Device::all();
         $locations = Location::all();
+        $require_private_key_text = (config('app.ssh_private_key') == "true") ? 'Passphrase für Privatekey' : 'Passwort vom Switch';
 
-        return view('device.perform-ssh', compact('devices', 'locations'));
+        return view('device.perform-ssh', compact('devices', 'locations', 'require_private_key_text'));
     }
 
     static function performSSH(Request $request) {
