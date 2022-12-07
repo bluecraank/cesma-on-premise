@@ -25,8 +25,9 @@ class VlanController extends Controller
     static function AddVlansFromDevice($vlans, $device, $location) {
         foreach($vlans['vlan_element'] as $vlan) {
             $vlan = Vlan::firstOrCreate([
-                'name' => $vlan['name'],
                 'vid' => $vlan['vlan_id'],
+            ], [
+                'name' => $vlan['name'],
                 'description' => "VLAN " . $vlan['vlan_id'] . " found on " . $device,
                 'location_id' => $location,
             ]);

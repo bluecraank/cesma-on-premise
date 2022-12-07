@@ -66,7 +66,8 @@ class ApiRequestController extends Controller
             ]);
             
             // Return data
-            if($responses['portStatistic']->successful() AND $responses['vlanPort']->successful() AND $responses['sysStatus']->successful()) {
+            if($responses['portStatistic'] and $responses['vlanPort'] and $responses['sysStatus'] and 
+            $responses['portStatistic']->successful() AND $responses['vlanPort']->successful() AND $responses['sysStatus']->successful()) {
                 return [
                     'vlan_data' => $responses['vlanData']->json(),
                     'portstats_data' => $responses['portStatistic']->json(),

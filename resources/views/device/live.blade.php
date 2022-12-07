@@ -159,7 +159,7 @@
                                 {{ $port->name }}
                             </td>
                             <td>
-                                <span class="tag is-blue ">{{ $untagged[$port->id] }}</span>
+                                {{ $untagged[$port->id] }}
                             </td>
                             <td>
                                 <div class="dropdown is-up is-small">

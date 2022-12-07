@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('vlans', function (Blueprint $table) {
             $table->id();
             $table->integer('vid')->unique();
-            $table->string('name')->unique();
+            $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->string('location_id')->references('id')->on('locations');
             $table->timestamps();
