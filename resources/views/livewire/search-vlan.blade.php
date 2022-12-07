@@ -1,19 +1,3 @@
-@if ($errors->any())
-<div class="notification is-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-
-@if(session()->has('success'))
-<div class="notification is-success">
-    {{ session()->get('success') }}
-</div>
-@endif
-
 <div class="box">
     <h1 class="title is-pulled-left">VLANs</h1>
 

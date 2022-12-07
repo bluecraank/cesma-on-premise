@@ -19,11 +19,11 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function overview()
+    function index()
     {
         $devices = Device::all()->sortBy('name');
-        $locations = Location::all();
-        $buildings = Building::all();
+        $locations = Location::all()->keyBy('id');
+        $buildings = Building::all()->keyBy('id');
         $https = env('APP_HTTPS');
 
         return view('device.overview', compact(

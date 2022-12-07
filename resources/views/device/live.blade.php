@@ -1,6 +1,6 @@
 <x-layouts.main>
     @if ($errors->any())
-    <div class="notification is-danger">
+    <div class="notification status is-danger">
         <ul>
             @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -96,7 +96,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Ports</th>
+                            <th>Mitglieder</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -143,7 +143,7 @@
                             <th>Name</th>
                             <th>Untagged</th>
                             <th>Tagged</th>
-                            <th>Speed</th>
+                            <th class="has-text-centered">Speed Mbit/s</th>
                         </tr>
                     </thead>
 
@@ -154,10 +154,10 @@
                         @php
                         $status = ($port->is_port_up) ? 'is-online' : 'is-offline';
                         if($port->trunk_group != null) {
-                            $tagged[$port->id] = $tagged[$port->trunk_group];
+                        $tagged[$port->id] = $tagged[$port->trunk_group];
                         }
                         @endphp
-                        <tr>
+                        <tr style="line-height: 37px;">
                             <td class="has-text-centered">
                                 <i class="fa fa-circle {{ $status }}"></i>
                             </td>
@@ -168,30 +168,44 @@
                                 {{ $port->name }}
                             </td>
                             <td>
-                                {{ $untagged[$port->id] }}
+                                <span class="tag is-primary ">{{ $untagged[$port->id] }}</span>
                             </td>
                             <td>
-                                <div class='dropdown is-hoverable'>
-                                    <div class='dropdown-trigger'>
-                                        <button class='button' aria-haspopup='true' aria-controls='dropdown-menu4'>
-                                            <span>{{ count($tagged[$port->id]) }}</span><span class='icon is-small'>
-                                                <i class='fas fa-angle-down' aria-hidden='true'></i>
+                                <div class="dropdown is-up is-small">
+                                    <div class="dropdown-trigger" onclick="$(this).parent().toggleClass('is-active');">
+                                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu7">
+                                            <span> {{ count($tagged[$port->id]) }} VLANs</span>
+                                            <span class="icon is-small">
+                                                <i class="fas fa-angle-up" aria-hidden="true"></i>
                                             </span>
                                         </button>
                                     </div>
-                                    <div class='dropdown-menu' id='dropdown-menu4' role='menu'>
-                                        <div class='dropdown-content'>
-                                            <div class='dropdown-item'>
-                                                @foreach ($tagged[$port->id] as $tag)
-                                                <span class="tag is-link">{{ $tag }}</span>
-                                                @endforeach
+                                    <div class="dropdown-menu" id="dropdown-menu7" role="menu">
+                                        <div class="dropdown-content">
+                                            <div class="dropdown-item">
+                                                <div class="tags">
+                                                    @php sort($tagged[$port->id]) @endphp
+                                                    @foreach ($tagged[$port->id] as $tag)
+                                                    <span class="tag is-link ">{{ $tag }}</span>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                {{ $port_statistic[$port->id]['port_speed_mbps'] }} Mbit/s
+                            <td class="has-text-centered">
+                                @if ($port_statistic[$port->id]['port_speed_mbps'] == 0)
+                                <span class="tag is-link ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10) 
+                                <span class="tag is-danger ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 100) 
+                                <span class="tag is-warning">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 1000)
+                                <span class="tag is-primary">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10000)
+                                <span class="tag is-primary">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @endif
                             </td>
                         </tr>
                         @endif

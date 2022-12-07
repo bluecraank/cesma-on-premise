@@ -1,19 +1,3 @@
-@if ($errors->any())
-<div class="notification is-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-
-@if(session()->has('success'))
-<div class="notification is-success">
-    {{ session()->get('success') }}
-</div>
-@endif
-
 <div class="box">
     <h1 class="title is-pulled-left">Dashboard</h1>
 
@@ -48,7 +32,7 @@
                 <td>{{ $device->name }}</td>
                 <td>{{ $device->hostname }}</td>
                 <td>{{ json_decode($device->system_data, true)['product_model'] }}</td>
-                <td>{{ $locations->find($device->location)->name }}</td>
+                <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }}, {{ $device->details }} #{{ $device->number }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
                         <a class="button is-link is-small" href="/switch/live/{{ $device->id }}">

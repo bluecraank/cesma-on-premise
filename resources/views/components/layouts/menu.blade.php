@@ -38,6 +38,20 @@
                     </li>
                 </ul>
 
+                <p class="menu-label">Daten</p>
+                <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('trunks') }}" class="trunk">
+                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('trunks') }}" class="firmware">
+                            <span class="icon"><i class="fa-sharp fa-solid fa-microchip"></i></span> Firmware
+                        </a>
+                    </li>
+                </ul>
+
                 <p class="menu-label">Benutzer</p>
                 <ul class="menu-list">
                     <li>

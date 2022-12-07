@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/', [DeviceController::class, 'overview'])->name('dashboard');
+    Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
     Route::get('/trunks', [DeviceController::class, 'trunks'])->name('trunks');
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
