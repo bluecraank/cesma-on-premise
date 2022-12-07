@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \App\Models\Device;
-use \App\Models\Location;
+use App\Models\Device;
+use App\Models\Location;
 use phpseclib3\File\ANSI;
-use \phpseclib3\Net\SSH2;
+use phpseclib3\Net\SSH2;
+use App\Http\Controllers\EncryptionController;
+use Illuminate\Support\Facades\Auth;
+
 
 class SSHController extends Controller
 {
@@ -31,9 +34,15 @@ class SSHController extends Controller
 
         if(SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
-            if (!$ssh->login(env('APP_API_USERNAME'), $request->input('passphrase'))) {
+            if (config('app.ssh_private_key')) {
+                $key = EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase'));
+            } else {
+                $key = $request->input('passphrase');
+            }
+
+            if (!$ssh->login(config('app.ssh_username'), $key)) {
                 $return->status = 'xmark';
-                $return->output = 'Login Failed, dump: ' . $request->input('passphrase');
+                $return->output = 'Login Failed';
                 return json_encode($return, true);
             }
 

@@ -2,14 +2,14 @@
     <h1 class="title is-pulled-left">VLANs</h1>
 
     <div class="is-pulled-right ml-4">
-        <button class="button is-success"><i class="fa-solid fa-plus"></i></button>
+        <button class="button is-success is-small"><i class="fa-solid fa-plus"></i></button>
     </div>
 
 
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" wire:model.debounce.500ms="searchTerm" type="text" placeholder="Search a vlan...">
+                <input class="input is-small" wire:model.debounce.500ms="searchTerm" type="text" placeholder="Search a vlan...">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>

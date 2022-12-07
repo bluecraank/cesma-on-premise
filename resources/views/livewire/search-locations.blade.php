@@ -2,13 +2,13 @@
     <h1 class="title is-pulled-left">Standorte</h1>
 
     <div class="is-pulled-right ml-4">
-        <button onclick="$('.modal-add-site').show();return false;" class="button is-success"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="$('.modal-add-site').show();return false;" class="is-small button is-success"><i class="fa-solid fa-plus"></i></button>
     </div>
 
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a location...">
+                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a location...">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>

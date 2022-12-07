@@ -49,7 +49,7 @@
           <div class="field">
             <div class="control">
               <label class="label is-small">Theme auswählen</label>
-              <div class="select is-small">
+              <div class="select is-small is-fullwidth">
                 <select name="theme">
                   <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme']=='light' ) ? 'selected' : '' @endphp value="light">Light</option>
                   <option @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme']=='dark' ) ? 'selected' : '' @endphp value="dark">Dark</option>
@@ -64,7 +64,7 @@
 
     <div class="title mt-6">Privater Schlüssel für SSH</div>
     <div class="columns">
-      <div class="column is-6">
+      <div class="column is-12">
         <form action="/user/privatekey" method="post">
           @csrf
           @method('PUT')
@@ -85,10 +85,10 @@
           Status:
           @php if($privatekey) { echo '<span class="has-text-success">Privatekey vorhanden</span>'; $disabled = ""; } else { echo '<span class="has-text-warning">Privatekey nicht vorhanden</span>'; $disabled = "disabled"; } @endphp
           <br><br>
-          <button class="button is-small is-primary">Hochladen</button>
+          <button class="button is-small is-primary is-pulled-left">Hochladen</button>
         </form>
 
-        <form action="/user/delete-privatekey" class="mt-1" method="POST">
+        <form action="/user/delete-privatekey" class="mt-1 is-pulled-right" method="POST">
           @csrf
           @method('DELETE')
           <button {{ $disabled }} @endphp class="button is-small is-danger">Privatekey entfernen</button>

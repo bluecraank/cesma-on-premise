@@ -75,7 +75,7 @@
                 </ul>
 
 
-                <p class="has-text-centered menu-label is-username-info">cesma v1.0.0</p>
+                <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->name }}<br>cesma v1.0.1</p>
             </div>
 
         </div>

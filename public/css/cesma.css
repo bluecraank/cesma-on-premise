@@ -12,6 +12,7 @@
 .is-menu {
     min-width: 210px;
     min-height: 100vh;
+    max-height: 100vh;
 }
 
 .menu {
