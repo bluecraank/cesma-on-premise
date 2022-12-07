@@ -68,3 +68,7 @@
     margin-bottom: 5px;
     font-size: 22px;
 }
+
+.is-blue {
+    background-color: rgb(7, 148, 204) !important;
+}

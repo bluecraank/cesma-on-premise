@@ -201,18 +201,54 @@ function submitSystemsettings() {
     $(".modal-save-settings").show();
 }
 
+function refreshSwitch(ele) {
+    //$("#refresh-form").submit();
+    $(ele).addClass('is-loading');
 
-$( document ).on( 'keydown', function ( e ) {
-    if ( e.keyCode === 27 ) {
+    let form = $("#refresh-form").serialize();
+    fetch('/switch/refresh', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form
+    }).then(response => response.json())
+        .then(data => {
+
+            if(data.success == "true") {
+                $(ele).removeClass('is-loading');
+                $(ele).addClass('is-success');
+                $(ele).children().removeClass('fa-rotate');
+                $(ele).children().addClass('fa-check'); 
+
+            } else {
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');
+                $(ele).addClass('is-danger');
+                $(ele).children().removeClass('fa-sync');
+                $(ele).children().addClass('fa-exclamation-triangle');
+                
+                $(".notification.status ul li").text(data.error);
+                $(".notification.status").fadeIn(20);
+
+                setTimeout(function () {
+                    $(".notification.status").fadeOut(250);
+                }, 3000)
+            }
+        }
+    );
+
+}
+
+$(document).on('keydown', function (e) {
+    if (e.keyCode === 27) {
         $('.modal').hide();
     }
 });
 
-$(document).mouseup(function(e) 
-{
+$(document).mouseup(function (e) {
     var container = $(".dropdown.is-active");
-    if (!container.is(e.target) && container.has(e.target).length === 0) 
-    {
+    if (!container.is(e.target) && container.has(e.target).length === 0) {
         container.removeClass('is-active');
     }
 });

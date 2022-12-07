@@ -133,7 +133,7 @@ class DeviceController extends Controller
      */
     public function update(UpdateDeviceRequest $request, Device $device)
     {
-        if ($request->input('password') != "__HIDDEN__" and $request->input('password') != "") {
+        if ($request->input('password') != "__hidden__" and $request->input('password') != "") {
             $encrypted_pw = EncryptionController::encrypt($request->input('password'));
             $request->merge(['password' => $encrypted_pw]);
         }
@@ -180,22 +180,22 @@ class DeviceController extends Controller
         // Get login cookie
 
         if (!$auth_cookie = ApiRequestController::login($device->password, $device->hostname)) {
-            return redirect()->back()->withErrors(['error' => 'Could not login to device']);
+            return json_encode(['success' => 'false', 'error' => 'Could not login to device']);
             //return false;
         }
 
         // Get data from device
         if (!$device_data = ApiRequestController::getData($auth_cookie, $device->hostname)) {
             ApiRequestController::logout($auth_cookie, $device->hostname);
-            return redirect()->back()->withErrors(['error' => 'Could not get data from device']);
+            return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
         }
 
         ApiRequestController::logout($auth_cookie, $device->hostname);
         if(Device::whereId($request->input('id'))->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
-            return redirect()->back()->with('success', 'Device updated');
+            return json_encode(['success' => 'true']);
         }
 
-        return redirect()->back()->withErrors(['error' => 'Could not login to device']);
+        return json_encode(['success' => 'false', 'error' => 'Could not update device']);
     }
 
     function live($id)

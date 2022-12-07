@@ -1,20 +1,11 @@
 <x-layouts.main>
-    @if ($errors->any())
-    <div class="notification status is-danger">
+    <div style="display:none" class="notification status is-danger">
         <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
+            <li></li>
         </ul>
     </div>
-    @endif
 
-    @if(session()->has('success'))
-    <div class="notification is-success">
-        {{ session()->get('success') }}
-    </div>
-    @endif
-    <div class="columns">
+    <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
                 <div class="column is-6">
@@ -26,7 +17,7 @@
                     </h1>
                 </div>
                 <div class="column is-6">
-                    <form action="/switch/refresh" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />@csrf @method('PUT')<button class="is-pulled-right is-primary button"><i class="is-size-5 fa fa-rotate"></i></button></form>
+                    <form action="/switch/refresh" id="refresh-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />@csrf @method('PUT')<a onclick="refreshSwitch(this)" class="is-pulled-right is-primary button"><i class="is-size-5 fa fa-rotate"></i></a></form>
                 </div>
             </div>
         </div>
@@ -168,7 +159,7 @@
                                 {{ $port->name }}
                             </td>
                             <td>
-                                <span class="tag is-primary ">{{ $untagged[$port->id] }}</span>
+                                <span class="tag is-blue ">{{ $untagged[$port->id] }}</span>
                             </td>
                             <td>
                                 <div class="dropdown is-up is-small">
@@ -186,7 +177,7 @@
                                                 <div class="tags">
                                                     @php sort($tagged[$port->id]) @endphp
                                                     @foreach ($tagged[$port->id] as $tag)
-                                                    <span class="tag is-link ">{{ $tag }}</span>
+                                                    <span class="tag is-blue">{{ $tag }}</span>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -197,9 +188,9 @@
                             <td class="has-text-centered">
                                 @if ($port_statistic[$port->id]['port_speed_mbps'] == 0)
                                 <span class="tag is-link ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10) 
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10)
                                 <span class="tag is-danger ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 100) 
+                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 100)
                                 <span class="tag is-warning">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
                                 @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 1000)
                                 <span class="tag is-primary">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
