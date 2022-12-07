@@ -35,11 +35,11 @@
                 <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }}, {{ $device->details }} #{{ $device->number }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
-                        <a class="button is-blue is-small" href="/switch/live/{{ $device->id }}">
+                        <a class="button is-success is-small" href="/switch/live/{{ $device->id }}">
                             <i class="fa-solid fa-eye"></i>
                         </a>
 
-                        <a class="button is-small is-primary" href="{{ $https }}{{ $device->hostname }}" target="_blank">
+                        <a class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}" target="_blank">
                             <i class="fa fa-arrow-up-right-from-square"></i>
                         </a>
 

@@ -143,7 +143,7 @@
                         @if (!str_contains($port->id, "Trk"))
 
                         @php
-                        $status = ($port->is_port_up) ? 'is-online' : 'is-offline';
+                        $status = ($port->is_port_up) ? 'has-text-success' : 'has-text-danger';
                         if($port->trunk_group != null) {
                         $tagged[$port->id] = $tagged[$port->trunk_group];
                         }

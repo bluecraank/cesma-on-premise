@@ -310,13 +310,13 @@ class DeviceController extends Controller
         try {
             if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 1)) {
                 fclose($fp);
-                return "is-online";
+                return "has-text-success	";
             }
             fclose($fp);
 
-            return "is-offline";
+            return "has-text-danger";
         } catch (\Exception $e) {
-            return "is-offline";
+            return "has-text-warning";
         }
     }
 }

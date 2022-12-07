@@ -1,6 +1,6 @@
 // Custom notification banner timeout
 setTimeout(function () {
-    $(".notification.status").fadeOut(250);
+    $(".notification.status").slideUp(500);
 }, 3000)
 
 // Only one checkbox allowed
@@ -221,6 +221,10 @@ function refreshSwitch(ele) {
                 $(ele).children().removeClass('fa-rotate');
                 $(ele).children().addClass('fa-check'); 
 
+                setTimeout(function () {
+                    window.location.reload();
+                }, 750)
+
             } else {
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');
@@ -229,11 +233,7 @@ function refreshSwitch(ele) {
                 $(ele).children().addClass('fa-exclamation-triangle');
                 
                 $(".notification.status ul li").text(data.error);
-                $(".notification.status").fadeIn(20);
-
-                setTimeout(function () {
-                    $(".notification.status").fadeOut(250);
-                }, 3000)
+                $(".notification.status").slideDown(500);
             }
         }
     );
