@@ -9,7 +9,7 @@ use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
 use App\Http\Controllers\EncryptionController;
 use Illuminate\Support\Facades\Auth;
-
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class SSHController extends Controller
 {
@@ -24,7 +24,6 @@ class SSHController extends Controller
 
     static function performSSH(Request $request) {
         $device = Device::find($request->input('id'));
-        $password = $request->input('passphrase');
         $command = $request->input('command');
 
         $return = new \stdClass();
@@ -35,7 +34,7 @@ class SSHController extends Controller
         if(SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $key = EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase'));
+                $key = PublicKeyLoader::load(EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase')));
             } else {
                 $key = $request->input('passphrase');
             }
