@@ -40,6 +40,9 @@
                 </td>
                 <td style="width:150px;">
                     <div class="has-text-centered">
+                    <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
                         <button onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
                         <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                     </div>

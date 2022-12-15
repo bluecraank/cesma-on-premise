@@ -72,7 +72,3 @@
 .is-blue {
     background-color: rgb(7, 148, 204) !important;
 }
-
-aside.menu {
-    overflow-y: scroll;
-}

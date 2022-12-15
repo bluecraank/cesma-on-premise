@@ -26,6 +26,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
     Route::get('/trunks', [DeviceController::class, 'trunks'])->name('trunks');
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
+    Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');

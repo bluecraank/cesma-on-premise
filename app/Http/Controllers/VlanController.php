@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVlanRequest;
 use App\Http\Requests\UpdateVlanRequest;
+use App\Models\Device;
 use App\Models\Vlan;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,43 @@ class VlanController extends Controller
         }
     }
 
+
+    public function getPortsByVlan($vlan) {
+        $vlans = [];
+        $devices = Device::all()->sortBy('name');
+        $ports = [];
+        $count_untagged = 0;
+        $count_tagged = 0;
+        $count_online = 0;
+
+        foreach($devices as $device) {
+            $ports[$device->name] = [];
+            $vlans = json_decode($device->vlan_port_data)->vlan_port_element;
+            $port_data = json_decode($device->port_data)->port_element;
+            
+            foreach($vlans as $port_vlan_key => $port_vlan) {
+                if($port_vlan->vlan_id == $vlan) {
+                    $ports[$device->name][] = $port_vlan->port_id;
+                    if($port_vlan->port_mode == "POM_UNTAGGED") {
+                        $count_untagged++;
+
+                        if(is_numeric($port_vlan->port_id) and $port_data[$port_vlan_key]->is_port_up) {
+                            $count_online++;
+                        }
+                    } else {
+                        $count_tagged++;
+                    }
+                }
+            }
+        }
+
+        return view('vlan.details', compact(
+            'ports',
+            'count_untagged',
+            'count_tagged',
+            'count_online',
+        ));
+    }
     /**
      * Show the form for creating a new resource.
      *
