@@ -286,6 +286,7 @@ class DeviceController extends Controller
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
 
+
     public function relativeTime($time)
     {
         $d[0] = array(1, "s");
@@ -317,6 +318,26 @@ class DeviceController extends Controller
             return "has-text-danger";
         } catch (\Exception $e) {
             return "has-text-warning";
+        }
+    }
+
+    static function updateAllSwitches() {
+        $devices = Device::all()->keyBy('id');   
+        foreach($devices as $device) {
+            // Get login cookie
+    
+            if (!$auth_cookie = ApiRequestController::login($device->password, $device->hostname)) {
+
+            }
+    
+            // Get data from device
+            if (!$device_data = ApiRequestController::getData($auth_cookie, $device->hostname)) {
+                ApiRequestController::logout($auth_cookie, $device->hostname);
+            }
+    
+            ApiRequestController::logout($auth_cookie, $device->hostname);
+            if(Device::whereId($device->id)->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+            }
         }
     }
 }
