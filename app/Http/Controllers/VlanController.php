@@ -52,7 +52,7 @@ class VlanController extends Controller
             foreach($vlans as $port_vlan_key => $port_vlan) {
                 if($port_vlan->vlan_id == $vlan) {
                     $ports[$device->name][] = $port_vlan->port_id;
-                    if($port_vlan->port_mode == "POM_UNTAGGED") {
+                    if(isset($port_data[$port_vlan_key]) and $port_vlan->port_mode == "POM_UNTAGGED") {
                         $count_untagged++;
 
                         if(is_numeric($port_vlan->port_id) and $port_data[$port_vlan_key]->is_port_up) {

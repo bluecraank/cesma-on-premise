@@ -34,7 +34,13 @@ class SSHController extends Controller
         if(SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $key = PublicKeyLoader::load(EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase')));
+                $decrypt = EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase'));
+                if($decrypt === NULL) {
+                    $return->status = 'xmark';
+                    $return->output = 'Falsche Passphrase für Schlüssel';
+                    return json_encode($return, true);
+                }
+                $key = PublicKeyLoader::load($decrypt);
             } else {
                 $key = $request->input('passphrase');
             }

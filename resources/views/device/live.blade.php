@@ -87,7 +87,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Mitglieder</th>
+                            <th>Mitglieder (Ports)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,7 +111,7 @@
                     </thead>
                     <tbody>
                         @foreach(json_decode($device->vlan_data)->vlan_element as $vlan)
-                        <tr>
+                        <tr class="is-clickable" onclick="location.href = '/vlans/{{ $vlan->vlan_id }}';">
                             <td>{{ $vlan->name }}</td>
                             <td>{{ $vlan->vlan_id }}</td>
                         </tr>
@@ -159,7 +159,7 @@
                                 {{ $port->name }}
                             </td>
                             <td>
-                                {{ $untagged[$port->id] }}
+                               {!! $untagged[$port->id] !!}
                             </td>
                             <td>
                                 <div class="dropdown is-up is-small">
@@ -177,7 +177,7 @@
                                                 <div class="tags">
                                                     @php sort($tagged[$port->id]) @endphp
                                                     @foreach ($tagged[$port->id] as $tag)
-                                                    <span class="tag is-blue">{{ $tag }}</span>
+                                                    <span class="tag is-blue is-clickable" onclick="location.href = '/vlans/{{ $tag }}';">{{ $tag }}</span>
                                                     @endforeach
                                                 </div>
                                             </div>

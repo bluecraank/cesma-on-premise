@@ -259,7 +259,7 @@ class DeviceController extends Controller
             // Get tagged, untagged
             foreach ($vlan_ports as $vlan_port) {
                 if ($vlan_port->port_mode == "POM_UNTAGGED" and !str_contains($vlan_port->port_id, "Trk")) {
-                    $untagged[$vlan_port->port_id] = "VLAN " . $vlan_port->vlan_id;
+                    $untagged[$vlan_port->port_id] = "<span class='is-clickable' onclick=\"location.href = '/vlans/".$vlan_port->vlan_id."';\">VLAN " . $vlan_port->vlan_id."</a>";
                 } elseif ($vlan_port->port_mode == "POM_TAGGED_STATIC" and !str_contains($vlan_port->port_id, "Trk")) {
                     $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
                 } elseif ($vlan_port->port_mode == "POM_TAGGED_STATIC" and str_contains($vlan_port->port_id, "Trk")) {
