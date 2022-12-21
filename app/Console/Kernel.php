@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('switch:refresh')->everyThirtyMinutes();
+        $schedule->command('switch:backup')->dailyAt('13:00');
 
     }
 
