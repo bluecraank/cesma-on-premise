@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateBuildingRequest;
 use App\Models\Building;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-// ANSONSTEN GUZZLE!!!
 
 class BuildingController extends Controller
 {

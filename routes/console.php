@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\BackupController;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -21,4 +22,10 @@ Artisan::command('inspire', function () {
 
 Artisan::command('switch:refresh', function () {
     $this->comment(DeviceController::updateAllSwitches());
-})->purpose('Display an inspiring quote');
+    $this->comment('Switches refreshed');
+})->purpose('Refreshing all switches');
+
+Artisan::command('switch:backup', function () {
+    $this->comment(BackupController::getBackups());
+    $this->comment('Switches backups finished');
+})->purpose('Backup all switches');

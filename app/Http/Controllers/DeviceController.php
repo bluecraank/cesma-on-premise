@@ -7,10 +7,12 @@ use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
+use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\ErrorHandler\Debug;
+
 
 class DeviceController extends Controller
 {
@@ -204,6 +206,8 @@ class DeviceController extends Controller
 
         if ($device) {
 
+            $backups = Backup::where('device_id', $id)->get();
+
             $device->count_vlans = count(json_decode($device->vlan_data)->vlan_element);
             $device->count_trunks = 0;
 
@@ -279,7 +283,8 @@ class DeviceController extends Controller
                 'status',
                 'system',
                 'ports_online',
-                'count_ports'
+                'count_ports',
+                'backups'
             ));
         }
 

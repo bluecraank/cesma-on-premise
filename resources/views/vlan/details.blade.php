@@ -27,7 +27,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>PORTS TAGGED</strong></p>
-                <p class="subtitle">{{ $count_tagged }}</p>
+                <p class="subtitle">{{ $count_tagged }}</p> 
             </div>
         </div>
         <div class="level-item has-text-centered">

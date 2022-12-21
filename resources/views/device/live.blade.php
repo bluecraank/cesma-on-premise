@@ -120,6 +120,33 @@
                 </table>
 
             </div>
+            <div class="box">
+                <h2 class="subtitle">Backups</h2>
+                <table class="table is-striped is-narrow is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Erstellt</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($backups as $backup)
+                        @php 
+                            if($backup->status == 1) {
+                                $status = 'Erfolgreich';
+                            } else {
+                                $status = 'Fehlgeschlagen';
+                            }
+                        @endphp
+                        <tr class="is-clickable" onclick="location.href = '/switch/{{ $device->id }}/backups';">
+                            <td>{{ $backup->created_at }}</td>
+                            <td>{{ $status }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
         </div>
 
 

@@ -181,6 +181,14 @@ function deleteUserModal(id, name) {
     modal.show()
 }
 
+function deleteBackupModal(id, date) {
+    let modal = $('.modal-delete-backup');
+    modal.find('.backup-id').val(id);
+    modal.find('.backup-date').val(date);
+    modal.show()
+}
+
+
 // Verbotene Befehle Funktion
 function add_blacklist_command() {
     var inputText = $('input[name="blacklist_new_command"]').val();

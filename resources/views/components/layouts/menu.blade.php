@@ -40,6 +40,11 @@
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('backups') }}" class="{{ (request()->is('backups')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> Backups
+                        </a>
+                    </li>
                 </ul>
 
                 <p class="menu-label">Benutzer</p>

@@ -8,6 +8,7 @@ use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\BackupController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/user-management', [UserController::class, 'management'])->name('user-management');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
-    Route::get('/switch/live/{id}', [DeviceController::class, 'live'])->name('live');
+    Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
+    Route::get('/backups', [BackupController::class, 'index'])->name('backups');
+    Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
+    Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
 
     // Perform SSH
     Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
@@ -51,6 +55,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
     Route::delete('/user/delete', [UserController::class, 'destroy']);
     Route::delete('/user/delete-privatekey', [UserController::class, 'deletePrivatekey']);
+    Route::delete('/backup/delete', [BackupController::class, 'destroy']);
 
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);
