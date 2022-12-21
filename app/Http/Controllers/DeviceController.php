@@ -206,7 +206,7 @@ class DeviceController extends Controller
 
         if ($device) {
 
-            $backups = Backup::where('device_id', $id)->get();
+            $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
 
             $device->count_vlans = count(json_decode($device->vlan_data)->vlan_element);
             $device->count_trunks = 0;

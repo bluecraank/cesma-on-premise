@@ -8,7 +8,9 @@ use App\Models\Backup;
 use phpseclib3\Net\SFTP;
 use App\Models\Device;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class BackupController extends Controller
 {
@@ -105,9 +107,20 @@ class BackupController extends Controller
 
     static function getBackups() {
         Device::all()->each(function ($device) {
-            $sftp = new SFTP('10.9.8.66');
-            $sftp->login('admin', 'fridolin');
-            $data =$sftp->get('/cfg/running-config');
+            if (config('app.ssh_private_key')) {
+                $decrypt = file_get_contents($_SERVER['DOCUMENT_ROOT']."storage/app/ssh_private.key");
+                if($decrypt !== NULL) {
+                    $key = PublicKeyLoader::load($decrypt);
+                } else {
+                    return false;
+                }
+            } else {
+                $key = EncryptionController::decrypt($device->password);
+            }
+      
+            $sftp = new SFTP($device->hostname);
+            $sftp->login(config('app.ssh_username'), $key);
+            $data = $sftp->get('/cfg/running-config');
     
             Backup::create([
                 'device_id' => $device->id,

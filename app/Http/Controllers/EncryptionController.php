@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class EncryptionController extends Controller
 {
     static function encrypt($password) {
-        $secret = env('APP_ENCRYPTION');
+        $secret = config('app.encryption');
 
         $cipher = "aes-128-cbc";
         $ivlen = openssl_cipher_iv_length($cipher);
@@ -22,7 +22,7 @@ class EncryptionController extends Controller
     }
     
     static function decrypt($data) {
-        $secret = env('APP_ENCRYPTION');
+        $secret = config('app.encryption');
         $c = base64_decode($data);
 
         $cipher = "aes-128-cbc";
