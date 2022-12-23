@@ -117,16 +117,24 @@ class BackupController extends Controller
             } else {
                 $key = EncryptionController::decrypt($device->password);
             }
-      
-            $sftp = new SFTP($device->hostname);
-            $sftp->login(config('app.ssh_username'), $key);
-            $data = $sftp->get('/cfg/running-config');
-    
-            Backup::create([
-                'device_id' => $device->id,
-                'data' => $data,
-                'status' => 1,
-            ]);
+            
+            try {
+                $sftp = new SFTP($device->hostname);
+                $sftp->login(config('app.ssh_username'), $key);
+                $data = $sftp->get('/cfg/running-config');
+        
+                Backup::create([
+                    'device_id' => $device->id,
+                    'data' => $data,
+                    'status' => 1,
+                ]);
+            } catch (\Exception $e) {
+                Backup::create([
+                    'device_id' => $device->id,
+                    'data' => $e->getMessage(),
+                    'status' => 0,
+                ]);
+            }
         });
     }
 
