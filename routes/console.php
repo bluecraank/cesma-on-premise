@@ -29,3 +29,8 @@ Artisan::command('switch:backup', function () {
     $this->comment(BackupController::getBackups());
     $this->comment('Switches backups finished');
 })->purpose('Backup all switches');
+
+Artisan::command('switch:backup:mail', function () {
+    $this->comment(BackupController::sendMail());
+    $this->comment('Backup mail sent');
+})->purpose('Sent backup status');

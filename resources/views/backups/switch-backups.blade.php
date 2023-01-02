@@ -30,7 +30,7 @@
                 <td>{{ $status }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
-                        <a class="button is-small is-link" @php if($backup->status == 1) { echo 'href="/download/switch/backup/'.$backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
+                        <a class="button is-small is-success" @php if($backup->status == 1) { echo 'href="/download/switch/backup/'.$backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
                             <i class="fa fa-download"></i>
                         </a>
 
