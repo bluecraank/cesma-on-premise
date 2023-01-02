@@ -168,7 +168,7 @@ class BackupController extends Controller
             $modDevices[$key] = new \stdClass();
             $modDevices[$key]->name = $device->name;
             $modDevices[$key]->backups = $backups->where('device_id', $device->id)->count();
-            $modDevices[$key]->last_backup = $backups->where('device_id', $device->id)->last();
+            $modDevices[$key]->last_backup = $backups->where('device_id', $device->id)->where('status', 1)->last();
             $modDevices[$key]->success = $backups->where('device_id', $device->id)->where('status', 1)->where('created_at', '>', Carbon::now()->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())->count();
             $modDevices[$key]->fail = $backups->where('device_id', $device->id)->where('status', 0)->where('created_at', '>', Carbon::now()->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())->count();
             $modDevices[$key]->success_total = ($modDevices[$key]->fail == 0) ? 1 : 0;

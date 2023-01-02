@@ -45,7 +45,7 @@ class SendBackupStatus extends Mailable
     public function content()
     {
         return new Content(
-            view: 'backupmail',
+            view: 'backups.MailTemplateBackup',
         );
     }
 

@@ -11,17 +11,48 @@ class ApiRequestController extends Controller
     static function login(string $api_password, string $hostname) {
         $url = env('APP_HTTPS') . $hostname . '/rest/v7/login-sessions';
 
-        // Try to login
-        try {
             // Post request to login
             $api_password = EncryptionController::decrypt($api_password);
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
-            ])->retry(2,200)->post($url, [
+            ])->retry(2,200, throw: false)->post($url, [
                 'userName' => env('APP_API_USERNAME'),
                 'password' => $api_password,
             ]);
+            
+            if($response->failed()) {
+                $url = env('APP_HTTPS') . $hostname . '/rest/v5/login-sessions';
+                $response = NULL;
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json'
+                ])->retry(2,200, throw: false)->post($url, [
+                    'userName' => env('APP_API_USERNAME'),
+                    'password' => $api_password,
+                ]);
+            }
+
+            if($response->failed()) {
+                $url = env('APP_HTTPS') . $hostname . '/rest/v3/login-sessions';
+                $response = NULL;
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json'
+                ])->retry(2,200, throw: false)->post($url, [
+                    'userName' => env('APP_API_USERNAME'),
+                    'password' => $api_password,
+                ]);
+            }
+
+            if($response->failed()) {
+                $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
+                $response = NULL;
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json'
+                ])->retry(2,200, throw: false)->post($url, [
+                    'userName' => env('APP_API_USERNAME'),
+                    'password' => $api_password,
+                ]);
+            }
 
             // Return cookie if login was successful
             if($response->successful() AND !empty($response->json()['cookie'])) {
@@ -29,11 +60,6 @@ class ApiRequestController extends Controller
             }
 
             return false;
-
-        } catch (\Exception $e) {
-            //echo "Login failed: ".$e->getMessage();
-            return false;
-        }
     }
 
     static function getData($cookie, $hostname) {

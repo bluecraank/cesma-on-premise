@@ -22,13 +22,13 @@
                 </tr>
             </thead>
             <tbody>
-              <tr>
                 @foreach($devices as $device)
+                <tr>
                 <td class="tg-0lax">{{ $device->name }}</td>
                 <td class="tg-0lax">{{ $device->last_backup->created_at }}</td>
                 <td class="tg-0lax">@php if($device->success_total == 1) { echo "<span style='color:green'>Erfolgreich (".$device->success."/".$device->success.")</span>"; } else { echo "<span style='color:red'>Fehlgeschlagen (".$device->fail."/".(($device->fail)+($device->success)).")</span>"; }  @endphp</td>
-                @endforeach
               </tr>
+                @endforeach
             </tbody>
         </table>
 </body>
