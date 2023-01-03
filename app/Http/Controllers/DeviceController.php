@@ -138,6 +138,8 @@ class DeviceController extends Controller
         if ($request->input('password') != "__hidden__" and $request->input('password') != "") {
             $encrypted_pw = EncryptionController::encrypt($request->input('password'));
             $request->merge(['password' => $encrypted_pw]);
+        } else {	
+            $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);
         }
 
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {

@@ -1,7 +1,7 @@
 <div class="column is-narrow is-menu">
     <aside class="menu">
         <div>
-            <h2 class="is-logo has-text-centered"><i style="font-size:25px" class="fa fa-terminal"></i>cesma
+            <h2 class="is-logo has-text-centered"><i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>cesma
             </h2>
 
             <div class="menu-items">
