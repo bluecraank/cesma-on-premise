@@ -14,7 +14,7 @@
         <thead>
             <tr>
                 <th>Switch</th>
-                <th>Letztes Backup von</th>
+                <th>Letztes Backup</th>
                 <th>Status</th>
                 <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
@@ -30,7 +30,7 @@
             @endphp
             <tr>
                 <td>{{ $device->name }}</td>
-                <td>{{ $device->last_backup->created_at }}</td>
+                <td>{{ $device->last_backup->created_at->diffForHumans() }}</td>
                 <td>{{ $status }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">

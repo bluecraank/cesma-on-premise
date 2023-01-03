@@ -22,11 +22,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('vlans') }}" class="{{ (request()->is('vlans')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-ethernet"></i></span> VLAN
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-location-dot"></i></span> Standort
                         </a>
@@ -35,6 +30,11 @@
 
                 <p class="menu-label">Daten</p>
                 <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('vlans') }}" class="{{ (request()->is('vlans')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-ethernet"></i></span> VLAN
+                        </a>
+                    </li>
                     <li>
                         <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
