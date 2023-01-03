@@ -21,38 +21,38 @@ class ApiRequestController extends Controller
                 'password' => $api_password,
             ]);
             
-            if($response->failed()) {
-                $url = env('APP_HTTPS') . $hostname . '/rest/v5/login-sessions';
-                $response = NULL;
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json'
-                ])->retry(2,200, throw: false)->post($url, [
-                    'userName' => env('APP_API_USERNAME'),
-                    'password' => $api_password,
-                ]);
-            }
+            // if($response->failed()) {
+            //     $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
+            //     $response = NULL;
+            //     $response = Http::withHeaders([
+            //         'Content-Type' => 'application/json'
+            //     ])->retry(2,200, throw: false)->post($url, [
+            //         'userName' => env('APP_API_USERNAME'),
+            //         'password' => $api_password,
+            //     ]);
+            // }
 
-            if($response->failed()) {
-                $url = env('APP_HTTPS') . $hostname . '/rest/v3/login-sessions';
-                $response = NULL;
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json'
-                ])->retry(2,200, throw: false)->post($url, [
-                    'userName' => env('APP_API_USERNAME'),
-                    'password' => $api_password,
-                ]);
-            }
+            // if($response->failed()) {
+            //     $url = env('APP_HTTPS') . $hostname . '/rest/v3/login-sessions';
+            //     $response = NULL;
+            //     $response = Http::withHeaders([
+            //         'Content-Type' => 'application/json'
+            //     ])->retry(2,200, throw: false)->post($url, [
+            //         'userName' => env('APP_API_USERNAME'),
+            //         'password' => $api_password,
+            //     ]);
+            // }
 
-            if($response->failed()) {
-                $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
-                $response = NULL;
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json'
-                ])->retry(2,200, throw: false)->post($url, [
-                    'userName' => env('APP_API_USERNAME'),
-                    'password' => $api_password,
-                ]);
-            }
+            // if($response->failed()) {
+            //     $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
+            //     $response = NULL;
+            //     $response = Http::withHeaders([
+            //         'Content-Type' => 'application/json'
+            //     ])->retry(2,200, throw: false)->post($url, [
+            //         'userName' => env('APP_API_USERNAME'),
+            //         'password' => $api_password,
+            //     ]);
+            // }
 
             // Return cookie if login was successful
             if($response->successful() AND !empty($response->json()['cookie'])) {

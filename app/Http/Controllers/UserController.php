@@ -42,7 +42,6 @@ class UserController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->role = 2;
         $user->password = Hash::make($request->password);
         $user->save();
         LogController::log('User erstellt', '{"name": "' . $user->name . '", "email": "' . $user->email . '"}');

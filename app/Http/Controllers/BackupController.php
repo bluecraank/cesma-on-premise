@@ -24,8 +24,14 @@ class BackupController extends Controller
      */
     public function index()
     {
-        $backups = Backup::all()->sortByDesc('created_at')->keyBy('id')->take(Device::all()->count());
+        $backups = Backup::all()->keyBy('id')->last();
         $devices = Device::all()->keyBy('id');
+
+
+        foreach($devices as $device) {
+            $device->last_backup = $backups->where('device_id', $device->id)->first();
+        }
+
         return view('backups.index', compact('backups', 'devices'));
     }
 
