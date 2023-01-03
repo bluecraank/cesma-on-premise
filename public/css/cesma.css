@@ -72,3 +72,10 @@
 .is-blue {
     background-color: rgb(7, 148, 204) !important;
 }
+
+.is-username-info {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%, -19%);
+}
