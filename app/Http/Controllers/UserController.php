@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,17 @@ class UserController extends Controller
 
     public function management()
     {
-        return view('user.management');
+        $keys = Key::all();
+        $keys2 = [];
+
+        foreach($keys as $k => $key) {
+            $keys2[$k] = new \stdClass();
+            $keys2[$k]->desc = $key->description;
+            $keys2[$k]->key = EncryptionController::decrypt($key->key);
+            $keys2[$k]->id = $key->id;
+        }
+
+        return view('system.management', compact('keys2'));
     }
 
     function store(Request $request)
@@ -115,7 +126,7 @@ class UserController extends Controller
         }
     }
 
-    function deletePrivatekey() {
+    function deletePubkey() {
         $user = User::find(Auth::user()->id);
         $user->privatekey = null;
         if($user->save()) {
@@ -124,4 +135,5 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['error' => 'Fehler beim Löschen des Öffentlichen Schlüssels.']);
         }
     }
+    
 }

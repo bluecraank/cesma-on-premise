@@ -9,9 +9,12 @@ use App\Models\Location;
 use App\Models\Building;
 use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\ErrorHandler\Debug;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
 
 
 class DeviceController extends Controller
@@ -344,6 +347,50 @@ class DeviceController extends Controller
     
             ApiRequestController::logout($auth_cookie, $device->hostname);
             if(Device::whereId($device->id)->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+            }
+        }
+    }
+
+    public function getPubkeys() {
+        $users = User::all();
+        
+        $key = "";
+
+        foreach($users as $user) {
+            if($user->privatekey) {
+                $key .= $user->privatekey = EncryptionController::decrypt($user->privatekey) . "\n";
+            }
+        }
+
+        return $key;
+    }
+
+    public function syncPubkeys(Request $request) {
+        $device = Device::find($request->input('id'));
+
+        if($device) {
+            if (config('app.ssh_private_key')) {
+                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
+                if($decrypt !== NULL) {
+                    $key = PublicKeyLoader::load($decrypt);
+                } else {
+                    return json_encode(['success' => 'false', 'error' => 'Error private key']);
+                }
+            } else {
+                $key = EncryptionController::decrypt($device->password);
+            }
+
+            try {
+                $sftp = new SFTP($device->hostname);
+                $sftp->login(config('app.ssh_username'), $key);
+                $upload = $sftp->put('/ssh/mgr_keys/authorized_keys', KeyController::getPubkeys());
+
+                $sftp->disconnect();
+
+                return json_encode(['success' => 'true', 'error' => $upload]);
+
+            } catch (\Exception $e) {
+                return json_encode(['success' => 'false', 'error' => 'Error sftp connection '.$e->getMessage()]);
             }
         }
     }

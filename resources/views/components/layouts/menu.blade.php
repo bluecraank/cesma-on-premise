@@ -59,8 +59,8 @@
                 <p class="menu-label">System</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('user-management') }}" class="{{ (request()->is('user-management')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-gear"></i></span> Benutzer
+                        <a href="{{ route('system') }}" class="{{ (request()->is('system')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-gear"></i></span> System
                         </a>
                     </li>
                     <li>

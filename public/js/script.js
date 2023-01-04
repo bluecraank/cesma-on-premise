@@ -248,6 +248,40 @@ function refreshSwitch(ele) {
 
 }
 
+function syncPubkeys(ele) {
+    $(ele).addClass('is-loading');
+
+
+    let form = $("#sync-pubkey-form").serialize();
+    fetch('/switch/sync-pubkeys', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form
+    }).then(response => response.json())
+        .then(data => {
+
+            if(data.success == "true") {
+                $(ele).removeClass('is-loading');
+                $(ele).addClass('is-success');
+                $(ele).children().removeClass('fa-rotate');
+                $(ele).children().addClass('fa-check'); 
+            } else {
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');
+                $(ele).addClass('is-danger');
+                $(ele).children().removeClass('fa-sync');
+                $(ele).children().addClass('fa-exclamation-triangle');
+                
+                $(".notification.status ul li").text(data.error);
+                $(".notification.status").slideDown(500);
+            }
+        }
+    );
+
+}
+
 $(document).on('keydown', function (e) {
     if (e.keyCode === 27) {
         $('.modal').hide();

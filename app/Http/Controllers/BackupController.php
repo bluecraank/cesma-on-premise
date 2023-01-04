@@ -10,9 +10,8 @@ use phpseclib3\Net\SFTP;
 use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 
 class BackupController extends Controller
@@ -117,7 +116,7 @@ class BackupController extends Controller
     static function getBackups() {
         Device::all()->each(function ($device) {
             if (config('app.ssh_private_key')) {
-                $decrypt = file_get_contents($_SERVER['DOCUMENT_ROOT']."storage/app/ssh_private.key");
+                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
                 if($decrypt !== NULL) {
                     $key = PublicKeyLoader::load($decrypt);
                 } else {

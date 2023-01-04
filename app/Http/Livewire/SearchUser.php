@@ -20,7 +20,7 @@ class SearchUser extends Component
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
-        return view('livewire.search-user',[
+        return view('livewire.search-system',[
             'users' => User::where('name','like', $searchTerm)->orWhere('email', 'like', $searchTerm)->get()->sortBy('name'),
         ]);
     }

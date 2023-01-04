@@ -147,6 +147,17 @@
                 </table>
 
             </div>
+
+            <div class="box">
+                <h2 class="subtitle">Aktionen</h2>
+
+                <form action="/switch/sync-pubkeys" id="sync-pubkey-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
+                    @csrf
+                    <a onclick="syncPubkeys(this)" class="button is-success">
+                        <i style="margin-right: 7px;" class="fa-solid fa-sync"></i> Update Pubkeys
+                    </a>
+                </form>
+            </div>
         </div>
 
 

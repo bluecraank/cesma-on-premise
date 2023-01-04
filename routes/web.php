@@ -9,7 +9,7 @@ use App\Http\Controllers\SSHController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
-
+use App\Http\Controllers\KeyController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,12 +32,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
-    Route::get('/user-management', [UserController::class, 'management'])->name('user-management');
+    Route::get('/system', [UserController::class, 'management'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
     Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
+    Route::get('/pubkey/show', [KeyController::class, 'getPubkeys']);
 
 
     Route::get('/encrypt-key', [SSHController::class, 'encrypt_key_index']);
@@ -52,6 +53,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
     Route::post('/user/create', [UserController::class, 'store']);
+    Route::post('/switch/sync-pubkeys', [DeviceController::class, 'syncPubkeys']);
+    Route::post('/pubkey/add', [KeyController::class, 'store']);
 
     // Delete routes
     Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
@@ -59,8 +62,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/location/delete', [LocationController::class, 'destroy']);
     Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
     Route::delete('/user/delete', [UserController::class, 'destroy']);
-    Route::delete('/user/delete-privatekey', [UserController::class, 'deletePrivatekey']);
+    Route::delete('/user/delete-pubkey', [UserController::class, 'deletePubkey']);
     Route::delete('/backup/delete', [BackupController::class, 'destroy']);
+    Route::delete('/pubkey/delete', [KeyController::class, 'destroy']);
 
     // Update routes
     Route::put('/switch/update', [DeviceController::class, 'update']);
