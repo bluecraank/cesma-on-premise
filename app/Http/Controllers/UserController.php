@@ -15,11 +15,11 @@ class UserController extends Controller
         $users = User::all();
         $key = Auth::user()->privatekey;
         if($key) {
-            $privatekey = true;
+            $pubkey = true;
         } else {
-            $privatekey = false;
+            $pubkey = false;
         }
-        return view('user.index', compact('users', 'privatekey'));
+        return view('user.index', compact('users', 'pubkey'));
     }
 
     public function management()
@@ -72,11 +72,10 @@ class UserController extends Controller
             }
         }
 
-        $key = $request->input('privatekey');
-        $passphrase = $request->input('passphrase');
+        $key = $request->input('pubkey');
         if (!empty($key)) {
             $user = User::find(Auth::user()->id);
-            $user->privatekey = EncryptionController::encryptKey($key, $passphrase);
+            $user->privatekey = EncryptionController::encrypt($key);
             $user->save();
         }
 
@@ -98,23 +97,21 @@ class UserController extends Controller
 
     }
 
-    function setPrivatekey(Request $request) {
+    function setPubkey(Request $request) {
         $user = User::find(Auth::user()->id);
-        $privatekey = $request->input('privatekey');
-        $passphrase = $request->input('passphrase');
+        $pubkey = $request->input('pubkey');
 
         $validator = Validator::make($request->all(), [
-            'privatekey' => 'required|min:100|starts_with:-----BEGIN RSA PRIVATE KEY-----|ends_with:-----END RSA PRIVATE KEY-----',
-            'passphrase' => 'required|min:8|max:50',
+            'pubkey' => 'required|min:50|starts_with:ssh-rsa',
         ])->validate();
 
-        $key = EncryptionController::encryptKey($privatekey, $passphrase);
+        $key = EncryptionController::encrypt($pubkey);
         $user->privatekey = $key;
 
         if($user->save()) {
-            return redirect()->back()->with('success', 'Private Key gespeichert!');
+            return redirect()->back()->with('success', 'Öffentlicher Schlüssel gespeichert!');
         } else {
-            return redirect()->back()->withErrors(['error' => 'Fehler beim Speichern des Private Keys.']);
+            return redirect()->back()->withErrors(['error' => 'Fehler beim Speichern des Öffentlichen Schlüssels.']);
         }
     }
 
@@ -122,9 +119,9 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
         $user->privatekey = null;
         if($user->save()) {
-            return redirect()->back()->with('success', 'Private Key gelöscht!');
+            return redirect()->back()->with('success', 'Öffentlicher Schlüssel gelöscht!');
         } else {
-            return redirect()->back()->withErrors(['error' => 'Fehler beim Löschen des Private Keys.']);
+            return redirect()->back()->withErrors(['error' => 'Fehler beim Löschen des Öffentlichen Schlüssels.']);
         }
     }
 }

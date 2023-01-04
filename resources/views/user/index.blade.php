@@ -62,36 +62,30 @@
       <button class="button is-small is-primary">Speichern</button>
     </form>
 
-    <div class="title mt-6">Privater Schlüssel für SSH</div>
+    <div class="title mt-6">SSH: Öffentlicher Schlüssel</div>
     <div class="columns">
       <div class="column is-12">
-        <form action="/user/privatekey" method="post">
+        <form action="/user/pubkey" method="post">
           @csrf
           @method('PUT')
           <div class="field">
-            <label class="label is-small">Passwort zum Verschlüsseln</label>
+            <label class="label is-small">Inhalt SSH-Pubkey</label>
             <div class="control">
-              <input class="input is-small" name="passphrase" type="password" placeholder="Passwort">
+              <textarea class="textarea" name="pubkey" placeholder="ssh-rsa ABFDHkJ2312..."></textarea>
             </div>
-          </div>
-          <div class="field">
-            <label class="label is-small">Inhalt Privatekey</label>
-            <div class="control">
-              <textarea class="textarea" name="privatekey" placeholder="-----BEGIN RSA PRIVATE KEY-----"></textarea>
-            </div>
-            <span class="help has-text-success"><i class="fa-solid fa-lock"></i> Dein Privatekey wird verschlüsselt gespeichert</span>
+            <span class="help has-text-success"><i class="fa-solid fa-lock"></i> Dein Öffentlicher Schlüssel wird verschlüsselt gespeichert</span>
 
           </div>
           Status:
-          @php if($privatekey) { echo '<span class="has-text-success">Privatekey vorhanden</span>'; $disabled = ""; } else { echo '<span class="has-text-warning">Privatekey nicht vorhanden</span>'; $disabled = "disabled"; } @endphp
+          @php if($pubkey) { echo '<span class="has-text-success">Schlüssel vorhanden</span>'; $disabled = ""; } else { echo '<span class="has-text-warning">Schlüssel nicht vorhanden</span>'; $disabled = "disabled"; } @endphp
           <br><br>
           <button class="button is-small is-primary is-pulled-left">Hochladen</button>
         </form>
 
-        <form action="/user/delete-privatekey" class="mt-1 is-pulled-right" method="POST">
+        <form action="/user/delete-pubkey" class="mt-1 is-pulled-right" method="POST">
           @csrf
           @method('DELETE')
-          <button {{ $disabled }} @endphp class="button is-small is-danger">Privatekey entfernen</button>
+          <button {{ $disabled }} @endphp class="button is-small is-danger">Schlüssel entfernen</button>
 
         </form>
       </div>

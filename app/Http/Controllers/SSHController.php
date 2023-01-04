@@ -9,6 +9,8 @@ use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
 use App\Http\Controllers\EncryptionController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 
 class SSHController extends Controller
@@ -20,6 +22,16 @@ class SSHController extends Controller
         $require_private_key_text = (config('app.ssh_private_key') == "true") ? 'Passphrase für Privatekey' : 'Passwort vom Switch';
 
         return view('device.perform-ssh', compact('devices', 'locations', 'require_private_key_text'));
+    }
+
+    public function encrypt_key_index() {
+        return view('ssh.encrypt');
+    }
+
+    public function encrypt_key_save() {
+        $key = EncryptionController::encrypt(request()->input('key'));
+        Storage::disk('local')->put('ssh.key', $key);
+        return "Importiert"; 
     }
 
     static function performSSH(Request $request) {
@@ -34,13 +46,20 @@ class SSHController extends Controller
         if(SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $decrypt = EncryptionController::decryptKey(Auth::user()->privatekey, $request->input('passphrase'));
+                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
                 if($decrypt === NULL) {
                     $return->status = 'xmark';
-                    $return->output = 'Falsche Passphrase für Schlüssel';
+                    $return->output = 'Kein Schlüssel vorhanden';
                     return json_encode($return, true);
                 }
                 $key = PublicKeyLoader::load($decrypt);
+
+                if(!Hash::check($request->input('passphrase'), Auth::user()->password)) {
+                    $return->status = 'xmark';
+                    $return->output = 'Passwort falsch';
+                    return json_encode($return, true);
+                }
+                
             } else {
                 $key = $request->input('passphrase');
             }

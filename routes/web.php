@@ -39,6 +39,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
     Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
 
+
+    Route::get('/encrypt-key', [SSHController::class, 'encrypt_key_index']);
+    Route::post('/encrypt-key/save', [SSHController::class, 'encrypt_key_save']);
+    
     // Perform SSH
     Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
     
@@ -65,7 +69,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
     Route::put('/user/update', [UserController::class, 'update']);
-    Route::put('/user/privatekey', [UserController::class, 'setPrivatekey']);
+    Route::put('/user/pubkey', [UserController::class, 'setPubkey']);
     
 });
 

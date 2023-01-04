@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Passwort wdh:</label>
+                        <label class="label">Passwort bestätigen:</label>
                         <div class="control">
                             <input required class="input" name="password_confirmation" type="password" placeholder="Confirm password">
                         </div>
