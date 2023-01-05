@@ -185,10 +185,8 @@ class DeviceController extends Controller
         $device = Device::find($request->input('id'));
 
         // Get login cookie
-
         if (!$auth_cookie = ApiRequestController::login($device->password, $device->hostname)) {
             return json_encode(['success' => 'false', 'error' => 'Could not login to device']);
-            //return false;
         }
 
         // Get data from device
@@ -200,7 +198,7 @@ class DeviceController extends Controller
         ApiRequestController::logout($auth_cookie, $device->hostname);
 
         if(Device::whereId($request->input('id'))->update(['mac_table_data' => json_encode($device_data['mac_table_data'], true), 'vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
-            EndpointController::updateEndpointsOfSwitch($device->id);
+            EndpointController::storeMergedClientDataOfSwitch($device->id);
             return json_encode(['success' => 'true']);
         }
 
@@ -212,22 +210,21 @@ class DeviceController extends Controller
         $device = Device::find($id);
 
         if ($device) {
-
-            $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
-
-            $device->count_vlans = count(json_decode($device->vlan_data)->vlan_element);
+            $trunks = [];
+            $tagged = [];
+            $untagged = [];
+            $ports_online = 0;
+            $count_ports = 0;
             $device->count_trunks = 0;
 
-            $device->format_time = $this->relativeTime(strtotime($device->updated_at));
-
+            $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
+            $device->count_vlans = count(json_decode($device->vlan_data)->vlan_element);
+            $device->format_time = $device->updated_at->diffForHumans();
             $device->ports = json_decode($device->port_data)->port_element;
-
             $vlan_ports = json_decode($device->vlan_port_data)->vlan_port_element;
-
             $port_statistic_raw = json_decode($device->port_statistic_data, true)['port_statistics_element'];
-
             $system = json_decode($device->system_data);
-            //ddd($system);
+
             $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
 
             // Correct port_statistic array
@@ -236,17 +233,10 @@ class DeviceController extends Controller
                 unset($port_statistic_raw[$key]);
             }
 
-            // Get trunks
-            $trunks = [];
-            $tagged = [];
-            $untagged = [];
-            $ports_online = 0;
-            $count_ports = 0;
-
+            // Sort and count ports
             foreach ($device->ports as $port) {
                 $untagged[$port->id] = "";
                 $tagged[$port->id] = [];
-
 
                 if (str_contains($port->id, 'Trk')) {
                     $device->count_trunks++;
@@ -264,10 +254,8 @@ class DeviceController extends Controller
                 } 
 
             }
-
-            //ddd($vlan_ports);
-
-            // Get tagged, untagged
+            
+            // Get tagged, untagged VLANs as list
             foreach ($vlan_ports as $vlan_port) {
                 if ($vlan_port->port_mode == "POM_UNTAGGED" and !str_contains($vlan_port->port_id, "Trk")) {
                     $untagged[$vlan_port->port_id] = "<span class='is-clickable' onclick=\"location.href = '/vlans/".$vlan_port->vlan_id."';\">VLAN " . $vlan_port->vlan_id."</a>";
@@ -278,8 +266,8 @@ class DeviceController extends Controller
                 }
             }
 
+            // Onlinestatus
             $status = $this->isOnline($device->hostname);
-            //ddd($device->ports);
 
             return view('device.live', compact(
                 'device',
@@ -298,32 +286,12 @@ class DeviceController extends Controller
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
 
-
-    public function relativeTime($time)
-    {
-        $d[0] = array(1, "s");
-        $d[1] = array(60, "m");
-        $d[2] = array(3600, "h");
-        $d[3] = array(86400, "d");
-        $w = array();
-        $return = "";
-        $now = time();
-        $diff = ($now - $time);
-        $secondsLeft = $diff;
-        for ($i = 3; $i > -1; $i--) {
-            $w[$i] = intval($secondsLeft / $d[$i][0]);
-            $secondsLeft -= ($w[$i] * $d[$i][0]);
-            if ($w[$i] != 0) $return .= abs($w[$i]) . "" . $d[$i][1] . (($w[$i] > 1) ? '' : '') . " ";
-        }
-        return ($diff > 0) ? $return = "vor " . $return : $return = "Jetzt gerade";
-    }
-
     public function isOnline($hostname)
     {
         try {
             if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 1)) {
                 fclose($fp);
-                return "has-text-success	";
+                return "has-text-success";
             }
             fclose($fp);
 
@@ -363,16 +331,15 @@ class DeviceController extends Controller
 
     public function getPubkeys() {
         $users = User::all();
+        $keys = "";
         
-        $key = "";
-
         foreach($users as $user) {
             if($user->privatekey) {
-                $key .= $user->privatekey = EncryptionController::decrypt($user->privatekey) . "\n";
+                $keys .= $user->privatekey = EncryptionController::decrypt($user->privatekey) . "\n";
             }
         }
 
-        return $key;
+        return $keys;
     }
 
     public function syncPubkeys(Request $request) {
@@ -403,5 +370,31 @@ class DeviceController extends Controller
                 return json_encode(['success' => 'false', 'error' => 'Error sftp connection '.$e->getMessage()]);
             }
         }
+    }
+
+    static function getMacAddressesFromDevices() {
+        $device = Device::all()->keyBy('id');
+
+        $DataToIds = [];
+        $MacsToIds = [];
+        $i = 0;
+        foreach($device as $switch) {
+            $macTable = json_decode($switch->mac_table_data, true);
+            $macData = (isset($macTable['mac_table_entry_element'])) ? $macTable['mac_table_entry_element'] : [];
+            $MacAddressesData = [];
+            foreach($macData as $entry) {
+                if(str_contains($entry['port_id'], "Trk") or str_contains($entry['port_id'], "48")) {
+                    continue;
+                }
+                $MacAddressesData[$i] = $entry;
+                $MacAddressesData[$i]['device_id'] = $switch->id;
+                $MacAddressesData[$i]['device_name'] = $switch->name;
+                $MacsToIds[$i] = strtolower(str_replace([":", "-"], "", $entry['mac_address']));
+                $i++;
+            }
+            $DataToIds = array_merge($DataToIds, $MacAddressesData);
+        }
+
+        return array($MacsToIds, $DataToIds);
     }
 }

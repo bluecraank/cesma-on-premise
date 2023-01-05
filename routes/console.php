@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\EndpointController;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -34,3 +35,9 @@ Artisan::command('switch:backup:mail', function () {
     $this->comment(BackupController::sendMail());
     $this->comment('Backup mail sent');
 })->purpose('Sent backup status');
+
+Artisan::command('switch:macs:toClients', function () {
+    $this->comment('--- START MERGING CLIENTS ---');
+    $this->comment(EndpointController::storeMergedClientData());
+    $this->comment('--- END MERGING CLIENTS ---');
+})->purpose('Correlate MACs with Clients');

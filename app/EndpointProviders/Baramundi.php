@@ -3,7 +3,6 @@
 namespace App\EndpointProviders;
 
 use App\Interfaces\IEndpoint;
-use App\Models\Endpoint;
 use Illuminate\Support\Facades\Http;
 
 class Baramundi implements IEndpoint
