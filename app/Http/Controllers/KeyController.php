@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateKeyRequest;
 use App\Models\Key;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class KeyController extends Controller
 {
@@ -17,7 +18,7 @@ class KeyController extends Controller
      */
     static function getPubkeys()
     {
-        $data = '{
+        $data_raw = '{
             "collection_result": {
                 "total_elements_count": 867,
                 "filtered_elements_count": 867
@@ -5228,36 +5229,39 @@ class KeyController extends Controller
             ]
         }';
 
-        $arps = explode("\n", shell_exec("arp -a"));
-        $ips = [];
+        $start = microtime(true);
+        $data = json_decode($data_raw, true);
+        foreach($data['mac_table_entry_element'] as $key => $value) {
+            $mac = str_replace("-", "", $value['mac_address']);
+            $macs[$mac] = [];
+            $macs[$mac]['port'] = $value['port_id'];
+            $macs[$mac]['vlan'] = $value['vlan_id'];
+        }
+        
+        $uri = "https://bms-srv.doepke.local:2345/bConnect/v1.1/Endpoints.json";
+        $baramundi = Http::withoutVerifying()->withBasicAuth('doepke.local\fischer.nils', '97/=h%7zQ%T')->get($uri);
+        $i = 1;
 
-        foreach($arps as $arp) {
-            $string = explode(") at", $arp);
-            if(isset($string[1])) {
-                $mac = explode("on", $string[1]);
-                $mac = trim($mac[0]);
-                $ip = explode("(", $string[0]);
-                $ip = trim($ip[1]);
-                $macs[] = str_replace(":", "", str_replace("[ether]","", $mac));
+        foreach($macs as $key => $info) {
+            foreach($baramundi->json() as $endpoint) {
+                if(isset($endpoint['MACList'])) {
+                    $list = strtolower(str_replace(":", "", $endpoint['MACList']));
+
+                    if(strpos($list, $key) !== false) {
+                        $ip = (isset($endpoint['PrimaryIP'])) ? $endpoint['PrimaryIP'] : "N/A";
+                        echo $endpoint['HostName']." | " . $ip . " | " . $key . " | " .$info['port'] . " | " . $info['vlan'] . "</br>";
+                        
+                        $i++;
+                        break;
+                    }
+                }
             }
-            //echo gethostbyaddr($ip) . " | " . $ip . " | " . str_replace("[ether]","", $mac) . "<br>";
         }
+        $time_elapsed_secs = microtime(true) - $start;
+        echo $time_elapsed_secs."sec</br>";
+        echo $i;
 
-        $i = 0;
-        $data_de = json_decode($data, true);
-
-        foreach($data_de['mac_table_entry_element'] as $macentry) {
-            $mac = str_replace("-", "", $macentry['mac_address']);
-            $port = $macentry['port_id'];
-            $vlan = $macentry['vlan_id'];
-            $ip = array_search($mac, $macs);
-            var_dump($ip);
-            $i++;
-        }
-
-        return $i;
-
-        return true; 
+        return;
         $keys = Key::all();
 
         $users = User::all();

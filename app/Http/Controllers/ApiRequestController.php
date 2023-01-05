@@ -89,6 +89,10 @@ class ApiRequestController extends Controller
                 $pool->as('ports')->withHeaders([
                     'Cookie' => "$cookie",
                     ])->get($url . 'ports'),
+                
+                $pool->as('mac_table')->withHeaders([
+                    'Cookie' => "$cookie",
+                    ])->get($url . 'mac-table'),
             ]);
             
             // Return data
@@ -100,6 +104,7 @@ class ApiRequestController extends Controller
                     'vlanport_data' => $responses['vlanPort']->json(),
                     'sysstatus_data' => $responses['sysStatus']->json(),
                     'ports_data' => $responses['ports']->json(),
+                    'mac_table_data' => $responses['mac_table']->json(),
                 ];
             }
             

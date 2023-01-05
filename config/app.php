@@ -23,6 +23,11 @@ return [
     'ssh_private_key_data' => env('APP_SSH_PRIVATE_KEY_DATA', 'false'),
     'encryption' => env('APP_ENCRYPTION', 'false'),
 
+    'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
+    'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
+    'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
+    
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

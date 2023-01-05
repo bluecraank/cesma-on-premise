@@ -198,7 +198,8 @@ class DeviceController extends Controller
         }
 
         ApiRequestController::logout($auth_cookie, $device->hostname);
-        if(Device::whereId($request->input('id'))->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+
+        if(Device::whereId($request->input('id'))->update(['mac_table_data' => json_encode($device_data['mac_table_data'], true), 'vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
             return json_encode(['success' => 'true']);
         }
 

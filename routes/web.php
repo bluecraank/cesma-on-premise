@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\SSHController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\EndpointController;
 use App\Http\Controllers\KeyController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
     Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
     Route::get('/pubkey/show', [KeyController::class, 'getPubkeys']);
+    Route::get('/endpoints', [EndpointController::class, 'getMergedData']);
 
 
     Route::get('/encrypt-key', [SSHController::class, 'encrypt_key_index']);

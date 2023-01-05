@@ -22,6 +22,7 @@ return new class extends Migration
             $table->json('port_data');
             $table->json('port_statistic_data');
             $table->json('vlan_port_data');
+            $table->json('mac_table_data');
             $table->json('system_data');
             $table->integer('building');
             $table->integer('location');
