@@ -15,8 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('switch:refresh')->everyFifteenMinutes();
-        $schedule->command('switch:macs:toClients')->everyThirtyMinutes();
+        $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
+        $schedule->command('switch:macs:toClients')->everyThirtyMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
         $schedule->command('switch:backup')->dailyAt('08:00');
         $schedule->command('switch:backup:mail')->weekly()->sundays()->at('22:00');
     }
