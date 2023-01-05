@@ -9,7 +9,7 @@ use Illuminate\Http\Client\Pool;
 class ApiRequestController extends Controller
 {
     static function login(string $api_password, string $hostname) {
-        $url = env('APP_HTTPS') . $hostname . '/rest/v7/login-sessions';
+        $url = config('app.https') . $hostname . '/rest/v7/login-sessions';
 
             // Post request to login
             $api_password = EncryptionController::decrypt($api_password);
@@ -20,39 +20,6 @@ class ApiRequestController extends Controller
                 'userName' => env('APP_API_USERNAME'),
                 'password' => $api_password,
             ]);
-            
-            // if($response->failed()) {
-            //     $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
-            //     $response = NULL;
-            //     $response = Http::withHeaders([
-            //         'Content-Type' => 'application/json'
-            //     ])->retry(2,200, throw: false)->post($url, [
-            //         'userName' => env('APP_API_USERNAME'),
-            //         'password' => $api_password,
-            //     ]);
-            // }
-
-            // if($response->failed()) {
-            //     $url = env('APP_HTTPS') . $hostname . '/rest/v3/login-sessions';
-            //     $response = NULL;
-            //     $response = Http::withHeaders([
-            //         'Content-Type' => 'application/json'
-            //     ])->retry(2,200, throw: false)->post($url, [
-            //         'userName' => env('APP_API_USERNAME'),
-            //         'password' => $api_password,
-            //     ]);
-            // }
-
-            // if($response->failed()) {
-            //     $url = env('APP_HTTPS') . $hostname . '/rest/v1/login-sessions';
-            //     $response = NULL;
-            //     $response = Http::withHeaders([
-            //         'Content-Type' => 'application/json'
-            //     ])->retry(2,200, throw: false)->post($url, [
-            //         'userName' => env('APP_API_USERNAME'),
-            //         'password' => $api_password,
-            //     ]);
-            // }
 
             // Return cookie if login was successful
             if($response->successful() AND !empty($response->json()['cookie'])) {
@@ -63,7 +30,7 @@ class ApiRequestController extends Controller
     }
 
     static function getData($cookie, $hostname) {
-        $url = env('APP_HTTPS') . $hostname . '/rest/v7/';
+        $url = config('app.https') . $hostname . '/rest/v7/';
 
         // Try to get data from device
         try {
@@ -116,7 +83,7 @@ class ApiRequestController extends Controller
     }
 
     static function logout($cookie, $hostname) {
-        $url = env('APP_HTTPS') . $hostname . '/rest/v7/'; 
+        $url = config('app.https') . $hostname . '/rest/v7/'; 
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
