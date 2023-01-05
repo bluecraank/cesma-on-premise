@@ -200,6 +200,7 @@ class DeviceController extends Controller
         ApiRequestController::logout($auth_cookie, $device->hostname);
 
         if(Device::whereId($request->input('id'))->update(['mac_table_data' => json_encode($device_data['mac_table_data'], true), 'vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+            EndpointController::updateEndpointsOfSwitch($device->id);
             return json_encode(['success' => 'true']);
         }
 
@@ -338,16 +339,24 @@ class DeviceController extends Controller
             // Get login cookie
     
             if (!$auth_cookie = ApiRequestController::login($device->password, $device->hostname)) {
-
+                continue;
             }
     
             // Get data from device
             if (!$device_data = ApiRequestController::getData($auth_cookie, $device->hostname)) {
                 ApiRequestController::logout($auth_cookie, $device->hostname);
+                continue;
             }
     
             ApiRequestController::logout($auth_cookie, $device->hostname);
-            if(Device::whereId($device->id)->update(['vlan_data' => json_encode($device_data['vlan_data'], true), 'port_data' => json_encode($device_data['ports_data'], true), 'port_statistic_data' => json_encode($device_data['portstats_data'], true), 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
+
+            if(Device::whereId($device->id)->update(
+                ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
+                'vlan_data' => json_encode($device_data['vlan_data'], true), 
+                'port_data' => json_encode($device_data['ports_data'], true), 
+                'port_statistic_data' => json_encode($device_data['portstats_data'], true), 
+                'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
+                'system_data' => json_encode($device_data['sysstatus_data'], true)])) {
             }
         }
     }

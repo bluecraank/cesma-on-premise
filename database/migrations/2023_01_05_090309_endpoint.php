@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ednpoints', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('endpoints', function (Blueprint $table) {
+            $table->string('hostname')->unique();
             $table->integer('switch_id');
             $table->integer('vlan_id');
-            $table->integer('port_id');
+            $table->string('port_id');
             $table->macAddress('mac_address');
             $table->ipAddress('ip_address');
-            $table->string('hostname');
+            $table->timestamps();
         });
     }
 

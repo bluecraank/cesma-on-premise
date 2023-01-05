@@ -22,11 +22,13 @@ class Baramundi implements IEndpoint
         $endpoints = [];
         $i = 0;
 
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             if(isset($value['MACList']) and (isset($value['PrimaryIP']) or isset($value['HostName']))) {
 
                 $endpoints[$i] = new \stdClass();
-                $endpoints[$i]->mac_addresses = strtolower(str_replace(":", "", $value['MACList']));
+
+                $maclist = explode(";", strtolower(str_replace(":", "", $value['MACList'])));
+                $endpoints[$i]->mac_addresses = $maclist;
                 $endpoints[$i]->ip_address = (isset($value['PrimaryIP'])) ? $value['PrimaryIP'] : null;
                 $endpoints[$i]->hostname = (isset($value['HostName'])) ? $value['HostName'] : null;
 

@@ -45,6 +45,11 @@
                             <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> Backups
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('clients') }}" class="{{ (request()->is('clients')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-computer"></i></span> Clients
+                        </a>
+                    </li>
                 </ul>
 
                 <p class="menu-label">Benutzer</p>

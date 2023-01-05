@@ -104,7 +104,7 @@ class ApiRequestController extends Controller
                     'vlanport_data' => $responses['vlanPort']->json(),
                     'sysstatus_data' => $responses['sysStatus']->json(),
                     'ports_data' => $responses['ports']->json(),
-                    'mac_table_data' => $responses['mac_table']->json(),
+                    'mac_table_data' => $responses['mac_table']->json()
                 ];
             }
             

@@ -38,10 +38,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
     Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
-    Route::get('/pubkey/show', [KeyController::class, 'getPubkeys']);
-    Route::get('/endpoints', [EndpointController::class, 'getMergedData']);
+    Route::get('/clients', [EndpointController::class, 'index'])->name('clients');
 
+    // TEMP
+    Route::get('/pubkey/show', [DeviceController::class, 'updateAllSwitches']);
+    Route::get('/endpoints', [EndpointController::class, 'updateEndpoint']);
 
+    // INIT
     Route::get('/encrypt-key', [SSHController::class, 'encrypt_key_index']);
     Route::post('/encrypt-key/save', [SSHController::class, 'encrypt_key_save']);
     
