@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">Clients</h1>
+    <h1 class="title is-pulled-left">Clients (@php echo count($clients); @endphp)</h1>
 
     <div class="is-pulled-right ml-4">
     </div>
@@ -39,9 +39,7 @@
                     <td>{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>
                     <td>{{ $client->port_id }}</td>
-                    <td>{{ $client->switch_id }}</td>
                     <td>{{ $devices[$client->switch_id]->name }}</td>
-
                 </tr>
             @endforeach
         </tbody>

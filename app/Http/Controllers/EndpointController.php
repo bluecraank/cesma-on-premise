@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\EndpointProviders\Baramundi;
 use App\Models\Device;
 use App\Models\Endpoint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class EndpointController extends Controller
@@ -13,8 +14,9 @@ class EndpointController extends Controller
     public function index() {
 
         $clients = Endpoint::all()->sortBy('hostname');
+        $devices = Device::all()->keyBy('id');
 
-        return view('endpoints.index', compact('clients'));
+        return view('endpoints.index', compact('clients', 'devices'));
     }
 
     public function getEndpoints() { 
@@ -73,31 +75,45 @@ class EndpointController extends Controller
     }
 
     public function getMergedData() {
-        $start = microtime(true);
         $endpoint_data = $this->getEndpoints();
         $mac_data = $this->getMacAddressTables();
         $formatted_macs = $this->getFormattedMacs($mac_data);
 
-        $loops = 0;
         $i = 0;
 
+        if($endpoint_data == null or empty($endpoint_data)) {
+            return false;
+        }
+        
+        Endpoint::truncate();
+    
         foreach($endpoint_data as $client) {
             foreach($client->mac_addresses as $mac) {
                 if($key = array_search($mac, $formatted_macs)) {
 
-                    echo $key . " | " . $client->hostname . " | " . $client->ip_address . " | " . $mac . " | " . $mac_data[$key]['port_id'] . " | " . $mac_data[$key]['vlan_id'] . " | " . $mac_data[$key]['device_name'] . "</br>";
+                    $endpoint = new Endpoint();
+                    $endpoint->switch_id = $mac_data[$key]['device_id'];
+                    
+                    $endpoint->hostname = strtolower($client->hostname);
+                    if($endpoint->hostname == "" or $endpoint->hostname == null) {
+                        $endpoint->hostname = "UNK-".Str::random(10);
+                    }
+                    $endpoint->ip_address = $client->ip_address;
+                    $endpoint->mac_address = $mac;
+                    $endpoint->port_id = $mac_data[$key]['port_id'];
+                    $endpoint->vlan_id = $mac_data[$key]['vlan_id'];
+
+                    if(!empty($endpoint->ip_address)) {
+                        $endpoint->save();
+                    }                    
+                    
                     $i++;
                 }
-
-                $loops++;
             }
         }
-        $time_elapsed_secs = microtime(true) - $start;
-        return $time_elapsed_secs. " | " . $loops . " | " . count($formatted_macs) . " | " . count($mac_data) . " | " . $i;
-
     }
 
-    static function updateEndpointsOfSwitch($id = 1) {
+    public function updateEndpointsOfSwitch($id = 1) {
         $device = Device::find($id);
         if($device) {
             $macAddressTable = json_decode($device->mac_table_data, true);

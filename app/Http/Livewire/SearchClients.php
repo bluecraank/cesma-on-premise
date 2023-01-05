@@ -21,7 +21,7 @@ class SearchClients extends Component
 
     public function render()
     {
-        $devices = Device::all()->keyBy('name');
+        $devices = Device::all()->keyBy('id');
 
         $searchTerm = '%'.$this->searchTerm.'%';
 

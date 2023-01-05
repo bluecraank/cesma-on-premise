@@ -41,7 +41,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/clients', [EndpointController::class, 'index'])->name('clients');
 
     // TEMP
-    Route::get('/pubkey/show', [DeviceController::class, 'updateAllSwitches']);
+    Route::get('/pubkey/show', [EndpointController::class, 'getMergedData']);
     Route::get('/endpoints', [EndpointController::class, 'updateEndpoint']);
 
     // INIT

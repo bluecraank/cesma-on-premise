@@ -22,6 +22,10 @@ class Baramundi implements IEndpoint
         $endpoints = [];
         $i = 0;
 
+        if($data == null or empty($data)) {
+            return $endpoints;
+        }
+
         foreach ($data as $value) {
             if(isset($value['MACList']) and (isset($value['PrimaryIP']) or isset($value['HostName']))) {
 
