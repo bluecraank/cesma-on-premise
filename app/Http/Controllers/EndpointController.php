@@ -48,14 +48,13 @@ class EndpointController extends Controller
                     if($endpoint->hostname == "" or $endpoint->hostname == null) {
                         $endpoint->hostname = "UNK-".Str::random(10);
                     }
+
+                    $endpoint->id = md5($client->ip_address."".$mac);
                     $endpoint->ip_address = $client->ip_address;
                     $endpoint->mac_address = $mac;
                     $endpoint->port_id = $mac_data[$key]['port_id'];
                     $endpoint->vlan_id = $mac_data[$key]['vlan_id'];
-
-                    if(!empty($endpoint->ip_address)) {
-                        $endpoint->save();
-                    }                    
+                    $endpoint->save();                  
                 }
             }
         }
@@ -99,15 +98,13 @@ class EndpointController extends Controller
                         if($endpoint->hostname == "" or $endpoint->hostname == null) {
                             $endpoint->hostname = "UNK-".Str::random(10);
                         }
-
+                        
+                        $endpoint->id = md5($client->ip_address."".$mac);
                         $endpoint->ip_address = $client->ip_address;
                         $endpoint->mac_address = $mac;
                         $endpoint->port_id = $MacAddressesData[$key]['port_id'];
                         $endpoint->vlan_id = $MacAddressesData[$key]['vlan_id'];
-
-                        if(!empty($endpoint->ip_address)) {
-                            $endpoint->save();
-                        }
+                        $endpoint->save();
                     }
                 }
             }

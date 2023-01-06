@@ -17,6 +17,7 @@ return new class extends Migration
         Schema::dropIfExists('endpoints');
 
         Schema::create('endpoints', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->string('hostname');
             $table->integer('switch_id');
             $table->integer('vlan_id');

@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('endpoints', function (Blueprint $table) {
-            $table->string('hostname')->unique();
+            $table->string('id')->primary();
+            $table->string('hostname');
             $table->integer('switch_id');
             $table->integer('vlan_id');
             $table->string('port_id');
