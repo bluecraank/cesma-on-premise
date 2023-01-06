@@ -22,8 +22,9 @@
                 <th>IP Adresse</th>
                 <th>MAC Adresse</th>
                 <th>VLAN</th>
-                <th>Port</th>
                 <th>Switch</th>
+                <th>Port</th>
+                <th>Found</th>
                 {{-- <th style="width:150px;text-align:center">Aktionen</th> --}}
             </tr>
         </thead>
@@ -38,8 +39,9 @@
                     <td>{{ $client->ip_address }}</td>
                     <td>{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>
-                    <td>{{ $client->port_id }}</td>
                     <td>{{ $devices[$client->switch_id]->name }}</td>
+                    <td>{{ $client->port_id }}</td>
+                    <td>{{ $client->updated_at->format('d.m.Y H:i:s') }}</td>
                 </tr>
             @endforeach
         </tbody>

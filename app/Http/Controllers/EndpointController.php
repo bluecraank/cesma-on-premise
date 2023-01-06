@@ -36,13 +36,13 @@ class EndpointController extends Controller
             return dd("Keine Endpoints der Provider erhalten");
         }
         
-        Endpoint::truncate();
+        //Endpoint::truncate();
     
         foreach($endpoint_data as $client) {
             foreach($client->mac_addresses as $mac) {
                 if($key = array_search($mac, $mac_data[0])) {
                     $endpoint = new Endpoint();
-                    $endpoint->switch_id = $mac_data[$key]['device_id'];
+                    $endpoint->switch_id = $mac_data[1][$key]['device_id'];
                     
                     $endpoint->hostname = strtolower($client->hostname);
                     if($endpoint->hostname == "" or $endpoint->hostname == null) {
@@ -52,9 +52,21 @@ class EndpointController extends Controller
                     $endpoint->id = md5($client->ip_address."".$mac);
                     $endpoint->ip_address = $client->ip_address;
                     $endpoint->mac_address = $mac;
-                    $endpoint->port_id = $mac_data[$key]['port_id'];
-                    $endpoint->vlan_id = $mac_data[$key]['vlan_id'];
-                    $endpoint->save();                  
+                    $endpoint->port_id = $mac_data[1][$key]['port_id'];
+                    $endpoint->vlan_id = $mac_data[1][$key]['vlan_id'];
+
+                    // Check for existence of endpoint
+                    if($dev = Endpoint::find($endpoint->id)) {
+                        $dev->update([
+                            'hostname' => $endpoint->hostname,
+                            'switch_id' => $endpoint->switch_id,
+                            'vlan_id' => $endpoint->vlan_id,
+                            'port_id' => $endpoint->port_id,
+                        ]);
+                    } else {
+                        $endpoint->save();   
+                    }
+               
                 }
             }
         }
