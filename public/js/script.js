@@ -248,7 +248,7 @@ function refreshSwitch(ele) {
 
 }
 
-function syncPubkeys(ele) {
+function uploadPubkeys(ele) {
     $(ele).addClass('is-loading');
 
 
@@ -272,6 +272,74 @@ function syncPubkeys(ele) {
                 $(ele).removeClass('is-primary');
                 $(ele).addClass('is-danger');
                 $(ele).children().removeClass('fa-sync');
+                $(ele).children().addClass('fa-exclamation-triangle');
+                
+                $(".notification.status ul li").text(data.error);
+                $(".notification.status").slideDown(500);
+            }
+        }
+    );
+
+}
+
+function getClients(ele) {
+    $(ele).addClass('is-loading');
+
+
+    let form = $("#get-clients-form").serialize();
+    fetch('/switch/get/clients', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form
+    }).then(response => response.json())
+        .then(data => {
+
+            if(data.success == "true") {
+                $(ele).removeClass('is-loading');
+                $(ele).addClass('is-success');
+                $(ele).children().removeClass('fa-computer');
+                $(ele).children().addClass('fa-check'); 
+            } else {
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');
+                $(ele).addClass('is-danger');
+                $(ele).children().removeClass('fa-computer');
+                $(ele).children().addClass('fa-exclamation-triangle');
+                
+                $(".notification.status ul li").text(data.error);
+                $(".notification.status").slideDown(500);
+            }
+        }
+    );
+
+}
+
+function createBackup(ele) {
+    $(ele).addClass('is-loading');
+
+
+    let form = $("#create-backup-form").serialize();
+    fetch('/switch/create/backup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form
+    }).then(response => response.json())
+        .then(data => {
+
+            if(data.success == "true") {
+                $(ele).removeClass('is-loading');
+                $(ele).addClass('is-success');
+                $(ele).children().removeClass('fa-hdd');
+                $(ele).children().addClass('fa-check'); 
+            } else {
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');
+                $(ele).addClass('is-danger');
+                $(ele).children().removeClass('fa-hdd');
                 $(ele).children().addClass('fa-exclamation-triangle');
                 
                 $(".notification.status ul li").text(data.error);

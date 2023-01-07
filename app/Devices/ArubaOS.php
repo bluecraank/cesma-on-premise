@@ -294,14 +294,14 @@ class ArubaOS implements IDevice
                     'data' => "No data received",
                     'status' => 0,
                 ]);
-                echo "Failed to backup switch: " . $device->hostname."\n";
+                //echo "Failed to backup switch: " . $device->hostname."\n";
             } elseif(strlen($data) > 10) {
                 Backup::create([
                     'device_id' => $device->id,
                     'data' => $data,
                     'status' => 1,
                 ]);
-                echo "Backup created for switch: " . $device->hostname."\n";
+                //echo "Backup created for switch: " . $device->hostname."\n";
                 return true;
             }
         } catch (\Exception $e) {
@@ -310,9 +310,9 @@ class ArubaOS implements IDevice
                 'data' => $e->getMessage(),
                 'status' => 0,
             ]);
-            echo "Failed to backup switch: " . $device->hostname."\n";
+            //echo "Failed to backup switch: " . $device->hostname."\n";
         }
-        echo "Failed to backup switch: " . $device->hostname."\n";
+        //echo "Failed to backup switch: " . $device->hostname."\n";
         return false;
     }
 

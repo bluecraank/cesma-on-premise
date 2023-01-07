@@ -388,4 +388,34 @@ class DeviceController extends Controller
 
         return array($MacsToIds, $DataToIds);
     }
+
+    static function createBackup() {
+        $id = request()->input('id');
+        $device = Device::find($id);
+        if($device) {
+            $type = self::getFirmwareType($device->type);
+            $backup = $type::createBackup($device);
+
+            if($backup) {
+                return json_encode(['success' => 'true', 'error' => 'Backup created']);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+            }
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+    }
+
+    static function getFirmwareType($type) {
+        switch ($type) {
+            case 'aruba-os':
+                return ArubaOS::class;
+                break;
+            case 'aruba-cx':
+                return ArubaCX::class;
+                break;
+            default:
+                return "Error: Unknown device type: " . $type . "\n";
+        }
+    }
 }

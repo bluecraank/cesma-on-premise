@@ -55,6 +55,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/user/create', [UserController::class, 'store']);
 
     Route::post('/switch/upload/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
+    Route::post('/switch/create/backup', [DeviceController::class, 'createBackup']);
+    Route::post('/switch/get/clients', [ClientController::class, 'getClientsFromSwitch',]);
 
     Route::post('/pubkey/add', [KeyController::class, 'store']);
 
