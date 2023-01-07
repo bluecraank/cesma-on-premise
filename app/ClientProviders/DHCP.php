@@ -1,10 +1,10 @@
 <?php
 
-namespace App\EndpointProviders;
+namespace App\ClientProviders;
 
-use App\Interfaces\IEndpoint;
+use App\Interfaces\IClient;
 
-class DHCP implements IEndpoint
+class DHCP implements IClient
 {
     public function queryClientData(): Array {
 

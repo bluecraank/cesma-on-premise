@@ -27,7 +27,8 @@
             @foreach ($devices as $device)
             @php
             $trunks = array();
-            foreach(json_decode($device->port_data, true)['port_element'] as $trunk)
+            $trunk_data = json_decode($device->port_data, true);
+            foreach($trunk_data as $trunk)
             {
                 if(str_contains($trunk['id'], 'Trk'))
                 {

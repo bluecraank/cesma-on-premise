@@ -35,6 +35,8 @@
                 @endforeach
             </tbody>
         </table>
+
+        <a href="/upload/key" class="button is-warning">Upload Privatekey</a>
     </div>
 
     <div class="modal modal-new-user">

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->longText('data');
-            $table->foreignId('device_id')->constrained('devices');
+            $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
             $table->integer('status')->default(0);
         });
     }

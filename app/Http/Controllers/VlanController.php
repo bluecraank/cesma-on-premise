@@ -24,7 +24,7 @@ class VlanController extends Controller
     }
 
     static function AddVlansFromDevice($vlans, $device, $location) {
-        foreach($vlans['vlan_element'] as $vlan) {
+        foreach($vlans as $vlan) {
             $vlan = Vlan::firstOrCreate([
                 'vid' => $vlan['vlan_id'],
             ], [
@@ -46,16 +46,16 @@ class VlanController extends Controller
 
         foreach($devices as $device) {
             $ports[$device->name] = [];
-            $vlans = json_decode($device->vlan_port_data)->vlan_port_element;
-            $port_data = json_decode($device->port_data)->port_element;
+            $vlans = json_decode($device->vlan_port_data, true);
+            $port_data = json_decode($device->port_data, true);
             
             foreach($vlans as $port_vlan_key => $port_vlan) {
-                if($port_vlan->vlan_id == $vlan) {
-                    $ports[$device->name][] = $port_vlan->port_id;
-                    if(isset($port_data[$port_vlan_key]) and $port_vlan->port_mode == "POM_UNTAGGED") {
+                if($port_vlan['vlan_id'] == $vlan) {
+                    $ports[$device->name][] = $port_vlan['port_id'];
+                    if(isset($port_data[$port_vlan_key]) and !$port_vlan['is_tagged']) {
                         $count_untagged++;
 
-                        if(is_numeric($port_vlan->port_id) and $port_data[$port_vlan_key]->is_port_up) {
+                        if(is_numeric($port_vlan['port_id']) and $port_data[$port_vlan_key]['is_port_up']) {
                             $count_online++;
                         }
                     } else {

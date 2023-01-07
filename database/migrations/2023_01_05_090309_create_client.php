@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        //
-        Schema::dropIfExists('endpoints');
-
-        Schema::create('endpoints', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('hostname')->nullable();
-            $table->integer('switch_id');
+            $table->integer('switch_id')->constrained('devices')->onDelete('cascade');
             $table->integer('vlan_id');
             $table->string('port_id');
             $table->macAddress('mac_address');
@@ -35,6 +32,7 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('endpoints');
+        Schema::dropIfExists('clients');
     }
 };

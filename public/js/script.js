@@ -253,7 +253,7 @@ function syncPubkeys(ele) {
 
 
     let form = $("#sync-pubkey-form").serialize();
-    fetch('/switch/sync-pubkeys', {
+    fetch('/switch/upload/pubkeys', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

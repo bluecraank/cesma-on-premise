@@ -8,8 +8,9 @@ use App\Http\Controllers\SSHController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
-use App\Http\Controllers\EndpointController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
+use App\Devices\ArubaOS;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,6 @@ use Illuminate\Support\Facades\Auth;
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
     Route::get('/trunks', [DeviceController::class, 'trunks'])->name('trunks');
-    Route::get('/bcp', [BackupController::class, 'sendMail']);
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
@@ -37,16 +37,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
-    Route::get('/download/switch/backup/{id}', [BackupController::class, 'downloadBackup']);
-    Route::get('/clients', [EndpointController::class, 'index'])->name('clients');
-
-    // TEMP
-    Route::get('/pubkey/show', [EndpointController::class, 'getMergedData']);
-    Route::get('/endpoints', [EndpointController::class, 'updateEndpoint']);
+    Route::get('/switch/download/backup/{id}', [BackupController::class, 'downloadBackup']);
+    Route::get('/clients', [ClientController::class, 'index'])->name('clients');
 
     // INIT
-    Route::get('/encrypt-key', [SSHController::class, 'encrypt_key_index']);
-    Route::post('/encrypt-key/save', [SSHController::class, 'encrypt_key_save']);
+    Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
+    Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
     
     // Perform SSH
     Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
@@ -57,7 +53,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
     Route::post('/user/create', [UserController::class, 'store']);
-    Route::post('/switch/sync-pubkeys', [DeviceController::class, 'syncPubkeys']);
+
+    Route::post('/switch/upload/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
+
     Route::post('/pubkey/add', [KeyController::class, 'store']);
 
     // Delete routes

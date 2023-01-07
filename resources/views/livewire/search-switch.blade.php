@@ -22,6 +22,7 @@
                 <th>Name</th>
                 <th>Hostname</th>
                 <th>Modell</th>
+                <th>Firmware</th>
                 <th>Standort</th>
                 <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
@@ -31,7 +32,8 @@
             <tr>
                 <td>{{ $device->name }}</td>
                 <td>{{ $device->hostname }}</td>
-                <td>{{ json_decode($device->system_data, true)['product_model'] }}</td>
+                <td>{{ json_decode($device->system_data, true)['model'] }}</td>
+                <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
                 <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }}, {{ $device->details }} #{{ $device->number }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">

@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\EndpointProviders\Baramundi;
+use App\ClientProviders\Baramundi;
 use App\Models\Device;
-use App\Models\Endpoint;
+use App\Models\Client;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class EndpointController extends Controller
+class ClientController extends Controller
 {
 
     public function index() {
 
-        $clients = Endpoint::all()->sortBy('hostname');
+        $clients = Client::all()->sortBy('hostname');
         $devices = Device::all()->keyBy('id');
 
-        return view('endpoints.index', compact('clients', 'devices'));
+        return view('clients.index', compact('clients', 'devices'));
     }
 
     static function getClientsFromProviders() { 
@@ -29,19 +29,19 @@ class EndpointController extends Controller
     }
 
     static function storeMergedClientData() {
-        $endpoint_data = EndpointController::getClientsFromProviders();
+        $endpoint_data = ClientController::getClientsFromProviders();
         $mac_data = DeviceController::getMacAddressesFromDevices(); 
 
         if($endpoint_data == null or empty($endpoint_data)) {
             return dd("Keine Endpoints der Provider erhalten");
         }
         
-        //Endpoint::truncate();
+        //Client::truncate();
     
         foreach($endpoint_data as $client) {
             foreach($client->mac_addresses as $mac) {
                 if($key = array_search($mac, $mac_data[0])) {
-                    $endpoint = new Endpoint();
+                    $endpoint = new Client();
                     $endpoint->switch_id = $mac_data[1][$key]['device_id'];
                     
                     $endpoint->hostname = strtolower($client->hostname);
@@ -52,11 +52,11 @@ class EndpointController extends Controller
                     $endpoint->id = md5($client->ip_address."".$mac);
                     $endpoint->ip_address = $client->ip_address;
                     $endpoint->mac_address = $mac;
-                    $endpoint->port_id = $mac_data[1][$key]['port_id'];
-                    $endpoint->vlan_id = $mac_data[1][$key]['vlan_id'];
+                    $endpoint->port_id = $mac_data[1][$key]['port'];
+                    $endpoint->vlan_id = $mac_data[1][$key]['vlan'];
 
                     // Check for existence of endpoint
-                    if($dev = Endpoint::find($endpoint->id)) {
+                    if($dev = Client::find($endpoint->id)) {
                         $dev->update([
                             'hostname' => $endpoint->hostname,
                             'switch_id' => $endpoint->switch_id,
@@ -98,12 +98,12 @@ class EndpointController extends Controller
 
             $DataToIds = array_merge($DataToIds, $MacAddressesData);
             
-            $endpoint_data = EndpointController::getClientsFromProviders();
+            $endpoint_data = ClientController::getClientsFromProviders();
 
             foreach($endpoint_data as $client) {
                 foreach($client->mac_addresses as $mac) {
                     if($key = array_search($mac, $MacsToIds)) {
-                        $endpoint = new Endpoint();
+                        $endpoint = new Client();
                         $endpoint->switch_id = $device->id;
                         
                         $endpoint->hostname = strtolower($client->hostname);

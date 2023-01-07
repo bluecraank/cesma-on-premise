@@ -8,6 +8,7 @@ use App\Models\Location;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
 use App\Http\Controllers\EncryptionController;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -28,10 +29,19 @@ class SSHController extends Controller
         return view('ssh.encrypt');
     }
 
-    public function encrypt_key_save() {
-        $key = EncryptionController::encrypt(request()->input('key'));
-        Storage::disk('local')->put('ssh.key', $key);
-        return "Importiert"; 
+    public function encrypt_key_save(Request $request) {
+        
+        $validator = Validator::make($request->all(), [
+            'key' => 'required|starts_with:-----BEGIN RSA PRIVATE KEY-----,ends_with:-----END RSA PRIVATE KEY-----'
+        ])->validate();
+        
+        if($validator) {
+            $key = EncryptionController::encrypt(request()->input('key'));
+            Storage::disk('local')->put('ssh.key', $key);
+            return "Importiert"; 
+        } else {
+            return "{'error': 'Kein gültiger Schlüssel'}";
+        }
     }
 
     static function performSSH(Request $request) {

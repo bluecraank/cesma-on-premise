@@ -108,7 +108,7 @@ class UserController extends Controller
 
     }
 
-    function setPubkey(Request $request) {
+    public function setPubkey(Request $request) {
         $user = User::find(Auth::user()->id);
         $pubkey = $request->input('pubkey');
 
@@ -126,7 +126,7 @@ class UserController extends Controller
         }
     }
 
-    function deletePubkey() {
+    public function deletePubkey() {
         $user = User::find(Auth::user()->id);
         $user->privatekey = null;
         if($user->save()) {
@@ -135,5 +135,4 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['error' => 'Fehler beim Löschen des Öffentlichen Schlüssels.']);
         }
     }
-    
 }

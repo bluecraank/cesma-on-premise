@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Devices\ArubaCX;
+use App\Devices\ArubaOS;
 use App\Http\Requests\StoreBackupRequest;
 use App\Http\Requests\UpdateBackupRequest;
 use App\Mail\SendBackupStatus;
@@ -113,44 +115,19 @@ class BackupController extends Controller
         return view('backups.switch-backups', compact('backups', 'device'));
     }
 
-    static function getBackups() {
+    static function backupAll() {
         Device::all()->each(function ($device) {
-            if (config('app.ssh_private_key')) {
-                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
-                if($decrypt !== NULL) {
-                    $key = PublicKeyLoader::load($decrypt);
-                } else {
-                    return false;
-                }
-            } else {
-                $key = EncryptionController::decrypt($device->password);
+            switch ($device->type) {
+                case 'aruba-os':
+                    ArubaOS::createBackup($device);
+                    break;
+                case 'aruba-cx':
+                    ArubaCX::createBackup($device);                    
+                    break;
+                default:
+                    echo "Error: Unknown device type: " . $device->type . "\n";
             }
             
-            try {
-                $sftp = new SFTP($device->hostname);
-                $sftp->login(config('app.ssh_username'), $key);
-                $data = $sftp->get('/cfg/running-config');
-        
-                if($data === NULL or strlen($data) < 10 or $data == false) {
-                    Backup::create([
-                        'device_id' => $device->id,
-                        'data' => "No data received",
-                        'status' => 0,
-                    ]);
-                } elseif(strlen($data) > 10) {
-                    Backup::create([
-                        'device_id' => $device->id,
-                        'data' => $data,
-                        'status' => 1,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => $e->getMessage(),
-                    'status' => 0,
-                ]);
-            }
         });
     }
 
@@ -183,7 +160,6 @@ class BackupController extends Controller
             }
         }
 
-        //ddd($modDevices);
         Mail::to('fischers@doepke.de')->send(new SendBackupStatus($backups, $modDevices, $totalError));
 
         dd('Success! Email has been sent successfully.');

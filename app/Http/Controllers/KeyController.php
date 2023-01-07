@@ -8,6 +8,8 @@ use App\Models\Key;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
 
 class KeyController extends Controller
 {
@@ -137,5 +139,33 @@ class KeyController extends Controller
             return redirect()->back()->with('error', 'Key not found!');
         }
 
+    }
+
+    static function uploadPubkeys($device) {
+        if (config('app.ssh_private_key')) {
+            $decrypt = EncryptionController::getPrivateKey();
+            if($decrypt !== NULL) {
+                $key = PublicKeyLoader::load($decrypt);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Error private key']);
+            }
+        } else {
+            $key = EncryptionController::decrypt($device->password);
+        }
+
+        try {
+            $sftp = new SFTP($device->hostname);
+            $sftp->login(config('app.ssh_username'), $key);
+            //$upload = $sftp->put('/ssh/mgr_keys/authorized_keys', KeyController::getPubkeys());
+            $upload = "Works";
+            $sftp->disconnect();
+
+            return json_encode(['success' => 'true', 'error' => $upload]);
+
+        } catch (\Exception $e) {
+            return json_encode(['success' => 'false', 'error' => 'Error sftp connection '.$e->getMessage()]);
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Error sftp connection']);
     }
 }

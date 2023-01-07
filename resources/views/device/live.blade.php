@@ -62,19 +62,19 @@
         <div class="column">
             <div class="box">
                 <label class="label">Seriennummer</label>
-                {{ $system->serial_number }}
+                {{ $system->serial }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Firmware</label>
-                {{ $system->firmware_version }}
+                {{ $system->firmware }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Hardware</label>
-                {{ $system->hardware_revision }}
+                {{ $system->hardware }}
             </div>
         </div>
     </div>
@@ -110,7 +110,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(json_decode($device->vlan_data)->vlan_element as $vlan)
+                        @foreach(json_decode($device->vlan_data) as $vlan)
                         <tr class="is-clickable" onclick="location.href = '/vlans/{{ $vlan->vlan_id }}';">
                             <td>{{ $vlan->name }}</td>
                             <td>{{ $vlan->vlan_id }}</td>

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\EndpointProviders;
+namespace App\ClientProviders;
 
-use App\Interfaces\IEndpoint;
+use App\Interfaces\IClient;
 use Illuminate\Support\Facades\Http;
 
-class Baramundi implements IEndpoint
+class Baramundi implements IClient
 {
     /**
      * @return Array

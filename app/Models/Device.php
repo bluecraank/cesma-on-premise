@@ -22,6 +22,8 @@ class Device extends Model
         'vlan_port_data',
         'system_data',
         'port_data',
+        'mac_table_data',
+        'type'
     ];
 
     /**

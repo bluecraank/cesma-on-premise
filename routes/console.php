@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BackupController;
-use App\Http\Controllers\EndpointController;
+use App\Http\Controllers\ClientController;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -22,12 +22,12 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('switch:refresh', function () {
-    $this->comment(DeviceController::updateAllSwitches());
+    $this->comment(DeviceController::refreshAll());
     $this->comment('Switches refreshed');
 })->purpose('Refreshing all switches');
 
 Artisan::command('switch:backup', function () {
-    $this->comment(BackupController::getBackups());
+    $this->comment(BackupController::backupAll());
     $this->comment('Switches backups finished');
 })->purpose('Backup all switches');
 
@@ -38,6 +38,6 @@ Artisan::command('switch:backup:mail', function () {
 
 Artisan::command('switch:macs:toClients', function () {
     $this->comment('--- START MERGING CLIENTS ---');
-    $this->comment(EndpointController::storeMergedClientData());
+    $this->comment(ClientController::storeMergedClientData());
     $this->comment('--- END MERGING CLIENTS ---');
 })->purpose('Correlate MACs with Clients');

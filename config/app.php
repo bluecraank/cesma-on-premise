@@ -19,7 +19,9 @@ return [
     'api_username' => env('APP_API_USERNAME', 'admin'),
     'ssh_private_key' => env('APP_SSH_PRIVATE_KEY', 'false'),
     'ssh_username' => env('APP_SSH_USERNAME', 'false'),
-    'https' => env('APP_HTTPS', 'http://'),
+
+    'https' => (env('APP_HTTPS') == "true") ? "https://" : "http://",
+
     'ssh_private_key_data' => env('APP_SSH_PRIVATE_KEY_DATA', 'false'),
     'encryption' => env('APP_ENCRYPTION', 'false'),
 

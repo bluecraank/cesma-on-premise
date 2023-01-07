@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('location');
             $table->string('details');
             $table->integer('number');
+            $table->string('type');
             $table->timestamps();
         });
     }

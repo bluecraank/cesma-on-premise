@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Device;
-use App\Models\Endpoint;
+use App\Models\Client;
 use App\Traits\WithLogin;
 
 
@@ -28,7 +28,7 @@ class SearchClients extends Component
         $searchTerm = str_Replace([" ", ";", ":", "-"], "", $searchTerm);
 
         return view('livewire.search-clients',[
-            'clients' => Endpoint::where('hostname', 'like', $searchTerm)
+            'clients' => Client::where('hostname', 'like', $searchTerm)
             ->orWhere('ip_address', 'like', $searchTerm)
             ->orWhere('mac_address', 'like', $searchTerm)
             ->orWhere('vlan_id', 'like', $searchTerm)

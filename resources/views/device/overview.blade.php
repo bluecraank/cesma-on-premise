@@ -30,6 +30,18 @@
                 </div>
 
                 <div class="field">
+                    <label class="label">Firmware</label>
+                    <div class="control">
+                        <div class="select">
+                            <select required name="type">
+                                <option value="aruba-os">ArubaOS</option>
+                                <option value="aruba-cx">ArubaCX</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>   
+
+                <div class="field">
                     <label class="label">Standort</label>
                     <div class="control">
                         <div class="select">
