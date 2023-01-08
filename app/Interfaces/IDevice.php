@@ -41,5 +41,7 @@ use Illuminate\Http\Client\Request;
         static function getMacTableData(Array $macs): Array;
         
         static function getSystemInformations(Array $system): Array;
+
+        static function getTrunks(Device $device): Array;
     }
 ?>

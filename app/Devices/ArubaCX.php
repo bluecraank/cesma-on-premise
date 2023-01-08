@@ -285,6 +285,16 @@ class ArubaCX implements IDevice
                     $untagged_vlan = $vlanport['vlan_tag'];
                     $tagged_vlans = $vlanport['vlan_trunks'];
 
+                    if(is_array($tagged_vlans) and count($tagged_vlans) == 0) {
+                        // Man kann davon ausgehen, dass es ein Trunk ist
+                        $return[$i] = [
+                            "port_id" => $vlanport['ifindex'],
+                            "vlan_id" => "Trunk",
+                            "is_tagged" => true,
+                        ];
+                        $i++;
+                    }
+
                     foreach($tagged_vlans as $tagged_key => $tagged) {
                         $return[$i] = [
                             "port_id" => $vlanport['ifindex'],
@@ -305,6 +315,19 @@ class ArubaCX implements IDevice
         }
 
         return $return;
+    }
+
+    static function getTrunks($device): Array {
+
+        $trunks = [];
+        $ports = json_decode($device->vlan_port_data, true);
+        foreach($ports as $port) {
+            if(str_contains($port['vlan_id'], "Trunk")) {
+                $trunks[] = "1/1/".$port['port_id'];
+            }
+        }        
+
+        return $trunks;
     }
 
     static function createBackup($device): bool

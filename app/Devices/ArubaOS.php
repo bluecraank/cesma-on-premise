@@ -285,6 +285,19 @@ class ArubaOS implements IDevice
         return $return;
     }
 
+    static function getTrunks($device): Array {
+
+        $trunks = [];
+        $ports = json_decode($device->port_data, true);
+        foreach($ports as $port) {
+            if(str_contains($port['id'], "Trk")) {
+                $trunks[] = $port['id'];
+            }
+        }
+
+        return $trunks;
+    }
+
     static function createBackup($device): bool
     {
         if(!$login_info = self::ApiLogin($device)) {

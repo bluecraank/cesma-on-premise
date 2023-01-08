@@ -47,12 +47,31 @@ class DeviceController extends Controller
         ));
     }
 
-    function index_trunks() {
-        $devices = Device::all();
+    static function index_trunks() {
+        $data = self::getTrunks();
 
         return view('device.trunks', compact(
-            'devices',
+            'data'
         ));
+    }
+
+    static function getTrunks() {
+        $devices = Device::all();
+
+        $data = [];
+        foreach($devices as $device) {
+            if(!in_array($device->type, array_keys(self::$models))) {
+                continue;
+            }
+    
+            $class = self::$models[$device->type]; 
+            $data[$device->id] = array(
+                'name' => $device->name,
+                'trunks' => $class::getTrunks($device),
+            );
+        }
+
+        return $data;
     }
 
     /**
