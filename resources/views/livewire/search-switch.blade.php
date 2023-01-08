@@ -52,4 +52,12 @@
             </tr>
             @endforeach
     </table>
+
+    <div>
+        <div class="buttons are-small">
+            <button class="button is-warning"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</button>
+            <button class="button is-warning"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</button>
+            <button class="button is-warning"><i class="fa-solid fa-computer mr-2"></i> Update Clients</button>
+        </div>
+    </div>
 </div>
