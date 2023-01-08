@@ -22,15 +22,17 @@
         <tbody>
             @foreach ($devices as $device)
             @php
-                if($device->last_backup->status == 1) {
+                if(isset($device->last_backup->status) and $device->last_backup->status == 1) {
                     $status = 'Erfolgreich';
+                    $num_status = 1;
                 } else {
                     $status = 'Fehlgeschlagen';
+                    $num_status = 0;
                 }
             @endphp
             <tr>
                 <td>{{ $device->name }}</td>
-                <td>{{ $device->last_backup->created_at->diffForHumans() }}</td>
+                <td>{{ isset($device->last_backup->created_at) ? $device->last_backup->created_at->diffForHumans() : "N/A" }}</td>
                 <td>{{ $status }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
@@ -38,7 +40,7 @@
                             <i class="fa-solid fa-eye"></i>
                         </a>
 
-                        <a title="Herunterladen" class="button is-small is-primary" @php if(1) { echo 'href="/switch/download/backup/'.$device->last_backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
+                        <a title="Herunterladen" class="button is-small is-primary" @php if($num_status) { echo 'href="/switch/download/backup/'.$device->last_backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
                             <i class="fa fa-download"></i>
                         </a>
                     </div>
