@@ -1,6 +1,6 @@
 <div class="column is-narrow is-menu">
     <aside class="menu">
-        <div>
+        <div style="padding-bottom:40px;">
             <h2 class="is-logo has-text-centered"><i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>cesma
             </h2>
 

@@ -82,27 +82,54 @@ class SSHController extends Controller
 
             if($ssh->isConnected()) {
                 $ssh->setTimeout(3);
-                $ssh->setWindowSize(80, 250);
+
+                if($device->type == "aruba-os") {
+                    $ssh->setWindowSize(80, 250);
+                } else {
+                    $ssh->setWindowSize(110, 250);
+                }
 
                 $output = new ANSI();
                 $output->setHistory(250);
 
-                $ssh->read("Press any key to continue");
-                $ssh->write("\n");
+                if($device->type == "aruba-os") {
+                    $ssh->read("Press any key to continue");
+                    $ssh->write("\n");
+                } else {
+                    $ssh->read(json_decode($device->system_data,true)['name']."#");
+                }
+   
                 $ssh->write("conf\n");
 
                 @$output->appendString($ssh->read());
                 
                 $ssh->write($command."\n");
+
                 @$output->appendString($ssh->read());
+
+                if($device->type == "aruba-os") {
+                    $ssh->write("wr mem\n");
+                } else {
+                    $ssh->write("write memory\n");
+                }
                 
-                $ssh->write("wr mem\n\n");
                 $ssh->disconnect();
 
                 $output = strip_tags(trim(str_replace("\n", "", str_replace("\n\r", "<br>",$output->getHistory()))));
                 
                 $output = preg_replace('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', '', $output, 1);
                 
+
+                if($device->type == "aruba-os") {
+                    
+                } else {
+                    $oldoutput = $output;
+                    $output = strstr($output, json_decode($device->system_data,true)['name']."#");
+                    if($output == false) {
+                        $output = $oldoutput;
+                    }
+                }
+
                 if(SSHController::substr_count_array($output, array("Invalid", "not found", "Incomplete")) != 0) {
                     $return->status = 'xmark';
                     $return->output = $output;

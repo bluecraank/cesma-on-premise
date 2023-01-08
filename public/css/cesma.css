@@ -26,6 +26,11 @@
     padding-left: 10px;
 }
 
+.menu-list a {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
 .menu-items {
     margin-top: 10px;
 }

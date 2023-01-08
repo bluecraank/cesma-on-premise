@@ -158,7 +158,7 @@ class ArubaOS implements IDevice
 
     public function test($device) {
         $device = Device::find($device);
-        return self::getApiData($device);
+        return self::createBackup($device);
     }
 
     static function getVlanData($vlans): Array
@@ -287,48 +287,52 @@ class ArubaOS implements IDevice
 
     static function createBackup($device): bool
     {
-        if (config('app.ssh_private_key')) {
-            $privatekey = EncryptionController::getPrivateKey();
-            if($privatekey !== NULL) {
-                $key = PublicKeyLoader::load($privatekey);
-            } else {
-                return false;
-            }
-        } else {
-            $key = EncryptionController::decrypt($device->password);
+        if(!$login_info = self::ApiLogin($device)) {
+            return false;
         }
-        
-        try {
-            $sftp = new SFTP($device->hostname);
-            $sftp->login(config('app.ssh_username'), $key);
-            $data = $sftp->get('/cfg/running-config');
-            //ddd($device->id);
-            if($data === NULL or strlen($data) < 10 or $data == false) {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => "No data received",
-                    'status' => 0,
-                ]);
-                //echo "Failed to backup switch: " . $device->hostname."\n";
-            } elseif(strlen($data) > 10) {
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        $https = config('app.https');
+
+        $api_url = $https . $device->hostname . '/rest/' . $api_version . '/cli';
+
+        $backup = Http::withoutVerifying()->asJson()->withHeaders([
+            'Cookie' => $cookie,
+        ])->post($api_url, array(
+            'cmd' => 'show running-config',
+        ));
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
+
+        if($backup->successful()) {
+            $data = $backup->json()["result_base64_encoded"];
+            $data = base64_decode($data);
+            $data = str_replace("Running configuration:", "", $data);
+            $data = strstr($data, ";") or $data;
+            if($data !== NULL and strlen($data) > 10 and $data != false) {
                 Backup::create([
                     'device_id' => $device->id,
                     'data' => $data,
                     'status' => 1,
                 ]);
-                //echo "Backup created for switch: " . $device->hostname."\n";
                 return true;
+            } else {
+                Backup::create([
+                    'device_id' => $device->id,
+                    'data' => "No data received",
+                    'status' => 0,
+                ]);
+                return false;
             }
-        } catch (\Exception $e) {
+        } else {
             Backup::create([
                 'device_id' => $device->id,
-                'data' => $e->getMessage(),
+                'data' => "No data received",
                 'status' => 0,
             ]);
-            //echo "Failed to backup switch: " . $device->hostname."\n";
+            return false;
         }
-        //echo "Failed to backup switch: " . $device->hostname."\n";
-        return false;
     }
 
     static function restoreBackup(Request $request): bool
