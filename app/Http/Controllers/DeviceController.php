@@ -16,12 +16,18 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Builder\Class_;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 
 
 class DeviceController extends Controller
 {
+    static $models = [
+        'aruba-os' => ArubaOS::class,
+        'aruba-cx' => ArubaCX::class,
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -84,20 +90,14 @@ class DeviceController extends Controller
         $device->hostname = $hostname;
         $device->password = $encrypted_pw;
         $device->type = $request->input('type');
-
-        switch ($device->type) {
-            case 'aruba-os':
-                $device_data = ArubaOS::getApiData($device);
-                $class = ArubaOS::class;
-                break;
-            case 'aruba-cx':
-                $device_data = ArubaCX::getApiData($device);
-                $class = ArubaCX::class;
-                break;
-            default:
-                return redirect()->back()->withErrors('Device type not found');
-        }
         
+        if(!in_array($device->type, array_keys(self::$models))) {
+            return redirect()->back()->withErrors('Device type not found');
+        }
+
+        $class = self::$models[$request->input('type')]; 
+        $device_data = $class::getApiData($device);
+
         // Merge device data to request
         $request->merge([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -197,16 +197,13 @@ class DeviceController extends Controller
     {
         $device = Device::find($request->input('id'));
 
-        switch ($device->type) {
-            case 'aruba-os':
-                $device_data = ArubaOS::getApiData($device);
-                break;
-            case 'aruba-cx':
-                $device_data = ArubaCX::getApiData($device);
-                break;
-            default:
-                return json_encode(['success' => 'false', 'error' => 'Unknown device type']);
+
+        if(!in_array($device->type, array_keys(self::$models))) {
+            return json_encode(['success' => 'false', 'error' => 'Could not update device']);
         }
+
+        $class = self::$models[$request->input('type')]; 
+        $device_data = $class::getApiData($device);
         
 
         if($device->update(
@@ -239,7 +236,7 @@ class DeviceController extends Controller
             $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
             $device->count_vlans = count(json_decode($device->vlan_data, true));
             $device->format_time = $device->updated_at->diffForHumans();
-            $device->ports = json_decode($device->port_data);
+            $device->ports = json_decode($device->port_data, true);
             $vlan_ports = json_decode($device->vlan_port_data);
             $port_statistic_raw = json_decode($device->port_statistic_data, true);
             $system = json_decode($device->system_data);
@@ -254,21 +251,21 @@ class DeviceController extends Controller
 
             // Sort and count ports
             foreach ($device->ports as $port) {
-                $untagged[$port->id] = "";
-                $tagged[$port->id] = [];
+                $untagged[$port['id']] = "";
+                $tagged[$port['id']] = [];
 
-                if (str_contains($port->id, 'Trk')) {
+                if (str_contains($port['id'], 'Trk')) {
                     $device->count_trunks++;
                 } else {
                     $count_ports++;
                 }
 
-                if ($port->trunk_group != "") {
-                    $trunks[$port->trunk_group][] = $port->id;
-                    $untagged[$port->id] = "Member of " . $port->trunk_group;
+                if ($port['trunk_group'] != "") {
+                    $trunks[$port['trunk_group']][] = $port['id'];
+                    $untagged[$port['id']] = "Member of " . $port['trunk_group'];
                 }
 
-                if($port->is_port_up == "true" and !str_contains($port->id, 'Trk')) {
+                if($port['is_port_up'] == "true" and !str_contains($port['id'], 'Trk')) {
                     $ports_online++;
                 } 
 
@@ -327,16 +324,13 @@ class DeviceController extends Controller
 
         foreach($devices as $device) {
 
-            switch ($device->type) {
-                case 'aruba-os':
-                    $device_data = ArubaOS::getApiData($device);
-                    break;
-                case 'aruba-cx':
-                    $device_data = ArubaCX::getApiData($device);
-                    break;
-                default:
-                    echo "Error: Unknown device type: " . $device->type . "\n";
+            if(!in_array($device->type, array_keys(self::$models))) {
+                echo "Device type not supported: " . $device->name."\n";
+                continue;
             }
+    
+            $class = self::$models[$device->type]; 
+            $device_data = $class::getApiData($device);
             
     
             if(isset($device_data) and $device->update(
@@ -393,8 +387,12 @@ class DeviceController extends Controller
         $id = request()->input('id');
         $device = Device::find($id);
         if($device) {
-            $type = self::getFirmwareType($device->type);
-            $backup = $type::createBackup($device);
+            if(!in_array($device->type, array_keys(self::$models))) {
+                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+            }
+
+            $class = self::$models[$device->type];
+            $backup = $class::createBackup($device);
 
             if($backup) {
                 return json_encode(['success' => 'true', 'error' => 'Backup created']);
@@ -404,18 +402,5 @@ class DeviceController extends Controller
         }
 
         return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
-    }
-
-    static function getFirmwareType($type) {
-        switch ($type) {
-            case 'aruba-os':
-                return ArubaOS::class;
-                break;
-            case 'aruba-cx':
-                return ArubaCX::class;
-                break;
-            default:
-                return "Error: Unknown device type: " . $type . "\n";
-        }
     }
 }

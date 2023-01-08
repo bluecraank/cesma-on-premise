@@ -76,7 +76,7 @@ class ArubaOS implements IDevice
         $logout = Http::withoutVerifying()->withHeaders([
             'Content-Type' => 'application/json',
             'Cookie' => "$cookie",
-        ])->delete($api_url . 'login-sessions');
+        ])->delete($api_url);
 
         return true;
     }   
@@ -96,6 +96,21 @@ class ArubaOS implements IDevice
             return ['success' => false, 'data' => $response->json()];
         }
     }   
+
+    static function ApiGetAcceptPlain($hostname, $cookie, $api, $version) : Array {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+ 
+        $response = Http::withoutVerifying()->withHeaders([
+            'Accept' => 'text/plain',
+            'Cookie' => "$cookie",
+        ])->get($api_url);
+
+        if($response->successful()) {
+            return ['success' => true, 'data' => $response->body()];
+        } else {
+            return ['success' => false, 'data' => "Error while fetching $api"];
+        }    
+    }
 
     static function getApiData($device): Array
     {

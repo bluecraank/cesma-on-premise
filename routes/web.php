@@ -1,5 +1,6 @@
 <?php
 
+use App\Devices\ArubaCX;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
@@ -44,6 +45,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
     
+    Route::get('/switch/cx/test/{hostname}', [ArubaCX::class, 'test']);
+
     // Perform SSH
     Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
     

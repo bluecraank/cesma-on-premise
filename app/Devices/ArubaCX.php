@@ -2,65 +2,65 @@
 
 namespace App\Devices;
 
+use App\Http\Controllers\BackupController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Backup;
 use App\Models\Device;
+use Illuminate\Http\Client\Request;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 
 class ArubaCX implements IDevice
 {
     static $api_auth = [
-        "login" => "login-sessions",
-        "logout" => "login-sessions",
+        "login" => "login",
+        "logout" => "logout",
     ];
 
     static $available_apis = [
-        "status" => 'system/status',
-        "vlans" => 'vlans',
-        "ports" => 'ports',
-        "portstats" => 'port-statistics',
-        "vlanport" => 'vlans-ports',
-        "mac" => 'mac-table',
+        "status" => '/system?attributes=software_version,subsystems,hostname&depth=3',
+        "subsystem" => 'system/subsystems/chassis,1?attributes=product_info',
+        "vlans" => 'system/vlans?attributes=name,id&depth=2',
+        "ports" => 'system/interfaces?attributes=ifindex,link_state,description&depth=2',
+        "portstats" => 'system/interfaces?attributes=ifindex,link_speed,description&depth=2',
+        "vlanport" => 'system/interfaces?attributes=ifindex,vlan_mode,vlan_tag,vlan_trunks&depth=2',
+        "mac" => 'system/vlans?attributes=name,id,macs&depth=3',
     ];
 
     static function GetApiVersions($hostname): string
     {
         $https = config('app.https');
-        $url = $https . $hostname . '/rest/version';
+        $url = $https . $hostname . '/rest';
 
         $versions = Http::withoutVerifying()->get($url);
 
         if($versions->successful()) {
-            $versionsFound = $versions->json()['version_element'];
-            return $versionsFound[array_key_last($versionsFound)]['version'];
+            $versionsFound = $versions->json()['latest'];
+            return $versionsFound['version'];
         }
 
-        return "v7";
+        return "v10.04";
     }
 
     static function ApiLogin($device): string
     {
         $api_version = self::GetApiVersions($device->hostname);
-
         $api_url = config('app.https') . $device->hostname . '/rest/' . $api_version . '/' . self::$api_auth['login'];
  
         $api_username = config('app.api_username');
         $api_password = EncryptionController::decrypt($device->password);
 
         try {
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json'
-            ])->retry(2,200, throw: false)->post($api_url, [
-                'userName' => $api_username,
-                'password' => $api_password,
-            ]);
+            $response = Http::withoutVerifying()->asForm()->post($api_url, [
+                'username' => "admin",
+                'password' => "fridolin",
+            ]); 
 
             // Return cookie if login was successful
-            if($response->successful() AND !empty($response->json()['cookie'])) {
-                return $response->json()['cookie'].";".$api_version;
+            if($response->successful() AND !empty($response->header('Set-Cookie'))) {
+                return $response->cookies()->toArray()[0]['Name']."=".$response->cookies()->toArray()[0]['Value'].";".$api_version;
             }
         } catch (\Exception $e) {
             return "";
@@ -73,9 +73,8 @@ class ArubaCX implements IDevice
         $api_url = config('app.https') . $hostname . '/rest/' . $api_version . '/' . self::$api_auth['logout'];
         
         $logout = Http::withoutVerifying()->withHeaders([
-            'Content-Type' => 'application/json',
             'Cookie' => "$cookie",
-        ])->delete($api_url . 'login-sessions');
+        ])->post($api_url);
 
         return true;
     }   
@@ -83,7 +82,7 @@ class ArubaCX implements IDevice
     static function ApiGet($hostname, $cookie, $api, $version): Array
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
-
+ 
         $response = Http::withoutVerifying()->withHeaders([
             'Content-Type' => 'application/json',
             'Cookie' => "$cookie",
@@ -92,9 +91,24 @@ class ArubaCX implements IDevice
         if($response->successful()) {
             return ['success' => true, 'data' => $response->json()];
         } else {
-            return ['success' => false, 'data' => $response->json()];
+            return ['success' => false, 'data' => "Error while fetching $api"];
         }
     }   
+
+    static function ApiGetAcceptPlain($hostname, $cookie, $api, $version) : Array {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+ 
+        $response = Http::withoutVerifying()->withHeaders([
+            'Accept' => 'text/plain',
+            'Cookie' => "$cookie",
+        ])->get($api_url);
+
+        if($response->successful()) {
+            return ['success' => true, 'data' => $response->body()];
+        } else {
+            return ['success' => false, 'data' => "Error while fetching $api"];
+        }    
+    }
 
     static function getApiData($device): Array
     {
@@ -105,7 +119,6 @@ class ArubaCX implements IDevice
         $data = [];
 
         if(!$login_info = self::ApiLogin($device)) {
-            //ddd($login_info);
             return ['success' => false, 'data' => 'Login failed'];
         }
 
@@ -123,30 +136,30 @@ class ArubaCX implements IDevice
         self::ApiLogout($device->hostname, $cookie, $api_version);
 
         $system_data = self::getSystemInformations($data['status']);
-        $vlan_data = self::getVlanData($data['vlans']['vlan_element']);
-        $port_data = self::getPortData($data['ports']['port_element']);
-        $portstat_data = self::getPortStatisticData($data['portstats']['port_statistics_element']);
-        $vlanport_data = self::getVlanPortData($data['vlanport']['vlan_port_element']);
-        $mac_data = self::getMacTableData($data['mac']['mac_table_entry_element']);
-
-        //ddd($system_data, $vlan_data, $port_data, $portstat_data, $vlanport_data, $mac_data);
+        $vlan_data = self::getVlanData($data['vlans']);
+        $port_data = self::getPortData($data['ports']);
+        $portstat_data = self::getPortStatisticData($data['portstats']);
+        $vlanport_data = self::getVlanPortData($data['vlanport']);
+        $mac_data = self::getMacTableData($data['mac']);
 
         return [
-            'system' => $system_data,
-            'vlans' => $vlan_data,
-            'ports' => $port_data,
-            'portstats' => $portstat_data,
-            'vlanport' => $vlanport_data,
-            'mac' => $mac_data,
+            'sysstatus_data' => $system_data,
+            'vlan_data' => $vlan_data,
+            'ports_data' => $port_data,
+            'portstats_data' => $portstat_data,
+            'vlanport_data' => $vlanport_data,
+            'mac_table_data' => $mac_data,
         ];
     }
 
-    public function test($device) {
-        return self::getApiData($device);
+    public function test($hostname) {
+        $device = new Device();
+        $device->hostname = $hostname;
+        return BackupController::downloadBackup(8);
     }
 
     static function getVlanData($vlans): Array
-    {
+    {     
         $return = [];
 
         if(empty($vlans) or !is_array($vlans) or !isset($vlans)) {
@@ -154,30 +167,35 @@ class ArubaCX implements IDevice
         }
 
         foreach($vlans as $vlan) {
-            $return[$vlan['vlan_id']] = [
+            $return[$vlan['id']] = [
                 'name' => $vlan['name'],
-                'vlan_id' => $vlan['vlan_id'],
+                'vlan_id' => $vlan['id'],
             ];
         }
 
         return $return;
     }
 
-    static function getMacTableData($macs): Array
+    static function getMacTableData($vlan_macs): Array
     {
         $return = [];
 
-        if(empty($macs) or !is_array($macs) or !isset($macs)) {
+        if(empty($vlan_macs) or !is_array($vlan_macs) or !isset($vlan_macs)) {
             return $return;
         }
 
-        foreach($macs as $mac) {
-            $mac_filtered = str_replace("-", "", strtolower($mac['mac_address']));
-            $return[$mac_filtered] = [
-                'mac' => $mac_filtered,
-                'port' => $mac['port_id'],
-                'vlan' => $mac['vlan_id'],
-            ];
+        foreach($vlan_macs as $vlan_id => $vlan_mac_table) {
+
+            if(isset($vlan_mac_table['macs']) and is_array($vlan_mac_table['macs'])) {
+                foreach($vlan_mac_table['macs'] as $mac) {
+                    $mac_filtered = str_replace(":", "", strtolower($mac['mac_addr']));
+                    $return[$mac_filtered] = [
+                        'mac' => $mac_filtered,
+                        'port' => explode("/", key($mac['port']))[2],
+                        'vlan' => $vlan_id,
+                    ];
+                }
+            }
         }
 
         return $return;
@@ -185,7 +203,7 @@ class ArubaCX implements IDevice
 
     static function getSystemInformations($system): Array
     {
-        if(isset($system['name']) and $system['name'] != "") {
+        if(isset($system['hostname']) and $system['hostname'] != "") {
             $return = [
             'name' => "AOS-UNKNOWN",
             'model' => "Unknown",
@@ -197,19 +215,19 @@ class ArubaCX implements IDevice
         }
 
         $return = [
-            'name' => $system['name'],
-            'model' => $system['product_model'],
-            'serial' => $system['serial_number'],
-            'firmware' => $system['firmware_version'],
-            'hardware' => $system['hardware_revision'],
-            'mac' => strtolower($system['base_ethernet_address']['octets']),
+            'name' => $system['hostname'],
+            'model' => $system['subsystems']['chassis,1']['product_info']['product_name'],
+            'serial' => $system['subsystems']['chassis,1']['product_info']['serial_number'],
+            'firmware' => $system['software_version'],
+            'hardware' => $system['subsystems']['chassis,1']['product_info']['part_number'],
+            'mac' => strtolower(str_replace(":", "", $system['subsystems']['chassis,1']['product_info']['base_mac_address'])),
         ];
 
         return $return;
     }
 
     static function getPortData(Array $ports): Array
-    {
+    {    
         $return = [];
 
         if(empty($ports) or !is_array($ports) or !isset($ports)) {
@@ -217,12 +235,14 @@ class ArubaCX implements IDevice
         }
 
         foreach($ports as $port) {
-            $return[$port['id']] = [
-                'name' => $port['name'],
-                'id' => $port['id'],
-                'is_port_up' => $port['is_port_up'],
-                'trunk_group' => $port['trunk_group'],
-            ];
+            if($port['ifindex'] < 1000) {
+                $return[$port['ifindex']] = [
+                    'name' => $port['description'],
+                    'id' => $port['ifindex'],
+                    'is_port_up' => ($port['link_state'] == "up") ? true : false,
+                    'trunk_group' => null,
+                ];
+            }
         }
 
         return $return;
@@ -237,13 +257,14 @@ class ArubaCX implements IDevice
         }
 
         foreach($portstats as $port) {
-            $return[$port['id']] = [
-                "id" => $port['id'],
-                "name" => $port['name'],
-                "port_speed_mbps" => $port['port_speed_mbps'],
-            ];
+            if($port['ifindex'] < 1000) {
+                $return[$port['ifindex']] = [
+                    "id" => $port['ifindex'],
+                    "name" => $port['description'],
+                    "port_speed_mbps" => $port['link_speed'] / 1000000,
+                ];
+            }
         }
-
         return $return;
     }
 
@@ -255,63 +276,101 @@ class ArubaCX implements IDevice
             return $return;
         }
 
+        $i = 0;
         foreach($vlanports as $vlanport) {
-            $return[$vlanport['port_id']] = [
-                "port_id" => $vlanport['port_id'],
-                "vlan_id" => $vlanport['vlan_id'],
-                "is_tagged" => ($vlanport['port_mode'] == "POM_TAGGED_STATIC") ? true : false,
-            ];
+            if($vlanport['ifindex'] < 1000) {
+                if($vlanport['vlan_mode'] == "native-untagged") {// Untagged und erlaubte als trunks
+                    $untagged_vlan = $vlanport['vlan_tag'];
+                    $tagged_vlans = $vlanport['vlan_trunks'];
+
+                    foreach($tagged_vlans as $tagged_key => $tagged) {
+                        $return[$i] = [
+                            "port_id" => $vlanport['ifindex'],
+                            "vlan_id" => $tagged_key,
+                            "is_tagged" => true,
+                        ];
+                        $i++;
+                    }
+
+                    $return[$i] = [
+                        "port_id" => $vlanport['ifindex'],
+                        "vlan_id" => key($untagged_vlan),
+                        "is_tagged" => false,
+                    ];
+                    $i++;
+                }
+            } 
         }
 
         return $return;
     }
 
     static function createBackup($device): bool
-    {
-        if (config('app.ssh_private_key')) {
-            $privatekey = EncryptionController::getPrivateKey();
-            if($privatekey !== NULL) {
-                $key = PublicKeyLoader::load($privatekey);
-            } else {
-                return false;
-            }
-        } else {
-            $key = EncryptionController::decrypt($device->password);
+    {   
+        if(!$login_info = self::ApiLogin($device)) {
+            ddd($login_info);
+            return false;
         }
-        
-        try {
-            $sftp = new SFTP($device->hostname);
-            $sftp->login(config('app.ssh_username'), $key);
-            $data = $sftp->get('/cfg/running-config');
-    
-            if($data === NULL or strlen($data) < 10 or $data == false) {
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        $data = self::ApiGetAcceptPlain($device->hostname, $cookie, "configs/running-config", $api_version);
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
+
+        if($data['success']) {
+            if(strlen($data['data']) > 10) {
                 Backup::create([
                     'device_id' => $device->id,
-                    'data' => "No data received",
-                    'status' => 0,
-                ]);
-            } elseif(strlen($data) > 10) {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => $data,
+                    'data' => $data['data'],
                     'status' => 1,
                 ]);
-
                 return true;
+            } else {
+                Backup::create([
+                    'device_id' => $device->id,
+                    'data' => "No data",
+                    'status' => 0,
+                ]);
+                return false;
             }
-        } catch (\Exception $e) {
-            Backup::create([
-                'device_id' => $device->id,
-                'data' => $e->getMessage(),
-                'status' => 0,
-            ]);
         }
-        
+
         return false;
     }
 
-    public function restoreBackup($backup_id): bool
+    static function restoreBackup(Request $request): bool
     {
+        $device = Device::find($request->input('device_id'));
+        $backup = Backup::find($request->input('backup_id'));
+
+        if(!$device) {
+            return ['success' => false, 'data' => 'Device not found'];
+        }
+
+        if(!$backup) {
+            return ['success' => false, 'data' => 'Backup not found'];
+        }
+
+        if(!$login_info = self::ApiLogin($device)) {
+            return ['success' => false, 'data' => 'Login failed'];
+        }
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        $https = config('app.https');
+
+        $api_url = $https . $device->hostname . '/rest/' . $api_version . '/system/config/cfg_restore/payload';
+
+        $restore = Http::withoutVerifying()->withHeaders([
+            'Cookie' => $cookie,
+        ])->post($api_url, [
+            'config_base64_encoded' => base64_encode($backup->data),
+            'is_forced_reboot_enabled' => 'false',
+            'is_recoverymode_enabled' => 'false',
+        ]);
+
+        ddd($restore);
         return true;
     }
 }

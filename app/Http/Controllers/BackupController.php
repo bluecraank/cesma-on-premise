@@ -131,7 +131,7 @@ class BackupController extends Controller
         });
     }
 
-    public function downloadBackup($id) {
+    static function downloadBackup($id) {
         $backup = Backup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';

@@ -22,6 +22,8 @@ use Illuminate\Http\Client\Request;
 
         static function ApiGet(String $hostname, String $cookie, String $api, String $api_version): Array;
 
+        static function ApiGetAcceptPlain(String $hostname, String $cookie, String $api, String $api_version): Array;
+
         static function getApiData(Device $device): Array;
 
         static function createBackup(Device $device): bool;

@@ -193,13 +193,17 @@
                     </thead>
 
                     <tbody class="live-body">
-                        @foreach ($device->ports as $port)
-                        @if (!str_contains($port->id, "Trk"))
+                        @php
+                            $portlist = $device->ports;
+                            sort($portlist);
+                        @endphp
+                        @foreach ($portlist as $port)
+                        @if (!str_contains($port['id'], "Trk"))
 
                         @php
-                        $status = ($port->is_port_up) ? 'has-text-success' : 'has-text-danger';
-                        if($port->trunk_group != null) {
-                        $tagged[$port->id] = $tagged[$port->trunk_group];
+                        $status = ($port['is_port_up']) ? 'has-text-success' : 'has-text-danger';
+                        if($port['trunk_group'] != null) {
+                        $tagged[$port['id']] = $tagged[$port['trunk_group']];
                         }
                         @endphp
                         <tr style="line-height: 37px;">
@@ -207,19 +211,19 @@
                                 <i class="fa fa-circle {{ $status }}"></i>
                             </td>
                             <td class="has-text-centered">
-                                {{ $port->id }}
+                                {{ $port['id'] }}
                             </td>
                             <td>
-                                {{ $port->name }}
+                                {{ $port['name'] }}
                             </td>
                             <td>
-                               {!! $untagged[$port->id] !!}
+                               {!! $untagged[$port['id']] !!}
                             </td>
                             <td>
                                 <div class="dropdown is-up is-small">
                                     <div class="dropdown-trigger" onclick="$(this).parent().toggleClass('is-active');">
                                         <button class="button" aria-haspopup="true" aria-controls="dropdown-menu7">
-                                            <span> {{ count($tagged[$port->id]) }} VLANs</span>
+                                            <span> {{ count($tagged[$port['id']]) }} VLANs</span>
                                             <span class="icon is-small">
                                                 <i class="fas fa-angle-up" aria-hidden="true"></i>
                                             </span>
@@ -229,8 +233,8 @@
                                         <div class="dropdown-content">
                                             <div class="dropdown-item">
                                                 <div class="tags">
-                                                    @php sort($tagged[$port->id]) @endphp
-                                                    @foreach ($tagged[$port->id] as $tag)
+                                                    @php sort($tagged[$port['id']]) @endphp
+                                                    @foreach ($tagged[$port['id']] as $tag)
                                                     <span class="tag is-blue is-clickable" onclick="location.href = '/vlans/{{ $tag }}';">{{ $tag }}</span>
                                                     @endforeach
                                                 </div>
@@ -240,16 +244,16 @@
                                 </div>
                             </td>
                             <td class="has-text-centered">
-                                @if ($port_statistic[$port->id]['port_speed_mbps'] == 0)
-                                <span class="tag is-link ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10)
-                                <span class="tag is-danger ">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 100)
-                                <span class="tag is-warning">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 1000)
-                                <span class="tag is-primary">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
-                                @elseif ($port_statistic[$port->id]['port_speed_mbps'] == 10000)
-                                <span class="tag is-primary">{{ $port_statistic[$port->id]['port_speed_mbps'] }}</span>
+                                @if ($port_statistic[$port['id']]['port_speed_mbps'] == 0)
+                                <span class="tag is-link ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10)
+                                <span class="tag is-danger ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 100)
+                                <span class="tag is-warning">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 1000)
+                                <span class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10000)
+                                <span class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
                                 @endif
                             </td>
                         </tr>
