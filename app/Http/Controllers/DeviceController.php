@@ -33,8 +33,7 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function index()
-    {
+    function index() {
         $devices = Device::all()->sortBy('name');
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
@@ -48,13 +47,20 @@ class DeviceController extends Controller
         ));
     }
 
+    function index_trunks() {
+        $devices = Device::all();
+
+        return view('device.trunks', compact(
+            'devices',
+        ));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
@@ -64,8 +70,7 @@ class DeviceController extends Controller
      * @param  \App\Http\Requests\StoreDeviceRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreDeviceRequest $request)
-    {
+    public function store(StoreDeviceRequest $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:devices|max:100',
             'hostname' => 'required|unique:devices|max:100',
@@ -124,8 +129,7 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function show(Device $device)
-    {
+    public function show(Device $device) {
         //
     }
 
@@ -135,8 +139,7 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function edit(Device $device)
-    {
+    public function edit(Device $device) {
         //
     }
 
@@ -147,8 +150,7 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDeviceRequest $request, Device $device)
-    {
+    public function update(UpdateDeviceRequest $request, Device $device) {
         if ($request->input('password') != "__hidden__" and $request->input('password') != "") {
             $encrypted_pw = EncryptionController::encrypt($request->input('password'));
             $request->merge(['password' => $encrypted_pw]);
@@ -171,8 +173,7 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $device)
-    {
+    public function destroy(Request $device) {
         $find = Device::find($device->input('id'));
         Backup::where('device_id', $find->id)->delete();
         Client::where('switch_id', $find->id)->delete();
@@ -184,17 +185,7 @@ class DeviceController extends Controller
         return redirect()->back()->with('error', 'Could not delete device');
     }
 
-    function trunks()
-    {
-        $devices = Device::all();
-
-        return view('device.trunks', compact(
-            'devices',
-        ));
-    }
-
-    static function refresh(Request $request)
-    {
+    static function refresh(Request $request) {
         $device = Device::find($request->input('id'));
 
 
@@ -202,7 +193,7 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'error' => 'Could not update device']);
         }
 
-        $class = self::$models[$request->input('type')]; 
+        $class = self::$models[$device->type]; 
         $device_data = $class::getApiData($device);
         
 
@@ -221,8 +212,142 @@ class DeviceController extends Controller
         return json_encode(['success' => 'false', 'error' => 'Could not update device']);
     }
 
-    function live($id)
-    {
+    static function refreshAll() {
+        $devices = Device::all()->keyBy('id');
+
+        echo "Update all devices\n";
+
+        foreach($devices as $device) {
+
+            if(!in_array($device->type, array_keys(self::$models))) {
+                echo "Device type not supported: " . $device->name."\n";
+                continue;
+            }
+    
+            $class = self::$models[$device->type]; 
+            $device_data = $class::getApiData($device);
+            
+    
+            if(isset($device_data) and $device->update(
+                ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
+                'vlan_data' => json_encode($device_data['vlan_data'], true), 
+                'port_data' => json_encode($device_data['ports_data'], true), 
+                'port_statistic_data' => json_encode($device_data['portstats_data'], true), 
+                'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
+                'system_data' => json_encode($device_data['sysstatus_data'], true)])) 
+            {
+                echo "Updated switch: " . $device->name."\n";
+            } else {
+                echo "Error updating switch: "
+                 . $device->name."\n";
+            }
+        }
+    }
+
+    public function uploadPubkeysToSwitch(Request $request) {
+        $device = Device::find($request->input('id'));
+
+        if($device) {
+            $class = self::$models[$device->type]; 
+            $pubkeys = KeyController::getPubkeysAsArray();
+            return $class::uploadPubkeys($device, $pubkeys);
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Error finding device']);
+    }
+
+    static function getMacAddressesFromDevices() {
+        $device = Device::all()->keyBy('id');
+
+        $DataToIds = [];
+        $MacsToIds = [];
+        $i = 0;
+        foreach($device as $switch) {
+            $macTable = json_decode($switch->mac_table_data, true);
+            $macData = (isset($macTable)) ? $macTable : [];
+            $MacAddressesData = [];
+            foreach($macData as $entry) {
+                if(str_contains($entry['port'], "Trk") or str_contains($entry['port'], "48")) {
+                    continue;
+                }
+                $MacAddressesData[$i] = $entry;
+                $MacAddressesData[$i]['device_id'] = $switch->id;
+                $MacAddressesData[$i]['device_name'] = $switch->name;
+                $MacsToIds[$i] = strtolower(str_replace([":", "-"], "", $entry['mac']));
+                $i++;
+            }
+            $DataToIds = array_merge($DataToIds, $MacAddressesData);
+        }
+
+        return array($MacsToIds, $DataToIds);
+    }
+
+    static function createBackup() {
+        $id = request()->input('id');
+        $device = Device::find($id);
+        if($device) {
+            if(!in_array($device->type, array_keys(self::$models))) {
+                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+            }
+
+            $class = self::$models[$device->type];
+            $backup = $class::createBackup($device);
+
+            if($backup) {
+                return json_encode(['success' => 'true', 'error' => 'Backup created']);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+            }
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+    }
+
+    static function createBackupAllDevices() {
+        $device = Device::all()->keyBy('id');
+
+        foreach($device as $switch) {
+            if(!in_array($switch->type, array_keys(self::$models))) {
+                continue;
+            }
+
+            $class = self::$models[$switch->type];
+            $class::createBackup($switch);
+        }
+
+        return json_encode(['success' => 'true', 'error' => 'Backups created']);
+    }
+
+    static function getClientsAllDevices() {
+        $device = Device::all()->keyBy('id');
+
+        foreach($device as $switch) {
+            if(!in_array($switch->type, array_keys(self::$models))) {
+                continue;
+            }
+
+            $class = self::$models[$switch->type];
+            $class::getClients($switch);
+        }
+
+        return json_encode(['success' => 'true', 'error' => 'Clients updated']);
+
+    }
+
+    static function uploadPubkeysAllDevices() { 
+        $pubkeys = KeyController::getPubkeysAsArray();
+
+        $devices = Device::all()->keyBy('id');
+
+        foreach($devices as $device) {
+            $class = self::$models[$device->type];
+            $class::uploadPubkeys($device, $pubkeys);
+        }
+
+        return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
+    }
+
+    function live($id) {
         $device = Device::find($id);
 
         if ($device) {
@@ -302,8 +427,7 @@ class DeviceController extends Controller
         return redirect()->back()->withErrors(['error' => 'Could not find device']);
     }
 
-    public function isOnline($hostname)
-    {
+    function isOnline($hostname) {
         try {
             if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 1)) {
                 fclose($fp);
@@ -317,105 +441,4 @@ class DeviceController extends Controller
         }
     }
 
-    static function refreshAll() {
-        $devices = Device::all()->keyBy('id');
-
-        echo "Update all devices\n";
-
-        foreach($devices as $device) {
-
-            if(!in_array($device->type, array_keys(self::$models))) {
-                echo "Device type not supported: " . $device->name."\n";
-                continue;
-            }
-    
-            $class = self::$models[$device->type]; 
-            $device_data = $class::getApiData($device);
-            
-    
-            if(isset($device_data) and $device->update(
-                ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
-                'vlan_data' => json_encode($device_data['vlan_data'], true), 
-                'port_data' => json_encode($device_data['ports_data'], true), 
-                'port_statistic_data' => json_encode($device_data['portstats_data'], true), 
-                'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
-                'system_data' => json_encode($device_data['sysstatus_data'], true)])) 
-            {
-                echo "Updated switch: " . $device->name."\n";
-            } else {
-                echo "Error updating switch: "
-                 . $device->name."\n";
-            }
-        }
-    }
-
-    public function uploadPubkeysToSwitch(Request $request) {
-        $device = Device::find($request->input('id'));
-
-        if($device) {
-            $class = self::$models[$device->type]; 
-            $pubkeys = KeyController::getPubkeysAsArray();
-            return $class::uploadPubkeys($device, $pubkeys);
-        }
-
-        return json_encode(['success' => 'false', 'error' => 'Error finding device']);
-    }
-
-    static function uploadPubkeysToEverySwitch() { 
-        $pubkeys = KeyController::getPubkeysAsArray();
-
-        $devices = Device::all()->keyBy('id');
-
-        foreach($devices as $device) {
-            $class = self::$models[$device->type];
-            $class::uploadPubkeys($device, $pubkeys);
-        }
-    }
-
-    static function getMacAddressesFromDevices() {
-        $device = Device::all()->keyBy('id');
-
-        $DataToIds = [];
-        $MacsToIds = [];
-        $i = 0;
-        foreach($device as $switch) {
-            $macTable = json_decode($switch->mac_table_data, true);
-            $macData = (isset($macTable)) ? $macTable : [];
-            $MacAddressesData = [];
-            foreach($macData as $entry) {
-                if(str_contains($entry['port'], "Trk") or str_contains($entry['port'], "48")) {
-                    continue;
-                }
-                $MacAddressesData[$i] = $entry;
-                $MacAddressesData[$i]['device_id'] = $switch->id;
-                $MacAddressesData[$i]['device_name'] = $switch->name;
-                $MacsToIds[$i] = strtolower(str_replace([":", "-"], "", $entry['mac']));
-                $i++;
-            }
-            $DataToIds = array_merge($DataToIds, $MacAddressesData);
-        }
-
-        return array($MacsToIds, $DataToIds);
-    }
-
-    static function createBackup() {
-        $id = request()->input('id');
-        $device = Device::find($id);
-        if($device) {
-            if(!in_array($device->type, array_keys(self::$models))) {
-                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
-            }
-
-            $class = self::$models[$device->type];
-            $backup = $class::createBackup($device);
-
-            if($backup) {
-                return json_encode(['success' => 'true', 'error' => 'Backup created']);
-            } else {
-                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
-            }
-        }
-
-        return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
-    }
 }

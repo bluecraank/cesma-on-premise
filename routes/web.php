@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 */
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
-    Route::get('/trunks', [DeviceController::class, 'trunks'])->name('trunks');
+    Route::get('/trunks', [DeviceController::class, 'index_trunks'])->name('trunks');
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
@@ -60,6 +60,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/switch/upload/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
     Route::post('/switch/create/backup', [DeviceController::class, 'createBackup']);
     Route::post('/switch/get/clients', [ClientController::class, 'getClientsFromSwitch',]);
+    Route::post('/switch/create/backup/all', [DeviceController::class, 'createBackupAllDevices']);
+    Route::post('/switch/get/clients/all', [ClientController::class, 'getClientsAllDevices']);
+    Route::post('/switch/upload/pubkeys/all', [DeviceController::class, 'uploadPubkeysAllDevices']);
 
     Route::post('/pubkey/add', [KeyController::class, 'store']);
 

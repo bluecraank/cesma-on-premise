@@ -350,6 +350,51 @@ function createBackup(ele) {
 
 }
 
+function doAllDeviceAction(type, ele) {
+    $(ele).addClass('is-loading');
+
+
+
+    let form = $("#form-all-devices").serialize();
+
+    let uri = '/switch/create/backup/all';
+    let cssclass = 'fa-hdd';
+
+    if (type == "clients") {
+        uri = '/switch/get/clients/all';
+        cssclass = 'fa-computer';
+    } else if (type == "pubkeys") {
+        uri = '/switch/upload/pubkeys/all';
+        cssclass = 'fa-sync';
+    }
+
+    fetch(uri, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form
+    }).then(response => response.json())
+        .then(data => {
+            if(data.success == "true") {
+                $(ele).removeClass('is-loading');
+                $(ele).addClass('is-success');
+                $(ele).children().removeClass(cssclass);
+                $(ele).children().addClass('fa-check'); 
+            } else {
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');
+                $(ele).addClass('is-danger');
+                $(ele).children().removeClass(cssclass);
+                $(ele).children().addClass('fa-exclamation-triangle');
+                
+                $(".notification.status ul li").text(data.error);
+                $(".notification.status").slideDown(500);
+            }
+        }
+    );
+}
+
 $(document).on('keydown', function (e) {
     if (e.keyCode === 27) {
         $('.modal').hide();

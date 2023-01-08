@@ -52,12 +52,18 @@
             </tr>
             @endforeach
     </table>
+</div>
 
-    <div>
-        <div class="buttons are-small">
-            <button class="button is-warning"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</button>
-            <button class="button is-warning"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</button>
-            <button class="button is-warning"><i class="fa-solid fa-computer mr-2"></i> Update Clients</button>
-        </div>
+
+<div class="box">
+    <div class="label is-small">Alle Switche</div>
+    <div class="buttons are-small">
+        <form action="post" id="form-all-devices">
+            @csrf
+            <a onclick="doAllDeviceAction('pubkeys', this)" class="button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
+            <a onclick="doAllDeviceAction('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+            <a onclick="doAllDeviceAction('clients', this)" class="button is-link"><i class="fa-solid fa-computer mr-2"></i> Update Clients</a>
+        </form>
     </div>
+    <div class="is-size-7">Diese Aktionen werden regelmäßig automatisiert durchgeführt</div>
 </div>

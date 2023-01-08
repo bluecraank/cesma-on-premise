@@ -29,7 +29,7 @@ class ClientController extends Controller
         }
     }
 
-    static function storeMergedClientData() {
+    static function getClientsAllDevices() {
         $endpoint_data = ClientController::getClientsFromProviders();
         $mac_data = DeviceController::getMacAddressesFromDevices(); 
 
@@ -70,7 +70,7 @@ class ClientController extends Controller
             }
         }
 
-        dd("Clients updated");
+        return json_encode(['success' => 'true', 'error' => 'Clients updated']);
     }
 
     static function getClientsFromSwitch(Request $request) {

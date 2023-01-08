@@ -38,6 +38,6 @@ Artisan::command('switch:backup:mail', function () {
 
 Artisan::command('switch:macs:toClients', function () {
     $this->comment('--- START MERGING CLIENTS ---');
-    $this->comment(ClientController::storeMergedClientData(null));
+    $this->comment(ClientController::getClientsAllDevices());
     $this->comment('--- END MERGING CLIENTS ---');
 })->purpose('Correlate MACs with Clients');
