@@ -343,18 +343,33 @@ class DeviceController extends Controller
             {
                 echo "Updated switch: " . $device->name."\n";
             } else {
-                echo "Error updating switch: " . $device->name."\n";
+                echo "Error updating switch: "
+                 . $device->name."\n";
             }
         }
     }
 
     public function uploadPubkeysToSwitch(Request $request) {
         $device = Device::find($request->input('id'));
+
         if($device) {
-            return KeyController::uploadPubkeys($device);
+            $class = self::$models[$device->type]; 
+            $pubkeys = KeyController::getPubkeysAsArray();
+            return $class::uploadPubkeys($device, $pubkeys);
         }
 
         return json_encode(['success' => 'false', 'error' => 'Error finding device']);
+    }
+
+    static function uploadPubkeysToEverySwitch() { 
+        $pubkeys = KeyController::getPubkeysAsArray();
+
+        $devices = Device::all()->keyBy('id');
+
+        foreach($devices as $device) {
+            $class = self::$models[$device->type];
+            $class::uploadPubkeys($device, $pubkeys);
+        }
     }
 
     static function getMacAddressesFromDevices() {

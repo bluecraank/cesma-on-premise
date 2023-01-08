@@ -3,6 +3,7 @@
 namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\DeviceController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
@@ -54,14 +55,15 @@ class ArubaCX implements IDevice
 
         try {
             $response = Http::withoutVerifying()->asForm()->post($api_url, [
-                'username' => "admin",
-                'password' => "fridolin",
+                'username' => $api_username,
+                'password' => $api_password,
             ]); 
 
             // Return cookie if login was successful
             if($response->successful() AND !empty($response->header('Set-Cookie'))) {
                 return $response->cookies()->toArray()[0]['Name']."=".$response->cookies()->toArray()[0]['Value'].";".$api_version;
             }
+
         } catch (\Exception $e) {
             return "";
         }
@@ -152,10 +154,10 @@ class ArubaCX implements IDevice
         ];
     }
 
-    public function test($hostname) {
-        $device = new Device();
-        $device->hostname = $hostname;
-        return BackupController::downloadBackup(8);
+    public function test($id) {
+        $device = Device::find($id);
+        // $device->hostname = $hostname;
+        // return DeviceController::uploadPubkeys($device);
     }
 
     static function getVlanData($vlans): Array
@@ -372,6 +374,34 @@ class ArubaCX implements IDevice
 
         ddd($restore);
         return true;
+    }
+
+    static function uploadPubkeys($device, $pubkeys) {
+        if(!$login_info = self::ApiLogin($device)) {
+            return json_encode(['success' => 'false', 'error' => 'Login failed']);
+        }
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        $https = config('app.https');
+
+        $api_url = $https . $device->hostname . '/rest/' . $api_version . '/system/users/' . config('app.api_username');
+
+        $upload = Http::withoutVerifying()->withHeaders([
+            'Cookie' => $cookie,
+            'Content-Type'  => 'application/json',
+        ])->patch($api_url, array(
+            'authorized_keys' => $pubkeys,
+        ));
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
+
+        if($upload->successful()) {
+            return json_encode(['success' => 'true', 'error' => 'Pubkeys synced']);
+        } else {
+            return json_encode(['success' => 'false', 'error' => 'Pubkeys not synced']);
+        }
+
     }
 }
 

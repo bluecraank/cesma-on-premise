@@ -54,6 +54,35 @@ class KeyController extends Controller
         return $keys2;
     }
 
+    static function getPubkeysAsArray() {
+        $keys = Key::all();
+        $users = User::all();
+
+        $keys2 = [];
+        $i = 1;
+
+        foreach($keys as $key) {
+            $format_key = EncryptionController::decrypt($key->key);
+            $keys2[$i] = $format_key;
+
+            $i++;
+        }
+
+        foreach($users as $user) {
+
+            if($user->privatekey !== NULL and !empty($user->privatekey)) {
+                $format_key = EncryptionController::decrypt($user->privatekey);
+
+                if($format_key !== NULL and !empty($format_key)) {  
+                    $keys2[$i] = $format_key;
+
+                    $i++;
+                }
+            }
+        }
+
+        return $keys2;     
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -142,6 +171,7 @@ class KeyController extends Controller
     }
 
     static function uploadPubkeys($device) {
+
         if (config('app.ssh_private_key')) {
             $decrypt = EncryptionController::getPrivateKey();
             if($decrypt !== NULL) {
