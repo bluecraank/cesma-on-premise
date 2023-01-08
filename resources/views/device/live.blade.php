@@ -152,22 +152,16 @@
                 <h2 class="subtitle">Aktionen</h2>
 
                 <div class="buttons are-small">
-                    <form class="mr-1" action="/switch/upload/pubkeys" id="sync-pubkey-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
+                    <form class="mr-1" action="" id="actions-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
                         @csrf
                         <a onclick="uploadPubkeys(this)" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-sync"></i> Pubkeys syncen
                         </a>
-                    </form>
 
-                    <form action="/switch/create/backup" id="create-backup-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
-                        @csrf
                         <a onclick="createBackup(this)" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-hdd"></i> Backup erstellen
                         </a>
-                    </form>
-                
-                    <form action="/switch/get/clients" id="get-clients-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
-                        @csrf
+
                         <a onclick="getClients(this)" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-computer"></i> Clients abfragen
                         </a>

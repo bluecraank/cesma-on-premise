@@ -45,7 +45,7 @@
 </div>
 
 <div class="modal modal-delete-backup">
-    <form action="/backup/delete" method="post">
+    <form action="/switch/backup/delete" method="post">
         <input type="hidden" name="_method" value="delete" />
         @csrf
         <div class="modal-background"></div>
@@ -58,7 +58,6 @@
                     <label class="label">ID:</label>
                     <div class="control">
                         <input class="backup-id input" type="text" disabled value="">
-                        <input class="backup-id input" name="id" type="hidden" value="">
                     </div>
                 </div>
                 <div class="field">
@@ -72,6 +71,53 @@
             <footer class="modal-card-foot">
                 <button class="button is-danger">Backup
                     löschen</button>
+                <button onclick="$('.modal-delete-backup').hide();return false;" type="button"
+                    class="button">Abbrechen</button>
+            </footer>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-upload-backup">
+    <form action="/switch/backup/restore" method="post">
+        <input class="id input" name="id" type="hidden" value="">
+        <input class="device-id input" name="device-id" type="hidden" value="">
+
+        @csrf
+        <div class="modal-background"></div>
+        <div style="margin-top: 40px" class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Backup wiederherstellen</p>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Switch:</label>
+                    <div class="control">
+                        <input class="name input" required type="text" name="switch" disabled value="">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Erstellt:</label>
+                    <div class="control">
+                        <input class="input created" required type="text" name="date" disabled value="">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Dein Passwort:</label>
+                    <div class="control">
+                        <input class="input" type="text" name="password" required placeholder="Dein Passwort">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Passwort vom Switch:</label>
+                    <div class="control">
+                        <input class="input" type="text" name="password-switch" required placeholder="Dein Passwort">
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-warning">Backup
+                    einspielen</button>
                 <button onclick="$('.modal-delete-backup').hide();return false;" type="button"
                     class="button">Abbrechen</button>
             </footer>

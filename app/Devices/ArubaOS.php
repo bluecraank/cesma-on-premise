@@ -348,17 +348,10 @@ class ArubaOS implements IDevice
         }
     }
 
-    static function restoreBackup(Request $request): bool
+    static function restoreBackup($device, $backup, $password_switch): Array
     {
-        $device = Device::find($request->input('device_id'));
-        $backup = Backup::find($request->input('backup_id'));
-
-        if(!$device) {
-            return ['success' => false, 'data' => 'Device not found'];
-        }
-
-        if(!$backup) {
-            return ['success' => false, 'data' => 'Backup not found'];
+        if($password_switch != EncryptionController::decrypt($device->password)) {
+            return ['success' => false, 'data' => 'Wrong password for switch'];
         }
 
         if(!$login_info = self::ApiLogin($device)) {
@@ -375,12 +368,31 @@ class ArubaOS implements IDevice
             'Cookie' => $cookie,
         ])->post($api_url, [
             'config_base64_encoded' => base64_encode($backup->data),
-            'is_forced_reboot_enabled' => 'false',
-            'is_recoverymode_enabled' => 'false',
+            'is_forced_reboot_enabled' => false,
+            'is_recoverymode_enabled' => false,
         ]);
 
-        ddd($restore);
-        return true;
+        if(isset($restore->json()['status']) and $restore->json()['status'] == "CRS_SUCCESS") {
+            return ['success' => true, 'data' => 'Restore successful'];
+        }
+
+        while (true) {
+            sleep(4);
+            $status = self::ApiGet($device->hostname, $cookie, '/system/config/cfg_restore/payload/status', $api_version);
+            $data = $status['data'];
+
+            if(isset($data['status']) and $data['status'] == "CRS_SUCCESS") {
+                return ['success' => true, 'data' => 'Restore successful'];
+            }
+
+            if(isset($data['status']) and $data['status'] != "CRS_IN_PROGRESS") {
+                break;
+            }
+        }
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
+        
+        return ['success' => false, 'data' => 'Restore failed: '.$data['status'] . " " .$data['failure_reason']];
     }
 
     static function uploadPubkeys($device) {

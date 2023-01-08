@@ -138,6 +138,16 @@ function editSwitchModal(id, name, hostname, location, building, details, number
     modal.show()
 }
 
+function uploadBackup(id, created_at, device,  name) {
+
+    let modal = $('.modal-upload-backup');
+    modal.find('.id').val(id);
+    modal.find('.name').val(name);
+    modal.find('.device-id').val(device);
+    modal.find('.created').val(created_at);
+    modal.show()
+}
+
 function deleteSwitchModal(id, name) {
     let modal = $('.modal-delete-switch');
     modal.find('.switch-id').val(id);
@@ -228,7 +238,8 @@ function refreshSwitch(ele) {
                 $(ele).addClass('is-success');
                 $(ele).children().removeClass('fa-rotate');
                 $(ele).children().addClass('fa-check'); 
-
+                $(ele).children().remove('fa-exclamation-triangle');
+                $(ele).remove('is-danger');
                 setTimeout(function () {
                     window.location.reload();
                 }, 750)
@@ -252,7 +263,7 @@ function uploadPubkeys(ele) {
     $(ele).addClass('is-loading');
 
 
-    let form = $("#sync-pubkey-form").serialize();
+    let form = $("#actions-form").serialize();
     fetch('/switch/upload/pubkeys', {
         method: 'POST',
         headers: {
@@ -267,6 +278,8 @@ function uploadPubkeys(ele) {
                 $(ele).addClass('is-success');
                 $(ele).children().removeClass('fa-rotate');
                 $(ele).children().addClass('fa-check'); 
+                $(ele).children().remove('fa-exclamation-triangle');
+                $(ele).remove('is-danger');
             } else {
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');
@@ -286,7 +299,7 @@ function getClients(ele) {
     $(ele).addClass('is-loading');
 
 
-    let form = $("#get-clients-form").serialize();
+    let form = $("#actions-form").serialize();
     fetch('/switch/get/clients', {
         method: 'POST',
         headers: {
@@ -299,6 +312,8 @@ function getClients(ele) {
             if(data.success == "true") {
                 $(ele).removeClass('is-loading');
                 $(ele).addClass('is-success');
+                $(ele).children().remove('fa-exclamation-triangle');
+                $(ele).remove('is-danger');
                 $(ele).children().removeClass('fa-computer');
                 $(ele).children().addClass('fa-check'); 
             } else {
@@ -320,7 +335,7 @@ function createBackup(ele) {
     $(ele).addClass('is-loading');
 
 
-    let form = $("#create-backup-form").serialize();
+    let form = $("#actions-form").serialize();
     fetch('/switch/create/backup', {
         method: 'POST',
         headers: {
@@ -333,6 +348,8 @@ function createBackup(ele) {
             if(data.success == "true") {
                 $(ele).removeClass('is-loading');
                 $(ele).addClass('is-success');
+                $(ele).children().remove('fa-exclamation-triangle');
+                $(ele).remove('is-danger');
                 $(ele).children().removeClass('fa-hdd');
                 $(ele).children().addClass('fa-check'); 
             } else {
@@ -381,6 +398,8 @@ function doAllDeviceAction(type, ele) {
                 $(ele).addClass('is-success');
                 $(ele).children().removeClass(cssclass);
                 $(ele).children().addClass('fa-check'); 
+                $(ele).children().remove('fa-exclamation-triangle');
+                $(ele).remove('is-danger');
             } else {
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');

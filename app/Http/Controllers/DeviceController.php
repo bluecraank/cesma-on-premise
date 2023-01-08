@@ -14,6 +14,8 @@ use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Builder\Class_;
@@ -364,6 +366,23 @@ class DeviceController extends Controller
         }
 
         return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
+    }
+
+    static function restoreBackup(Request $request) {
+        $device = Device::find($request->input('device-id'));
+        $backup = Backup::find($request->input('id'));
+
+        if($device and $backup) {
+            $password = $request->input('password');
+            $password_switch = $request->input('password-switch');
+            if(Hash::check($password, Auth::user()->password)) {
+                $class = self::$models[$device->type];
+                $restore = $class::restoreBackup($device, $backup, $password_switch);
+                return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Your password is wrong']);
+            }
+        }
     }
 
     function live($id) {

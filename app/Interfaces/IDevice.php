@@ -2,7 +2,8 @@
 
     namespace App\Interfaces;
 
-    use App\Models\Device;
+use App\Models\Backup;
+use App\Models\Device;
 use Illuminate\Http\Client\Request;
 
     interface IDevice
@@ -28,7 +29,7 @@ use Illuminate\Http\Client\Request;
 
         static function createBackup(Device $device): bool;
 
-        static function restoreBackup(Request $request): bool;
+        static function restoreBackup(Device $device, Backup $backup, String $password): Array;
 
         static function getPortData(Array $ports): Array;
     

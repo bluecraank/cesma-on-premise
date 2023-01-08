@@ -35,56 +35,46 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/system', [UserController::class, 'management'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
-    Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
-    Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
-    Route::get('/switch/download/backup/{id}', [BackupController::class, 'downloadBackup']);
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
-
-    // INIT
-    Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
-    Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
-    
-    Route::get('/switch/os/test/{id}', [ArubaOS::class, 'test']);
-
-    // Perform SSH
-    Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
-    
-    // Create routes
-    Route::post('/switch/create', [DeviceController::class, 'store']);
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
     Route::post('/user/create', [UserController::class, 'store']);
+    Route::post('/pubkey/add', [KeyController::class, 'store']);
+    Route::delete('/building/delete', [BuildingController::class, 'destroy']);
+    Route::delete('/location/delete', [LocationController::class, 'destroy']);
+    Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
+    Route::delete('/user/delete', [UserController::class, 'destroy']);
+    Route::delete('/user/delete-pubkey', [UserController::class, 'deletePubkey']);
+    Route::delete('/pubkey/delete', [KeyController::class, 'destroy']);
+    Route::put('/building/update', [BuildingController::class, 'update']);
+    Route::put('/location/update', [LocationController::class, 'update']);
+    Route::put('/vlan/update', [VlanController::class, 'update']);
+    Route::put('/user/update', [UserController::class, 'update']);
+    Route::put('/user/pubkey', [UserController::class, 'setPubkey']);
 
+    // Switch Routes
+    Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
+    Route::get('/switch/download/backup/{id}', [BackupController::class, 'downloadBackup']);
+    Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
+    Route::get('/switch/os/test/{id}', [ArubaOS::class, 'test']);
+    Route::post('/switch/create', [DeviceController::class, 'store']);
     Route::post('/switch/upload/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
     Route::post('/switch/create/backup', [DeviceController::class, 'createBackup']);
     Route::post('/switch/get/clients', [ClientController::class, 'getClientsFromSwitch',]);
     Route::post('/switch/create/backup/all', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/switch/get/clients/all', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/switch/upload/pubkeys/all', [DeviceController::class, 'uploadPubkeysAllDevices']);
-
-    Route::post('/pubkey/add', [KeyController::class, 'store']);
-
-    // Delete routes
-    Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
-    Route::delete('/building/delete', [BuildingController::class, 'destroy']);
-    Route::delete('/location/delete', [LocationController::class, 'destroy']);
-    Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
-    Route::delete('/user/delete', [UserController::class, 'destroy']);
-    Route::delete('/user/delete-pubkey', [UserController::class, 'deletePubkey']);
-    Route::delete('/backup/delete', [BackupController::class, 'destroy']);
-    Route::delete('/pubkey/delete', [KeyController::class, 'destroy']);
-
-    // Update routes
+    Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
+    Route::post('/switch/backup/restore', [DeviceController::class, 'restoreBackup']);
     Route::put('/switch/update', [DeviceController::class, 'update']);
     Route::put('/switch/refresh', [DeviceController::class, 'refresh']);
-    Route::put('/building/update', [BuildingController::class, 'update']);
-    Route::put('/location/update', [LocationController::class, 'update']);
-    Route::put('/vlan/update', [VlanController::class, 'update']);
-    Route::put('/user/update', [UserController::class, 'update']);
-    Route::put('/user/pubkey', [UserController::class, 'setPubkey']);
-    
+    Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
+    Route::delete('/switch/backup/delete', [BackupController::class, 'destroy']);
+
+    // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
+    // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
 });
 
 // Login
