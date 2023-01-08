@@ -32,11 +32,14 @@ class ArubaOS implements IDevice
         $https = config('app.https');
         $url = $https . $hostname . '/rest/version';
 
+        try {
         $versions = Http::withoutVerifying()->get($url);
 
         if($versions->successful()) {
             $versionsFound = $versions->json()['version_element'];
             return $versionsFound[array_key_last($versionsFound)]['version'];
+        }
+        } catch (\Exception $e) {
         }
 
         return "v7";
@@ -85,31 +88,39 @@ class ArubaOS implements IDevice
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
 
-        $response = Http::withoutVerifying()->withHeaders([
-            'Content-Type' => 'application/json',
-            'Cookie' => "$cookie",
-        ])->get($api_url);
+        try {
+            $response = Http::withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json',
+                'Cookie' => "$cookie",
+            ])->get($api_url);
 
-        if($response->successful()) {
-            return ['success' => true, 'data' => $response->json()];
-        } else {
-            return ['success' => false, 'data' => $response->json()];
+            if($response->successful()) {
+                return ['success' => true, 'data' => $response->json()];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
         }
     }   
 
     static function ApiGetAcceptPlain($hostname, $cookie, $api, $version) : Array {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
  
-        $response = Http::withoutVerifying()->withHeaders([
-            'Accept' => 'text/plain',
-            'Cookie' => "$cookie",
-        ])->get($api_url);
+        try {
+            $response = Http::withoutVerifying()->withHeaders([
+                'Accept' => 'text/plain',
+                'Cookie' => "$cookie",
+            ])->get($api_url);
 
-        if($response->successful()) {
-            return ['success' => true, 'data' => $response->body()];
-        } else {
-            return ['success' => false, 'data' => "Error while fetching $api"];
-        }    
+            if($response->successful()) {
+                return ['success' => true, 'data' => $response->body()];
+            } else {
+                return ['success' => false, 'data' => "Error while fetching $api"];
+            } 
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }   
     }
 
     static function getApiData($device): Array
@@ -158,7 +169,7 @@ class ArubaOS implements IDevice
 
     public function test($device) {
         $device = Device::find($device);
-        return self::createBackup($device);
+        return self::getApiData($device);
     }
 
     static function getVlanData($vlans): Array

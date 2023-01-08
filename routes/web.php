@@ -73,6 +73,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
     Route::delete('/switch/backup/delete', [BackupController::class, 'destroy']);
 
+    Route::get('/switch/test/{id}', [ArubaOS::class, 'test']);
     // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
 });

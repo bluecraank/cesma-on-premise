@@ -88,6 +88,11 @@ class ClientController extends Controller
         $i = 0;
         $macTable = json_decode($device->mac_table_data, true);
         $macData = (isset($macTable)) ? $macTable : [];
+
+        if(count($macData) == 0) {
+            return json_encode(['success' => 'false', 'error' => 'No data from device']);
+        }
+
         $MacAddressesData = [];
         foreach($macData as $entry) {
             if(str_contains($entry['port'], "Trk") or str_contains($entry['port'], "48")) {

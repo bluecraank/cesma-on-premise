@@ -124,6 +124,26 @@ class DeviceController extends Controller
         $class = self::$models[$request->input('type')]; 
         $device_data = $class::getApiData($device);
 
+        
+        $noData = false;
+        if($device_data['success'] == false) {
+            $noData = true;
+            $sys = [
+                'name' => "AOS-UNKNOWN",
+                'model' => "Unknown",
+                'serial' => "Unknown",
+                'firmware' => "Unknown",
+                'hardware' => "Unknown",
+                'mac' => "000000000000", 
+            ];
+            $device_data['sysstatus_data'] = $sys;
+            $device_data['vlan_data'] = [];
+            $device_data['ports_data'] = [];
+            $device_data['portstats_data'] = [];
+            $device_data['vlanport_data'] = [];
+            $device_data['mac_table_data'] = [];
+        }
+
         // Merge device data to request
         $request->merge([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -136,8 +156,10 @@ class DeviceController extends Controller
 
         if ($validator and $device = Device::create($request->all())) {
             LogController::log('Switch erstellt', '{"name": "' . $request->input('name') . '", "hostname": "' . $request->input('hostname') . '"}');
-            VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
-            $class::createBackup($device);
+            if(!$noData) {
+                VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
+                $class::createBackup($device);
+            }
             return redirect()->back()->with('success', 'Device added');
         }
 
@@ -217,6 +239,9 @@ class DeviceController extends Controller
         $class = self::$models[$device->type]; 
         $device_data = $class::getApiData($device);
         
+        if(isset($device_data['success']) and $device_data['success'] == false) {
+            return json_encode(['success' => 'false', 'error' => "No data received from device"]);
+        }
 
         if($device->update(
             ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -248,7 +273,24 @@ class DeviceController extends Controller
             $class = self::$models[$device->type]; 
             $device_data = $class::getApiData($device);
             
+            if(isset($device_data['success']) and $device_data['success'] == false) {
+                $sys = [
+                    'name' => "AOS-UNKNOWN",
+                    'model' => "Unknown",
+                    'serial' => "Unknown",
+                    'firmware' => "Unknown",
+                    'hardware' => "Unknown",
+                    'mac' => "000000000000", 
+                ];
+                $device_data['sysstatus_data'] = $sys;
+                $device_data['vlan_data'] = [];
+                $device_data['ports_data'] = [];
+                $device_data['portstats_data'] = [];
+                $device_data['vlanport_data'] = [];
+                $device_data['mac_table_data'] = [];
+            }
     
+
             if(isset($device_data) and $device->update(
                 ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
                 'vlan_data' => json_encode($device_data['vlan_data'], true), 
@@ -407,6 +449,7 @@ class DeviceController extends Controller
             $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
 
             // Correct port_statistic array
+            $port_statistic = [];
             foreach ($port_statistic_raw as $key => $value) {
                 $port_statistic[$value['id']] = $value;
                 unset($port_statistic_raw[$key]);

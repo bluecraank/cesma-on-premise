@@ -65,5 +65,5 @@
             <a onclick="doAllDeviceAction('clients', this)" class="button is-link"><i class="fa-solid fa-computer mr-2"></i> Update Clients</a>
         </form>
     </div>
-    <div class="is-size-7">Diese Aktionen werden regelmäßig automatisiert durchgeführt</div>
+    <div class="is-size-7">Backups & Clients werden regelmäßig automatisiert durchgeführt</div>
 </div>
