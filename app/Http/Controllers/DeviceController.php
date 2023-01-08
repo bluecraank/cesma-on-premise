@@ -126,7 +126,7 @@ class DeviceController extends Controller
 
         
         $noData = false;
-        if($device_data['success'] == false) {
+        if(isset($device_data['success']) and $device_data['success'] == false) {
             $noData = true;
             $sys = [
                 'name' => "AOS-UNKNOWN",
@@ -261,10 +261,10 @@ class DeviceController extends Controller
     static function refreshAll() {
         $devices = Device::all()->keyBy('id');
 
-        echo "Update all devices\n";
+        $time = microtime(true);
 
         foreach($devices as $device) {
-
+            $start = microtime(true);
             if(!in_array($device->type, array_keys(self::$models))) {
                 echo "Device type not supported: " . $device->name."\n";
                 continue;
@@ -299,12 +299,15 @@ class DeviceController extends Controller
                 'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
                 'system_data' => json_encode($device_data['sysstatus_data'], true)])) 
             {
-                echo "Updated switch: " . $device->name."\n";
+                $elapsed = microtime(true)-$start;
+                echo "Updated switch: " . $device->name." (".$elapsed."sec)\n";
             } else {
                 echo "Error updating switch: "
                  . $device->name."\n";
             }
         }
+
+        echo "Took ".microtime(true)-$time." seconds\n";
     }
 
     public function uploadPubkeysToSwitch(Request $request) {

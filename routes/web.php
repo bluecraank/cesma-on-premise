@@ -12,6 +12,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
 use App\Devices\ArubaOS;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,8 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
+
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
     Route::get('/trunks', [DeviceController::class, 'index_trunks'])->name('trunks');
@@ -66,17 +69,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/switch/create/backup/all', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/switch/get/clients/all', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/switch/upload/pubkeys/all', [DeviceController::class, 'uploadPubkeysAllDevices']);
-    Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
     Route::post('/switch/backup/restore', [DeviceController::class, 'restoreBackup']);
     Route::put('/switch/update', [DeviceController::class, 'update']);
     Route::put('/switch/refresh', [DeviceController::class, 'refresh']);
     Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
     Route::delete('/switch/backup/delete', [BackupController::class, 'destroy']);
-
-    Route::get('/switch/test/{id}', [ArubaOS::class, 'test']);
+    
+    // Route::get('/switch/test/{id}', [ArubaOS::class, 'test']);
     // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
 });
+
+// Route::middleware('auth:api')->get('/clients', [ClientController::class, 'index']);
 
 // Login
 Auth::routes();

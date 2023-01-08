@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->post('/switch/perform-ssh', function (Request $request) {
-    return "tEST";
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return "hello";
 });

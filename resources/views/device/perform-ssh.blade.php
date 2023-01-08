@@ -4,7 +4,8 @@
     <div class="column is-4">
       <h1 class="title">Befehl ausführen</h1>
       <form action="" method="post" id="executeForm">
-        @csrf
+        <input type="hidden" name="api_token" value="{{ Auth::user()->api_token }}">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div style="margin-top: 25px;">
           <div class="mt-5 field">
             <label class="label">Switch wählen</label>
@@ -66,7 +67,7 @@
             <p class="help is-danger">Bitte beachte, dass eingegebene Befehle nicht überprüft werden.</p>
           </div>
           <div class="mt-5 field">
-            <label class="label">{{ $require_private_key_text }}</label>
+            <label class="label">Passwort</label>
             <p class="control has-icons-left">
               <input required="true" class="input" type="password" required name="execute-passphrase" placeholder="Passphrase">
               <span class="icon is-small is-left">

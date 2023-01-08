@@ -25,7 +25,7 @@ class SearchSwitch extends Component
         $searchTerm = '%'.$this->searchTerm.'%';
         $https = config('app.https', 'http://');
         return view('livewire.search-switch',[
-            'devices' => Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('name'),
+            'devices' => Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id'),
             'locations' => Location::all()->keyBy('id'),
             'buildings' => Building::all()->keyBy('id'),
             'https' => $https

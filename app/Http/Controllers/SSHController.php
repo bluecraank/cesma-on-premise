@@ -8,6 +8,7 @@ use App\Models\Location;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
 use App\Http\Controllers\EncryptionController;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +49,10 @@ class SSHController extends Controller
         $device = Device::find($request->input('id'));
         $command = $request->input('command');
 
+        $user = User::where("api_token", "=", $request->input('api_token'));
+        if(!$user) {
+            return "Error";
+        }
         $return = new \stdClass();
         $return->status = 'check';
         $return->output = '';
@@ -117,8 +122,11 @@ class SSHController extends Controller
 
                 $output = strip_tags(trim(str_replace("\n", "", str_replace("\n\r", "<br>",$output->getHistory()))));
                 
-                $output = preg_replace('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', '', $output, 1);
-                
+                $output = preg_replace('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/', 'SM$$SM', $output, 1);
+                $newoutput = strstr($output, 'SM$$SM');
+                if($newoutput != false) {
+                    $output = $newoutput;
+                }
 
                 if($device->type == "aruba-os") {
                     

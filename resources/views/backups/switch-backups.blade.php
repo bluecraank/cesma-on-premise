@@ -105,13 +105,13 @@
                 <div class="field">
                     <label class="label">Dein Passwort:</label>
                     <div class="control">
-                        <input class="input" type="text" name="password" required placeholder="Dein Passwort">
+                        <input class="input" type="password" name="password" required placeholder="Dein Passwort">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Passwort vom Switch:</label>
                     <div class="control">
-                        <input class="input" type="text" name="password-switch" required placeholder="Dein Passwort">
+                        <input class="input" type="password" name="password-switch" required placeholder="Dein Passwort">
                     </div>
                 </div>
             </section>

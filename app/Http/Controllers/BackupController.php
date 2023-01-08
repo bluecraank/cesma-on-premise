@@ -116,19 +116,27 @@ class BackupController extends Controller
     }
 
     static function backupAll() {
+        $time = microtime(true);
         Device::all()->each(function ($device) {
             switch ($device->type) {
                 case 'aruba-os':
+                    $start = microtime(true);
                     ArubaOS::createBackup($device);
+                    $elapsed = microtime(true) - $start;
+                    echo "Backup created: " . $device->name . " (". $elapsed ."sec)\n";
                     break;
                 case 'aruba-cx':
-                    ArubaCX::createBackup($device);                    
+                    $start = microtime(true);
+                    ArubaCX::createBackup($device);  
+                    $elapsed = microtime(true) - $start;
+                    echo "Backup created: " . $device->name . " (". $elapsed ."sec)\n";               
                     break;
                 default:
                     echo "Error: Unknown device type: " . $device->type . "\n";
             }
             
         });
+        echo "Took ".microtime(true)-$time." seconds\n";
     }
 
     static function downloadBackup($id) {
