@@ -5,8 +5,8 @@
 # Central Switch Management [cesma]
 
 ## Working with
-- HP / Aruba Switch with ArubaOS Firmware
-- In theory, every arubaos like switch should work (not arubacx!)
+- HP / ArubaOS like Aruba 2930F
+- HP / ArubaCX like Aruba 6100
 
 ```
 "HP ProVision OS"
@@ -15,6 +15,8 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 ```
 
 ## Requirements
+- Enabled API on Aruba Switch with Password authentication
+- At least Firmwareversion 16.10 for ArubaOS, 10.11 for ArubaCX
 ```php8.1 php8.1-gmp php8.1-yaml php8.1-curl php8.1-mysqli php8.1-ldap php8.1-bcmath php8.1-mbstring php8.1-dom```
 
 ```MariaDB / MySQL Server```
@@ -27,15 +29,19 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 ## Features
 - Execute Commands on selected switches, locations or every switch 
 - Manage VLANs
+- Manage Uplinks
 - Backup running-config
+- Restore Backup (ArubaOS tested)
 - See MAC to Port data (with baramundi full support which device is on which port)
+- See Client status (pinging)
 - See Trunks
 - Manage Locations and buildings
 - Get VLANs from switch
 - Get Trunks from switch
+- Upload Pubkeys for SSH
 - Show Live Data from switch
 - Wildcards in execution commands
-- Simultaneously execute commands
+- Execute commands
 - Logging changes, executions and more
 - Set connection settings for API and SSH
 - Build on PHP Version 8.1
