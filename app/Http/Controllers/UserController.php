@@ -36,7 +36,7 @@ class UserController extends Controller
             $keys2[$k]->id = $key->id;
         }
 
-        return view('system.management', compact('keys2'));
+        return view('system.index', compact('keys2'));
     }
 
     function store(Request $request)

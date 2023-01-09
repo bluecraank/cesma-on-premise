@@ -41,7 +41,7 @@ class DeviceController extends Controller
         $buildings = Building::all()->keyBy('id');
         $https = config('app.https', 'http://');
 
-        return view('device.overview', compact(
+        return view('switch.index_devices', compact(
             'devices',
             'locations',
             'buildings',
@@ -52,7 +52,7 @@ class DeviceController extends Controller
     static function index_trunks() {
         $data = self::getTrunks();
 
-        return view('device.trunks', compact(
+        return view('switch.trunks', compact(
             'data'
         ));
     }
@@ -60,7 +60,7 @@ class DeviceController extends Controller
     static function index_uplinks() {
         $devices = Device::all()->keyBy('id');
         
-        return view('device.uplinks', compact('devices'));
+        return view('switch.uplinks', compact('devices'));
     }
 
     static function getTrunks() {
@@ -515,7 +515,7 @@ class DeviceController extends Controller
             // Onlinestatus
             $status = $this->isOnline($device->hostname);
 
-            return view('device.live', compact(
+            return view('switch.live', compact(
                 'device',
                 'tagged',
                 'untagged',

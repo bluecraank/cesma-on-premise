@@ -18,7 +18,7 @@ class VlanController extends Controller
     public function index() {
         $vlans = Vlan::all()->sortBy('vid');
 
-        return view('vlan.overview', compact(
+        return view('vlan.index', compact(
             'vlans'
         ));
     }

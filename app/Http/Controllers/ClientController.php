@@ -20,7 +20,7 @@ class ClientController extends Controller
         $clients = Client::all();
         $devices = Device::all()->keyBy('id');
 
-        return view('clients.index', compact('clients', 'devices'));
+        return view('client.index', compact('clients', 'devices'));
     }
 
     static function getClientsFromProviders() { 

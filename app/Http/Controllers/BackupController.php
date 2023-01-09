@@ -33,7 +33,7 @@ class BackupController extends Controller
             $device->last_backup = $backups->where('device_id', $device->id)->last();
         }
 
-        return view('backups.index', compact('backups', 'devices'));
+        return view('switch.index_backups', compact('backups', 'devices'));
     }
 
     /**
@@ -112,7 +112,7 @@ class BackupController extends Controller
     public function getSwitchBackups($id) {
         $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
         $device = Device::find($id);
-        return view('backups.switch-backups', compact('backups', 'device'));
+        return view('switch.backups', compact('backups', 'device'));
     }
 
     static function backupAll() {
