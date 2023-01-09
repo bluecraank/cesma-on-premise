@@ -1,9 +1,4 @@
-// Custom notification banner timeout
-setTimeout(function () {
-    $(".notification.status").slideUp(500);
-}, 3000)
-
-// Only one checkbox allowed
+// SSH Command fetch
 $('select[name="execute-specify-switch"]').on('change', function () {
     if ($(this).val() == "specific-switch") {
         $("input[name='which_switch']").val("specific-switch");
@@ -20,31 +15,10 @@ $('select[name="execute-specify-switch"]').on('change', function () {
     }
 });
 
-// Put fast-command in textarea
 $('select[name="fast-command"]').on('change', function () {
     if ($(this).val() != "Schnellaktion") { $("textarea[name='execute-command']").val($(this).val()); }
 });
 
-
-// MultiSelect
-$('#switch-select-ms').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
-$('#switch-select-ms-2').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
-// Loggingtable searchable
-$('#fulltextsearch').on('input', function () {
-    var text = $(this).val();
-    $('#logging-table tbody tr').show();
-    $('#logging-table tbody tr:not(:contains(' + text + '))').hide();
-});
-
-// fetch execute command api
 $("button[name='executeSwitchCommand'").click(async function () {
     if ($("select[name='execute-switch-select']").val() && $("input[name='execute-passphrase']").val() && $("textarea[name='execute-command']").val()) {
 
@@ -73,7 +47,6 @@ $("button[name='executeSwitchCommand'").click(async function () {
 });
 
 async function execute(switches, command, passphrase, type, api_token) {
-
     $.each(switches, async function (index, value) {
         $(".output-buttons").append(`<button class='is-loading button' data-id='${value.id}'>${value.name}</button>`);
 
@@ -85,7 +58,7 @@ async function execute(switches, command, passphrase, type, api_token) {
         formData.append("api_token", $('#executeForm').find('input[name="api_token"]').val())
 
         fetch(
-            '/switch/perform-ssh',
+            '/switch/'+value.id+'/ssh/execute',
             {
                 method: 'POST',
                 body: formData
@@ -106,26 +79,7 @@ $('.output-buttons').on("click", "button", function () {
     $(`.outputs div[data-id='${id}']`).removeClass("is-hidden");
 })
 
-
-// Table Sorter
-$('th').click(function () {
-    var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-    this.asc = !this.asc
-    if (!this.asc) { rows = rows.reverse() }
-    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
-})
-
-function comparer(index) {
-    return function (a, b) {
-        var valA = getCellValue(a, index), valB = getCellValue(b, index)
-        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-    }
-}
-
-function getCellValue(row, index) { return $(row).find('td').eq(index).text() }
-
-
+// Functions
 function editSwitchModal(id, name, hostname, location, building, details, number, uplinks) {
 
     let modal = $('.modal-edit-switch');
@@ -137,16 +91,6 @@ function editSwitchModal(id, name, hostname, location, building, details, number
     modal.find('.switch-building').val(building);
     modal.find('.switch-details').val(details);
     modal.find('.switch-uplinks').val(uplinks);
-    modal.show()
-}
-
-function uploadBackup(id, created_at, device,  name) {
-
-    let modal = $('.modal-upload-backup');
-    modal.find('.id').val(id);
-    modal.find('.name').val(name);
-    modal.find('.device-id').val(device);
-    modal.find('.created').val(created_at);
     modal.show()
 }
 
@@ -200,185 +144,48 @@ function deleteBackupModal(id, date) {
     modal.show()
 }
 
-
-// Verbotene Befehle Funktion
-function add_blacklist_command() {
-    var inputText = $('input[name="blacklist_new_command"]').val();
-    $("#command-list-ul").append('<li><i onclick="$(this).parent().remove();" style="color:red;margin-right:10px;cursor:pointer" class="remove-command-list fa-sharp fa-solid fa-xmark"></i> ' + inputText + '</li>');
-    $('input[name="blacklist_new_command"]').val("");
-}
-
-function submitSystemsettings() {
-    let form = $('#form-systemsettings');
-
-    var commands = $("#command-list-ul li").map(function () {
-        return $(this).text().replace(" ", "");
-    }).get();
-
-    let stringify = JSON.stringify(commands)
-    $('input[name="blacklist_commands"]').val(stringify);
-
-    $(".modal-save-settings").show();
-}
-
 function refreshSwitch(ele) {
-    //$("#refresh-form").submit();
     $(ele).addClass('is-loading');
-
     let form = $("#refresh-form").serialize();
-    fetch('/switch/refresh', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: form
-    }).then(response => response.json())
-        .then(data => {
+    let id = $("#refresh-form .device_id").val();
 
-            if(data.success == "true") {
-                $(ele).removeClass('is-loading');
-                $(ele).addClass('is-success');
-                $(ele).children().removeClass('fa-rotate');
-                $(ele).children().addClass('fa-check'); 
-                $(ele).children().remove('fa-exclamation-triangle');
-                $(ele).remove('is-danger');
-                setTimeout(function () {
-                    window.location.reload();
-                }, 750)
+    let uri = '/switch/'+id+'/refresh';
+    let cssclass = 'fa-rotate';
 
-            } else {
-                $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $(ele).addClass('is-danger');
-                $(ele).children().removeClass('fa-sync');
-                $(ele).children().addClass('fa-exclamation-triangle');
-                
-                $(".notification.status ul li").text(data.error);
-                $(".notification.status").slideDown(500);
-            }
-        }
-    );
-
+    fetcher(uri, form, ele, cssclass, true);
 }
 
-function uploadPubkeys(ele) {
-    $(ele).addClass('is-loading');
+function restoreBackup(id, created_at, device,  name) {
+    let modal = $('.modal-upload-backup');
+    modal.find('.id').val(id);
+    modal.find('.name').val(name);
+    modal.find('.device-id').val(device);
+    modal.find('.created').val(created_at);
+    modal.show()
+}
 
-
+function device_live_actions(ele, type) {
     let form = $("#actions-form").serialize();
-    fetch('/switch/upload/pubkeys', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: form
-    }).then(response => response.json())
-        .then(data => {
+    let id = $("#actions-form .device_id").val();
 
-            if(data.success == "true") {
-                $(ele).removeClass('is-loading');
-                $(ele).addClass('is-success');
-                $(ele).children().removeClass('fa-rotate');
-                $(ele).children().addClass('fa-check'); 
-                $(ele).children().remove('fa-exclamation-triangle');
-                $(ele).remove('is-danger');
-            } else {
-                $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $(ele).addClass('is-danger');
-                $(ele).children().removeClass('fa-sync');
-                $(ele).children().addClass('fa-exclamation-triangle');
-                
-                $(".notification.status ul li").text(data.error);
-                $(".notification.status").slideDown(500);
-            }
-        }
-    );
+    let uri = '/switch/'+id+'/backup/create';
+    let cssclass = "fa-hdd";
 
+    if(type == "clients") {
+        uri = '/switch/'+id+'/clients';
+        cssclass = "fa-computer";
+    } else if(type == "pubkeys") {
+        uri = '/switch/'+id+'/ssh/pubkeys';
+        cssclass = "fa-sync";
+    }
+
+    fetcher(uri, form, ele, cssclass);    
 }
 
-function getClients(ele) {
-    $(ele).addClass('is-loading');
-
-
-    let form = $("#actions-form").serialize();
-    fetch('/switch/get/clients', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: form
-    }).then(response => response.json())
-        .then(data => {
-
-            if(data.success == "true") {
-                $(ele).removeClass('is-loading');
-                $(ele).addClass('is-success');
-                $(ele).children().remove('fa-exclamation-triangle');
-                $(ele).remove('is-danger');
-                $(ele).children().removeClass('fa-computer');
-                $(ele).children().addClass('fa-check'); 
-            } else {
-                $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $(ele).addClass('is-danger');
-                $(ele).children().removeClass('fa-computer');
-                $(ele).children().addClass('fa-exclamation-triangle');
-                
-                $(".notification.status ul li").text(data.error);
-                $(".notification.status").slideDown(500);
-            }
-        }
-    );
-
-}
-
-function createBackup(ele) {
-    $(ele).addClass('is-loading');
-
-
-    let form = $("#actions-form").serialize();
-    fetch('/switch/create/backup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: form
-    }).then(response => response.json())
-        .then(data => {
-
-            if(data.success == "true") {
-                $(ele).removeClass('is-loading');
-                $(ele).addClass('is-success');
-                $(ele).children().remove('fa-exclamation-triangle');
-                $(ele).remove('is-danger');
-                $(ele).children().removeClass('fa-hdd');
-                $(ele).children().addClass('fa-check'); 
-            } else {
-                $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $(ele).addClass('is-danger');
-                $(ele).children().removeClass('fa-hdd');
-                $(ele).children().addClass('fa-exclamation-triangle');
-                
-                $(".notification.status ul li").text(data.error);
-                $(".notification.status").slideDown(500);
-            }
-        }
-    );
-
-}
-
-function doAllDeviceAction(type, ele) {
-    $(ele).addClass('is-loading');
-
-
-
+function device_overview_actions(type, ele) {
     let form = $("#form-all-devices").serialize();
-
     let uri = '/switch/create/backup/all';
     let cssclass = 'fa-hdd';
-
     if (type == "clients") {
         uri = '/switch/get/clients/all';
         cssclass = 'fa-computer';
@@ -386,7 +193,12 @@ function doAllDeviceAction(type, ele) {
         uri = '/switch/upload/pubkeys/all';
         cssclass = 'fa-sync';
     }
+    fetcher(uri, form, ele, cssclass);
+}
 
+// Fetcher function
+function fetcher(uri, form, ele, cssclass, timeout = false) {
+    $(ele).addClass('is-loading');
     fetch(uri, {
         method: 'POST',
         headers: {
@@ -396,26 +208,32 @@ function doAllDeviceAction(type, ele) {
     }).then(response => response.json())
         .then(data => {
             if(data.success == "true") {
-                $(ele).removeClass('is-loading');
                 $(ele).addClass('is-success');
-                $(ele).children().removeClass(cssclass);
                 $(ele).children().addClass('fa-check'); 
-                $(ele).children().remove('fa-exclamation-triangle');
-                $(ele).remove('is-danger');
-            } else {
                 $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $(ele).addClass('is-danger');
                 $(ele).children().removeClass(cssclass);
+                $(ele).children().removeClass('fa-exclamation-triangle');
+                $(ele).removeClass('is-danger');
+
+                if(timeout) {
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1100)
+                }
+            } else {
+                $(ele).addClass('is-danger');
                 $(ele).children().addClass('fa-exclamation-triangle');
-                
-                $(".notification.status ul li").text(data.error);
-                $(".notification.status").slideDown(500);
+                $(ele).children().removeClass(cssclass);
+                $(ele).removeClass('is-loading');
+                $(ele).removeClass('is-primary');  
+                // $(".notification.status ul li").text(data.error);
+                // $(".notification.status").slideDown(500);
             }
         }
     );
 }
 
+// Essentials
 $(document).on('keydown', function (e) {
     if (e.keyCode === 27) {
         $('.modal').hide();
@@ -436,4 +254,40 @@ $(document).ready(function() {
         return false;
       }
     });
-  });
+});
+
+// Table Sorting
+$('th').click(function () {
+    var table = $(this).parents('table').eq(0)
+    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+    this.asc = !this.asc
+    if (!this.asc) { rows = rows.reverse() }
+    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+})
+
+function comparer(index) {
+    return function (a, b) {
+        var valA = getCellValue(a, index), valB = getCellValue(b, index)
+        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+    }
+}
+
+function getCellValue(row, index) { 
+    return $(row).find('td').eq(index).text() 
+}
+
+// MultiSelect
+$('#switch-select-ms').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+})
+
+$('#switch-select-ms-2').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+})
+
+// Custom notification banner timeout
+setTimeout(function () {
+    $(".notification.status").slideUp(500);
+}, 3000)

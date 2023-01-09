@@ -57,6 +57,12 @@ class DeviceController extends Controller
         ));
     }
 
+    static function index_uplinks() {
+        $devices = Device::all()->keyBy('id');
+        
+        return view('device.uplinks', compact('devices'));
+    }
+
     static function getTrunks() {
         $devices = Device::all();
 
@@ -318,8 +324,8 @@ class DeviceController extends Controller
         echo "Took ".microtime(true)-$time." seconds\n";
     }
 
-    public function uploadPubkeysToSwitch(Request $request) {
-        $device = Device::find($request->input('id'));
+    public function uploadPubkeysToSwitch($id, Request $request) {
+        $device = Device::find($id);
 
         if($device) {
             $class = self::$models[$device->type]; 

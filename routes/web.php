@@ -27,11 +27,9 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('/switch/perform-ssh', [SSHController::class, 'performSSH']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
-    Route::get('/trunks', [DeviceController::class, 'index_trunks'])->name('trunks');
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
@@ -39,7 +37,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/system', [UserController::class, 'management'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
-    Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
@@ -58,27 +55,44 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/user/update', [UserController::class, 'update']);
     Route::put('/user/pubkey', [UserController::class, 'setPubkey']);
 
-    // Switch Routes
-    Route::get('/switch/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
-    Route::get('/switch/download/backup/{id}', [BackupController::class, 'downloadBackup']);
-    Route::get('/switch/{id}/live', [DeviceController::class, 'live'])->name('live');
-    Route::get('/switch/os/test/{id}', [ArubaOS::class, 'test']);
-    Route::post('/switch/create', [DeviceController::class, 'store']);
-    Route::post('/switch/upload/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
-    Route::post('/switch/create/backup', [DeviceController::class, 'createBackup']);
-    Route::post('/switch/get/clients', [ClientController::class, 'getClientsFromSwitch',]);
-    Route::post('/switch/create/backup/all', [DeviceController::class, 'createBackupAllDevices']);
-    Route::post('/switch/get/clients/all', [ClientController::class, 'getClientsAllDevices']);
-    Route::post('/switch/upload/pubkeys/all', [DeviceController::class, 'uploadPubkeysAllDevices']);
-    Route::post('/switch/backup/restore', [DeviceController::class, 'restoreBackup']);
-    Route::put('/switch/update', [DeviceController::class, 'update']);
-    Route::put('/switch/refresh', [DeviceController::class, 'refresh']);
-    Route::delete('/switch/delete', [DeviceController::class, 'destroy']);
-    Route::delete('/switch/backup/delete', [BackupController::class, 'destroy']);
+    // Switch Route
     
     Route::get('/clients/ping', [ClientController::class, 'checkOnlineStatus']);
     // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
+});
+
+
+Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function() {
+    // Allgemein
+    Route::get('/backups', [BackupController::class, 'index'])->name('backups');
+    Route::get('/trunks', [DeviceController::class, 'index_trunks'])->name('trunks');
+    Route::get('/uplinks', [DeviceController::class, 'index_uplinks'])->name('uplinks');
+
+    // Switch specific
+    Route::get('/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
+    Route::get('/{id}/live', [DeviceController::class, 'live'])->name('live');
+    Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup']);
+    Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
+    Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
+    Route::post('/{id}/clients', [ClientController::class, 'getClientsFromSwitch',]);
+    
+    // Switch backups
+    Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
+    Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);
+    Route::delete('/backup/delete', [BackupController::class, 'destroy']);
+
+    // Standard CRUD operations
+    Route::post('/create', [DeviceController::class, 'store']);
+    Route::put('/update', [DeviceController::class, 'update']);
+    Route::put('/{id}/refresh', [DeviceController::class, 'refresh']);
+    Route::delete('/delete', [DeviceController::class, 'destroy']);
+
+
+    // Posts for actions on all Switches
+    Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
+    Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
+    Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
 });
 
 // Route::middleware('auth:api')->get('/clients', [ClientController::class, 'index']);

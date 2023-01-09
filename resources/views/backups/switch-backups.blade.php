@@ -30,9 +30,9 @@
                 <td>{{ $status }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
-                        <button title="Wiederherstellen" onclick="uploadBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')" @php if($backup->status != 1) { echo 'disabled'; } @endphp class="button is-warning is-small"><i class="fa-solid fa-upload"></i></button>
+                        <button title="Wiederherstellen" onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')" @php if($backup->status != 1) { echo 'disabled'; } @endphp class="button is-warning is-small"><i class="fa-solid fa-upload"></i></button>
 
-                        <a title="Herunterladen" class="button is-small is-success" @php if($backup->status == 1) { echo 'href="/switch/download/backup/'.$backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
+                        <a title="Herunterladen" class="button is-small is-success" @php if($backup->status == 1) { echo 'href="/switch/backup/'.$backup->id.'/download"'; } else { echo 'disabled'; } @endphp download="backup.txt">
                             <i class="fa fa-download"></i>
                         </a>
 

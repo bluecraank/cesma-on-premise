@@ -62,9 +62,7 @@ class ClientController extends Controller
                     $endpoint->port_id = $mac_data[1][$key]['port'];
                     $endpoint->vlan_id = $mac_data[1][$key]['vlan'];
 
-                    if($endpoint->mac_Address == "089204bd54fd") {
-                        return "Found: " .$endpoint->hostname;
-                    }
+
                     // Check for existence of endpoint
                     $dev = Client::find($endpoint->id);
 
@@ -76,7 +74,6 @@ class ClientController extends Controller
                             'hostname' => $endpoint->hostname,
                             'id' => $endpoint->id,
                         ]);
-
                         $found++;
                     } else {
 
@@ -146,7 +143,6 @@ class ClientController extends Controller
                     }
 
                     $endpoint->id = md5($client->ip_address."".$mac);
-                    echo $endpoint->id." ". $client->hostname;
                     $endpoint->ip_address = $client->ip_address;
                     $endpoint->mac_address = $mac;
                     $endpoint->port_id = $mac_data[1][$key]['port'];
@@ -173,7 +169,7 @@ class ClientController extends Controller
     }
 
     static function checkOnlineStatus() {
-        $clients = Client::all()->sortBy('ip_address');
+        $clients = Client::all();
 
         $start = microtime(true);
         $clients2 = [];
@@ -192,7 +188,8 @@ class ClientController extends Controller
 
         foreach($output as $client) {
             $data = explode(" ", $client);
-            if($key = array_search($data[0], $clients2)) {
+            $key = array_search($data[0], $clients2);
+            if($key !== false or $key == 0) {
                 // $key = array_search($data[0], $clients2);
                 if($data[0] == "12.13.14.15") {
                     $clients[$key]->online = 0;

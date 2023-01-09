@@ -32,14 +32,14 @@
                 <ul class="menu-list">
                     <li>
                         <a href="{{ route('vlans') }}" class="{{ (request()->is('vlans')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-ethernet"></i></span> VLAN
+                            <span class="icon"><i class="fa fa-ethernet"></i></span> VLANs
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route('backups') }}" class="{{ (request()->is('backups')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> Backups

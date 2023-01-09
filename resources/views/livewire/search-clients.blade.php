@@ -18,7 +18,6 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
-                <th class="has-text-centered">O</th>
                 <th>Hostname</th>
                 <th>IP Adresse</th>
                 <th>MAC Adresse</th>
@@ -43,8 +42,7 @@
                 $end = implode(':', $chunks);
             @endphp
                 <tr>   
-                    <td><i style="display:block" class="fa has-text-centered fa-circle {{ $online }}"></i></td>
-                    <td>{{ strtoupper($client->hostname) }}</td>
+                    <td><i style="" class="fa fa-circle {{ $online }}"></i> {{ strtoupper($client->hostname) }}</td>
                     <td>{{ $client->ip_address }}</td>
                     <td>{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>

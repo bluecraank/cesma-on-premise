@@ -67,9 +67,12 @@
     <div class="buttons are-small">
         <form action="post" id="form-all-devices">
             @csrf
-            <a onclick="doAllDeviceAction('pubkeys', this)" class="button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
-            <a onclick="doAllDeviceAction('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
-            <a onclick="doAllDeviceAction('clients', this)" class="button is-link"><i class="fa-solid fa-computer mr-2"></i> Update Clients</a>
+            <a onclick="device_overview_actions('pubkeys', this)" class="button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
+            <a onclick="device_overview_actions('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+            <a onclick="device_overview_actions('clients', this)" class="button is-link"><i class="fa-solid fa-computer mr-2"></i> Update Clients</a>
+            <a class="button is-link" href="/switch/uplinks"><i class="fa-solid fa-up-down mr-2"></i> Show Uplinks</a>
+            <a class="button is-link" href="/switch/trunks"><i class="fa-solid fa-circle-nodes mr-2"></i> Show Trunks</a>
+
         </form>
     </div>
     <div class="is-size-7">Backups & Clients werden regelmäßig automatisiert durchgeführt</div>

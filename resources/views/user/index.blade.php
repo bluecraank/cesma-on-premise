@@ -73,7 +73,7 @@
             <div class="control">
               <textarea class="textarea" name="pubkey" placeholder="ssh-rsa ABFDHkJ2312..."></textarea>
             </div>
-            <span class="help has-text-success"><i class="fa-solid fa-lock"></i> Dein Öffentlicher Schlüssel wird verschlüsselt gespeichert</span>
+            <span class="help has-text-success"><i class="fa-solid fa-lock"></i> Dein öffentlicher Schlüssel wird verschlüsselt gespeichert</span>
 
           </div>
           Status:

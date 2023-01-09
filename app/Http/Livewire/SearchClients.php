@@ -25,7 +25,7 @@ class SearchClients extends Component
 
         $searchTerm = '%'.$this->searchTerm.'%';
 
-        $searchTerm = str_Replace([" ", ";", ":", "-"], "", $searchTerm);
+        $searchTerm = str_Replace([";", ":", "-"], "", $searchTerm);
 
         return view('livewire.search-clients',[
             'clients' => Client::where('hostname', 'like', $searchTerm)

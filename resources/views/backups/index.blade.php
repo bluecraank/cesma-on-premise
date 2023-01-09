@@ -40,7 +40,7 @@
                             <i class="fa-solid fa-eye"></i>
                         </a>
 
-                        <a title="Herunterladen" class="button is-small is-primary" @php if($num_status) { echo 'href="/switch/download/backup/'.$device->last_backup->id.'"'; } else { echo 'disabled'; } @endphp download="backup.txt">
+                        <a title="Herunterladen" class="button is-small is-primary" @php if($num_status) { echo 'href="/switch/backup/'.$device->last_backup->id.'/download"'; } else { echo 'disabled'; } @endphp download="backup.txt">
                             <i class="fa fa-download"></i>
                         </a>
                     </div>

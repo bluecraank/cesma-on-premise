@@ -17,7 +17,7 @@
                     </h1>
                 </div>
                 <div class="column is-6">
-                    <form action="/switch/refresh" id="refresh-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />@csrf @method('PUT')<a onclick="refreshSwitch(this)" class="is-pulled-right is-primary button"><i class="is-size-5 fa fa-rotate"></i></a></form>
+                    <form action="/switch/refresh" id="refresh-form" method="post"><input type="hidden" class="device_id" name="id" value="{{ $device->id }}" />@csrf @method('PUT')<a onclick="refreshSwitch(this)" class="is-pulled-right is-primary button"><i class="is-size-5 fa fa-rotate"></i></a></form>
                 </div>
             </div>
         </div>
@@ -152,17 +152,17 @@
                 <h2 class="subtitle">Aktionen</h2>
 
                 <div class="buttons are-small">
-                    <form class="mr-1" action="" id="actions-form" method="post"><input type="hidden" name="id" value="{{ $device->id }}" />
+                    <form class="mr-1" action="" id="actions-form" method="post"><input type="hidden" class="device_id" name="id" value="{{ $device->id }}" />
                         @csrf
-                        <a onclick="uploadPubkeys(this)" class="button is-success">
+                        <a onclick="device_live_actions(this, 'pubkeys')" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-sync"></i> Pubkeys syncen
                         </a>
 
-                        <a onclick="createBackup(this)" class="button is-success">
+                        <a onclick="device_live_actions(this, 'backups')" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-hdd"></i> Backup erstellen
                         </a>
 
-                        <a onclick="getClients(this)" class="button is-success">
+                        <a onclick="device_live_actions(this, 'clients')" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-computer"></i> Clients abfragen
                         </a>
                     </form>
