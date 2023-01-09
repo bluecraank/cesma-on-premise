@@ -72,7 +72,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     // Switch specific
     Route::get('/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
     Route::get('/{id}/live', [DeviceController::class, 'live'])->name('live');
-    Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup']);
+    Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');;
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
     Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
     Route::post('/{id}/clients', [ClientController::class, 'getClientsFromSwitch',]);

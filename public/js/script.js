@@ -184,13 +184,13 @@ function device_live_actions(ele, type) {
 
 function device_overview_actions(type, ele) {
     let form = $("#form-all-devices").serialize();
-    let uri = '/switch/create/backup/all';
+    let uri = '/switch/every/backup/create';
     let cssclass = 'fa-hdd';
     if (type == "clients") {
-        uri = '/switch/get/clients/all';
+        uri = '/switch/every/clients';
         cssclass = 'fa-computer';
     } else if (type == "pubkeys") {
-        uri = '/switch/upload/pubkeys/all';
+        uri = '/switch/every/pubkeys';
         cssclass = 'fa-sync';
     }
     fetcher(uri, form, ele, cssclass);
