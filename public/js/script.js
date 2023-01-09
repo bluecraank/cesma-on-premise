@@ -126,7 +126,7 @@ function comparer(index) {
 function getCellValue(row, index) { return $(row).find('td').eq(index).text() }
 
 
-function editSwitchModal(id, name, hostname, location, building, details, number) {
+function editSwitchModal(id, name, hostname, location, building, details, number, uplinks) {
 
     let modal = $('.modal-edit-switch');
     modal.find('.switch-id').val(id);
@@ -136,6 +136,7 @@ function editSwitchModal(id, name, hostname, location, building, details, number
     modal.find('.switch-location').val(location);
     modal.find('.switch-building').val(building);
     modal.find('.switch-details').val(details);
+    modal.find('.switch-uplinks').val(uplinks);
     modal.show()
 }
 

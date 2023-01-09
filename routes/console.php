@@ -36,8 +36,14 @@ Artisan::command('switch:backup:mail', function () {
     $this->comment('Backup mail sent');
 })->purpose('Sent backup status');
 
-Artisan::command('switch:macs:toClients', function () {
+Artisan::command('clients:update', function () {
     $this->comment('--- START MERGING CLIENTS ---');
     $this->comment(ClientController::getClientsAllDevices());
     $this->comment('--- END MERGING CLIENTS ---');
 })->purpose('Correlate MACs with Clients');
+
+Artisan::command('clients:ping', function () {
+    $this->comment('--- START PINGING CLIENTS ---');
+    $this->comment(ClientController::checkOnlineStatus());
+    $this->comment('--- END PINGING CLIENTS ---');
+})->purpose('Ping Clients');

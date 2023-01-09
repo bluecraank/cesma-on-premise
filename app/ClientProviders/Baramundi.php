@@ -31,6 +31,14 @@ class Baramundi implements IClient
                 $endpoints[$i] = new \stdClass();
 
                 $maclist = explode(";", strtolower(str_replace(":", "", $value['MACList'])));
+                
+                if(isset($value['PrimaryMAC'])) {
+                    $maclist[] = strtolower(str_replace(":", "", $value['PrimaryMAC']));
+                }
+
+                if(isset($value['LogicalMAC'])) {
+                    $maclist[] = strtolower(str_replace(":", "", $value['LogicalMAC']));
+                }
                 $endpoints[$i]->mac_addresses = $maclist;
                 $endpoints[$i]->ip_address = (isset($value['PrimaryIP'])) ? $value['PrimaryIP'] : null;
                 $endpoints[$i]->hostname = (isset($value['HostName'])) ? $value['HostName'] : null;
@@ -38,7 +46,6 @@ class Baramundi implements IClient
                 $i++;
             }
         }
-
         
         return $endpoints;
     }

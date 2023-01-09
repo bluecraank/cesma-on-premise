@@ -18,6 +18,7 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
+                <th class="has-text-centered">O</th>
                 <th>Hostname</th>
                 <th>IP Adresse</th>
                 <th>MAC Adresse</th>
@@ -31,10 +32,18 @@
         <tbody>
             @foreach($clients as $client)
             @php
+                if($client->online == 1) {
+                    $online = 'has-text-success';
+                } elseif($client->online == 0) {
+                    $online = 'has-text-danger';
+                } else {
+                    $online = 'has-text-link';
+                }
                 $chunks = str_split(strtoupper($client->mac_address), 2);
                 $end = implode(':', $chunks);
             @endphp
-                <tr>
+                <tr>   
+                    <td><i style="display:block" class="fa has-text-centered fa-circle {{ $online }}"></i></td>
                     <td>{{ strtoupper($client->hostname) }}</td>
                     <td>{{ $client->ip_address }}</td>
                     <td>{{ $end }}</td>

@@ -29,6 +29,13 @@
         </thead>
         <tbody>
             @foreach ($devices as $device)
+            @php 
+                $uplinks = json_decode($device->uplinks, true);
+                if($uplinks == null)
+                    $uplinks = array();
+
+                $uplinks_string = implode(',', $uplinks);
+                @endphp 
             <tr>
                 <td>{{ $device->name }}</td>
                 <td>{{ $device->hostname }}</td>
@@ -45,7 +52,7 @@
                             <i class="fa fa-arrow-up-right-from-square"></i>
                         </a>
 
-                        <button onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}' )" class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                        <button onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}', '{{ $uplinks_string }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
                         <button onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                     </div>
                 </td>

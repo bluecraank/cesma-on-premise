@@ -116,6 +116,10 @@ class DeviceController extends Controller
         $device->hostname = $hostname;
         $device->password = $encrypted_pw;
         $device->type = $request->input('type');
+        $device->uplinks = [];
+        if($request->input('uplinks_ports') and !empty($request->input('uplinks_ports'))) {
+            $device->uplinks = json_encode(explode(",", $request->input('uplinks')));
+        }
         
         if(!in_array($device->type, array_keys(self::$models))) {
             return redirect()->back()->withErrors('Device type not found');
@@ -199,6 +203,10 @@ class DeviceController extends Controller
             $request->merge(['password' => $encrypted_pw]);
         } else {	
             $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);
+        }
+
+        if($request->input('uplinks') and !empty($request->input('uplinks'))) {
+            $request->merge(['uplinks' => json_encode(explode(",", $request->input('uplinks')))]);
         }
 
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
@@ -333,9 +341,15 @@ class DeviceController extends Controller
             $macData = (isset($macTable)) ? $macTable : [];
             $MacAddressesData = [];
             foreach($macData as $entry) {
-                if(str_contains($entry['port'], "Trk") or str_contains($entry['port'], "48")) {
+                $uplinks = !empty($switch->uplinks) ? json_decode($switch->uplinks, true) : [];
+                if(in_array($entry['port'], $uplinks) or str_contains($entry['port'], "Trk") or str_contains($entry['port'], "Trunk")) {
                     continue;
                 }
+
+                if(in_array(strtolower(str_replace([":", "-"], "", $entry['mac'])), $MacsToIds)) {
+                    continue;   
+                }
+
                 $MacAddressesData[$i] = $entry;
                 $MacAddressesData[$i]['device_id'] = $switch->id;
                 $MacAddressesData[$i]['device_name'] = $switch->name;
@@ -345,6 +359,7 @@ class DeviceController extends Controller
             $DataToIds = array_merge($DataToIds, $MacAddressesData);
         }
 
+        // ddd(count($MacsToIds),array($MacsToIds, $DataToIds), in_array("089203bd54fd", $MacsToIds));
         return array($MacsToIds, $DataToIds);
     }
 

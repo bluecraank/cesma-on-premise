@@ -9,6 +9,10 @@ class Client extends Model
 {
     use HasFactory;
 
+
+    public $incrementing = false;
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'switch_id',
         'vlan_id',
@@ -16,5 +20,8 @@ class Client extends Model
         'mac_address',
         'ip_address',
         'hostname',
+        'id',
+        'created_at',
+        'updated_at'
     ];
 }

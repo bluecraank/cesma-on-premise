@@ -32,7 +32,7 @@
                 <div class="field">
                     <label class="label">Firmware</label>
                     <div class="control">
-                        <div class="select">
+                        <div class="select is-fullwidth">
                             <select required name="type">
                                 <option value="aruba-os">ArubaOS</option>
                                 <option value="aruba-cx">ArubaCX</option>
@@ -64,7 +64,32 @@
                             type="text" placeholder="1">
                     </div>
                 </div>
+
+                <div class="card">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Optionale Angaben
+                      </p>
+                      <a class="card-header-icon" aria-label="more options">
+                        <span class="icon">
+                          <i class="fas fa-angle-down" onclick="$('.msgoptionalopen').toggleClass('is-hidden')" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    </header>
+                    <div class="card-content msgoptionalopen is-hidden">
+                        <div class="content">
+                            <div class="field">
+                                <label class="label">Uplink-Ports</label>
+                                <div class="control">
+                                    <input class="input" name="uplink_ports" type="text" placeholder="1,2,3,4">
+                                </div>
+                            </div>                          
+                        </div>
+                    </div>
+                </div>
+                    
             </section>
+
             <footer class="modal-card-foot">
                 <button class="button is-success">Erstellen</button>
                 <button onclick="$('.modal-new-switch').hide();return false;" type="button"
@@ -126,6 +151,29 @@
                             style="display: inline-block;width:200px" type="text" placeholder="z.B Abteilung">
                         <input class="input switch-numbering" name="number"
                             style="display: inline-block;width:40px" type="text" placeholder="1">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Optionale Angaben
+                      </p>
+                      <a class="card-header-icon" aria-label="more options">
+                        <span class="icon">
+                          <i class="fas fa-angle-down" onclick="$('.msgoptionalopen').toggleClass('is-hidden')" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    </header>
+                    <div class="card-content msgoptionalopen is-hidden">
+                        <div class="content">
+                            <div class="field">
+                                <label class="label">Uplink-Ports</label>
+                                <div class="control">
+                                    <input class="input switch-uplinks" name="uplinks" type="text" placeholder="1,2,3,4">
+                                </div>
+                            </div>                          
+                        </div>
                     </div>
                 </div>
             </section>

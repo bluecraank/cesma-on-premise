@@ -23,7 +23,8 @@ class Device extends Model
         'system_data',
         'port_data',
         'mac_table_data',
-        'type'
+        'type',
+        'uplinks'
     ];
 
     /**
