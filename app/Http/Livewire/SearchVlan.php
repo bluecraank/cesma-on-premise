@@ -20,7 +20,7 @@ class SearchVlan extends Component
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
-        return view('livewire.search-vlan',[
+        return view('vlan.index_',[
             'vlans' => Vlan::where('name','like', $searchTerm)->get()->sortBy('vid'),
         ]);
     }

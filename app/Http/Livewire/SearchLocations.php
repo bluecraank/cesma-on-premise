@@ -22,7 +22,7 @@ class SearchLocations extends Component
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
-        return view('livewire.search-locations',[
+        return view('location.index_',[
             'buildings' => Building::where('name','like', $searchTerm)->get()->sortBy('name'),
             'locations' => Location::all()->keyBy('id'),
         ]);

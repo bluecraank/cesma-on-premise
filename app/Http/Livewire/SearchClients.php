@@ -27,7 +27,7 @@ class SearchClients extends Component
 
         $searchTerm = str_Replace([";", ":", "-"], "", $searchTerm);
 
-        return view('livewire.search-clients',[
+        return view('client.index_',[
             'clients' => Client::where('hostname', 'like', $searchTerm)
             ->orWhere('ip_address', 'like', $searchTerm)
             ->orWhere('mac_address', 'like', $searchTerm)
