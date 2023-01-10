@@ -18,14 +18,13 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
-                <th>Hostname</th>
-                <th>IP Adresse</th>
-                <th>MAC Adresse</th>
+                <th>Name</th>
+                <th>IP</th>
+                <th>MAC</th>
                 <th>VLAN</th>
                 <th>Switch</th>
                 <th>Port</th>
-                <th>Found</th>
-                {{-- <th style="width:150px;text-align:center">Aktionen</th> --}}
+                <th>Updated</th>
             </tr>
         </thead>
         <tbody>

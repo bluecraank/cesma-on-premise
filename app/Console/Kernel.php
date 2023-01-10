@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
         // $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
         // $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
+        $schedule->command('subnets:ping')->everyFifteenMinutes()->timezone('Europe/Berlin');
         $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin');
         $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin');
         $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin');

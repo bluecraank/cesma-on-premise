@@ -2,10 +2,10 @@
 
 namespace App\ClientProviders;
 
-use App\Interfaces\IClient;
+use App\Interfaces\IClientProvider;
 use Illuminate\Support\Str;
 
-class SNMP_Sophos_XG implements IClient
+class SNMP_Sophos_XG implements IClientProvider
 {
     static function queryClientData(): Array {
 

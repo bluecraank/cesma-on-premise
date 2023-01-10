@@ -2,7 +2,7 @@
 
     namespace App\Interfaces;
     
-    interface IClient
+    interface IClientProvider
     {
      
         /**
@@ -10,6 +10,6 @@
          */
         static function queryClientData(): Array; 
 
-
+        static function queryClientDataDebug(): Array;
     }
 ?>

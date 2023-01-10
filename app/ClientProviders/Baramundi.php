@@ -2,10 +2,10 @@
 
 namespace App\ClientProviders;
 
-use App\Interfaces\IClient;
+use App\Interfaces\IClientProvider;
 use Illuminate\Support\Facades\Http;
 
-class Baramundi implements IClient
+class Baramundi implements IClientProvider
 {
     /**
      * @return Array
@@ -50,8 +50,25 @@ class Baramundi implements IClient
         return $endpoints;
     }
 
-    public function storeClientData($data) {
-        // TODO
+    static function queryClientDataDebug(): Array
+    {
+        $url = config('app.baramundi_api_url')."/bCOnnect/v1.1/Endpoints.json";
+        $username = config('app.baramundi_username');
+        $password = config('app.baramundi_password');
+
+        $data = Http::withoutVerifying()->withBasicAuth($username, $password)->get($url)->json();
+
+        $endpoints = [];
+
+
+        if($data == null or empty($data)) {
+            return $endpoints;
+        }
+
+        $endpoints = $data;
+
+        
+        dd($endpoints); 
     }
 }
 

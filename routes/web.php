@@ -97,5 +97,13 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
 });
 
+Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function() {
+
+    Route::get('/client-providers/baramundi', [Baramundi::class, 'queryClientDataDebug']);
+    Route::get('/client-providers/sophosxg', [SNMP_Sophos_XG::class, 'queryClientDataDebug']);
+
+    Route::get('/client-check/nmap', [ClientController::class, 'nmapClientCheck']);
+
+});
 // Login
 Auth::routes();
