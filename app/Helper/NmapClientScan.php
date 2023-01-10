@@ -31,7 +31,8 @@
             }
     
             echo "Took: ".(microtime(true)-$start)."sec\n";
-            echo "Nmap finished\n";
+            echo "Nmap finished - sleeping 120 seconds\n";
+            sleep(120);
     }
 
 ?>
