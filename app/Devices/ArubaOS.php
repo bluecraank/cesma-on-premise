@@ -153,7 +153,7 @@ class ArubaOS implements IDevice
         $port_data = self::getPortData($data['ports']['port_element']);
         $portstat_data = self::getPortStatisticData($data['portstats']['port_statistics_element']);
         $vlanport_data = self::getVlanPortData($data['vlanport']['vlan_port_element']);
-        $mac_data = self::getMacTableData($data['mac']['mac_table_entry_element']);
+        $mac_data = self::getMacTableData($data['mac']['mac_table_entry_element'], $device);
 
         //ddd($system_data, $vlan_data, $port_data, $portstat_data, $vlanport_data, $mac_data);
 
@@ -190,7 +190,7 @@ class ArubaOS implements IDevice
         return $return;
     }
 
-    static function getMacTableData($macs): Array
+    static function getMacTableData($macs, $device): Array
     {
         $return = [];
 

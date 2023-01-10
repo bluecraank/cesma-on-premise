@@ -93,6 +93,8 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
+
+    Route::get('/{id}/debug/mactable', [DeviceController::class, 'debugMacTable']);
 });
 
 // Route::middleware('auth:api')->get('/clients', [ClientController::class, 'index']);

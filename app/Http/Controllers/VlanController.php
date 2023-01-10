@@ -50,15 +50,16 @@ class VlanController extends Controller
             $port_data = json_decode($device->port_data, true);
             foreach($vlans as $port_vlan_key => $port_vlan) {
                 if($port_vlan['vlan_id'] == $vlan) {
-                    $ports[$device->name][] = $port_vlan['port_id'];
                     // var_dump($port_vlan);
                     if(isset($port_vlan['is_tagged']) and !$port_vlan['is_tagged']) {
                         $count_untagged++;
+                        $ports[$device->name]['untagged'] = $port_vlan['port_id'];
 
-                        if(isset($port_data[$port_vlan_key]) and $port_data[$port_vlan_key]['is_port_up']) {
+                        if(isset($port_data[$port_vlan['port_id']]) and $port_data[$port_vlan['port_id']]['is_port_up']) {
                             $count_online++;
                         }
                     } else {
+                        $ports[$device->name]['tagged'] = $port_vlan['port_id'];
                         $count_tagged++;
                     }
                 }

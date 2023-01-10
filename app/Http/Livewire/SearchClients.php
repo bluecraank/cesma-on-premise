@@ -25,8 +25,16 @@ class SearchClients extends Component
 
         $searchTerm = '%'.$this->searchTerm.'%';
 
-        $searchTerm = str_Replace([";", ":", "-"], "", $searchTerm);
+        // MAC
+        if(substr_count($searchTerm, ":") == 5) {
+            $searchTerm = str_Replace(":", "", $searchTerm);
+        }
 
+        // PC
+        if(substr_count($searchTerm, "-") > 1) {
+            $searchTerm = str_Replace([";", ":"], "", $searchTerm);
+        }
+    
         return view('client.index_',[
             'clients' => Client::where('hostname', 'like', $searchTerm)
             ->orWhere('ip_address', 'like', $searchTerm)

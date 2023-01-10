@@ -153,7 +153,7 @@ class ArubaCX implements IDevice
         $port_data = self::getPortData($data['ports']);
         $portstat_data = self::getPortStatisticData($data['portstats']);
         $vlanport_data = self::getVlanPortData($data['vlanport']);
-        $mac_data = self::getMacTableData($data['mac']);
+        $mac_data = self::getMacTableData($data['vlans'], $device);
 
         return [
             'sysstatus_data' => $system_data,
@@ -189,27 +189,37 @@ class ArubaCX implements IDevice
         return $return;
     }
 
-    static function getMacTableData($vlan_macs): Array
+    static function getMacTableData($vlans, $device): Array
     {
-        $return = [];
-
-        if(empty($vlan_macs) or !is_array($vlan_macs) or !isset($vlan_macs)) {
-            return $return;
+        if(!$login_info = self::ApiLogin($device)) {
+            return ['success' => false, 'data' => 'Login failed'];
         }
 
-        foreach($vlan_macs as $vlan_id => $vlan_mac_table) {
+        list($cookie, $api_version) = explode(";", $login_info);
 
-            if(isset($vlan_mac_table['macs']) and is_array($vlan_mac_table['macs'])) {
-                foreach($vlan_mac_table['macs'] as $mac) {
-                    $mac_filtered = str_replace(":", "", strtolower($mac['mac_addr']));
-                    $return[$mac_filtered] = [
-                        'mac' => $mac_filtered,
-                        'port' => explode("/", key($mac['port']))[2],
-                        'vlan' => $vlan_id,
-                    ];
-                }
+        $vlan_macs = [];
+        foreach($vlans as $vlan) {
+            $url = "system/vlans/".$vlan['id']."/macs?attributes=port,mac_addr&depth=2";
+            
+            $api_data = self::ApiGet($device->hostname, $cookie, $url, $api_version);
+            if($api_data['success']) {
+                $vlan_macs[$vlan['id']] = $api_data['data'];
             }
         }
+
+        $return = []; 
+        foreach($vlan_macs as $key => $macs) {
+            foreach($macs as $mac) {
+                $mac_filtered = str_replace(":", "", strtolower($mac['mac_addr']));
+                $return[$mac_filtered] = [
+                    'port' => explode("/", key($mac['port']))[2],
+                    'mac' => $mac_filtered,
+                    'vlan' => $key,
+                ];
+            }
+        }
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
 
         return $return;
     }

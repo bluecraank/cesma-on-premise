@@ -405,6 +405,14 @@ class DeviceController extends Controller
         return json_encode(['success' => 'true', 'error' => 'Backups created']);
     }
 
+    static function debugMacTable($id) {
+        $device = Device::find($id);
+
+        if($device) {
+            ddd(ArubaCX::getApiData($device));
+        }
+    }
+
     static function getClientsAllDevices() {
         $device = Device::all()->keyBy('id');
 
