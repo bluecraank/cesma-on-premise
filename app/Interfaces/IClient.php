@@ -8,7 +8,7 @@
         /**
          * @return Array<Endpoint>
          */
-        public function queryClientData(): Array; 
+        static function queryClientData(): Array; 
 
 
     }

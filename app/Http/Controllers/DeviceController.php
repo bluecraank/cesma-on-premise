@@ -303,7 +303,7 @@ class DeviceController extends Controller
                 $device_data['vlanport_data'] = [];
                 $device_data['mac_table_data'] = [];
             }
-    
+        
 
             if(isset($device_data) and $device->update(
                 ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 

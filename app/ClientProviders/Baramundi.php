@@ -11,7 +11,7 @@ class Baramundi implements IClient
      * @return Array
      * 
     */
-    public function queryClientData(): Array {
+    static function queryClientData(): Array {
         $url = config('app.baramundi_api_url')."/bCOnnect/v1.1/Endpoints.json";
         $username = config('app.baramundi_username');
         $password = config('app.baramundi_password');
@@ -19,7 +19,7 @@ class Baramundi implements IClient
         $data = Http::withoutVerifying()->withBasicAuth($username, $password)->get($url)->json();
 
         $endpoints = [];
-        $i = 0;
+
 
         if($data == null or empty($data)) {
             return $endpoints;
@@ -27,8 +27,6 @@ class Baramundi implements IClient
 
         foreach ($data as $value) {
             if(isset($value['MACList']) and (isset($value['PrimaryIP']) or isset($value['HostName']))) {
-
-                $endpoints[$i] = new \stdClass();
 
                 $maclist = explode(";", strtolower(str_replace(":", "", $value['MACList'])));
                 
@@ -39,11 +37,13 @@ class Baramundi implements IClient
                 if(isset($value['LogicalMAC'])) {
                     $maclist[] = strtolower(str_replace(":", "", $value['LogicalMAC']));
                 }
-                $endpoints[$i]->mac_addresses = $maclist;
-                $endpoints[$i]->ip_address = (isset($value['PrimaryIP'])) ? $value['PrimaryIP'] : null;
-                $endpoints[$i]->hostname = (isset($value['HostName'])) ? $value['HostName'] : null;
 
-                $i++;
+                $endpoints[] = [
+                    'mac_addresses' => $maclist,
+                    'ip_address' => (isset($value['PrimaryIP'])) ? $value['PrimaryIP'] : null,
+                    'hostname' => (isset($value['HostName'])) ? $value['HostName'] : null,
+                ];
+
             }
         }
         

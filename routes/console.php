@@ -1,5 +1,6 @@
 <?php
 
+use App\ClientProviders\SNMP_Sophos_XG;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
@@ -45,5 +46,11 @@ Artisan::command('clients:update', function () {
 Artisan::command('clients:ping', function () {
     $this->comment('--- START PINGING CLIENTS ---');
     $this->comment(ClientController::checkOnlineStatus());
+    $this->comment('--- END PINGING CLIENTS ---');
+})->purpose('Ping Clients');
+
+Artisan::command('clients:resolve', function () {
+    $this->comment('--- START PINGING CLIENTS ---');
+    $this->comment(SNMP_Sophos_XG::queryClientData());
     $this->comment('--- END PINGING CLIENTS ---');
 })->purpose('Ping Clients');

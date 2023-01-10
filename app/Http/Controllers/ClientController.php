@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Acamposm\Ping\Ping;
 use Acamposm\Ping\PingCommandBuilder;
+use App\ClientProviders\SNMP_Sophos_XG;
 use Carbon\Carbon;
 
 class ClientController extends Controller
@@ -24,12 +25,26 @@ class ClientController extends Controller
     }
 
     static function getClientsFromProviders() { 
+       
+        // Baramundi
         if(!empty(config('app.baramundi_api_url'))) {
             $provider = new Baramundi;
             $endpoints = $provider->queryClientData();
 
-            return $endpoints;
+        
         }
+
+        // Sophos XG
+        $data = SNMP_Sophos_XG::queryClientData();
+
+
+        // Returns: Array of mac_addresses, hostname and ip_address
+        return array_merge($endpoints, $data);
+    }
+
+    static function debugClientsFromProviders() {
+        $data = ClientController::getClientsFromProviders();
+        dd($data);
     }
 
     static function getClientsAllDevices() {
@@ -46,18 +61,18 @@ class ClientController extends Controller
         $new = 0;
 
         foreach($endpoint_data as $client) {
-            foreach($client->mac_addresses as $mac) {
+            foreach($client['mac_addresses'] as $mac) {
                 if($key = array_search($mac, $mac_data[0])) {
                     $endpoint = new Client();
                     $endpoint->switch_id = $mac_data[1][$key]['device_id'];
                     
-                    $endpoint->hostname = strtolower($client->hostname);
+                    $endpoint->hostname = strtolower($client['hostname']);
                     if($endpoint->hostname == "" or $endpoint->hostname == null) {
                         $endpoint->hostname = "UNK-".Str::random(10);
                     }
 
-                    $endpoint->id = md5($client->ip_address."".$mac);
-                    $endpoint->ip_address = $client->ip_address;
+                    $endpoint->id = md5($client['ip_address']."".$mac);
+                    $endpoint->ip_address = $client['ip_address'];
                     $endpoint->mac_address = $mac;
                     $endpoint->port_id = $mac_data[1][$key]['port'];
                     $endpoint->vlan_id = $mac_data[1][$key]['vlan'];
@@ -71,7 +86,7 @@ class ClientController extends Controller
                             'switch_id' => $endpoint->switch_id,
                             'vlan_id' => $endpoint->vlan_id,
                             'port_id' => $endpoint->port_id,
-                            'hostname' => $endpoint->hostname,
+                            'hostname' => str_contains($endpoint->hostname, 'UNK-') ? $dev->hostname : $endpoint->hostname,
                             'id' => $endpoint->id,
                         ]);
                         $found++;
@@ -87,7 +102,7 @@ class ClientController extends Controller
             $i++;
         }
 
-        echo "Got: ".$i." | Processed MACs: ".$is. " | Already in db: ".$found." | New: ".$new ."\n";
+        echo "MACs: ".$i." | MACs found on Switch: ".$is. " | Already saved: ".$found." | New: ".$new ."\n";
         return json_encode(['success' => 'true', 'error' => 'Clients updated']);
     }
 
@@ -176,8 +191,14 @@ class ClientController extends Controller
         $ipc = 15;
         for($i = 0; $i < count($clients); $i++) {
             if($clients[$i]->ip_address == "") {
-                $clients2[$i] = "12.13.14.".$ipc;
-                $ipc++;
+                $try = gethostbyname($clients[$i]->hostname);
+                if($try != $clients[$i]->hostname) {
+                    $clients[$i]->ip_address = $try;
+                    $clients[$i]->save();
+                } else {
+                    $clients2[$i] = "12.13.14.".$ipc;
+                    $ipc++;
+                }
             } else {
                 $clients2[$i] = $clients[$i]->ip_address;
             }

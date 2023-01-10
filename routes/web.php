@@ -1,6 +1,7 @@
 <?php
 
 use App\ClientProviders\Baramundi;
+use App\ClientProviders\SNMP_Sophos_XG;
 use App\Devices\ArubaCX;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
@@ -94,7 +95,8 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
 
-    Route::get('/{id}/debug/mactable', [DeviceController::class, 'debugMacTable']);
+    Route::get('/debug/mactable', [SNMP_Sophos_XG::class, 'queryClientData']);
+    Route::get('/debug/clientdata', [ClientController::class, 'debugClientsFromProviders']);
 });
 
 // Route::middleware('auth:api')->get('/clients', [ClientController::class, 'index']);
