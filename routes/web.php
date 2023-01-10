@@ -101,8 +101,7 @@ Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function()
 
     Route::get('/client-providers/baramundi', [Baramundi::class, 'queryClientDataDebug']);
     Route::get('/client-providers/sophosxg', [SNMP_Sophos_XG::class, 'queryClientDataDebug']);
-
-    Route::get('/client-check/nmap', [ClientController::class, 'nmapClientCheck']);
+    Route::get('/client/mactable', [ClientController::class, 'debugMacTable']);
 
 });
 // Login

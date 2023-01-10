@@ -12,6 +12,7 @@ use App\Models\Building;
 use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
+use App\Models\MacAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -276,7 +277,11 @@ class DeviceController extends Controller
                 $device_data['ports_data'] = [];
                 $device_data['portstats_data'] = [];
                 $device_data['vlanport_data'] = [];
-                $device_data['mac_table_data'] = [];
+            }
+
+            MacAddress::where("device_id", $device->id)->delete();
+            foreach($device_data['mac_table_data'] as $key => $mac) {
+                MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $device->id);
             }
 
             if(isset($device_data) and $device->update(
