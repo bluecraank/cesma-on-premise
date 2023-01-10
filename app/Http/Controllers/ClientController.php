@@ -11,13 +11,14 @@ use Illuminate\Support\Str;
 use Acamposm\Ping\Ping;
 use Acamposm\Ping\PingCommandBuilder;
 use App\ClientProviders\SNMP_Sophos_XG;
+use App\Models\HostIpMac;
+use App\Models\MacVlanPortSwitch;
 use Carbon\Carbon;
 
 class ClientController extends Controller
 {
 
     public function index() {
-
         $clients = Client::all();
         $devices = Device::all()->keyBy('id');
 
@@ -25,26 +26,18 @@ class ClientController extends Controller
     }
 
     static function getClientsFromProviders() { 
-       
         // Baramundi
         if(!empty(config('app.baramundi_api_url'))) {
             $provider = new Baramundi;
             $endpoints = $provider->queryClientData();
-
         
         }
 
         // Sophos XG
         $data = SNMP_Sophos_XG::queryClientData();
 
-
         // Returns: Array of mac_addresses, hostname and ip_address
         return array_merge($endpoints, $data);
-    }
-
-    static function debugClientsFromProviders() {
-        $data = ClientController::getClientsFromProviders();
-        dd($data);
     }
 
     static function getClientsAllDevices() {
@@ -71,12 +64,13 @@ class ClientController extends Controller
                         $endpoint->hostname = "UNK-".Str::random(10);
                     }
 
+                    echo "Now processing: ".$endpoint->hostname."\n";
+
                     $endpoint->id = md5($client['ip_address']."".$mac);
                     $endpoint->ip_address = $client['ip_address'];
                     $endpoint->mac_address = $mac;
                     $endpoint->port_id = $mac_data[1][$key]['port'];
                     $endpoint->vlan_id = $mac_data[1][$key]['vlan'];
-
 
                     // Check for existence of endpoint
                     $dev = Client::find($endpoint->id);
@@ -89,9 +83,10 @@ class ClientController extends Controller
                             'hostname' => str_contains($endpoint->hostname, 'UNK-') ? $dev->hostname : $endpoint->hostname,
                             'id' => $endpoint->id,
                         ]);
+                        echo "----> Updated: ".$dev->hostname."\n";
                         $found++;
                     } else {
-
+                        echo "----> New: ".$endpoint->hostname."\n";
                         $endpoint->save();  
                         $new++;
                     }

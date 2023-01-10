@@ -12,16 +12,10 @@ use App\Models\Building;
 use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Builder\Class_;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
-
 
 class DeviceController extends Controller
 {
@@ -50,7 +44,7 @@ class DeviceController extends Controller
     }
 
     static function index_trunks() {
-        $data = self::getTrunks();
+        $data = self::getTrunksAllDevices();
 
         return view('switch.trunks', compact(
             'data'
@@ -61,25 +55,6 @@ class DeviceController extends Controller
         $devices = Device::all()->keyBy('id');
         
         return view('switch.uplinks', compact('devices'));
-    }
-
-    static function getTrunks() {
-        $devices = Device::all();
-
-        $data = [];
-        foreach($devices as $device) {
-            if(!in_array($device->type, array_keys(self::$models))) {
-                continue;
-            }
-    
-            $class = self::$models[$device->type]; 
-            $data[$device->id] = array(
-                'name' => $device->name,
-                'trunks' => $class::getTrunks($device),
-            );
-        }
-
-        return $data;
     }
 
     /**
@@ -303,7 +278,6 @@ class DeviceController extends Controller
                 $device_data['vlanport_data'] = [];
                 $device_data['mac_table_data'] = [];
             }
-        
 
             if(isset($device_data) and $device->update(
                 ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -348,24 +322,37 @@ class DeviceController extends Controller
             $MacAddressesData = [];
             foreach($macData as $entry) {
                 $uplinks = !empty($switch->uplinks) ? json_decode($switch->uplinks, true) : [];
+
                 if(in_array($entry['port'], $uplinks) or str_contains($entry['port'], "Trk") or str_contains($entry['port'], "Trunk")) {
                     continue;
                 }
 
-                if(in_array(strtolower(str_replace([":", "-"], "", $entry['mac'])), $MacsToIds)) {
-                    continue;   
-                }
+                $search_mac = strtolower(str_replace([":", "-"], "", $entry['mac']));
 
+                if(in_array($search_mac, $MacsToIds)) {
+                    $key = array_search($search_mac, $MacsToIds);
+
+                    // Solange die WLAN-Netze hohe VLAN-IDs haben, funktioniert diese Methode
+                    // Wenn die WLAN-Netze niedrige VLAN-IDs haben, muss hier noch was geändert werden
+                    // Aktuell wird so ein Client im VLAN 100 statt im VLAN 3060 priorisiert, 
+                    // sodass der Port an dem der Clienten hängt eher korrekt ist
+                    if($entry['vlan'] < $DataToIds[$key]['vlan']) {
+                        $DataToIds[$key] = $entry; 
+                        $DataToIds[$key]['device_id'] = $switch->id;
+                        $DataToIds[$key]['device_name'] = $switch->name;
+                        $MacsToIds[$key] = $search_mac;
+                        continue;
+                    }   
+                }
+            
                 $MacAddressesData[$i] = $entry;
                 $MacAddressesData[$i]['device_id'] = $switch->id;
                 $MacAddressesData[$i]['device_name'] = $switch->name;
-                $MacsToIds[$i] = strtolower(str_replace([":", "-"], "", $entry['mac']));
+                $MacsToIds[$i] = $search_mac;
                 $i++;
             }
             $DataToIds = array_merge($DataToIds, $MacAddressesData);
         }
-
-        // ddd(count($MacsToIds),array($MacsToIds, $DataToIds), in_array("089203bd54fd", $MacsToIds));
         return array($MacsToIds, $DataToIds);
     }
 
@@ -405,14 +392,6 @@ class DeviceController extends Controller
         return json_encode(['success' => 'true', 'error' => 'Backups created']);
     }
 
-    static function debugMacTable($id) {
-        $device = Device::find($id);
-
-        if($device) {
-            ddd(ArubaCX::getApiData($device));
-        }
-    }
-
     static function getClientsAllDevices() {
         $device = Device::all()->keyBy('id');
 
@@ -427,6 +406,25 @@ class DeviceController extends Controller
 
         return json_encode(['success' => 'true', 'error' => 'Clients updated']);
 
+    }
+
+    static function getTrunksAllDevices() {
+        $devices = Device::all();
+
+        $data = [];
+        foreach($devices as $device) {
+            if(!in_array($device->type, array_keys(self::$models))) {
+                continue;
+            }
+    
+            $class = self::$models[$device->type]; 
+            $data[$device->id] = array(
+                'name' => $device->name,
+                'trunks' => $class::getTrunks($device),
+            );
+        }
+
+        return $data;
     }
 
     static function uploadPubkeysAllDevices() { 

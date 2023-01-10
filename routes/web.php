@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Switch Route
     
     Route::get('/clients/ping', [ClientController::class, 'checkOnlineStatus']);
+    
     // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
 });
@@ -94,12 +95,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
-
-    Route::get('/debug/mactable', [SNMP_Sophos_XG::class, 'queryClientData']);
-    Route::get('/debug/clientdata', [ClientController::class, 'debugClientsFromProviders']);
 });
-
-// Route::middleware('auth:api')->get('/clients', [ClientController::class, 'index']);
 
 // Login
 Auth::routes();
