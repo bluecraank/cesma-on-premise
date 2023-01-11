@@ -14,6 +14,8 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
 use App\Devices\ArubaOS;
+use App\Http\Controllers\SnmpCollectorController;
+use App\Models\SnmpCollector;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +41,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/system', [UserController::class, 'management'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
+    Route::get('/printers', [ClientController::class, 'index_printers'])->name('printers');
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
@@ -58,7 +61,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Switch Route
     
-    Route::get('/clients/ping', [ClientController::class, 'checkOnlineStatus']);
+    // Route::get('/clients/ping', [ClientController::class, 'checkOnlineStatus']);
     
     // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
     // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
@@ -77,7 +80,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');;
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
     Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
-    Route::post('/{id}/clients', [ClientController::class, 'getClientsFromSwitch',]);
+    // Route::post('/{id}/clients', [ClientController::class, 'getClientsFromSwitch',]);
     
     // Switch backups
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
@@ -105,6 +108,7 @@ Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function()
     Route::get('/client/mactablev2/{id}', [ArubaOS::class, 'test']);
     Route::get('/client/mactable', [ClientController::class, 'debugMacTable']);
     Route::get('/client/unknown', [ClientController::class, 'debugUnknownClients']);
+    Route::get('/client/snmp', [SnmpCollectorController::class, 'collect']);
 });
 // Login
 Auth::routes();

@@ -27,7 +27,7 @@
     
             foreach($subnets as $net) {
                 echo "Scanning ".$net."\n";
-                $result = exec("nmap -sn ".$net." ", $output, $return);
+                $result = exec("nmap -sn ".$net." -oX storage/app/".explode("/", $net)[0], $output, $return);
             }
     
             echo "Took: ".(microtime(true)-$start)."sec\n";

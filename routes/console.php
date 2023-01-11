@@ -48,9 +48,3 @@ Artisan::command('clients:ping', function () {
     $this->comment(ClientController::checkOnlineStatus());
     $this->comment('--- END PINGING CLIENTS ---');
 })->purpose('Ping Clients');
-
-Artisan::command('subnets:ping', function () {
-    $this->comment('--- START PINGING SUBNETS ---');
-    $this->comment(ClientController::nmapClientCheck());
-    $this->comment('--- END PINGING SUBNETS ---');
-})->purpose('Ping Clients');

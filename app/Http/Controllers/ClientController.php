@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\ClientProviders\Baramundi;
 use App\Models\Device;
 use App\Models\Client;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\ClientProviders\SNMP_Sophos_XG;
 use App\Models\MacAddress;
 use App\Models\UnknownClient;
 use Carbon\Carbon;
+use SebastianBergmann\Type\UnknownType;
 
 class ClientController extends Controller
 {
@@ -20,6 +19,13 @@ class ClientController extends Controller
         $devices = Device::all()->keyBy('id');
 
         return view('client.index', compact('clients', 'devices'));
+    }
+
+    public function index_printers() {
+        $printers = UnknownClient::all();
+        $devices = Device::all()->keyBy('id');
+
+        return view('client.index_printers', compact('printers', 'devices'));
     }
 
     static function getClientsFromProviders() { 
@@ -104,6 +110,57 @@ class ClientController extends Controller
                             'vlan_id' => $mac_data[$key]['vlan_id'],
                         ]);
                     }
+
+                    unset($mac_only[$key]);
+                }
+            }
+        }
+
+        // Printers
+        $printer_data = SnmpCollectorController::collect();
+        foreach($printer_data as $printer) {
+            $hostname = "KM-".$printer['mac'];
+
+            // $prnt = UnknownClient;
+            $ip = ($printer['ip']) ? $printer['ip'] : "";
+
+            // if($prnt) {
+            //     $prnt->update([
+            //         'ip_address' => $ip
+            //     ]);
+            // } else {
+                $delete = UnknownClient::where('mac_address', $printer['mac'])->delete();
+                $key = array_search($printer['mac'], $mac_only);
+                if($key) {
+                UnknownClient::create([
+                    'hostname' => $hostname,
+                    'ip_address' => $ip,
+                    'mac_address' => $printer['mac'],
+                    'device_id' => $mac_data[$key]['device_id'],
+                    'port_id' => $mac_data[$key]['port_id'],
+                    'vlan_id' => $mac_data[$key]['vlan_id'],
+                    'type' => 'printer',
+                ]);
+            // }
+            }
+        }
+        
+        foreach($mac_only as $key => $mac) {
+            // Mitel Phone
+            if(str_contains($mac, "08000f") or str_contains($mac, "1400e9")) {
+                $delete = UnknownClient::where('mac_address', $mac)->delete();
+                if($mac_data[$key]['vlan_id'] == 120) {
+                    $hostname = "MITEL-".$mac;   
+                    $ip = "";
+                    UnknownClient::create([
+                        'hostname' => $hostname,
+                        'ip_address' => $ip,
+                        'mac_address' => $mac,
+                        'device_id' => $mac_data[$key]['device_id'],
+                        'port_id' => $mac_data[$key]['port_id'],
+                        'vlan_id' => $mac_data[$key]['vlan_id'],
+                        'type' => 'phone',
+                    ]);
                 }
             }
         }

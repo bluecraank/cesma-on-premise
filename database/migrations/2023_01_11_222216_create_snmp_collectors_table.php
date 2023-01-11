@@ -13,15 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('unknown_clients', function (Blueprint $table) {
+        Schema::create('snmp_collectors', function (Blueprint $table) {
             $table->id();
             $table->string('mac_address');
-            $table->foreignId('device_id')->constrained('devices');
-            $table->string('port_id');
-            $table->string('vlan_id');
+            $table->string('description');
             $table->string('hostname');
-            $table->string('ip_address')->nullable();
-            $table->string('type');
+            $table->string('ip_address')->unique();
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('unknown_clients');
+        Schema::dropIfExists('snmp_collectors');
     }
 };

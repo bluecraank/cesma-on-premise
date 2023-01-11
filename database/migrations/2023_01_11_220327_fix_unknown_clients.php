@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('unknown_clients');
         Schema::create('unknown_clients', function (Blueprint $table) {
             $table->id();
             $table->string('mac_address');
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('unknown_clients');
+        //
     }
 };
