@@ -37,7 +37,7 @@
                 $uplinks_string = implode(',', $uplinks);
                 @endphp 
             <tr>
-                <td>{{ $device->name }}</td>
+                <td><i style="" class="mr-1 fa fa-circle {{ $device->online }}"></i> {{ $device->name }}</td>
                 <td>{{ $device->hostname }}</td>
                 <td>{{ json_decode($device->system_data, true)['model'] }}</td>
                 <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>

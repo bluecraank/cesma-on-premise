@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Controllers\DeviceController;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
@@ -24,8 +25,14 @@ class SearchSwitch extends Component
     {
         $searchTerm = '%'.$this->searchTerm.'%';
         $https = config('app.https', 'http://');
+
+        $devices = Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id');
+        foreach($devices as $device) {
+            $device->online = DeviceController::isOnline($device->hostname);
+        }
+
         return view('switch.index_',[
-            'devices' => Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id'),
+            'devices' => $devices,
             'locations' => Location::all()->keyBy('id'),
             'buildings' => Building::all()->keyBy('id'),
             'https' => $https

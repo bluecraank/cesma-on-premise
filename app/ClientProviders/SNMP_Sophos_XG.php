@@ -3,6 +3,7 @@
 namespace App\ClientProviders;
 
 use App\Interfaces\IClientProvider;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class SNMP_Sophos_XG implements IClientProvider
@@ -20,7 +21,7 @@ class SNMP_Sophos_XG implements IClientProvider
             $data[0] = strstr($data[0], ".");
             $data[0] = preg_replace('/./', "", $data[0], 1);
 
-            $req = exec('timeout 1 host '.$data[0], $dns, $result);
+            $req = exec('timeout 0.1 host '.$data[0], $dns, $result);
 
             if(!isset($dns[0])) {
                 $dns = array(0 => "pointer ");
@@ -40,9 +41,30 @@ class SNMP_Sophos_XG implements IClientProvider
             ];
         }
 
-        echo microtime(true) - $start;
+        // echo microtime(true) - $start;
         
         return $macs;
+    }
+
+    static function queryClientDataDebug(): Array
+    {
+        $url = config('app.baramundi_api_url')."/bCOnnect/v1.1/Endpoints.json";
+        $username = config('app.baramundi_username');
+        $password = config('app.baramundi_password');
+
+        $data = Http::withoutVerifying()->withBasicAuth($username, $password)->get($url)->json();
+
+        $endpoints = [];
+
+
+        if($data == null or empty($data)) {
+            return $endpoints;
+        }
+
+        $endpoints = $data;
+
+        
+        dd($endpoints); 
     }
 }
 

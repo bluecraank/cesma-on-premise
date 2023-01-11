@@ -6,16 +6,11 @@ use App\ClientProviders\Baramundi;
 use App\Models\Device;
 use App\Models\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Acamposm\Ping\Ping;
-use Acamposm\Ping\PingCommandBuilder;
 use App\ClientProviders\SNMP_Sophos_XG;
-use App\Models\HostIpMac;
 use App\Models\MacAddress;
-use App\Models\MacVlanPortSwitch;
+use App\Models\UnknownClient;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
@@ -35,6 +30,7 @@ class ClientController extends Controller
         
         }
 
+        $data = [];
         // Sophos XG
         $data = SNMP_Sophos_XG::queryClientData();
 
@@ -43,63 +39,77 @@ class ClientController extends Controller
     }
 
     static function getClientsAllDevices() {
-        $endpoint_data = ClientController::getClientsFromProviders();
-        $mac_data = DeviceController::getMacAddressesFromDevices(); 
+        $endpoints = ClientController::getClientsFromProviders();
 
-        if($endpoint_data == null or empty($endpoint_data)) {
+        if($endpoints == null or empty($endpoints)) {
             return dd("Keine Endpoints der Provider erhalten");
         }
         
-        $i = 1;
-        $is = 1;
-        $found = 1;
-        $new = 0;
+        $macs = MacAddress::all()->sortBy('vlan_id');
 
-        foreach($endpoint_data as $client) {
-            foreach($client['mac_addresses'] as $mac) {
-                if($key = array_search($mac, $mac_data[0])) {
-                    $endpoint = new Client();
-                    $endpoint->switch_id = $mac_data[1][$key]['device_id'];
-                    
-                    $endpoint->hostname = strtolower($client['hostname']);
-                    if($endpoint->hostname == "" or $endpoint->hostname == null) {
-                        $endpoint->hostname = "UNK-".Str::random(10);
-                    }
+        $mac_only = [];
+        $mac_data = [];
 
-                    echo "Now processing: ".$endpoint->hostname."\n";
-
-                    $endpoint->id = md5($client['ip_address']."".$mac);
-                    $endpoint->ip_address = $client['ip_address'];
-                    $endpoint->mac_address = $mac;
-                    $endpoint->port_id = $mac_data[1][$key]['port'];
-                    $endpoint->vlan_id = $mac_data[1][$key]['vlan'];
-
-                    // Check for existence of endpoint
-                    $dev = Client::find($endpoint->id);
-
-                    if($dev !== null) { 
-                        $dev->update([
-                            'switch_id' => $endpoint->switch_id,
-                            'vlan_id' => $endpoint->vlan_id,
-                            'port_id' => $endpoint->port_id,
-                            'hostname' => str_contains($endpoint->hostname, 'UNK-') ? $dev->hostname : $endpoint->hostname,
-                            'id' => $endpoint->id,
-                        ]);
-                        echo "----> Updated: ".$dev->hostname."\n";
-                        $found++;
-                    } else {
-                        echo "----> New: ".$endpoint->hostname."\n";
-                        $endpoint->save();  
-                        $new++;
-                    }
-
-                    $is++;
+        $i = 0;
+        foreach($macs as $mac) {
+            if($key = array_search($mac->mac_address, $mac_only)) {
+                if($mac_data[$key]['vlan_id'] > $mac->vlan_id) {
+                    $mac_data[$key] = [
+                        'mac_address' => $mac->mac_address,
+                        'device_id' => $mac->device_id,
+                        'port_id' => $mac->port_id,
+                        'vlan_id' => $mac->vlan_id,
+                    ];
+                    $mac_only[$key] = $mac->mac_address;
                 }
+            } else {
+                $mac_only[$i] = $mac->mac_address;
+                $mac_data[$i] = [
+                    'mac_address' => $mac->mac_address,
+                    'device_id' => $mac->device_id,
+                    'port_id' => $mac->port_id,
+                    'vlan_id' => $mac->vlan_id,
+                ];
+                $i++;
+
             }
-            $i++;
         }
 
-        echo "MACs: ".$i." | MACs found on Switch: ".$is. " | Already saved: ".$found." | New: ".$new ."\n";
+        foreach($endpoints as $client) {
+            foreach($client['mac_addresses']as $mac) {
+                if(in_array($mac, $mac_only)) {
+                    $key = array_search($mac, $mac_only);
+
+                    $md5 = md5($client['hostname'].$mac);
+                    if($dev = Client::find($md5)) {
+                        // echo $client['hostname']." | ".$mac_data[$key]['vlan_id']." | ".$dev->vlan_id."<br>";
+                        if ($mac_data[$key]['vlan_id'] < $dev->vlan_id) {
+                            echo $client['hostname']." | ".$mac_data[$key]['port_id']." | ".$mac_data[$key]['vlan_id']."<br>";
+
+                            $dev->update([
+                                'hostname' => $client['hostname'],
+                                'switch_id' => $mac_data[$key]['device_id'],
+                                'vlan_id' => $mac_data[$key]['vlan_id'],
+                                'port_id' => $mac_data[$key]['port_id'],
+                            ]);
+                        }
+                    } else {
+                        Client::create([
+                            'id' => md5($client['hostname'].$mac),
+                            'hostname' => $client['hostname'],
+                            'ip_address' => $client['ip_address'],
+                            'mac_address' => $mac,
+                            'switch_id' => $mac_data[$key]['device_id'],
+                            'port_id' => $mac_data[$key]['port_id'],
+                            'vlan_id' => $mac_data[$key]['vlan_id'],
+                        ]);
+                    }
+                }
+            }
+        }
+
+
+        // echo "MACs: ".$i." | MACs found on Switch: ".$is. " | Already saved: ".$found." | New: ".$new ."\n";
         return json_encode(['success' => 'true', 'error' => 'Clients updated']);
     }
 
@@ -235,8 +245,100 @@ class ClientController extends Controller
     }
 
     static function debugMacTable() {
-        $macs = MacAddress::all();
+        $macs = MacAddress::where('port_id', "NOT LIKE", "Trk%")->orderBy('vlan_id')->get();
 
-        dd($macs);
+        $endpoints = ClientController::getClientsFromProviders();
+
+        $mac_only = [];
+        $mac_data = [];
+
+        $i = 0;
+        foreach($macs as $mac) {
+            if($key = array_search($mac->mac_address, $mac_only)) {
+                if($mac_data[$key]['vlan_id'] > $mac->vlan_id) {
+                    $mac_data[$key] = [
+                        'mac_address' => $mac->mac_address,
+                        'device_id' => $mac->device_id,
+                        'port_id' => $mac->port_id,
+                        'vlan_id' => $mac->vlan_id,
+                    ];
+                    $mac_only[$key] = $mac->mac_address;
+                }
+            } else {
+                $mac_only[$i] = $mac->mac_address;
+                $mac_data[$i] = [
+                    'mac_address' => $mac->mac_address,
+                    'device_id' => $mac->device_id,
+                    'port_id' => $mac->port_id,
+                    'vlan_id' => $mac->vlan_id,
+                ];
+                $i++;
+
+            }
+        }
+
+        foreach($endpoints as $client) {
+            foreach($client['mac_addresses']as $mac) {
+                if(in_array($mac, $mac_only)) {
+                    $key = array_search($mac, $mac_only);
+
+                    $md5 = md5($client['hostname'].$mac);
+                    if($dev = Client::find($md5)) {
+                        // echo $client['hostname']." | ".$mac_data[$key]['vlan_id']." | ".$dev->vlan_id."<br>";
+                        if ($mac_data[$key]['vlan_id'] < $dev->vlan_id) {
+                            echo $client['hostname']." | ".$mac_data[$key]['port_id']." | ".$mac_data[$key]['vlan_id']."<br>";
+
+                            $dev->update([
+                                'hostname' => $client['hostname'],
+                                'switch_id' => $mac_data[$key]['device_id'],
+                                'vlan_id' => $mac_data[$key]['vlan_id'],
+                                'port_id' => $mac_data[$key]['port_id'],
+                            ]);
+                        }
+                    } else {
+                        Client::create([
+                            'id' => md5($client['hostname'].$mac),
+                            'hostname' => $client['hostname'],
+                            'ip_address' => $client['ip_address'],
+                            'mac_address' => $mac,
+                            'switch_id' => $mac_data[$key]['device_id'],
+                            'port_id' => $mac_data[$key]['port_id'],
+                            'vlan_id' => $mac_data[$key]['vlan_id'],
+                        ]);
+                    }
+
+                    unset($mac_only[$key]);
+                }
+            }
+        }
+
+        foreach($mac_only as $key => $mac) {
+            // Mitel Phone
+            if(str_contains($mac, "08000f") or str_contains($mac, "1400e9")) {
+                if($mac_data[$key]['vlan_id'] == 120) {
+                    $hostname = "MITEL-".$mac;   
+                    $ip = "";
+                    UnknownClient::create([
+                        'hostname' => $hostname,
+                        'ip_address' => $ip,
+                        'mac_address' => $mac,
+                        'device_id' => $mac_data[$key]['device_id'],
+                        'port_id' => $mac_data[$key]['port_id'],
+                        'vlan_id' => $mac_data[$key]['vlan_id'],
+                    ]);
+                }
+            }
+        }
+        // "Hostname .1.3.6.1.2.1.1.1.0"
+        dd($macs, $mac_only, count($mac_only), count($mac_data));
+    }
+
+    static function debugUnknownClients() {
+        $unknown = UnknownClient::all();
+        foreach($unknown as $client) {
+            echo $client->hostname." | ".$client->mac_address." | ".$client->vlan_id."<br>";
+
+        }        
+        dd($unknown);
     }
 }

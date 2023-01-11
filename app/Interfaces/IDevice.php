@@ -39,7 +39,7 @@ use Illuminate\Http\Client\Request;
     
         static function getVlanData(Array $vlans): Array; 
 
-        static function getMacTableData(Array $macs, Device $device): Array;
+        static function getMacTableData(Array $macs, Device $device, $cookie, $api_version): Array;
         
         static function getSystemInformations(Array $system): Array;
 

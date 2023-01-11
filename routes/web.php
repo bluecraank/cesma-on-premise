@@ -73,7 +73,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
 
     // Switch specific
     Route::get('/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
-    Route::get('/{id}/live', [DeviceController::class, 'live'])->name('live');
+    Route::get('/{id}/live', [DeviceController::class, 'index_live'])->name('live');
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');;
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
     Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
@@ -101,8 +101,9 @@ Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function()
 
     Route::get('/client-providers/baramundi', [Baramundi::class, 'queryClientDataDebug']);
     Route::get('/client-providers/sophosxg', [SNMP_Sophos_XG::class, 'queryClientDataDebug']);
+    Route::get('/client/mactablev2/{id}', [ArubaOS::class, 'test']);
     Route::get('/client/mactable', [ClientController::class, 'debugMacTable']);
-
+    Route::get('/client/unknown', [ClientController::class, 'debugUnknownClients']);
 });
 // Login
 Auth::routes();

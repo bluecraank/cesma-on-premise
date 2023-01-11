@@ -18,10 +18,20 @@ class Kernel extends ConsoleKernel
         // $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
         // $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
         // $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
+        
+        // API abfragen
         $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin');
-        $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin');
+        
+        // Daten aus der DB verarbeiten und Clients finden / updaten
+        $schedule->command('clients:update')->hourly()->timezone('Europe/Berlin');
+
+        // Clients anpingen, um den Status anzuzeigen
         $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin');
+        
+        // Backups erstellen
         $schedule->command('switch:backup')->dailyAt('08:00');
+
+        // Backups per Mail versenden
         $schedule->command('switch:backup:mail')->weekly()->sundays()->at('22:00');
     }
 

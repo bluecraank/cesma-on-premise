@@ -27,7 +27,7 @@ class ArubaCX implements IDevice
         "ports" => 'system/interfaces?attributes=ifindex,link_state,description&depth=2',
         "portstats" => 'system/interfaces?attributes=ifindex,link_speed,description&depth=2',
         "vlanport" => 'system/interfaces?attributes=ifindex,vlan_mode,vlan_tag,vlan_trunks&depth=2',
-        "mac" => 'system/vlans?attributes=name,id,macs&depth=3',
+        // "mac" => 'system/vlans?attributes=name,id,macs&depth=3',
     ];
 
     static function GetApiVersions($hostname): string
@@ -146,14 +146,16 @@ class ArubaCX implements IDevice
             }
         }
 
-        self::ApiLogout($device->hostname, $cookie, $api_version);
+        // self::ApiLogout($device->hostname, $cookie, $api_version);
 
         $system_data = self::getSystemInformations($data['status']);
         $vlan_data = self::getVlanData($data['vlans']);
         $port_data = self::getPortData($data['ports']);
         $portstat_data = self::getPortStatisticData($data['portstats']);
         $vlanport_data = self::getVlanPortData($data['vlanport']);
-        $mac_data = self::getMacTableData($data['vlans'], $device);
+        $mac_data = self::getMacTableData($data['vlans'], $device, $cookie, $api_version);
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
 
         return [
             'sysstatus_data' => $system_data,
@@ -189,18 +191,11 @@ class ArubaCX implements IDevice
         return $return;
     }
 
-    static function getMacTableData($vlans, $device): Array
+    static function getMacTableData($vlans, $device, $cookie, $api_version): Array
     {
-        if(!$login_info = self::ApiLogin($device)) {
-            return ['success' => false, 'data' => 'Login failed'];
-        }
-
-        list($cookie, $api_version) = explode(";", $login_info);
-
         $vlan_macs = [];
         foreach($vlans as $vlan) {
             $url = "system/vlans/".$vlan['id']."/macs?attributes=port,mac_addr&depth=2";
-            
             $api_data = self::ApiGet($device->hostname, $cookie, $url, $api_version);
             if($api_data['success']) {
                 $vlan_macs[$vlan['id']] = $api_data['data'];
@@ -218,8 +213,6 @@ class ArubaCX implements IDevice
                 ];
             }
         }
-
-        self::ApiLogout($device->hostname, $cookie, $api_version);
 
         return $return;
     }
