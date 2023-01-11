@@ -18,12 +18,17 @@
                 <ul class="menu-list">
                     <li>
                         <a href="{{ route('dashboard') }}" class="{{ (request()->is('/')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-bars-progress"></i></span> Switch
+                            <span class="icon"><i class="fa fa-bars-progress"></i></span> Switches
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('backups') }}" class="{{ (request()->is('backups')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> Backups
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-location-dot"></i></span> Standort
+                            <span class="icon"><i class="fa fa-location-dot"></i></span> Standorte
                         </a>
                     </li>
                 </ul>
@@ -35,14 +40,14 @@
                             <span class="icon"><i class="fa fa-ethernet"></i></span> VLANs
                         </a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunk
-                        </a>
-                    </li> --}}
                     <li>
-                        <a href="{{ route('backups') }}" class="{{ (request()->is('backups')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> Backups
+                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> Trunks
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('uplinks') }}" class="{{ (request()->is('uplinks')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-up-down"></i></span> Uplinks
                         </a>
                     </li>
                     <li>

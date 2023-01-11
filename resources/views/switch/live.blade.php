@@ -161,10 +161,6 @@
                         <a onclick="device_live_actions(this, 'backups')" class="button is-success">
                             <i style="margin-right: 7px;" class="fa-solid fa-hdd"></i> Backup erstellen
                         </a>
-
-                        <a onclick="device_live_actions(this, 'clients')" class="button is-success">
-                            <i style="margin-right: 7px;" class="fa-solid fa-computer"></i> Clients abfragen
-                        </a>
                     </form>
                   </div>
             </div>

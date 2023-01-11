@@ -89,6 +89,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::put('/update', [DeviceController::class, 'update']);
     Route::put('/{id}/refresh', [DeviceController::class, 'refresh']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
+    Route::put('/uplinks/update', [DeviceController::class, 'updateUplinks']);
 
 
     // Posts for actions on all Switches

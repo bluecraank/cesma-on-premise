@@ -43,23 +43,30 @@ class VlanController extends Controller
         $count_untagged = 0;
         $count_tagged = 0;
         $count_online = 0;
+        $has_vlan = 0;
 
         foreach($devices as $device) {
             $ports[$device->name] = [];
+
+            $found_on = false;
             $vlans = json_decode($device->vlan_port_data, true);
             $port_data = json_decode($device->port_data, true);
             foreach($vlans as $port_vlan_key => $port_vlan) {
                 if($port_vlan['vlan_id'] == $vlan) {
+                    if(!$found_on) {
+                        $found_on = true;
+                        $has_vlan++;
+                    }
                     // var_dump($port_vlan);
                     if(isset($port_vlan['is_tagged']) and !$port_vlan['is_tagged']) {
                         $count_untagged++;
-                        $ports[$device->name]['untagged'] = $port_vlan['port_id'];
+                        $ports[$device->name]['untagged'][] = $port_vlan['port_id'];
 
                         if(isset($port_data[$port_vlan['port_id']]) and $port_data[$port_vlan['port_id']]['is_port_up']) {
                             $count_online++;
                         }
                     } else {
-                        $ports[$device->name]['tagged'] = $port_vlan['port_id'];
+                        // $ports[$device->name]['tagged'][] = $port_vlan['port_id'];
                         $count_tagged++;
                     }
                 }
@@ -71,6 +78,7 @@ class VlanController extends Controller
         // return;
         return view('vlan.details', compact(
             'ports',
+            'has_vlan',
             'count_untagged',
             'count_tagged',
             'count_online',

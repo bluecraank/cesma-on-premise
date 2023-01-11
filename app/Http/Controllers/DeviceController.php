@@ -470,6 +470,28 @@ class DeviceController extends Controller
         return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
     }
 
+    static function updateUplinks(Request $request) {
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ])->validate();
+
+        $device = Device::find($request->input('id'));
+
+        if(str_contains($request->input('uplinks'), ":") or str_contains($request->input('uplinks'), " ") or str_contains($request->input('uplinks'), ";")) {
+            return redirect()->back()->withErrors(['uplinks' => 'Uplinks must be comma separated']);
+        }
+
+        if($device) {
+            $uplinks = $request->input('uplinks');
+            $uplinks = explode(',', $uplinks);
+            $device->uplinks = json_encode($uplinks);
+            $device->save();
+        }
+
+        return redirect()->back();
+    }
+
     static function restoreBackup(Request $request) {
         $device = Device::find($request->input('device-id'));
         $backup = Backup::find($request->input('id'));

@@ -15,7 +15,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Vorhanden auf</strong></p>
-                <p class="subtitle">{{ count($ports) }}</p>
+                <p class="subtitle">{{ $has_vlan }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
@@ -42,25 +42,27 @@
 
     <div class="columns ml-1 mr-1">
         <div class="column is-12">
-                <h2 class="subtitle">Switche</h2>
+                {{-- <h2 class="subtitle">Switche</h2> --}}
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
                             <th>Switch</th>
-                            <th>Ports</th>
+                            <th>Untagged</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach ($ports as $switch => $port)
+                        @foreach ($port as $untagged)
                         <tr>
                             <td>{{ $switch }}</td>
                             <td>
-                                @php $imp = implode(', ', $port)
+                                @php $imp = implode(', ', $untagged)
                                     
                                 @endphp
                                 {{ $imp }}
                             </td>
                         </tr>
+                        @endforeach
                     @endforeach
                     </tbody>
                 </table>

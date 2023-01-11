@@ -144,6 +144,14 @@ function deleteBackupModal(id, date) {
     modal.show()
 }
 
+function editUplinkModal(id, name, uplinks) {
+    let modal = $('.modal-edit-uplinks');
+    modal.find('.device-id').val(id);
+    modal.find('.device-name').val(name);
+    modal.find('.device-uplinks').val(uplinks);
+    modal.show();
+}
+
 function refreshSwitch(ele) {
     $(ele).addClass('is-loading');
     let form = $("#refresh-form").serialize();
