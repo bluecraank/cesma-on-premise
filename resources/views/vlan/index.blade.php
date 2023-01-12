@@ -31,6 +31,21 @@
                             </span>
                         </p>
                     </div>
+                    <div class="field">
+                        <label class="label">IP-Bereich (optional)</label>
+                        <p class="control has-icons-left">
+                            <input class="input vlan-ip_range" name="ip_range" placeholder="10.10.10.0/24">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-up-down"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" name="scan" class="vlan-scan">
+                            NMAP-Scan aktivieren
+                          </label>
+                    </div>
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button is-success">Speichern</button>

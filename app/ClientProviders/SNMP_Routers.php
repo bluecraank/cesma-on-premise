@@ -12,7 +12,8 @@ class SNMP_Routers implements IClientProvider
         $cores = [
             1 => '192.168.100.176',
             2 => '192.168.100.175',
-            3 => '10.50.10.1'
+            3 => '10.50.10.1',
+            4 => '192.168.100.250'
         ];
 
         foreach($cores as $core) {

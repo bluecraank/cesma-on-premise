@@ -136,7 +136,12 @@ class VlanController extends Controller
      */
     public function update(UpdateVlanRequest $request, Vlan $vlan)
     {
-        if(Vlan::whereId($request['id'])->update($request->validated())) {
+        if(Vlan::whereId($request['id'])->update([
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'ip_range' => $request['ip_range'] ?? null,
+            'scan' => ($request['scan'] == "on") ? true : false
+        ])) {
             $vlanD = Vlan::whereId($request['id'])->first();
             LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '"}');
 

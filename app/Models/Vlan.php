@@ -14,5 +14,7 @@ class Vlan extends Model
         'vid',
         'description',
         'location_id',
+        'ip_range',
+        'scan',
     ];
 }

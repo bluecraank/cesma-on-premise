@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">Clients (@php echo count($clients); @endphp)</h1>
+    <h1 class="title is-pulled-left">Geräte (@php echo count($clients); @endphp)</h1>
 
     <div class="is-pulled-right ml-4">
         <a href="/printers" class="button"><i class="fa-solid fa-print mr-1"></i> / <i class="ml-1 fa-solid fa-phone mr-2"></i></a>
