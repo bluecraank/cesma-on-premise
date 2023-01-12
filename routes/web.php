@@ -1,6 +1,7 @@
 <?php
 
 use App\ClientProviders\Baramundi;
+use App\ClientProviders\SNMP_Routers;
 use App\ClientProviders\SNMP_Sophos_XG;
 use App\Devices\ArubaCX;
 use App\Http\Controllers\VlanController;
@@ -15,8 +16,6 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
 use App\Devices\ArubaOS;
 use App\Http\Controllers\SnmpCollectorController;
-use App\Models\SnmpCollector;
-use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -105,10 +104,12 @@ Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function()
 
     Route::get('/client-providers/baramundi', [Baramundi::class, 'queryClientDataDebug']);
     Route::get('/client-providers/sophosxg', [SNMP_Sophos_XG::class, 'queryClientDataDebug']);
+    Route::get('/client-providers/routers', [SNMP_Routers::class, 'queryClientDataDebug']);
     Route::get('/client/mactablev2/{id}', [ArubaOS::class, 'test']);
-    Route::get('/client/mactable', [ClientController::class, 'debugMacTable']);
+    Route::get('/client/mactable', [ClientController::class, 'getClientsAllDevices']);
     Route::get('/client/unknown', [ClientController::class, 'debugUnknownClients']);
     Route::get('/client/snmp', [SnmpCollectorController::class, 'collect']);
+    Route::get('/pubkey/{id}', [ArubaOS::class, 'test']);
 });
 // Login
 Auth::routes();

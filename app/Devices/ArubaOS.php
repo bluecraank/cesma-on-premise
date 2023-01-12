@@ -5,6 +5,7 @@ namespace App\Devices;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
+use App\Http\Controllers\KeyController;
 use App\Models\Backup;
 use App\Models\Device;
 use Illuminate\Http\Client\Request;
@@ -83,6 +84,25 @@ class ArubaOS implements IDevice
 
         return true;
     }   
+
+    static function ApiPut($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->put($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    }
 
     static function ApiGet($hostname, $cookie, $api, $version): Array
     {
@@ -169,7 +189,7 @@ class ArubaOS implements IDevice
 
     public function test($device) {
         $device = Device::find($device);
-        return self::getApiData($device);
+        // dd($device->hostname);
     }
 
     static function getVlanData($vlans): Array
@@ -442,19 +462,43 @@ class ArubaOS implements IDevice
             }
         } else {
             $key = EncryptionController::decrypt($device->password);
-        }
+        }       
 
-        try {
-            $sftp = new SFTP($device->hostname);
-            $sftp->login(config('app.ssh_username'), $key);
-            //$upload = $sftp->put('/ssh/mgr_keys/authorized_keys', KeyController::getPubkeys());
-            $upload = "Works";
-            $sftp->disconnect();
+        $keys = KeyController::getPubkeys();
+        if($keys != "") {
+            try {
+                $sftp = new SFTP($device->hostname);
+                $sftp->login(config('app.ssh_username'), "fridolin");
+                $upload = $sftp->put('/ssh/mgr_keys/authorized_keys', $keys);
+                $sftp->disconnect();
 
-            return json_encode(['success' => 'true', 'error' => $upload]);
+                if($upload) {
+                    if($login_info = self::ApiLogin($device))  {
+                        list($cookie, $api_version) = explode(";", $login_info);
+            
+                        $url = "authentication/ssh";
 
-        } catch (\Exception $e) {
-            return json_encode(['success' => 'false', 'error' => 'Error sftp connection '.$e->getMessage()]);
+                        $data = '{
+                            "auth_ssh_login": {
+                                "primary_method": "PAM_PUBLIC_KEY"
+                            },
+                            "auth_ssh_enable": {
+                                "primary_method": "PAM_PUBLIC_KEY"
+                            }
+                        }';
+            
+                        $response = self::ApiPut($device->hostname, $cookie, $url, $api_version, $data);
+
+                        if($response['success']) {
+                            return json_encode(['success' => 'true', 'error' => "Uploaded and aaa configured"]);
+                        }
+                    }
+                }
+
+                return json_encode(['success' => 'true', 'error' => $upload]);
+            } catch (\Exception $e) {
+                return json_encode(['success' => 'false', 'error' => 'Error sftp connection '.$e->getMessage()]);
+            }
         }
 
         return json_encode(['success' => 'false', 'error' => 'Error sftp connection']);

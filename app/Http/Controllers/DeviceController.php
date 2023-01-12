@@ -511,7 +511,7 @@ class DeviceController extends Controller
 
     static function isOnline($hostname) {
         try {
-            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 1)) {
+            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 0.2)) {
                 fclose($fp);
                 return "has-text-success";
             }
@@ -519,7 +519,7 @@ class DeviceController extends Controller
 
             return "has-text-danger";
         } catch (\Exception $e) {
-            return "has-text-warning";
+            return "has-text-danger";
         }
     }
 

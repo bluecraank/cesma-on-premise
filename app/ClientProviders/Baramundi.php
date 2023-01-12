@@ -38,9 +38,16 @@ class Baramundi implements IClientProvider
                     $maclist[] = strtolower(str_replace(":", "", $value['LogicalMAC']));
                 }
 
+                if(!isset($value['PrimaryIP']) or $value['PrimaryIP'] == null) {
+                    $value['PrimaryIP'] = gethostbyname($value['HostName']);
+                    if($value['PrimaryIP'] == $value['HostName']) {
+                        $value['PrimaryIP'] = null;
+                    }
+                }
+
                 $endpoints[] = [
                     'mac_addresses' => $maclist,
-                    'ip_address' => (isset($value['PrimaryIP'])) ? $value['PrimaryIP'] : null,
+                    'ip_address' => $value['PrimaryIP'] ?? null,
                     'hostname' => (isset($value['HostName'])) ? $value['HostName'] : null,
                 ];
 

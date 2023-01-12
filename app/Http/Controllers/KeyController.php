@@ -29,7 +29,7 @@ class KeyController extends Controller
         foreach($keys as $key) {
             $format_key = explode(" ", EncryptionController::decrypt($key->key));
 
-            $desc = (isset($format_key[2])) ? $format_key[2] : "Imported";
+            $desc = $format_key[2] ?? "Imported";
             $correct = $desc. " " . $format_key[0] . " " . $format_key[1];
             $keys2 .= $correct . "\n";
 
@@ -42,7 +42,7 @@ class KeyController extends Controller
                 $format_key = explode(" ", EncryptionController::decrypt($user->privatekey));
 
                 if($format_key !== NULL and !empty($format_key)) {  
-                    $desc = (isset($format_key[2])) ? $format_key[2] : "Imported";
+                    $desc = $format_key[2] ?? "Imported";
                     $correct = $desc. " " . $format_key[0] . " " . $format_key[1];
                     $keys2 .= $correct . "\n";
 

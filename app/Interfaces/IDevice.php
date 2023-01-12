@@ -21,6 +21,8 @@ use Illuminate\Http\Client\Request;
 
         static function ApiLogout(String $hostname, String $cookie, String $api_version): bool;
 
+        static function ApiPut(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+
         static function ApiGet(String $hostname, String $cookie, String $api, String $api_version): Array;
 
         static function ApiGetAcceptPlain(String $hostname, String $cookie, String $api, String $api_version): Array;
