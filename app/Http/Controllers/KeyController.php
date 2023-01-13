@@ -100,7 +100,7 @@ class KeyController extends Controller
         foreach($users as $user) {
 
             if($user->privatekey !== NULL and !empty($user->privatekey)) {
-                    $keys[$i] = $user->name;
+                    $keys[$i] = "User: ".$user->name;
 
                     $i++;
             }

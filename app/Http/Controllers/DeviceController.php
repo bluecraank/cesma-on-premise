@@ -462,18 +462,20 @@ class DeviceController extends Controller
     }
 
     static function uploadPubkeysAllDevices() {
-        
-        return redirect()->back()->withErrors(['error' => 'Error uploading pubkeys']);
         $pubkeys = KeyController::getPubkeysAsArray();
 
         $devices = Device::all()->keyBy('id');
 
-        foreach($devices as $device) {
-            $class = self::$models[$device->type];
-            $class::uploadPubkeys($device, $pubkeys);
+        if(count($pubkeys) >= 2 and !empty($pubkeys)) {
+            foreach($devices as $device) {
+                $class = self::$models[$device->type];
+                $class::uploadPubkeys($device, $pubkeys);
+            }
+
+            return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
         }
 
-        return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
+        return json_encode(['success' => 'false', 'error' => 'No pubkeys found']);
     }
 
     static function updateUplinks(Request $request) {

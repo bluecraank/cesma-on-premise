@@ -269,6 +269,15 @@ function device_overview_actions(type, ele) {
     fetcher(uri, form, ele, cssclass);
 }
 
+function syncPubkeys() {
+    let form = $("#form-sync-pubkeys").serialize();
+    let uri = '/switch/every/pubkeys';
+    let cssclass = 'fa-sync';
+    let ele = $(".sync-pubkeys-button");
+    fetcher(uri, form, ele, cssclass);
+    $(".modal-sync-pubkeys").hide();
+}
+
 // Fetcher function
 function fetcher(uri, form, ele, cssclass, timeout = false) {
     $(ele).addClass('is-loading');

@@ -10,11 +10,10 @@
     <div class="buttons are-small">
         <form action="post" id="form-all-devices">
             @csrf
-            <a onclick="device_overview_actions('pubkeys', this)" class="button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
+            <a onclick="device_overview_actions('pubkeys', this)" class="sync-pubkeys-button button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
             <a onclick="device_overview_actions('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
         </form>
     </div>
-    <div class="is-size-7">Diese Aufgaben werden regelmäßig ausgeführt</div>
 </div>
 
 <div class="modal modal-new-switch">
@@ -232,7 +231,7 @@
 </div>
 
 <div class="modal modal-sync-pubkeys">
-    <form action="/switch/every/pubkeys" method="post">
+    <form action="/switch/every/pubkeys" onsubmit="event.preventDefault(); syncPubkeys();" id="form-sync-pubkeys" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
