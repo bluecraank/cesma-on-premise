@@ -546,13 +546,14 @@ class ArubaOS implements IDevice
         
         $success = 0;
         $failed = 0;
+        $failed_ports = [];
         $portcount = count($ports);
 
         if($login_info = self::ApiLogin($device)) {
 
             list($cookie, $api_version) = explode(";", $login_info);
 
-            $uri = "vlans-ports";
+            $uri = "vlans-pors";
 
             foreach($ports as $key => $port) {
                 $data = '{
@@ -567,6 +568,7 @@ class ArubaOS implements IDevice
                     $success++;
                 } else {
                     $failed++;
+                    $failed_ports[] = "[".$port."] => VLAN-". $vlans[$key];
                 }
             }
 
@@ -581,11 +583,11 @@ class ArubaOS implements IDevice
             if($success == $portcount) {
                 return json_encode(['success' => 'true', 'error' => 'Updated '.$success.' of '.$portcount.' ports']);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'Failed to update '.$failed.' of '.count($ports).' ports']);
+                return json_encode(['success' => 'false', 'error' => 'Failed to update '.$failed.' of '.count($ports).' ports<br> '.implode("<br>", $failed_ports)]);
             }
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Login failed']);
+        return json_encode(['success' => 'false', 'error' => 'API Login failed']);
     }
 }
 

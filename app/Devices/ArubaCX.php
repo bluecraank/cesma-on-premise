@@ -528,7 +528,7 @@ class ArubaCX implements IDevice
 
                 $uri = "system/interfaces/1%2F1%2F".$port;
 
-                $result = self::ApiPut($device->hostname, $cookie, $uri, $api_version, $data);
+                $result = self::ApiPatch($device->hostname, $cookie, $uri, $api_version, $data);
 
                 if($result['success']) {
                     $success++;
