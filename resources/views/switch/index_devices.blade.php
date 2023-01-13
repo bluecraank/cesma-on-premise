@@ -1,5 +1,21 @@
 <x-layouts.main>
 @livewire('search-switch')
+<div class="box">
+    <div class="label is-small">Alle Switche</div>
+    {{-- <div class="buttons are-small"> --}}
+        {{-- <a class="button is-primary" href="/switch/uplinks"><i class="fa-solid fa-up-down mr-2"></i> Show Uplink-Ports</a> --}}
+        {{-- <a class="button is-primary" href="/switch/trunks"><i class="fa-solid fa-circle-nodes mr-2"></i> Show Trunks</a> --}}
+
+    {{-- </div> --}}
+    <div class="buttons are-small">
+        <form action="post" id="form-all-devices">
+            @csrf
+            <a onclick="device_overview_actions('pubkeys', this)" class="button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
+            <a onclick="device_overview_actions('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+        </form>
+    </div>
+    <div class="is-size-7">Diese Aufgaben werden regelmäßig ausgeführt</div>
+</div>
 
 <div class="modal modal-new-switch">
     <form action="/switch/create" method="post">
@@ -209,6 +225,35 @@
                 <button class="button is-danger">Switch
                     löschen</button>
                 <button onclick="$('.modal-delete-switch').hide();return false;" type="button"
+                    class="button">Abbrechen</button>
+            </footer>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-sync-pubkeys">
+    <form action="/switch/every/pubkeys" method="post">
+        @csrf
+        <div class="modal-background"></div>
+        <div style="margin-top: 40px" class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Pubkeys synchronisieren</p>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Folgende Pubkeys werden synchronisiert:</label>
+                    <div class="control">
+                        <ul class="ml-5" style="list-style-type:circle">
+                        @foreach ($keys as $key)
+                        <li>{{ $key }}</li>
+                        @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-primary">Synchronisieren</button>
+                <button onclick="$('.modal-sync-pubkeys').hide();return false;" type="button"
                     class="button">Abbrechen</button>
             </footer>
         </div>

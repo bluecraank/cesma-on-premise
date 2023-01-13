@@ -527,6 +527,7 @@ class ArubaOS implements IDevice
             
                         $response = self::ApiPut($device->hostname, $cookie, $url, $api_version, $data);
 
+                        self::ApiLogout($device->hostname, $cookie, $api_version);
                         if($response['success']) {
                             return json_encode(['success' => 'true', 'error' => "Uploaded and aaa configured"]);
                         }

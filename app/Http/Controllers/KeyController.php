@@ -83,6 +83,31 @@ class KeyController extends Controller
 
         return $keys2;     
     }
+
+    static function getPubkeysDesc() {
+        $keys_db = Key::all();
+        $users = User::all();
+
+        $keys = [];
+        $i = 1;
+
+        foreach($keys_db as $key) {
+            $keys[$i] = $key->description;
+
+            $i++;
+        }
+
+        foreach($users as $user) {
+
+            if($user->privatekey !== NULL and !empty($user->privatekey)) {
+                    $keys[$i] = $user->name;
+
+                    $i++;
+            }
+        }
+
+        return $keys;
+    }
     /**
      * Show the form for creating a new resource.
      *

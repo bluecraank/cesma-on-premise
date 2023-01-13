@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+use function Termwind\render;
+
 class DeviceController extends Controller
 {
     static $models = [
@@ -34,13 +36,15 @@ class DeviceController extends Controller
         $devices = Device::all()->sortBy('name');
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
+        $keys = KeyController::getPubkeysDesc();
         $https = config('app.https', 'http://');
 
         return view('switch.index_devices', compact(
             'devices',
             'locations',
             'buildings',
-            'https'
+            'https',
+            'keys'
         ));
     }
 
@@ -457,7 +461,9 @@ class DeviceController extends Controller
         return json_encode(['success' => 'false', 'error' => 'Error finding device']);
     }
 
-    static function uploadPubkeysAllDevices() { 
+    static function uploadPubkeysAllDevices() {
+        
+        return redirect()->back()->withErrors(['error' => 'Error uploading pubkeys']);
         $pubkeys = KeyController::getPubkeysAsArray();
 
         $devices = Device::all()->keyBy('id');

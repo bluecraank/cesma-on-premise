@@ -263,8 +263,8 @@ function device_overview_actions(type, ele) {
         uri = '/switch/every/clients';
         cssclass = 'fa-computer';
     } else if (type == "pubkeys") {
-        uri = '/switch/every/pubkeys';
-        cssclass = 'fa-sync';
+        $(".modal-sync-pubkeys").show();
+        return false;
     }
     fetcher(uri, form, ele, cssclass);
 }

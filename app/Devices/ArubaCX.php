@@ -496,6 +496,9 @@ class ArubaCX implements IDevice
             'authorized_keys' => $pubkeys,
         ));
 
+        // No need to enable public key auth, it's already enabled by default on ArubaCX
+        // see https://www.arubanetworks.com/techdocs/AOS-CX/10.10/HTML/security_83xx-8400-9300-10000/Content/Chp_Loc_AAA/Loc_AAA_cmds/ssh-pub-key-aut62.htm
+
         self::ApiLogout($device->hostname, $cookie, $api_version);
 
         if($upload->successful()) {
