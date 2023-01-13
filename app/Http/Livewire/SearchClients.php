@@ -36,13 +36,19 @@ class SearchClients extends Component
         }
     
         return view('client.index_',[
-            'clients' => Client::where('hostname', 'like', $searchTerm)
-            ->orWhere('ip_address', 'like', $searchTerm)
-            ->orWhere('mac_address', 'like', $searchTerm)
-            ->orWhere('vlan_id', 'like', $searchTerm)
-            ->orWhere('port_id', 'like', $searchTerm)
-            ->orWhere('switch_id', 'like', $searchTerm)
-            ->get(),
+            'clients' => Client::where(function ($query) use ($searchTerm) {
+                $hide_vlans = explode(",", config('app.hide_vlans'));
+                foreach($hide_vlans as $vlan) {
+                    $query->where('vlan_id', 'not like', $vlan);
+                }
+            })->where(function ($query) use ($searchTerm) {
+                $query->where('hostname', 'like', $searchTerm)
+                    ->orWhere('ip_address', 'like', $searchTerm)
+                    ->orWhere('mac_address', 'like', $searchTerm)
+                    ->orWhere('vlan_id', 'like', $searchTerm)
+                    ->orWhere('port_id', 'like', $searchTerm)
+                    ->orWhere('switch_id', 'like', $searchTerm);
+            })->get(),
             'devices' => $devices
         ]);
     }

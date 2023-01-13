@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin');
         
         // Daten aus der DB verarbeiten und Clients finden / updaten
-        $schedule->command('clients:update')->hourly()->timezone('Europe/Berlin');
+        $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin');
 
         // Clients anpingen, um den Status anzuzeigen
         $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin');

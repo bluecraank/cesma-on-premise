@@ -2,16 +2,11 @@
 
 namespace App\Devices;
 
-use App\Http\Controllers\BackupController;
-use App\Http\Controllers\DeviceController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Backup;
 use App\Models\Device;
-use Illuminate\Http\Client\Request;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
 
 class ArubaCX implements IDevice
 {
@@ -82,7 +77,26 @@ class ArubaCX implements IDevice
         ])->post($api_url);
 
         return true;
-    }   
+    } 
+    
+    static function ApiPut($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->put($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    }
 
     static function ApiGet($hostname, $cookie, $api, $version): Array
     {
@@ -98,6 +112,44 @@ class ArubaCX implements IDevice
                 return ['success' => true, 'data' => $response->json()];
             } else {
                 return ['success' => false, 'data' => "Error while fetching $api"];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    }   
+
+    static function ApiPatch($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->patch($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            dd($e->getMessage());   
+        }
+    }
+
+    static function ApiPost($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->post($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
             return ['success' => false, 'data' => []];
@@ -426,7 +478,7 @@ class ArubaCX implements IDevice
         return ['success' => false, 'data' => 'Restore failed: '.$data['status'] . " " .$data['failure_reason']];
     }
 
-    static function uploadPubkeys($device, $pubkeys) {
+    static function uploadPubkeys($device, $pubkeys): String {
         if(!$login_info = self::ApiLogin($device)) {
             return json_encode(['success' => 'false', 'error' => 'Login failed']);
         }
@@ -452,6 +504,55 @@ class ArubaCX implements IDevice
             return json_encode(['success' => 'false', 'error' => 'Pubkeys not synced']);
         }
 
+    }
+
+    static function updatePortVlanUntagged($vlans, $ports, $device): String {
+        $success = 0;
+        $failed = 0;
+        $portcount = count($ports);
+
+        if($login_info = self::ApiLogin($device)) {
+
+            list($cookie, $api_version) = explode(";", $login_info);
+
+            $rest_vlans_uri = "/rest/".$api_version."/system/vlans/";
+
+            foreach($ports as $key => $port) {
+                $data = '{
+                    "vlan_mode": "native-untagged",
+                    "vlan_tag": "'.$rest_vlans_uri.$vlans[$key].'",
+                    "vlan_trunks": [
+                      "'.$rest_vlans_uri.$vlans[$key].'"
+                    ]
+                  }';
+
+                $uri = "system/interfaces/1%2F1%2F".$port;
+
+                $result = self::ApiPut($device->hostname, $cookie, $uri, $api_version, $data);
+
+                if($result['success']) {
+                    $success++;
+                } else {
+                    $failed++;
+                }
+            }
+
+            if($failed !== count($ports)) {
+                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData);
+                $device->save();
+            }
+
+            self::ApiLogout($device->hostname, $cookie, $api_version);
+
+            if($success == $portcount) {
+                return json_encode(['success' => 'true', 'error' => 'Updated '.$success.' of '.$portcount.' ports']);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Failed to update '.$failed.' of '.count($ports).' ports']);
+            }
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Login failed']);
     }
 }
 

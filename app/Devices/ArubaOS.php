@@ -8,9 +8,9 @@ use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\KeyController;
 use App\Models\Backup;
 use App\Models\Device;
-use Illuminate\Http\Client\Request;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
+use Spatie\FlareClient\Api;
 
 class ArubaOS implements IDevice
 {
@@ -116,6 +116,44 @@ class ArubaOS implements IDevice
 
             if($response->successful()) {
                 return ['success' => true, 'data' => $response->json()];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    } 
+
+    static function ApiPatch($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->patch($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    }
+
+    static function ApiPost($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->post($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => array($response->status(), $response->json())];
             } else {
                 return ['success' => false, 'data' => $response->json()];
             }
@@ -451,7 +489,7 @@ class ArubaOS implements IDevice
         return ['success' => false, 'data' => 'Restore failed: '.$data['status'] . " " .$data['failure_reason']];
     }
 
-    static function uploadPubkeys($device) {
+    static function uploadPubkeys($device, $pubkeys = false): String {
 
         if (config('app.ssh_private_key')) {
             $decrypt = EncryptionController::getPrivateKey();
@@ -502,6 +540,52 @@ class ArubaOS implements IDevice
         }
 
         return json_encode(['success' => 'false', 'error' => 'Error sftp connection']);
+    }
+
+    static function updatePortVlanUntagged($vlans, $ports, $device): String {
+        
+        $success = 0;
+        $failed = 0;
+        $portcount = count($ports);
+
+        if($login_info = self::ApiLogin($device)) {
+
+            list($cookie, $api_version) = explode(";", $login_info);
+
+            $uri = "vlans-ports";
+
+            foreach($ports as $key => $port) {
+                $data = '{
+                    "vlan_id": '.$vlans[$key].', 
+                    "port_id": "'.$port.'", 
+                    "port_mode":"POM_UNTAGGED"
+                }';
+
+                $result = self::ApiPost($device->hostname, $cookie, $uri, $api_version, $data);
+
+                if($result['success']) {
+                    $success++;
+                } else {
+                    $failed++;
+                }
+            }
+
+            if($failed !== count($ports)) {
+                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
+                $device->save();
+            }
+
+            self::ApiLogout($device->hostname, $cookie, $api_version);
+
+            if($success == $portcount) {
+                return json_encode(['success' => 'true', 'error' => 'Updated '.$success.' of '.$portcount.' ports']);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'Failed to update '.$failed.' of '.count($ports).' ports']);
+            }
+        }
+
+        return json_encode(['success' => 'false', 'error' => 'Login failed']);
     }
 }
 

@@ -21,6 +21,7 @@ class Client extends Model
         'ip_address',
         'hostname',
         'id',
+        'type',
         'created_at',
         'updated_at'
     ];

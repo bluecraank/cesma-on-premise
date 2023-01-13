@@ -13,17 +13,10 @@ class ClientController extends Controller
 {
 
     public function index() {
-        $clients = Client::all();
+        $clients = Client::where('vlan_id', '!=', 3056)->get();
         $devices = Device::all()->keyBy('id');
 
         return view('client.index', compact('clients', 'devices'));
-    }
-
-    public function index_printers() {
-        $printers = UnknownClient::all();
-        $devices = Device::all()->keyBy('id');
-
-        return view('client.index_printers', compact('printers', 'devices'));
     }
 
     static function getClientsFromProviders() { 
@@ -121,14 +114,19 @@ class ClientController extends Controller
             $result = mb_substr($client['mac_address'], 0, 6);
             if(in_array($result, $printer_macs)) {
                 $type = "printer";
+                echo $client['mac_address']." | ".$type."<br>";
                 $unique_endpoints[$key]['type'] = $type;
             } elseif(in_array($result, $phone_macs)) {
                 $type = "phone";
+                echo $client['mac_address']." | ".$type."<br>";
+
                 $unique_endpoints[$key]['type'] = $type;
             }
+        }
 
+        foreach($unique_endpoints as $key => $client) {
             $md5 = md5($client['hostname'].$client['ip_address']);
-            $found = Client::where('id', md5($client['hostname'].$client['ip_address']))->first();
+            $found = Client::where('id', md5($client['hostname'].$client['ip_address']))->orWhere('mac_address', $client['mac_address'])->first();
             if($found) {
                 $found->update([
                     'hostname' => $client['hostname'],
@@ -264,14 +262,5 @@ class ClientController extends Controller
 
         $elapsed = microtime(true) - $start;
         echo ($elapsed."sec");
-    }
-
-    static function debugUnknownClients() {
-        $unknown = UnknownClient::all();
-        foreach($unknown as $client) {
-            echo $client->hostname." | ".$client->mac_address." | ".$client->vlan_id."<br>";
-
-        }        
-        dd($unknown);
     }
 }

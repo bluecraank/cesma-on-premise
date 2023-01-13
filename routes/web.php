@@ -40,7 +40,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/system', [UserController::class, 'management'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
-    Route::get('/printers', [ClientController::class, 'index_printers'])->name('printers');
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
@@ -92,6 +91,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::put('/{id}/refresh', [DeviceController::class, 'refresh']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
     Route::put('/uplinks/update', [DeviceController::class, 'updateUplinks']);
+    Route::post('/{id}/ports/update', [DeviceController::class, 'updateUntaggedPorts']);
 
 
     // Posts for actions on all Switches

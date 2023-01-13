@@ -29,6 +29,7 @@ return [
     'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
     
+    'hide_vlans' => env('HIDE_VLANS_IN_CLIENT_PAGE', ''),
 
     /*
     |--------------------------------------------------------------------------

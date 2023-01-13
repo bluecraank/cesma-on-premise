@@ -97,6 +97,11 @@
                             <td>{{ implode(', ', $trunk) }}</td>
                         </tr>
                         @endforeach
+                        @if (empty($trunks))
+                        <tr>
+                            <td colspan="2">Keine Trunks gefunden</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -169,7 +174,24 @@
 
         <div class="column is-8">
             <div class="box">
-                <h2 class="subtitle"><span class='success_font'>LIVE</span> Portübersicht</h2>
+                <h2 class="subtitle"><span class='success_font'>LIVE</span> Portübersicht 
+                    <span onclick="$('.port-vlan-select').each(function() {
+                        $( this ).prop('disabled', true);
+                      });$('.save-vlans').addClass('is-hidden');$('.edit-vlans').removeClass('is-hidden');" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
+                <span onclick="updateUntaggedPorts()" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
+                <span onclick="$('.port-vlan-select').each(function() {
+                    $( this ).prop('disabled', false);
+                  });$('.save-vlans').removeClass('is-hidden');$('.edit-vlans').addClass('is-hidden');
+                   " class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
+                   
+                   </h2>
+
+                <div class="notification response-update-vlan is-hidden is-success">
+                    <button class="delete" onclick="$('.response-update-vlan').addClass('is-hidden');"></button>
+                    <span class="response-update-vlan-text"></span>
+                </div>
+
+
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -207,7 +229,19 @@
                                 {{ $port['name'] }}
                             </td>
                             <td>
-                               {!! $untagged[$port['id']] !!}
+                                @if(str_contains($untagged[$port['id']], 'Trk')) 
+                                {{ $untagged[$port['id']] }}
+                                @else
+                                <div class="select">
+                                    <select data-id="{{ $device->id }}" data-port="{{ $port['id'] }}" data-current-vlan="{{  ($untagged[$port['id']]) ? $untagged[$port['id']] : 0 }}" class="port-vlan-select" disabled>
+                                        <option value="0">Kein VLAN</option>
+                                        @foreach(json_decode($device->vlan_data) as $vlan)
+                                        {{ $untagged[$port['id']] }}
+                                        <option value="{{ $vlan->vlan_id }}" {{  ($untagged[$port['id']] == $vlan->vlan_id) ? 'selected' : '' }}>{{ $vlan->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
                             </td>
                             <td>
                                 <div class="dropdown is-up is-small">

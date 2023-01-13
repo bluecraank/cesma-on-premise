@@ -111,7 +111,7 @@ class DeviceController extends Controller
             // Get tagged, untagged VLANs as list
             foreach ($vlan_ports as $vlan_port) {
                 if (!$vlan_port->is_tagged and !str_contains($vlan_port->port_id, "Trk")) {
-                    $untagged[$vlan_port->port_id] = "<span class='is-clickable' onclick=\"location.href = '/vlans/".$vlan_port->vlan_id."';\">VLAN " . $vlan_port->vlan_id."</a>";
+                    $untagged[$vlan_port->port_id] = $vlan_port->vlan_id;
                 } elseif ($vlan_port->is_tagged and !str_contains($vlan_port->port_id, "Trk")) {
                     $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
                 } elseif ($vlan_port->is_tagged and str_contains($vlan_port->port_id, "Trk")) {
@@ -490,6 +490,24 @@ class DeviceController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    static function updateUntaggedPorts(Request $request) {
+
+        $device = Device::find($request->input('device'));
+
+        if($device) {
+            $vlans = json_decode($request->input('vlans'), true);
+            $ports = json_decode($request->input('ports'), true);
+
+            if(is_array($vlans) and is_array($ports) and count($vlans) != 0 and count($vlans) == count($ports)) {
+                $class = self::$models[$device->type];
+                return $class::updatePortVlanUntagged($vlans, $ports, $device);
+            }
+
+            return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);
+        }
+        return json_encode(['success' => 'false', 'error' => 'Device not found']);
     }
 
     static function restoreBackup(Request $request) {

@@ -2,7 +2,6 @@
     <h1 class="title is-pulled-left">Geräte (@php echo count($clients); @endphp)</h1>
 
     <div class="is-pulled-right ml-4">
-        <a href="/printers" class="button"><i class="fa-solid fa-print mr-1"></i> / <i class="ml-1 fa-solid fa-phone mr-2"></i></a>
     </div>
 
     <div class="is-pulled-right">
@@ -38,11 +37,16 @@
                 } else {
                     $online = 'has-text-link';
                 }
+
+                if($client->type == "client") $type = 'computer';
+                if($client->type == "printer") $type = 'print';
+                if($client->type == "phone") $type = 'phone';
+
                 $chunks = str_split(strtoupper($client->mac_address), 2);
                 $end = implode(':', $chunks);
             @endphp
                 <tr>   
-                    <td><i style="" class="fa fa-circle {{ $online }}"></i> {{ strtoupper($client->hostname) }}</td>
+                    <td><i style="" class="mr-2 fa fa-{{ $type }} {{ $online }}"></i> {{ substr(strtoupper($client->hostname),0,20) }}</td>
                     <td>{{ $client->ip_address }}</td>
                     <td>{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>

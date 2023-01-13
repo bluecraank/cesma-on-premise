@@ -25,6 +25,10 @@ use Illuminate\Http\Client\Request;
 
         static function ApiGet(String $hostname, String $cookie, String $api, String $api_version): Array;
 
+        static function ApiPost(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+
+        static function ApiPatch(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+
         static function ApiGetAcceptPlain(String $hostname, String $cookie, String $api, String $api_version): Array;
 
         static function getApiData(Device $device): Array;
@@ -46,5 +50,9 @@ use Illuminate\Http\Client\Request;
         static function getSystemInformations(Array $system): Array;
 
         static function getTrunks(Device $device): Array;
+
+        static function uploadPubkeys($device, $pubkeys): String;
+
+        static function updatePortVlanUntagged($vlans, $ports, $device): String;
     }
 ?>

@@ -158,6 +158,65 @@ function editUplinkModal(id, name, uplinks) {
     modal.show();
 }
 
+function updateUntaggedPorts() {
+    let ports = [];
+    let vlans = [];
+    let device = 0;
+
+    let i = 0;
+    $(".port-vlan-select").each(function() {
+        if($(this).attr('data-current-vlan') != $(this).val()) {
+            device = $(this).attr('data-id');
+
+            let port = $(this).attr('data-port');
+            ports[i] = port;
+            vlans[i] = ($(this).val());
+
+            i++;
+        }
+    });
+
+    let token = $('meta[name="csrf-token"]').attr('content');
+
+    let formData = new FormData();
+    formData.append('ports', JSON.stringify(ports));
+    formData.append('vlans', JSON.stringify(vlans));
+    formData.append('device', device);
+    formData.append('_token', token);
+
+    let uri = '/switch/'+device+'/ports/update';
+
+    $(".live-body").css('opacity', '0.5');
+    fetch(uri, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success == "true") {
+            $(".live-body").css('opacity', '1');
+            $(".save-vlans").addClass('is-hidden');
+            $(".edit-vlans").removeClass('is-hidden');
+            $(".response-update-vlan").removeClass('is-hidden');
+            $(".response-update-vlan").addClass('is-success');
+            $(".response-update-vlan").removeClass('is-danger');
+            $(".response-update-vlan-text").html("<b>Success:</b> " + data.error);
+        } else {
+            $(".live-body").css('opacity', '1');
+            $(".save-vlans").addClass('is-hidden');
+            $(".edit-vlans").removeClass('is-hidden');
+            $(".response-update-vlan").removeClass('is-hidden');
+            $(".response-update-vlan").addClass('is-danger');
+            $(".response-update-vlan").removeClass('is-success');
+            $(".response-update-vlan-text").html("<b>Error:</b> " + data.error);
+        }
+    });
+
+    $(".port-vlan-select").each(function() {
+        $(this).prop('disabled', true);
+    });
+}
+
 function refreshSwitch(ele) {
     $(ele).addClass('is-loading');
     let form = $("#refresh-form").serialize();

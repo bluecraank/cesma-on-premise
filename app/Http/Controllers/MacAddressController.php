@@ -17,7 +17,7 @@ class MacAddressController extends Controller
         ]);
 
         if($newMacAddress) {
-            echo "Created new mac address: ".$mac."\n";
+            // echo "Created new mac address: ".$mac."\n";
             return true;
         }
         return false;
