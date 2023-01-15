@@ -98,6 +98,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
+    Route::post('/every/vlans', [DeviceController::class, 'updateVlansAllDevices'])->name('Sync VLAN Results');
 });
 
 Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function() {

@@ -25,6 +25,7 @@
                 <th>Beschreibung</th>
                 <th>IP-Bereich</th>
                 <th>Scan</th>
+                <th>Sync</th>
                 <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
         </thead>
@@ -32,8 +33,12 @@
             @foreach($vlans as $vlan)
             @php
                 $scan = "Nein";
+                $sync = "Nein";
                 if($vlan->scan == 1) {
                     $scan = "Ja";
+                }
+                if($vlan->sync == 1) {
+                    $sync = "Ja";
                 }
             @endphp
             <tr>
@@ -53,13 +58,15 @@
                 <td>
                     {{ $scan }}
                 </td>
-
+                <td>
+                    {{ $sync }}
+                </td>
                 <td style="width:150px;">
                     <div class="has-text-centered">
                     <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
                             <i class="fa-solid fa-eye"></i>
                         </a>
-                        <button onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                        <button onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
                         <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                     </div>
                 </td>

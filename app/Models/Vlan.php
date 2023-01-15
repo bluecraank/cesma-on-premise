@@ -16,5 +16,6 @@ class Vlan extends Model
         'location_id',
         'ip_range',
         'scan',
+        'sync',
     ];
 }

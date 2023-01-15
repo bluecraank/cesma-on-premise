@@ -10,8 +10,9 @@
     <div class="buttons are-small">
         <form action="post" id="form-all-devices">
             @csrf
-            <a onclick="device_overview_actions('pubkeys', this)" class="sync-pubkeys-button button is-link"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
-            <a onclick="device_overview_actions('backups', this)" class="button is-link"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+            <a onclick="device_overview_actions('backups', this)" class="button is-info"><i class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+            <a onclick="$('.modal-sync-vlans').show();return false;" class="button is-info"><i class="fa-solid fa-ethernet mr-2"></i> Sync VLANs</a>
+            <a onclick="device_overview_actions('pubkeys', this)" class="sync-pubkeys-button button is-info"><i class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
         </form>
     </div>
 </div>
@@ -254,6 +255,52 @@
                 <button class="button is-primary">Synchronisieren</button>
                 <button onclick="$('.modal-sync-pubkeys').hide();return false;" type="button"
                     class="button">Abbrechen</button>
+            </footer>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-sync-vlans">
+    <form action="/switch/every/vlans" id="form-sync-vlans" method="post">
+        @csrf
+        <div class="modal-background"></div>
+        <div style="margin-top: 40px" class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">VLANs synchronisieren</p>
+            </header>
+            <section class="modal-card-body">
+                <div class="content">
+                    <p>
+                        Hiermit werden die in der Datenbank hinterlegten VLANs auf die Switche übertragen. (<a href="{{ route('vlans') }}">Zur VLAN-Übersicht</a>)<br>
+                        <ul>
+                            <li>VLANs werden nur erstellt, nicht gelöscht.</li>
+                            <li>Namen werden überschrieben.</li>
+                        </ul>
+                        <br>
+                    </p>
+
+                    <label class="label">Optionen:</label>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" name="create-if-not-exists">
+                            VLANs erstellen, wenn noch nicht vorhanden
+                        </label>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" name="create-if-not-exists" checked>
+                            Ergebnis anzeigen
+                        </label>
+                    </div>
+                 </div> 
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-primary sync-vlan-start" onclick="$(this).addClass('is-loading');$('.sync-vlan-info').removeClass('is-hidden');$('.sync-vlan-cancel').addClass('is-hidden');">Synchronisieren</button>
+                <button onclick="$('.modal-sync-vlans').hide();return false;" type="button"
+                    class="button sync-vlan-cancel">Abbrechen</button>
+
+                <span class="sync-vlan-info help is-size-6 is-hidden">Dies dauert einige Minuten! Bitte warten...</span>
             </footer>
         </div>
     </form>

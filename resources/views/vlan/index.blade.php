@@ -44,7 +44,13 @@
                         <label class="checkbox">
                             <input type="checkbox" name="scan" class="vlan-scan">
                             NMAP-Scan aktivieren
-                          </label>
+                        </label>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" name="sync" class="vlan-sync">
+                            VLAN syncen
+                        </label>
                     </div>
                 </section>
                 <footer class="modal-card-foot">

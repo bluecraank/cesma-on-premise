@@ -52,7 +52,7 @@ class ArubaCX implements IDevice
         $api_password = EncryptionController::decrypt($device->password);
 
         try {
-            $response = Http::withoutVerifying()->asForm()->post($api_url, [
+            $response = Http::connectTimeout(3)->withoutVerifying()->asForm()->post($api_url, [
                 'username' => $api_username,
                 'password' => $api_password,
             ]); 
@@ -556,6 +556,102 @@ class ArubaCX implements IDevice
         }
 
         return json_encode(['success' => 'false', 'error' => 'Login failed']);
+    }
+
+    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans): Array {
+
+        $start = microtime(true);
+        $not_found = [];
+        $chg_name = [];
+        $return = [];
+        $return['log'] = [];
+
+        $i_not_found = 0;
+        $i_chg_name = 0;
+
+        $i_vlan_created = 0;
+        $i_vlan_chg_name = 0;
+
+        $return['log'][] = "<b>[Aufgaben]</b></br>";
+        foreach($vlans as $key => $vlan) {
+            if(!array_key_exists($key, $vlans_switch)) {
+                $not_found[$key] = $vlan;
+                $return['log'][] = "<span class='tag is-link'>VLAN $key</span> VLAN erstellen";
+                $i_not_found++;
+            } else {
+                if($vlan->name != $vlans_switch[$key]['name']) {
+                    $chg_name[$key] = $vlan;
+                    $return['log'][] = "<span class='tag is-link'>VLAN $key</span> Name ändern ({$vlans_switch[$key]['name']} => {$vlan->name})";
+                    $i_chg_name++;
+                }
+            }
+        }
+
+        if($i_not_found == 0 && $i_chg_name == 0) {
+            $return['log'][] = "Keine Aufgaben";
+            $return['time'] = number_format(microtime(true)-$start, 2);
+            return $return;
+        }   
+
+        $return['log'][] = "</br><b>[Log]</b></br>";
+
+        if(!$login_info = self::ApiLogin($device)) {
+            $return['log'][] = "<span class='tag is-danger'>API</span> Login fehlgeschlagen";
+            $return['time'] = number_format(microtime(true)-$start, 2);
+            return $return;
+        }
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        if($create_vlans) {
+            foreach($not_found as $key => $vlan) {
+                $data = '{
+                    "name": '.$vlan->name.',
+                    "id": '.$vlan->vid.'
+                }';
+                
+                $response = self::ApiPost($device->hostname, $cookie, "system/vlans", $api_version, $data);
+
+                if($response['success']) {
+                    $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich erstellt";
+                    $i_vlan_created++;
+                } else {
+                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht erstellt werden";
+                }
+            }
+        }
+
+        foreach($chg_name as $vlan) {
+            $data = '{
+                "name": "'.$vlan->name.'"
+            }';
+            
+            $response = self::ApiPut($device->hostname, $cookie, "system/vlans/".$vlan->vid, $api_version, $data);
+
+            if($response['success']) {
+                $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
+                $i_vlan_chg_name++;
+            } else {
+                if($vlan->vid != 1) {
+                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                } else {
+                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> VLAN 1 kann nicht umbenannt werden (ArubaCX Einschränkung)";
+                }
+            }
+        }
+
+        $vlan_data = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlans'], $api_version)['data'];
+        $device->vlan_data = self::getVlanData($vlan_data);
+        $device->save();
+
+        self::ApiLogout($device->hostname, $cookie, $api_version);
+
+        $return['log'][] = "</br><b>[Ergebnisse]</b></br>";
+        $return['log'][] = $i_vlan_created." von ".$i_not_found." VLANs erstellt";
+        $return['log'][] = $i_vlan_chg_name." von ".$i_chg_name." VLANs umbenannt";
+
+        $return['time'] = number_format(microtime(true)-$start, 2);
+        return $return;
     }
 }
 

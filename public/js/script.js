@@ -115,7 +115,7 @@ function deleteBuildingModal(id, name) {
     modal.show()
 }
 
-function editVlanModal(id, name, description, ip, scan) {
+function editVlanModal(id, name, description, ip, scan, sync) {
     let modal = $('.modal-edit-vlan');
     modal.find('.vlan-id').val(id);
     modal.find('.vlan-name').val(name);
@@ -125,6 +125,11 @@ function editVlanModal(id, name, description, ip, scan) {
         modal.find('.vlan-scan').prop('checked', true);
     } else {
         modal.find('.vlan-scan').prop('checked', false);
+    }
+    if(sync == 1) {
+        modal.find('.vlan-sync').prop('checked', true);
+    } else {
+        modal.find('.vlan-sync').prop('checked', false);
     }
     modal.show()
 }
@@ -158,10 +163,10 @@ function editUplinkModal(id, name, uplinks) {
     modal.show();
 }
 
-function updateUntaggedPorts() {
+function updateUntaggedPorts(id) {
     let ports = [];
     let vlans = [];
-    let device = 0;
+    let device = id;
 
     let i = 0;
     $(".port-vlan-select").each(function() {

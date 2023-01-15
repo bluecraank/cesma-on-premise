@@ -37,6 +37,7 @@ class VlanController extends Controller
 
 
     public function getPortsByVlan($vlan) {
+        $vlan_db = Vlan::where('vid', $vlan)->first();
         $vlans = [];
         $devices = Device::all()->sortBy('name');
         $ports = [];
@@ -82,6 +83,7 @@ class VlanController extends Controller
             'count_untagged',
             'count_tagged',
             'count_online',
+            'vlan_db'
         ));
     }
     /**
@@ -140,7 +142,8 @@ class VlanController extends Controller
             'name' => $request['name'],
             'description' => $request['description'],
             'ip_range' => $request['ip_range'] ?? null,
-            'scan' => ($request['scan'] == "on") ? true : false
+            'scan' => ($request['scan'] == "on") ? true : false,
+            'sync' => ($request['sync'] == "on") ? true : false
         ])) {
             $vlanD = Vlan::whereId($request['id'])->first();
             LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '"}');

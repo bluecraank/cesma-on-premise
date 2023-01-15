@@ -13,6 +13,7 @@ use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
 use App\Models\MacAddress;
+use App\Models\Vlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -80,6 +81,7 @@ class DeviceController extends Controller
             $vlan_ports = json_decode($device->vlan_port_data);
             $port_statistic_raw = json_decode($device->port_statistic_data, true);
             $system = json_decode($device->system_data);
+            $vlans = json_decode($device->vlan_data, true);
 
             $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
 
@@ -136,7 +138,8 @@ class DeviceController extends Controller
                 'system',
                 'ports_online',
                 'count_ports',
-                'backups'
+                'backups',
+                'vlans'
             ));
         }
 
@@ -478,6 +481,31 @@ class DeviceController extends Controller
         return json_encode(['success' => 'false', 'error' => 'No pubkeys found']);
     }
 
+    static function updateVlansAllDevices(Request $request) {
+        $devices = Device::all()->keyBy('id');
+        $vlans = Vlan::where('sync', '!=', '0')->get()->keyBy('vid');
+        $results = [];
+
+        $create_vlan = ($request->input('create-if-not-exists') == "on") ? true : false;
+
+        $start = microtime(true);
+        foreach($devices as $device) {
+            if(!in_array($device->type, array_keys(self::$models))) {
+                continue;
+            }
+
+            $vlans_switch = json_decode($device->vlan_data, true);
+
+            $results[$device->id] = [];
+
+            $class = self::$models[$device->type];
+            $results[$device->id] = $class::updateVlans($vlans, $vlans_switch, $device, $create_vlan);
+        }
+
+        $elapsed = microtime(true)-$start;
+        return view('vlan.sync', compact('devices', 'results', 'elapsed'));
+    }
+
     static function updateUplinks(Request $request) {
 
         $validator = Validator::make($request->all(), [
@@ -511,6 +539,8 @@ class DeviceController extends Controller
             if(is_array($vlans) and is_array($ports) and count($vlans) != 0 and count($vlans) == count($ports)) {
                 $class = self::$models[$device->type];
                 return $class::updatePortVlanUntagged($vlans, $ports, $device);
+            } else {
+                return json_encode(['success' => 'false', 'error' => 'No changes found']);
             }
 
             return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);

@@ -5,8 +5,7 @@
         </ul>
     </div>
     <div class="box">
-    <h1 class="title is-pulled-left">VLAN Details</h1>
-
+    <h1 class="title is-pulled-left">VLAN {{  $vlan_db['vid'] }} - {{ $vlan_db['name'] }}</span></h1>
     <br>
     <br>
     <br>

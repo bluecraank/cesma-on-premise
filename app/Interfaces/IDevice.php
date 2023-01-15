@@ -4,6 +4,7 @@
 
 use App\Models\Backup;
 use App\Models\Device;
+use App\Models\Vlan;
 use Illuminate\Http\Client\Request;
 
     interface IDevice
@@ -54,5 +55,7 @@ use Illuminate\Http\Client\Request;
         static function uploadPubkeys($device, $pubkeys): String;
 
         static function updatePortVlanUntagged($vlans, $ports, $device): String;
+
+        static function updateVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans): Array;
     }
 ?>

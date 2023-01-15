@@ -178,7 +178,7 @@
                     <span onclick="$('.port-vlan-select').each(function() {
                         $( this ).prop('disabled', true);
                       });$('.save-vlans').addClass('is-hidden');$('.edit-vlans').removeClass('is-hidden');" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
-                <span onclick="updateUntaggedPorts()" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
+                <span onclick="updateUntaggedPorts('{{ $device->id }}')" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
                 <span onclick="$('.port-vlan-select').each(function() {
                     $( this ).prop('disabled', false);
                   });$('.save-vlans').removeClass('is-hidden');$('.edit-vlans').addClass('is-hidden');
@@ -208,6 +208,7 @@
                         @php
                             $portlist = $device->ports;
                             sort($portlist);
+
                         @endphp
                         @foreach ($portlist as $port)
                         @if (!str_contains($port['id'], "Trk"))
@@ -218,6 +219,7 @@
                         $tagged[$port['id']] = $tagged[$port['trunk_group']];
                         }
                         @endphp
+
                         <tr style="line-height: 37px;">
                             <td class="has-text-centered">
                                 <i class="fa fa-circle {{ $status }}"></i>
@@ -244,7 +246,7 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="dropdown is-up is-small">
+                                <div class="dropdown is-down is-small">
                                     <div class="dropdown-trigger" onclick="$(this).parent().toggleClass('is-active');">
                                         <button class="button" aria-haspopup="true" aria-controls="dropdown-menu7">
                                             <span> {{ count($tagged[$port['id']]) }} VLANs</span>
@@ -256,10 +258,13 @@
                                     <div class="dropdown-menu" id="dropdown-menu7" role="menu">
                                         <div class="dropdown-content">
                                             <div class="dropdown-item">
+        
                                                 <div class="tags">
-                                                    @php sort($tagged[$port['id']]) @endphp
-                                                    @foreach ($tagged[$port['id']] as $tag)
-                                                    <span class="tag is-blue is-clickable" onclick="location.href = '/vlans/{{ $tag }}';">{{ $tag }}</span>
+                                                    @php sort($vlans) @endphp
+                                                    @foreach ($vlans as $vlan)
+                                                
+                                                    <span class="tag is-blue is-clickable has-text-weight-bold has-text-white"><input type="checkbox" {{ (in_array($vlan['vlan_id'], $tagged[$port['id']])) ? 'checked' : '' }} name="selectednames[]" value="4" class="mr-2" /> {{ $vlan['vlan_id'] }}</span>
+                                                    
                                                     @endforeach
                                                 </div>
                                             </div>
