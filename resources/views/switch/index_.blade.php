@@ -20,7 +20,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Hostname</th>
+                {{-- <th>Hostname</th> --}}
                 <th>Modell</th>
                 <th>Firmware</th>
                 <th>Standort</th>
@@ -38,7 +38,7 @@
                 @endphp 
             <tr>
                 <td><i style="" class="mr-1 fa fa-circle {{ $device->online }}"></i> {{ $device->name }}</td>
-                <td>{{ $device->hostname }}</td>
+                {{-- <td>{{ $device->hostname }}</td>    --}}
                 <td>{{ json_decode($device->system_data, true)['model'] }}</td>
                 <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
                 <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }}, {{ $device->details }} #{{ $device->number }}</td>
