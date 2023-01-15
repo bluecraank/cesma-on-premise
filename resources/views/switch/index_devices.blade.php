@@ -23,25 +23,25 @@
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Switch erstellen</p>
+                <p class="modal-card-title">{{ __('Switch.Create.Title') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Bezeichner</label>
+                    <label class="label">{{ __('Switch.Name') }}</label>
                     <div class="control">
                         <input required class="input" name="name" type="text" placeholder="Name">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Hostname / IP</label>
+                    <label class="label">{{ __('Switch.IP') }}</label>
                     <div class="control">
                         <input class="input" name="hostname" type="text" placeholder="Hostname / IP">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Passwort für API</label>
+                    <label class="label">{{ __('Switch.Password') }}</label>
                     <div class="control">
-                        <input required class="input" name="password" type="password" placeholder="Passwort für API">
+                        <input required class="input" name="password" type="password" placeholder="{{ __('Switch.Password') }}">
                     </div>
                 </div>
 
@@ -58,7 +58,7 @@
                 </div>   
 
                 <div class="field">
-                    <label class="label">Standort</label>
+                    <label class="label">{{ __('Location') }}</label>
                     <div class="control">
                         <div class="select">
                             <select required name="location">
@@ -75,7 +75,7 @@
                             </select>
                         </div>
                         <input class="input" name="details" style="display: inline-block;width:200px"
-                            type="text" placeholder="Standort">
+                            type="text" placeholder="Department / Floor">
                         <input class="input" name="number" style="display: inline-block;width:40px"
                             type="text" placeholder="1">
                     </div>
@@ -84,7 +84,7 @@
                 <div class="card">
                     <header class="card-header">
                       <p class="card-header-title">
-                        Optionale Angaben
+                        {{ __('Options') }}
                       </p>
                       <a class="card-header-icon" aria-label="more options">
                         <span class="icon">
@@ -95,7 +95,7 @@
                     <div class="card-content msgoptionalopen is-hidden">
                         <div class="content">
                             <div class="field">
-                                <label class="label">Uplink-Ports</label>
+                                <label class="label">{{ __('Switch.Uplink.Title') }}</label>
                                 <div class="control">
                                     <input class="input" name="uplink_ports" type="text" placeholder="1,2,3,4">
                                 </div>
@@ -107,9 +107,9 @@
             </section>
 
             <footer class="modal-card-foot">
-                <button class="button is-success">Erstellen</button>
+                <button class="button is-success">{{ __('Button.Save') }}</button>
                 <button onclick="$('.modal-new-switch').hide();return false;" type="button"
-                    class="button">Abbrechen</button>
+                    class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>
@@ -123,31 +123,31 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Switch bearbeiten</p>
+                <p class="modal-card-title">{{ __('Switch.Edit.Title') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Bezeichner</label>
+                    <label class="label">{{ __('Switch.Name') }}</label>
                     <div class="control">
                         <input type="hidden" class="switch-id" name="id" value="">
                         <input class="input switch-name" name="name" type="text" value="" placeholder="Name">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Hostame oder IP</label>
+                    <label class="label">{{ __('Switch.IP') }}</label>
                     <div class="control">
                         <input class="input switch-fqdn" name="hostname" type="text" value="" placeholder="Hostname oder IP">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Passwort für API</label>
+                    <label class="label">{{ __('Switch.Password') }}</label>
                     <div class="control">
                         <input class="input switch-password" name="password" type="password" value="__hidden__"
                             placeholder="WebGUI Password">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Standort</label>
+                    <label class="label">{{ __('Location') }}</label>
                     <div class="control">
                         <div class="select">
                             <select class="switch-location" name="location">
@@ -164,16 +164,16 @@
                             </select>
                         </div>
                         <input class="input switch-details" name="details"
-                            style="display: inline-block;width:200px" type="text" placeholder="z.B Abteilung">
+                            style="display: inline-block;width:200px" type="text" placeholder="Department, Floor">
                         <input class="input switch-numbering" name="number"
-                            style="display: inline-block;width:40px" type="text" placeholder="1">
+                            style="display: inline-block;width:40px" type="text" placeholder="Number 1">
                     </div>
                 </div>
 
                 <div class="card">
                     <header class="card-header">
                       <p class="card-header-title">
-                        Optionale Angaben
+                        {{ __('Options') }}
                       </p>
                       <a class="card-header-icon" aria-label="more options">
                         <span class="icon">
@@ -184,7 +184,7 @@
                     <div class="card-content msgoptionalopen is-hidden">
                         <div class="content">
                             <div class="field">
-                                <label class="label">Uplink-Ports</label>
+                                <label class="label">{{ __('Switch.Uplink.Title') }}</label>
                                 <div class="control">
                                     <input class="input switch-uplinks" name="uplinks" type="text" placeholder="1,2,3,4">
                                 </div>
@@ -194,9 +194,9 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">Speichern</button>
+                <button class="button is-success">{{ __('Button.Save') }}</button>
                 <button onclick="$('.modal-edit-switch').hide();return false;" type="button"
-                    class="button">Abbrechen</button>
+                    class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>
@@ -209,11 +209,11 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Switch löschen</p>
+                <p class="modal-card-title">{{ __('Switch.Delete.Title') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Möchtest du wirklich diesen Switch löschen?</label>
+                    <label class="label">{{ __('Switch.Delete.Desc') }}</label>
                     <div class="control">
                         <input class="switch-id" name="id" type="hidden" value="">
                         <input class="switch-name" name="name" type="hidden" value="">
@@ -222,10 +222,9 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-danger">Switch
-                    löschen</button>
+                <button class="button is-danger">{{ __('Button.Delete') }}</button>
                 <button onclick="$('.modal-delete-switch').hide();return false;" type="button"
-                    class="button">Abbrechen</button>
+                    class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>
@@ -237,11 +236,11 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Pubkeys synchronisieren</p>
+                <p class="modal-card-title">{{ __('Switch.Pubkey.Title') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Folgende Pubkeys werden synchronisiert:</label>
+                    <label class="label">{{ __('Switch.Pubkey.FollowingKeys') }}</label>
                     <div class="control">
                         <ul class="ml-5" style="list-style-type:circle">
                         @foreach ($keys as $key)
@@ -252,9 +251,9 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-primary">Synchronisieren</button>
+                <button class="button is-primary">{{ __('Button.Sync') }}</button>
                 <button onclick="$('.modal-sync-pubkeys').hide();return false;" type="button"
-                    class="button">Abbrechen</button>
+                    class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>
@@ -266,41 +265,37 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">VLANs synchronisieren</p>
+                <p class="modal-card-title">{{ __('Switch.Sync.Title') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="content">
                     <p>
-                        Hiermit werden die in der Datenbank hinterlegten VLANs auf die Switche übertragen. (<a href="{{ route('vlans') }}">Zur VLAN-Übersicht</a>)<br>
-                        <ul>
-                            <li>VLANs werden nur erstellt, nicht gelöscht.</li>
-                            <li>Namen werden überschrieben.</li>
-                        </ul>
+                        {!! __('Switch.Sync.Text') !!}
                         <br>
                     </p>
 
-                    <label class="label">Optionen:</label>
+                    <label class="label">{{ __('Options') }}</label>
                     <div class="field">
                         <label class="checkbox">
                             <input type="checkbox" name="create-if-not-exists">
-                            VLANs erstellen, wenn noch nicht vorhanden
+                            {{ __('Switch.Sync.CreateVlans') }}
                         </label>
                     </div>
 
                     <div class="field">
                         <label class="checkbox">
                             <input type="checkbox" name="show-results" checked>
-                            Ergebnisse anzeigen
+                            {{ __('Switch.Sync.ShowResults') }}
                         </label>
                     </div>
                  </div> 
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-primary sync-vlan-start" onclick="$(this).addClass('is-loading');$('.sync-vlan-info').removeClass('is-hidden');$('.sync-vlan-cancel').addClass('is-hidden');">Synchronisieren</button>
+                <button class="button is-primary sync-vlan-start" onclick="$(this).addClass('is-loading');$('.sync-vlan-info').removeClass('is-hidden');$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
                 <button onclick="$('.modal-sync-vlans').hide();return false;" type="button"
-                    class="button sync-vlan-cancel">Abbrechen</button>
+                    class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 
-                <span class="sync-vlan-info help is-size-6 is-hidden">Dies dauert einige Minuten! Bitte warten...</span>
+                <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Switch.Sync.Wait') }}</span>
             </footer>
         </div>
     </form>

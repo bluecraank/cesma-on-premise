@@ -9,6 +9,7 @@
     "Search.Placeh.Location": "Nach Standort suchen...",
     "Search.Placeh.Log": "Nach Einträgen suchen...",
     "Search.Placeh.User": "Nach Benutzern suchen...",
+    "Search.Placeh.Switch": "Nach Switch suchen...",
 
     "Button.Delete": "Löschen",
     "Button.Save": "Speichern",
@@ -16,6 +17,7 @@
     "Button.Add": "Hinzufügen",
     "Button.Edit": "Bearbeiten",
     "Button.Sync": "Synchronisieren",
+    "Button.Start": "Ausführen",
 
     "Modal.User.Add": "Benutzer erstellen",
     "Modal.User.Add.Name": "Benutzername",
@@ -61,12 +63,15 @@
     "Header.Trunks": "Trunks",
     "Header.Uplinks": "Uplinks",
     "Header.Usersettings": "Deine Einstellungen",
+    "Header.SSH": "Befehl ausführen",
+    "Header.Switches": "Switche",
 
 
     "Buildings": "Gebäude",
     "Location": "Standort",
     "Actions": "Aktionen",
     "Login": "Anmelden",
+    "Options": "Optionen",
 
     "Log.User": "Benutzer",
     "Log.Action": "Aktion",
@@ -114,5 +119,39 @@
     "Backup.Restore.YourPassword": "Dein Passwort",
     "Backup.Restore.SwitchPassword": "Passwort vom Switch",
     "Backup.Restore.Title": "Backup wiederherstellen",
-    "Backup.Delete.Title": "Backup löschen"
+    "Backup.Delete.Title": "Backup löschen",
+
+    "Switch.Delete.Title": "Switch löschen",
+    "Switch.Delete.Desc": "Möchtest du den Switch wirklich löschen?",
+    "Switch.Edit.Title": "Switch bearbeiten",
+    "Switch.Create.Title": "Switch erstellen",
+    "Switch.Location": "Standort",
+    "Switch.Type": "Typ",
+    "Switch.Sync.Title": "Synchronisieren",
+    "Switch.Sync.ShowResults": "Ergebnis anzeigen",
+    "Switch.Sync.CreateVlans": "VLAN erstellen, falls nicht vorhanden",
+    "Switch.Sync.Text": "Hiermit werden die in der Datenbank hinterlegten VLANs auf die Switche übertragen.<ul><li>VLANs werden nur erstellt, nicht gelöscht.</li><li>Namen werden überschrieben.</li></ul>",
+    "Switch.Pubkey.Title": "Öffentliche Schlüssel abgleichen",
+    "Switch.Pubkey.FollowingKeys": "Folgende Schlüssel werden abgeglichen",
+    "Switch.Uplink.Title": "Uplink-Ports",
+    "Switch.IP": "Hostname/IP",
+    "Switch.Name": "Bezeichnung",
+    "Switch.Password": "API Passwort",
+    "Switch.Live.Portoverview": "Portübersicht",
+    "Switch.Live.Members": "Mitglieder (Ports)",
+    "Switch.Live.LastUpdate": "Aktualisiert",
+    "Switch.Live.TrunkSummary": "TRUNKS INSGESAMT",
+    "Switch.Live.VlanSummary": "VLANS INSGESAMT",
+    "Switch.Live.Serialnumber": "Seriennummer",
+    "Switch.Live.Portname": "Beschreibung",
+    "Switch.Live.NoTrunksFound": "Keine Trunks gefunden",
+
+    "Switch.SSH.Output": "Ausgabe",
+    "Switch.SSH.Command": "Kommando",
+    "Switch.SSH.SelectSwitch": "Switch auswählen",
+    "Switch.SSH.FastCmd": "Schnellkommando",
+    "Switch.SSH.YourPassword": "Dein Passwort",
+    "Switch.SSH.Info": "Bitte beachte, dass eingegebene Befehle nicht überprüft werden.",
+    "Switch.SSH.Execute.Title": "Befehl ausführen",
+    "Switch.SSH.Execute.Desc": "Soll der Befehl wirklich ausgeführt werden?"
 }

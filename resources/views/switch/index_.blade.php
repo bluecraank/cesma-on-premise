@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">Übersicht</h1>
+    <h1 class="title is-pulled-left">{{ __('Header.Switches') }}</h1>
 
     <div class="is-pulled-right ml-4">
         <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i class="fa-solid fa-plus"></i></button>
@@ -8,7 +8,7 @@
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search a device">
+                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm" placeholder="{{ __('Search.Placeh.Switch') }}">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>

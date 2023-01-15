@@ -26,19 +26,19 @@
     <div class="level">
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><strong>Aktualsiert</strong></p>
+                <p class="heading"><strong>{{ __('Switch.Live.LastUpdate') }}</strong></p>
                 <p class="subtitle">{{ $device->format_time }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><strong>VLANS INSGESAMT</strong></p>
+                <p class="heading"><strong>{{ __('Switch.Live.VlanSummary') }}</strong></p>
                 <p class="subtitle">{{ $device->count_vlans }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><strong>TRUNKS INSGESAMT</strong></p>
+                <p class="heading"><strong>{{ __('Switch.Live.TrunkSummary') }}</strong></p>
                 <p class="subtitle">{{ $device->count_trunks }}</p>
             </div>
         </div>
@@ -61,7 +61,7 @@
 
         <div class="column">
             <div class="box">
-                <label class="label">Seriennummer</label>
+                <label class="label">{{ __('Switch.Live.Serialnumber') }}</label>
                 {{ $system->serial }}
             </div>
         </div>
@@ -87,7 +87,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Mitglieder (Ports)</th>
+                            <th>{{ __('Switch.Live.Members') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,7 +99,7 @@
                         @endforeach
                         @if (empty($trunks))
                         <tr>
-                            <td colspan="2">Keine Trunks gefunden</td>
+                            <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                         </tr>
                         @endif
                     </tbody>
@@ -130,7 +130,7 @@
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
-                            <th>Erstellt</th>
+                            <th>{{ __('Backup.Created') }}</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -138,9 +138,9 @@
                         @foreach($backups as $backup)
                         @php 
                             if($backup->status == 1) {
-                                $status = 'Erfolgreich';
+                                $status = __('Backup.Success');
                             } else {
-                                $status = 'Fehlgeschlagen';
+                                $status = __('Backup.Failed');
                             }
                         @endphp
                         <tr class="is-clickable" onclick="location.href = '/switch/{{ $device->id }}/backups';">
@@ -154,17 +154,17 @@
             </div>
 
             <div class="box">
-                <h2 class="subtitle">Aktionen</h2>
+                <h2 class="subtitle">{{ __('Actions') }}</h2>
 
                 <div class="buttons are-small">
                     <form class="mr-1" action="" id="actions-form" method="post"><input type="hidden" class="device_id" name="id" value="{{ $device->id }}" />
                         @csrf
                         <a onclick="device_live_actions(this, 'pubkeys')" class="button is-success">
-                            <i style="margin-right: 7px;" class="fa-solid fa-sync"></i> Pubkeys syncen
+                            <i style="margin-right: 7px;" class="fa-solid fa-sync"></i> Sync Pubkeys
                         </a>
 
                         <a onclick="device_live_actions(this, 'backups')" class="button is-success">
-                            <i style="margin-right: 7px;" class="fa-solid fa-hdd"></i> Backup erstellen
+                            <i style="margin-right: 7px;" class="fa-solid fa-hdd"></i> Create Backup
                         </a>
                     </form>
                   </div>
@@ -174,7 +174,7 @@
 
         <div class="column is-8">
             <div class="box">
-                <h2 class="subtitle"><span class='success_font'>LIVE</span> Portübersicht 
+                <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }} 
                     <span onclick="$('.port-vlan-select').each(function() {
                         $( this ).prop('disabled', true);
                       });$('.save-vlans').addClass('is-hidden');$('.edit-vlans').removeClass('is-hidden');" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
@@ -197,7 +197,7 @@
                         <tr>
                             <th class="has-text-centered" style="width: 70px;">Status</th>
                             <th class="has-text-centered" style="width: 70px;">Port</th>
-                            <th>Name</th>
+                            <th>{{ __('Switch.Live.Portname') }}</th>
                             <th>Untagged</th>
                             <th>Tagged</th>
                             <th class="has-text-centered">Speed Mbit/s</th>
