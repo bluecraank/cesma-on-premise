@@ -1,4 +1,4 @@
 @livewireScripts
-<script src="/js/script.js?v0.4"></script>
+<script src="/js/script.js?{{ config('app.version') }}"></script>
 </body>
 </html>

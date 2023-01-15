@@ -16,6 +16,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Cesma'),
+    'company' => env('APP_COMPANY', 'Default Company'),
+    'version' => env('APP_VERSION', '1.0.0'),
     'api_username' => env('APP_API_USERNAME', 'admin'),
     'ssh_private_key' => env('APP_SSH_PRIVATE_KEY', 'false'),
     'ssh_username' => env('APP_SSH_USERNAME', 'false'),
@@ -30,6 +32,8 @@ return [
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
     
     'hide_vlans' => env('HIDE_VLANS_IN_CLIENT_PAGE', ''),
+    'snmp_routers' => env('SNMP_ROUTERS', ''),
+    'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
 
     /*
     |--------------------------------------------------------------------------

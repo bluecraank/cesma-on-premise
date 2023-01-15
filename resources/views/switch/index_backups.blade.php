@@ -1,6 +1,6 @@
 <x-layouts.main>
 <div class="box">
-    <h1 class="title is-pulled-left">Backups</h1>
+    <h1 class="title is-pulled-left">{{ __('Header.Backup') }}</h1>
 
     <div class="is-pulled-right ml-4">
 
@@ -14,19 +14,19 @@
         <thead>
             <tr>
                 <th>Switch</th>
-                <th>Letztes Backup</th>
+                <th>{{ __('Backup.Last') }}</th>
                 <th>Status</th>
-                <th style="width:150px;text-align:center">Aktionen</th>
+                <th style="width:150px;text-align:center">{{ __('Actions')}}</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($devices as $device)
             @php
                 if(isset($device->last_backup->status) and $device->last_backup->status == 1) {
-                    $status = 'Erfolgreich';
+                    $status = __('Backup.Success');
                     $num_status = 1;
                 } else {
-                    $status = 'Fehlgeschlagen';
+                    $status = __('Backup.Failed');
                     $num_status = 0;
                 }
             @endphp
@@ -36,7 +36,7 @@
                 <td>{{ $status }}</td>
                 <td style="width:250px;">
                     <div class="has-text-centered">
-                        <a title="Ansehen" class="button is-success is-small" href="/switch/{{ $device['id'] }}/backups">
+                        <a title="{{ __('Backup.View') }}" class="button is-success is-small" href="/switch/{{ $device['id'] }}/backups">
                             <i class="fa-solid fa-eye"></i>
                         </a>
 

@@ -2,7 +2,7 @@
     @livewire('search-user')
 
     <div class="box">
-        <h1 class="title is-pulled-left">Zusätzliche SSH-Schlüssel</h1>
+        <h1 class="title is-pulled-left">{{ __('System.Addititional Pubkeys') }}</h1>
     
         <div class="is-pulled-right ml-4">
             <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i class="fa-solid fa-plus"></i></button>
@@ -15,9 +15,9 @@
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
-                    <th>Schlüssel</th>
-                    <th class="has-text-centered">Aktionen</th>
+                    <th>{{ __('System.Desc') }}</th>
+                    <th>{{ __('System.Key') }}</th>
+                    <th class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,8 @@
             </tbody>
         </table>
 
-        <a href="/upload/key" class="button is-warning">Upload Privatekey</a>
+        <a href="/upload/key" class="is-pulled-right is-small mb-5 button is-warning">{{ __('Setup.Privatekey.SSH') }}</a>
+        <div class="is-clearfix"></div>
     </div>
 
     <div class="modal modal-new-user">
@@ -45,29 +46,29 @@
             <div class="modal-background"></div>
             <div style="margin-top: 50px" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">User erstellen</p>
+                    <p class="modal-card-title">{{ __('Modal.User.Add' ) }}</p>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">Name:</label>
+                        <label class="label">{{ __('Modal.User.Add.Name' ) }}</label>
                         <div class="control">
-                            <input required class="input" name="name" type="text" placeholder="Name">
+                            <input required class="input" name="name" type="text" placeholder="Username">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">E-Mail:</label>
+                        <label class="label">{{ __('Modal.User.Add.Mail' ) }}</label>
                         <div class="control">
                             <input required class="input" name="email" type="email" placeholder="E-Mail">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Passwort:</label>
+                        <label class="label">{{ __('Modal.User.Add.Password' ) }}</label>
                         <div class="control">
                             <input required class="input" name="password" type="password" placeholder="New password">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Passwort bestätigen:</label>
+                        <label class="label">{{ __('Modal.User.Add.PasswordRepeat' ) }}</label>
                         <div class="control">
                             <input required class="input" name="password_confirmation" type="password" placeholder="Confirm password">
                         </div>
@@ -75,8 +76,8 @@
 
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success">Erstellen</button>
-                    <button onclick="$('.modal-new-user').hide();return false;" type="button" class="button">Abbrechen</button>
+                    <button class="button is-success">{{ __('Button.Add') }}</button>
+                    <button onclick="$('.modal-new-user').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
                 </footer>
             </div>
         </form>
@@ -88,14 +89,14 @@
             <div class="modal-background"></div>
             <div style="margin-top: 50px" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">User löschen</p>
+                    <p class="modal-card-title">{{ __('Modal.User.Delete' ) }}</p>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
                         <input type="hidden" name="id" class="user-id" value="">
-                        <label class="label">Möchtest du diesen User wirklich löschen?</label>
+                        <label class="label">{{ __('Modal.User.Delete.Desc' ) }}</label>
                         <p class="control has-icons-left">
-                            <input class="input user-name" type="text" name="name" readonly="true">
+                            <input class="input user-name" type="text" disabled name="name" readonly="true">
                             <span class="icon is-small is-left">
                                 <i class="fa fa-a"></i>
                             </span>
@@ -103,8 +104,8 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success">Löschen</button>
-                    <button onclick="$('.modal-delete-user').hide();return false;" type="button" class="button">Abbrechen</button>
+                    <button class="button is-warning">{{ __('Button.Delete') }}</button>
+                    <button onclick="$('.modal-delete-user').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
                 </footer>
             </div>
         </form>
@@ -115,25 +116,25 @@
             <div class="modal-background"></div>
             <div style="margin-top: 50px" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Key hinzufügen</p>
+                    <p class="modal-card-title">{{ __('Modal.Key.Add') }}</p>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">Beschreibung:</label>
+                        <label class="label">{{ __('Modal.Key.Add.Name') }}</label>
                         <div class="control">
-                            <input required class="input" name="description" type="text" placeholder="Name">
+                            <input required class="input" name="description" type="text" placeholder="Name this Key">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Key:</label>
+                        <label class="label">{{ __('Modal.Key.Add.Pubkey') }}</label>
                         <div class="control">
-                            <input required class="input" name="key" type="text" placeholder="ssh-rsa">
+                            <input required class="input" name="key" type="text" placeholder="ssh-rsa AAACHDK...">
                         </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success">Hinzufügen</button>
-                    <button onclick="$('.modal-new-key').hide();return false;" type="button" class="button">Abbrechen</button>
+                    <button class="button is-success">{{ __('Button.Add') }}</button>
+                    <button onclick="$('.modal-new-key').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
                 </footer>
             </div>
         </form>
@@ -146,19 +147,19 @@
             <div class="modal-background"></div>
             <div style="margin-top: 50px" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Key entfernen</p>
+                    <p class="modal-card-title">{{ __('Modal.Key.Delete') }}</p>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">Beschreibung:</label>
+                        <label class="label">{{ __('Modal.Key.Delete.Desc') }}</label>
                         <div class="control">
                             <input required class="input desc" disabled name="name" value="" type="text" placeholder="Name">
                         </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success">Entfernen</button>
-                    <button onclick="$('.modal-delete-key').hide();return false;" type="button" class="button">Abbrechen</button>
+                    <button class="button is-warning">{{ __('Button.Delete') }}</button>
+                    <button onclick="$('.modal-delete-key').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
                 </footer>
             </div>
         </form>

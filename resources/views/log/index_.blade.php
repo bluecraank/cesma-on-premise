@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">Logs</h1>
+    <h1 class="title is-pulled-left">{{ __('Header.Log') }}</h1>
 
     <div class="is-pulled-right ml-4">
 
@@ -8,7 +8,7 @@
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search log...">
+                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="{{ __('Search.Placeh.Log') }}">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>
@@ -19,9 +19,9 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
-                <th>User</th>
-                <th style="width:150px;text-align:center">Aktion</th>
-                <th>RAW Daten</th>
+                <th>{{ __('Log.User') }}</th>
+                <th style="width:150px;text-align:center">{{ __('Log.Action') }}</th>
+                <th>{{ __('Log.Data') }}</th>
             </tr>
         </thead>
         <tbody>

@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">Geräte (@php echo count($clients); @endphp)</h1>
+    <h1 class="title is-pulled-left">{{ __('Header.Clients') }} ({{ count($clients) }})</h1>
 
     <div class="is-pulled-right ml-4">
     </div>
@@ -7,7 +7,7 @@
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="Search mac, ip, name, vlan">
+                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="{{ __('Search.Placeh.Clients') }}">
                 <span class="icon is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>
@@ -60,8 +60,8 @@
     @php $elements = json_decode($clients->toJson(),true)['links']; @endphp
     @if ($clients->hasPages())
     <nav class="pagination" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" href="{{ $clients->previousPageUrl() }}">Vorherige Seite</a>
-        <a class="pagination-next" href="{{ $clients->nextPageUrl() }}">Nächste Seite</a>
+        <a class="pagination-previous" href="{{ $clients->previousPageUrl() }}">{{ __('Misc.Pagination.Previous') }}</a>
+        <a class="pagination-next" href="{{ $clients->nextPageUrl() }}">{{ __('Misc.Pagination.Next') }}</a>
         <ul class="pagination-list">
             @foreach ($elements as $key => $element)
                 @if ($key != 0 and $key != count($elements)-1)

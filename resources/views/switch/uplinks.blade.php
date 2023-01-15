@@ -1,6 +1,6 @@
 <x-layouts.main>
     <div class="box">
-        <h1 class="title is-pulled-left">Uplinks</h1>
+        <h1 class="title is-pulled-left">{{ __('Header.Uplinks') }}</h1>
     
         <div class="is-pulled-right ml-4">
             
@@ -15,7 +15,7 @@
                 <tr>
                     <th>Switch</th>
                     <th>Uplinks</th>
-                    <th class="has-text-centered">Aktionen</th>
+                    <th class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +45,7 @@
             <div class="modal-background"></div>
             <div style="margin-top: 40px" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Switch bearbeiten</p>
+                    <p class="modal-card-title">{{ __('Uplink.Edit') }}</p>
                 </header>
                 <section class="modal-card-body">
                     <input type="hidden" name="id" class="device-id input">
@@ -59,14 +59,14 @@
                     <div class="field">
                         <label class="label">Uplinks</label>
                         <div class="control">
-                            <input type="text" name="uplinks" class="device-uplinks input" placeholder="Uplinks">
+                            <input type="text" name="uplinks" class="device-uplinks input" placeholder="Uplink1,Uplink2,50,51">
                         </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success">Speichern</button>
+                    <button class="button is-success">{{ __('Button.Save') }}</button>
                     <button onclick="$('.modal-edit-uplinks').hide();return false;" type="button"
-                        class="button">Abbrechen</button>
+                        class="button">{{ __('Button.Cancel') }}</button>
                 </footer>
             </div>
         </form>

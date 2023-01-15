@@ -15,10 +15,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
-        // $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
-        // $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin')->between('07:15', '17:00');
-        
         // API abfragen
         $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin');
         

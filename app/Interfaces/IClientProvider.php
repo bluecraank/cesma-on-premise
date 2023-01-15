@@ -9,7 +9,5 @@
          * @return Array<Endpoint>
          */
         static function queryClientData(): Array; 
-
-        static function queryClientDataDebug(): Array;
     }
 ?>

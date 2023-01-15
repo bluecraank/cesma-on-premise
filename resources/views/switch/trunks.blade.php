@@ -1,6 +1,6 @@
 <x-layouts.main>
     <div class="box">
-        <h1 class="title is-pulled-left">Trunks</h1>
+        <h1 class="title is-pulled-left">{{ __('Header.Trunks') }}</h1>
     
         <div class="is-pulled-right ml-4">
             
@@ -26,6 +26,6 @@
                 @endforeach
         </table>
     
-        <span  class='has-text-link has-size-7'>ArubaCX: Ports mit allen VLANs tagged</span>
+        <span  class='has-text-link has-size-7'>{{ __('Trunk.Info.ArubaCX') }}</span>
     </div>
 </x-layouts>
