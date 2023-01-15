@@ -39,7 +39,9 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 - Get VLANs from switch
 - Get Trunks from switch
 - Upload Pubkeys for SSH
-- Show Live Data from switch
+- Show Live Data from 
+- Update untagged VLANs
+- Sync VLANs (Create and Sync Name)
 - Wildcards in execution commands
 - Execute commands
 - Logging changes, executions and more
