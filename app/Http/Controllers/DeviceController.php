@@ -503,7 +503,12 @@ class DeviceController extends Controller
         }
 
         $elapsed = microtime(true)-$start;
+
+        if($request->input('show_results') == "on") {
         return view('vlan.sync', compact('devices', 'results', 'elapsed'));
+        } else {
+            return redirect()->back()->with('success', 'Vlans synced');
+        }
     }
 
     static function updateUplinks(Request $request) {

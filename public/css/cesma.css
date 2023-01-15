@@ -56,6 +56,25 @@
     text-decoration: underline;
 }
 
+.always-visible {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+.no-use {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    
+}
+
 .is-offline {
     color: red;
 }

@@ -289,8 +289,8 @@
 
                     <div class="field">
                         <label class="checkbox">
-                            <input type="checkbox" name="create-if-not-exists" checked>
-                            Ergebnis anzeigen
+                            <input type="checkbox" name="show-results" checked>
+                            Ergebnisse anzeigen
                         </label>
                     </div>
                  </div> 

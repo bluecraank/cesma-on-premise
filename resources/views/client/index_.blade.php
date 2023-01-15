@@ -57,4 +57,19 @@
             @endforeach
         </tbody>
     </table>
-</div>
+    @php $elements = json_decode($clients->toJson(),true)['links']; @endphp
+    @if ($clients->hasPages())
+    <nav class="pagination" role="navigation" aria-label="pagination">
+        <a class="pagination-previous" href="{{ $clients->previousPageUrl() }}">Vorherige Seite</a>
+        <a class="pagination-next" href="{{ $clients->nextPageUrl() }}">Nächste Seite</a>
+        <ul class="pagination-list">
+            @foreach ($elements as $key => $element)
+                @if ($key != 0 and $key != count($elements)-1)
+                <li>
+                    <a href="{{ $clients->url($key) }}" class="pagination-link {{ ($key == $clients->currentPage()) ? 'is-current' : '' }}" aria-label="Page 1" aria-current="page">{{ $key }}</a>
+                </li>
+                @endif
+            @endforeach
+        </ul>
+      </nav>
+    @endif

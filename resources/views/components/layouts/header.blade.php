@@ -21,3 +21,10 @@
     @livewireStyles
     <title>{{ ucfirst(Route::currentRouteName()) }} | CESMA</title>
 </head>
+<noscript>
+    <div class="no-use">
+    <div class="notification is-danger always-visible is-radiusless">
+        <strong>JavaScript ist deaktiviert!</strong> Bitte aktiviere JavaScript um die volle Funktionalität dieser Seite zu nutzen.
+    </div>
+    </div>
+</noscript>
