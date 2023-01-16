@@ -4,6 +4,7 @@ use App\ClientProviders\SNMP_Sophos_XG;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\MacAddressController;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -48,3 +49,9 @@ Artisan::command('clients:ping', function () {
     $this->comment(ClientController::checkOnlineStatus());
     $this->comment('--- END PINGING CLIENTS ---');
 })->purpose('Ping Clients');
+
+Artisan::command('clients:vendors', function () {
+    $this->comment('--- GET MAC VENDORS ---');
+    $this->comment(MacAddressController::getMacVendor());
+    $this->comment('--- END FETCHING MAC VENDORS ---');
+})->purpose('Get Mac Vendors');

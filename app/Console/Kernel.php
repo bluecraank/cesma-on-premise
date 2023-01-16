@@ -18,12 +18,14 @@ class Kernel extends ConsoleKernel
         // API abfragen
         $schedule->command('switch:refresh')
         ->everyFifteenMinutes()
+        ->between('6:00', '20:00')
         ->timezone('Europe/Berlin')
         ->appendOutputTo(storage_path('logs/switch-refresh.log'));
         
         // Daten aus der DB verarbeiten und Clients finden / updaten
         $schedule->command('clients:update')
         ->everyThirtyMinutes()
+        ->between('6:00', '20:00')
         ->timezone('Europe/Berlin')
         ->appendOutputTo(storage_path('logs/clients-update.log'));
 
@@ -32,6 +34,11 @@ class Kernel extends ConsoleKernel
         ->everyTenMinutes()
         ->timezone('Europe/Berlin')
         ->appendOutputTo(storage_path('logs/client-ping.log'));
+
+        $schedule->command('client:vendor')
+        ->daily()
+        ->at('04:00')
+        ->appendOutputTo(storage_path('logs/mac-vendors.log'));
         
         // Backups erstellen
         $schedule->command('switch:backup')

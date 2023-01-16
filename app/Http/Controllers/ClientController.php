@@ -62,14 +62,12 @@ class ClientController extends Controller
                         'type' => self::getClientType($mac),
                     ];
 
-                    $identifier = md5($client['hostname'].$client['ip_address']);
-
                     // Check if client already exists in database
-                    $client_in_db = Client::where('id', $identifier)->orWhere('mac_address', $mac)->first();
+                    $client_in_db = Client::where('id', $mac)->first();
                     if($client_in_db) {
                         $client_in_db->update($insert_data);
                     } else {
-                        $insert_data['id'] = $identifier;
+                        $insert_data['id'] = $mac;
                         $insert_data['mac_address'] = $mac;
                         $insert_data['switch_id'] = $mactable[$mac]['device_id'];
                         Client::create($insert_data);

@@ -99,7 +99,7 @@
             <tr>
                 <th>Name</th>
                 <th>IP</th>
-                <th>MAC</th>
+                <th>MAC <i title="Hover over a mac address to see the vendor" class="fa-solid fa-circle-info ml-2"></i></th>
                 <th>VLAN</th>
                 <th>Switch</th>
                 <th>Port</th>
@@ -117,6 +117,14 @@
                     $online = 'has-text-link';
                 }
 
+                $vendor = substr($client->mac_address, 0, 6);
+                $ven_found = isset($vendors[$vendor]);
+                if($ven_found) {
+                    $vendor = $vendors[$vendor]->vendor_name;
+                } else {
+                    $vendor = 'Unknown';
+                }
+
                 if($client->type == "client") $type = 'computer';
                 if($client->type == "printer") $type = 'print';
                 if($client->type == "phone") $type = 'phone';
@@ -127,7 +135,7 @@
                 <tr>   
                     <td><i style="" class="mr-2 fa fa-{{ $type }} {{ $online }}"></i> {{ substr(strtoupper($client->hostname),0,20) }}</td>
                     <td>{{ $client->ip_address }}</td>
-                    <td>{{ $end }}</td>
+                    <td title="{{ $vendor }}">{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>
                     <td>{{ $devices[$client->switch_id]->name }}</td>
                     <td>{{ $client->port_id }}</td>
