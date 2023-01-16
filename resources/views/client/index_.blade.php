@@ -1,18 +1,97 @@
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Header.Clients') }} ({{ count($clients) }})</h1>
+    <h1 class="title is-pulled-left">{{ __('Header.Clients') }}</h1>
 
     <div class="is-pulled-right ml-4">
     </div>
 
     <div class="is-pulled-right">
-        <div class="field">
-            <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm" placeholder="{{ __('Search.Placeh.Clients') }}">
-                <span class="icon is-right">
-                    <i class="fas fa-search fa-xs"></i>
-                </span>
+    </div>
+
+    <div class="is-clearfix"></div>
+
+    <div class="field-group has-text-centered">
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">NAME</label>
+            <div class="control is-small">
+                <input wire:model.debounce.500ms="cHOSTNAME" class="input is-small is-radiusless" type="text">
             </div>
         </div>
+       
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">IP</label>
+            <div class="control is-small">
+                <input wire:model.debounce.500ms="cIP" class="input is-small is-radiusless" type="text">
+            </div>
+        </div>
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">MAC</label>
+            <div class="control is-small">
+                <input wire:model.debounce.500ms="cMAC" class="input is-small is-radiusless" type="text">
+            </div>
+        </div>
+       
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">VLAN</label>
+            <div class="control is-small">
+                <div class="select is-small">
+                <select  wire:model.debounce.500ms="cVLAN" class="is-radiusless">
+                    <option value="all">ALL</option>
+                    @foreach($vlans as $vlan)
+                        <option value="{{ $vlan->vid }}">{{ $vlan->vid }}</option>
+                    @endforeach
+                </select>
+            </div>
+            </div>
+        </div>
+
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">SWITCH</label>
+            <div class="control is-small">
+                <div class="select is-small is-radiusless">
+                    <select  wire:model.debounce.500ms="cSWITCH" class="is-radiusless">
+                        <option value="all">ALL</option>
+                        @foreach($devices as $device)
+                            <option value="{{ $device->id }}">{{ $device->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">PORT</label>
+            <div class="control is-small">
+                <input  wire:model.debounce.500ms="cPORT" class="input is-small is-radiusless" type="text">
+            </div>
+        </div>
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">STATUS</label>
+            <div class="control is-small">
+                <div class="select is-small is-radiusless">
+                    <select  wire:model.debounce.500ms="cSTATUS" class="is-radiusless">
+                        <option value="all">ALL</option>
+                        <option value="1">ONLINE</option>
+                        <option value="0">OFFLINE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-inline-block-desktop">
+            <label class="label is-small">TYPE</label>
+            <div class="control is-small">
+                <div class="select is-small is-radiusless">
+                    <select  wire:model.debounce.500ms="cTYPE" class="is-radiusless">
+                        <option value="all">ALL</option>
+                        <option value="client">CLIENT</option>
+                        <option value="printer">PRINTER</option>
+                        <option value="phone">PHONE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <span class="ml-1 is-text-bold  has-text-centered has-text-weight-bold">Results: {{ $count_results }} of {{ $count_clients }}</span>
     </div>
 
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">

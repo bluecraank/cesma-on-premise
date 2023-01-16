@@ -2,11 +2,6 @@
 @livewire('search-switch')
 <div class="box">
     <div class="label is-small">Alle Switche</div>
-    {{-- <div class="buttons are-small"> --}}
-        {{-- <a class="button is-primary" href="/switch/uplinks"><i class="fa-solid fa-up-down mr-2"></i> Show Uplink-Ports</a> --}}
-        {{-- <a class="button is-primary" href="/switch/trunks"><i class="fa-solid fa-circle-nodes mr-2"></i> Show Trunks</a> --}}
-
-    {{-- </div> --}}
     <div class="buttons are-small">
         <form action="post" id="form-all-devices">
             @csrf
