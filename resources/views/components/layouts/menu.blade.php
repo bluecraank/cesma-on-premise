@@ -27,18 +27,8 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-location-dot"></i></span> {{ __('Menu.Locations') }}
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('vlans') }}" class="{{ (request()->is('vlans')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-ethernet"></i></span> {{ __('Menu.Vlans') }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> {{ __('Menu.Trunks') }}
                         </a>
                     </li>
                     <li>
@@ -49,6 +39,20 @@
                     <li>
                         <a href="{{ route('clients') }}" class="{{ (request()->is('clients')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa-solid fa-computer"></i></span> {{ __('Menu.Clients') }}
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="menu-label">{{ __('Menu.Label.Data') }}</p>
+                <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> {{ __('Menu.Trunks') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-location-dot"></i></span> {{ __('Menu.Locations') }}
                         </a>
                     </li>
                 </ul>

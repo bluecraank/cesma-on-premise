@@ -27,7 +27,7 @@ class MacAddressController extends Controller
         MacAddress::where("device_id", $id)->delete();
 
         $uplinks = json_decode($json_uplinks, true);
-        foreach($data['mac_table_data'] as $mac) {
+        foreach($data as $mac) {
             if(!in_array($mac['port'], $uplinks)) {
 
                 MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);

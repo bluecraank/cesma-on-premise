@@ -74,10 +74,19 @@ class ArubaOS implements IDevice
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $api_version . '/' . self::$api_auth['logout'];
         
-        $logout = Http::withoutVerifying()->withHeaders([
-            'Content-Type' => 'application/json',
-            'Cookie' => "$cookie",
-        ])->delete($api_url);
+        try {
+            $logout = Http::connectTimeout(8)->withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json',
+                'Cookie' => "$cookie",
+            ])->delete($api_url);
+
+            if($logout->successful()) {
+                return true;
+            }
+
+        } catch (\Exception $e) {
+            return false;
+        }
 
         return true;
     }   
@@ -545,8 +554,6 @@ class ArubaOS implements IDevice
 
             list($cookie, $api_version) = explode(";", $login_info);
 
-            $uri = "vlans-pors";
-
             foreach($ports as $key => $port) {
                 $data = '{
                     "vlan_id": '.$vlans[$key].', 
@@ -554,7 +561,7 @@ class ArubaOS implements IDevice
                     "port_mode":"POM_UNTAGGED"
                 }';
 
-                $result = self::ApiPost($device->hostname, $cookie, $uri, $api_version, $data);
+                $result = self::ApiPost($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
                 if($result['success']) {
                     $success++;

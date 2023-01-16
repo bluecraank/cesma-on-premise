@@ -355,6 +355,9 @@ class DeviceController extends Controller
                 continue;
             }
 
+            MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
+
+
             $device->update([
                 'mac_table_data' => json_encode($device_data['mac_table_data'], true), 
                 'vlan_data' => json_encode($device_data['vlan_data'], true), 

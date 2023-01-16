@@ -16,19 +16,34 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // API abfragen
-        $schedule->command('switch:refresh')->everyFifteenMinutes()->timezone('Europe/Berlin');
+        $schedule->command('switch:refresh')
+        ->everyFifteenMinutes()
+        ->timezone('Europe/Berlin')
+        ->appendOutputTo(storage_path('logs/switch-refresh.log'));
         
         // Daten aus der DB verarbeiten und Clients finden / updaten
-        $schedule->command('clients:update')->everyThirtyMinutes()->timezone('Europe/Berlin');
+        $schedule->command('clients:update')
+        ->everyThirtyMinutes()
+        ->timezone('Europe/Berlin')
+        ->appendOutputTo(storage_path('logs/clients-update.log'));
 
         // Clients anpingen, um den Status anzuzeigen
-        $schedule->command('clients:ping')->everyTenMinutes()->timezone('Europe/Berlin');
+        $schedule->command('clients:ping')
+        ->everyTenMinutes()
+        ->timezone('Europe/Berlin')
+        ->appendOutputTo(storage_path('logs/client-ping.log'));
         
         // Backups erstellen
-        $schedule->command('switch:backup')->dailyAt('08:00');
+        $schedule->command('switch:backup')
+        ->dailyAt('08:00')
+        ->appendOutputTo(storage_path('logs/backup.log'));
 
         // Backups per Mail versenden
-        $schedule->command('switch:backup:mail')->weekly()->sundays()->at('22:00');
+        $schedule->command('switch:backup:mail')
+        ->weekly()
+        ->sundays()
+        ->at('22:00')
+        ->appendOutputTo(storage_path('logs/backup.log'));
     }
 
     /**

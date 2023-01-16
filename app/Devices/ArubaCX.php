@@ -71,9 +71,17 @@ class ArubaCX implements IDevice
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $api_version . '/' . self::$api_auth['logout'];
         
-        $logout = Http::withoutVerifying()->withHeaders([
-            'Cookie' => "$cookie",
-        ])->post($api_url);
+        try {
+            $logout = Http::connectTimeout(8)->withoutVerifying()->withHeaders([
+                'Cookie' => "$cookie",
+            ])->post($api_url);
+
+            if($logout->successful()) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
 
         return true;
     } 

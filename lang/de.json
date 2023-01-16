@@ -50,6 +50,7 @@
     "Menu.Label.User": "Benutzer",
     "Menu.Label.Action": "Aktionen",
     "Menu.Label.System": "System",
+    "Menu.Label.Data": "Daten",
 
     "Header.Clients": "Geräte",
     "Header.Vlans": "VLANs",
