@@ -18,7 +18,7 @@ class KeyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    static function getPubkeys()
+    static function getPubkeysAsText()
     {
         $keys = Key::all();
         $users = User::all();
@@ -108,15 +108,6 @@ class KeyController extends Controller
 
         return $keys;
     }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -140,40 +131,6 @@ class KeyController extends Controller
         LogController::log('Pubkey erstellt', '{"description": "' . $key->description . '"}');
 
         return redirect()->back()->with('success', 'Key created successfully!');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Key  $key
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Key $key)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Key  $key
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Key $key)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateKeyRequest  $request
-     * @param  \App\Models\Key  $key
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateKeyRequest $request, Key $key)
-    {
-        //
     }
 
     /**

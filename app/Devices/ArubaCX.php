@@ -6,7 +6,6 @@ use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Backup;
-use App\Models\Device;
 
 class ArubaCX implements IDevice
 {
@@ -217,12 +216,6 @@ class ArubaCX implements IDevice
             'vlanport_data' => $vlanport_data,
             'mac_table_data' => $mac_data,
         ];
-    }
-
-    public function test($id) {
-        $device = Device::find($id);
-        // $device->hostname = $hostname;
-        // return DeviceController::uploadPubkeys($device);
     }
 
     static function getVlanData($vlans): Array

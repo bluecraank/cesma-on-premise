@@ -38,6 +38,8 @@ return [
     'printer_macs' => env('PRINTER_MACS', ''),
     'phone_macs' => env('PHONE_MACS', ''),
 
+    'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

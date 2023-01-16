@@ -37,7 +37,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
-    Route::get('/system', [UserController::class, 'management'])->name('system');
+    Route::get('/system', [UserController::class, 'index_system'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
     Route::post('/location/create', [LocationController::class, 'store']);
@@ -55,14 +55,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
     Route::put('/user/update', [UserController::class, 'update']);
-    Route::put('/user/pubkey', [UserController::class, 'setPubkey']);
-
-    // Switch Route
-    
-    // Route::get('/clients/ping', [ClientController::class, 'checkOnlineStatus']);
-    
-    // Route::get('/upload/key', [SSHController::class, 'encrypt_key_index']);
-    // Route::post('/upload/key/store', [SSHController::class, 'encrypt_key_save']);
+    Route::put('/user/pubkey', [UserController::class, 'addPubkey']);
 });
 
 
@@ -78,7 +71,6 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');;
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
     Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
-    // Route::post('/{id}/clients', [ClientController::class, 'getClientsFromSwitch',]);
     
     // Switch backups
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
@@ -103,15 +95,7 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
 
 Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function() {
 
-    Route::get('/client-providers/baramundi', [Baramundi::class, 'queryClientDataDebug']);
-    Route::get('/client-providers/sophosxg', [SNMP_Sophos_XG::class, 'queryClientDataDebug']);
-    Route::get('/client-providers/routers', [SNMP_Routers::class, 'queryClientDataDebug']);
-    Route::get('/client/mactablev2/{id}', [ArubaOS::class, 'test']);
-    Route::get('/client/mactable', [ClientController::class, 'getClientsAllDevices']);
-    Route::get('/client/unknown', [ClientController::class, 'debugUnknownClients']);
-    Route::get('/client/snmp', [SnmpCollectorController::class, 'collect']);
-    Route::get('/pubkey/{id}', [ArubaOS::class, 'test']);
-    Route::get('/merge', [DeviceController::class, 'importTrunksToUplinks']);
 });
+
 // Login
 Auth::routes();

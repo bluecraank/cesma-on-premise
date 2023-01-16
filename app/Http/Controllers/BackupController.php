@@ -8,13 +8,10 @@ use App\Http\Requests\StoreBackupRequest;
 use App\Http\Requests\UpdateBackupRequest;
 use App\Mail\SendBackupStatus;
 use App\Models\Backup;
-use phpseclib3\Net\SFTP;
 use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use phpseclib3\Crypt\PublicKeyLoader;
 
 class BackupController extends Controller
 {
@@ -37,61 +34,6 @@ class BackupController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreBackupRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreBackupRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Backup  $backup
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Backup $backup)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Backup  $backup
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Backup $backup)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateBackupRequest  $request
-     * @param  \App\Models\Backup  $backup
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateBackupRequest $request, Backup $backup)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Backup  $backup
@@ -109,7 +51,7 @@ class BackupController extends Controller
 
     }
 
-    public function getSwitchBackups($id) {
+    static function getSwitchBackups($id) {
         $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
         $device = Device::find($id);
         return view('switch.backups', compact('backups', 'device'));
@@ -136,7 +78,8 @@ class BackupController extends Controller
             }
             
         });
-        echo "Took ".microtime(true)-$time." seconds\n";
+
+        echo "Backups finished in ".number_format(microtime(true)-$time, 2)." seconds\n";
     }
 
     static function downloadBackup($id) {
@@ -168,7 +111,7 @@ class BackupController extends Controller
             }
         }
 
-        Mail::to('fischers@doepke.de')->send(new SendBackupStatus($backups, $modDevices, $totalError));
+        Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($backups, $modDevices, $totalError));
 
         dd('Success! Email has been sent successfully.');
     }

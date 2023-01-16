@@ -24,7 +24,7 @@ class UserController extends Controller
         return view('user.index', compact('users', 'pubkey'));
     }
 
-    public function management()
+    public function index_system()
     {
         $keys = Key::all();
         $keys2 = [];
@@ -110,7 +110,7 @@ class UserController extends Controller
 
     }
 
-    public function setPubkey(Request $request) {
+    public function addPubkey(Request $request) {
         $user = User::find(Auth::user()->id);
         $pubkey = $request->input('pubkey');
 

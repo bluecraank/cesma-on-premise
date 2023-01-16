@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\KeyController;
 use App\Models\Backup;
-use App\Models\Device;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
-use Spatie\FlareClient\Api;
 
 class ArubaOS implements IDevice
 {
@@ -495,7 +493,7 @@ class ArubaOS implements IDevice
             $key = EncryptionController::decrypt($device->password);
         }       
 
-        $keys = KeyController::getPubkeys();
+        $keys = KeyController::getPubkeysAsText();
         if($keys != "") {
             try {
                 $sftp = new SFTP($device->hostname);
