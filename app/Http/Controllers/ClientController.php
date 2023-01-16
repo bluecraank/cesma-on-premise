@@ -19,195 +19,94 @@ class ClientController extends Controller
         return view('client.index', compact('clients', 'devices'));
     }
 
-    static function getClientsFromProviders() { 
+    static function getClientDataFromProviders() { 
         // Baramundi
         if(!empty(config('app.baramundi_api_url'))) {
             $provider = new Baramundi;
             $endpoints = $provider->queryClientData();
-        
         }
 
-        $data = [];
-        // Sophos XG
+        // Routers
         $data = SNMP_Routers::queryClientData();
 
-        // Returns: Array of mac_addresses, hostname and ip_address
+        $merged = array_merge($endpoints, $data);
+
+        if($merged == null or empty($merged)) {
+            return false;
+        }
+
         return array_merge($endpoints, $data);
     }
 
     static function getClientsAllDevices() {
-        $endpoints = ClientController::getClientsFromProviders();
-
-        if($endpoints == null or empty($endpoints)) {
-            return dd("Keine Endpoints der Provider erhalten");
-        }
+        $start = microtime(true);
+        // Get all clients from providers
+        $endpoints = ClientController::getClientDataFromProviders() ?? dd("Keine Endpoints der Provider erhalten");
         
-        $macs = MacAddress::all()->sortBy('vlan_id');
-
-        $mac_only = [];
-        $mac_data = [];
-
-        $i = 0;
-        foreach($macs as $mac) {
-            if($key = array_search($mac->mac_address, $mac_only)) {
-                if($mac_data[$key]['vlan_id'] > $mac->vlan_id) {
-                    $mac_data[$key] = [
-                        'mac_address' => $mac->mac_address,
-                        'device_id' => $mac->device_id,
-                        'port_id' => $mac->port_id,
-                        'vlan_id' => $mac->vlan_id,
-                    ];
-                    $mac_only[$key] = $mac->mac_address;
-                }
-            } else {
-                $mac_only[$i] = $mac->mac_address;
-                $mac_data[$i] = [
-                    'mac_address' => $mac->mac_address,
-                    'device_id' => $mac->device_id,
-                    'port_id' => $mac->port_id,
-                    'vlan_id' => $mac->vlan_id,
-                ];
-                $i++;
-
-            }
-        }
-
+        // Get all mac addresses from database
+        // lower vlans are more likely to be correct
+        // descending sort by device_id because newer devices are more likely at the end of star topology
+        $mactable = MacAddress::all()->sortBy('vlan_id')->sortByDesc('device_id')->keyBy('mac_address');
         $unique_endpoints = [];
 
+        // Get unique endpoints based on mac address
         foreach($endpoints as $client) {
             foreach($client['mac_addresses'] as $mac) {
-                if($key = array_search($mac, $mac_only)) {
-                    $unique_endpoints[$key] = [
+                if(!isset($unique_endpoints[$mac]) && isset($mactable[$mac])) {
+                    $unique_endpoints[$mac] = true;
+
+                    $insert_data = [
                         'hostname' => $client['hostname'],
                         'ip_address' => $client['ip_address'],
-                        'mac_address' => $mac,
-                        'device_id' => $mac_data[$key]['device_id'],
-                        'port_id' => $mac_data[$key]['port_id'],
-                        'vlan_id' => $mac_data[$key]['vlan_id'],
-                        'type' => "client",
+                        'port_id' => $mactable[$mac]['port_id'],
+                        'vlan_id' => $mactable[$mac]['vlan_id'],
+                        'type' => self::getClientType($mac),
                     ];
+
+                    $identifier = md5($client['hostname'].$client['ip_address']);
+
+                    // Check if client already exists in database
+                    $client_in_db = Client::where('id', $identifier)->orWhere('mac_address', $mac)->first();
+                    if($client_in_db) {
+                        $client_in_db->update($insert_data);
+                    } else {
+                        $insert_data['id'] = $identifier;
+                        $insert_data['mac_address'] = $mac;
+                        $insert_data['switch_id'] = $mactable[$mac]['device_id'];
+                        Client::create($insert_data);
+                    }
                 }
             }
         }
 
-        // Drucker
-        $printer_macs = [
-            '00206b'
-        ];
-        // Telefone
-        $phone_macs = [
-            '08000f',
-            '1400e9',
-            '00085d',
-        ];
-        
-        // Example:
-        // "hostname" => "pbx-nor.doepke.local."
-        // "ip_address" => "192.168.120.1"
-        // "mac_address" => "00085d9a56a0"
-        // "device_id" => 1
-        // "port_id" => "F20"
-        // "vlan_id" => "120"
-        // "type" => "phone"
-
-        foreach($unique_endpoints as $key => $client) {
-            $result = mb_substr($client['mac_address'], 0, 6);
-            if(in_array($result, $printer_macs)) {
-                $type = "printer";
-                echo $client['mac_address']." | ".$type."<br>";
-                $unique_endpoints[$key]['type'] = $type;
-            } elseif(in_array($result, $phone_macs)) {
-                $type = "phone";
-                echo $client['mac_address']." | ".$type."<br>";
-
-                $unique_endpoints[$key]['type'] = $type;
-            }
-        }
-
-        foreach($unique_endpoints as $key => $client) {
-            $md5 = md5($client['hostname'].$client['ip_address']);
-            $found = Client::where('id', md5($client['hostname'].$client['ip_address']))->orWhere('mac_address', $client['mac_address'])->first();
-            if($found) {
-                $found->update([
-                    'hostname' => $client['hostname'],
-                    'ip_address' => $client['ip_address'],
-                    'device_id' => $client['device_id'],
-                    'port_id' => $client['port_id'],
-                    'vlan_id' => $client['vlan_id'],
-                    'type' => $client['type'],
-                ]);
-            } else {
-                $client = Client::create([
-                    'id' => $md5,
-                    'hostname' => $client['hostname'],
-                    'ip_address' => $client['ip_address'],
-                    'mac_address' => $client['mac_address'],
-                    'switch_id' => $client['device_id'],
-                    'port_id' => $client['port_id'],
-                    'vlan_id' => $client['vlan_id'],
-                    'type' => $client['type'],
-                ]);
-            }
-        }
-
-        // echo "MACs: ".$i." | MACs found on Switch: ".$is. " | Already saved: ".$found." | New: ".$new ."\n";
-        return json_encode(['success' => 'true', 'error' => 'Clients updated']);
+        return json_encode(['success' => 'true', 'error' => 'Clients successfully updated ('.number_format(microtime(true) - $start, 2).'s)']);
     }
 
-    static function debugMacTable() {
-        $endpoints = ClientController::getClientsFromProviders();
-
-        if($endpoints == null or empty($endpoints)) {
-            return dd("Keine Endpoints der Provider erhalten");
-        }
-        
-        $macs = MacAddress::all()->sortBy('vlan_id');
-
-        $mac_only = [];
-        $mac_data = [];
-
-        $i = 0;
-        foreach($macs as $mac) {
-            if($key = array_search($mac->mac_address, $mac_only)) {
-                if($mac_data[$key]['vlan_id'] > $mac->vlan_id) {
-                    $mac_data[$key] = [
-                        'mac_address' => $mac->mac_address,
-                        'device_id' => $mac->device_id,
-                        'port_id' => $mac->port_id,
-                        'vlan_id' => $mac->vlan_id,
-                    ];
-                    $mac_only[$key] = $mac->mac_address;
-                }
-            } else {
-                $mac_only[$i] = $mac->mac_address;
-                $mac_data[$i] = [
-                    'mac_address' => $mac->mac_address,
-                    'device_id' => $mac->device_id,
-                    'port_id' => $mac->port_id,
-                    'vlan_id' => $mac->vlan_id,
-                ];
-                $i++;
-
+    static function cleanUpClientsOnUplinks() {
+        $devices = Device::all();
+        foreach($devices as $device) {
+            $uplinks = json_decode($device->uplinks, true);
+            foreach($uplinks as $uplink) {
+                Client::where('switch_id', $device->id)->where('port_id', $uplink)->delete();
             }
+        }      
+    }
+
+    static function getClientType($mac) {
+        $type = "client";
+            
+        $phone_macs = explode(",", config('app.phone_macs'));
+        $printer_macs = explode(",", config('app.printer_macs'));
+
+        $result = mb_substr($mac, 0, 6);
+
+        if(in_array($result, $printer_macs)) {
+            $type = "printer";
+        } elseif(in_array($result, $phone_macs)) {
+            $type = "phone";
         }
 
-        $unique_endpoints = [];
-        foreach($endpoints as $client) {
-            foreach($client['mac_addresses'] as $mac) {
-                if($key = array_search($mac, $mac_only)) {
-                    $unique_endpoints[$key] = [
-                        'hostname' => $client['hostname'],
-                        'ip_address' => $client['ip_address'],
-                        'mac_address' => $mac,
-                        'device_id' => $mac_data[$key]['device_id'],
-                        'port_id' => $mac_data[$key]['port_id'],
-                        'vlan_id' => $mac_data[$key]['vlan_id'],
-                    ];
-                }
-            }
-        }
-
-        return dd($unique_endpoints);
+        return $type;
     }
 
     static function checkOnlineStatus() {

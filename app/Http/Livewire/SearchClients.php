@@ -38,6 +38,9 @@ class SearchClients extends Component
         return view('client.index_',[
             'clients' => Client::where(function ($query) use ($searchTerm) {
                 $hide_vlans = explode(",", config('app.hide_vlans'));
+                if(str_contains($searchTerm, "online=1")) {
+                    $query->where('online', '=', 1);
+                }
                 foreach($hide_vlans as $vlan) {
                     $query->where('vlan_id', 'not like', $vlan);
                 }

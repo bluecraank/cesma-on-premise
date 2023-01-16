@@ -23,6 +23,7 @@ class Client extends Model
         'id',
         'type',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'online'
     ];
 }

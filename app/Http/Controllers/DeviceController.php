@@ -348,7 +348,6 @@ class DeviceController extends Controller
 
     static function refreshAll() {
         $devices = Device::all()->keyBy('id');
-
         $time = microtime(true);
 
         foreach($devices as $device) {
@@ -361,12 +360,7 @@ class DeviceController extends Controller
 
             $uplinks = json_decode($device->uplinks, true);
 
-            MacAddress::where("device_id", $device->id)->delete();
-            foreach($device_data['mac_table_data'] as $key => $mac) {
-                if(!in_array($mac['port'], $uplinks)) {
-                    MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $device->id);
-                }            
-            }
+            MacAddressController::cleanUpMacTable($device->id, $device_data['mac_table_data'], $uplinks);
 
             if(isset($device_data) and $device->update(
                 ['mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -379,8 +373,7 @@ class DeviceController extends Controller
                 $elapsed = microtime(true)-$start;
                 echo "Got switch data: " . $device->name." (".$elapsed."sec)\n";
             } else {
-                echo "Error getting switch data: "
-                 . $device->name."\n";
+                echo "Error getting switch data: ". $device->name."\n";
             }
         }
 

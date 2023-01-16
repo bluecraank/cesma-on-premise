@@ -22,4 +22,16 @@ class MacAddressController extends Controller
         
         return false;
     }
+
+    static function cleanUpMacTable($id, $data, $uplinks) {
+        MacAddress::where("device_id", $id)->delete();
+
+        foreach($data['mac_table_data'] as $mac) {
+            if(!in_array($mac['port'], $uplinks)) {
+
+                MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);
+            
+            }            
+        }
+    }
 }

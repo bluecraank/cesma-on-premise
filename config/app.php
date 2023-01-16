@@ -35,6 +35,9 @@ return [
     'snmp_routers' => env('SNMP_ROUTERS', ''),
     'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
 
+    'printer_macs' => env('PRINTER_MACS', ''),
+    'phone_macs' => env('PHONE_MACS', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
