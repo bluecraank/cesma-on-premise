@@ -27,7 +27,7 @@
                         if($uplinks == null or empty($uplinks) or !$uplinks) {
                             $uplinks = array();
                         }
-                        $uplinks = implode(', ', $uplinks);
+                        $uplinks = implode(',', $uplinks);
                     @endphp
                     <td>{{ $uplinks }}</td>
 

@@ -48,7 +48,7 @@ class SearchClients extends Component
                     ->orWhere('vlan_id', 'like', $searchTerm)
                     ->orWhere('port_id', 'like', $searchTerm)
                     ->orWhere('switch_id', 'like', $searchTerm);
-            })->paginate(500),
+            })->paginate(1000),
             'devices' => $devices
         ]);
     }

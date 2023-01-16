@@ -389,7 +389,7 @@ class ArubaCX implements IDevice
         $ports = json_decode($device->vlan_port_data, true);
         foreach($ports as $port) {
             if(str_contains($port['vlan_id'], "Trunk")) {
-                $trunks[] = "1/1/".$port['port_id'];
+                $trunks[] = $port['port_id'];
             }
         }        
 

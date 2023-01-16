@@ -111,6 +111,7 @@ Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function()
     Route::get('/client/unknown', [ClientController::class, 'debugUnknownClients']);
     Route::get('/client/snmp', [SnmpCollectorController::class, 'collect']);
     Route::get('/pubkey/{id}', [ArubaOS::class, 'test']);
+    Route::get('/merge', [DeviceController::class, 'importTrunksToUplinks']);
 });
 // Login
 Auth::routes();

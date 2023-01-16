@@ -198,7 +198,6 @@ class DeviceController extends Controller
         $class = self::$models[$request->input('type')]; 
         $device_data = $class::getApiData($device);
 
-        
         $noData = false;
         if(isset($device_data['success']) and $device_data['success'] == false) {
             $noData = true;
@@ -218,6 +217,16 @@ class DeviceController extends Controller
             $device_data['mac_table_data'] = [];
         }
 
+        $trunks = [];
+        $ports = $device_data['ports_data'];
+        foreach($ports as $port) {
+            if(str_contains($port['id'], "Trk")) {
+                $trunks[] = $port['id'];
+            }
+        }
+
+        $uplinks = json_encode($trunks);
+
         // Merge device data to request
         $request->merge([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true), 
@@ -225,7 +234,8 @@ class DeviceController extends Controller
             'port_data' => json_encode($device_data['ports_data'], true), 
             'port_statistic_data' => json_encode($device_data['portstats_data'], true), 
             'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
-            'system_data' => json_encode($device_data['sysstatus_data'], true)
+            'system_data' => json_encode($device_data['sysstatus_data'], true),
+            'uplinks' => $uplinks
         ]);
 
         if ($validator and $device = Device::create($request->all())) {
@@ -327,7 +337,7 @@ class DeviceController extends Controller
             'port_data' => json_encode($device_data['ports_data'], true), 
             'port_statistic_data' => json_encode($device_data['portstats_data'], true), 
             'vlan_port_data' => json_encode($device_data['vlanport_data'], true), 
-            'system_data' => json_encode($device_data['sysstatus_data'], true)])) 
+            'system_data' => json_encode($device_data['sysstatus_data'], true)]))
         {
             LogController::log('Switch aktualisiert', '{"name": "' . $device->name . '", "hostname": "' . $device->hostname . '"}');
             return json_encode(['success' => 'true']);
@@ -344,20 +354,16 @@ class DeviceController extends Controller
         foreach($devices as $device) {
             $start = microtime(true); 
             $device_data = self::$models[$device->type]::getApiData($device);
-            
+
             if(isset($device_data['success']) and $device_data['success'] == false) {
                 continue;
             }
 
+            $uplinks = json_decode($device->uplinks, true);
+
             MacAddress::where("device_id", $device->id)->delete();
             foreach($device_data['mac_table_data'] as $key => $mac) {
-                if($device->uplinks == null) {
-                    $uplinks = $device->uplinks = [];
-                } else {
-                    $uplinks = json_decode($device->uplinks, true);
-                }
-
-                if(!in_array($mac['port'], $uplinks) and !str_contains($mac['port'], "Trk")) {
+                if(!in_array($mac['port'], $uplinks)) {
                     MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $device->id);
                 }            
             }
@@ -583,6 +589,31 @@ class DeviceController extends Controller
         } catch (\Exception $e) {
             return "has-text-danger";
         }
+    }
+
+    static function importTrunksToUplinks() {
+        $devices = self::getTrunksAllDevices();
+
+        foreach($devices as $key => $device2) {
+            $trunks = implode(",",$device2['trunks']);
+            $trunks = explode(",", $trunks);
+
+            $device = Device::find($key);
+            $uplinks = json_decode($device->uplinks, true);
+
+
+            if(!is_array($uplinks) or count($uplinks) == 0 or empty($uplinks) or $uplinks[0] == "") {
+                $uplinks = $trunks;
+            } elseif(!is_array($trunks) or count($trunks) == 0 or empty($trunks) or $trunks[0] == "") {
+                $uplinks = $uplinks;
+            } else {
+                $uplinks = array_merge($trunks, $uplinks);
+            }
+
+            $device->uplinks = json_encode($uplinks);
+            $device->save();
+        }
+
     }
 
 }

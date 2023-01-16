@@ -7,6 +7,7 @@
 
     try {
         $db = new MySQLi('localhost', 'root', 'mQK62mNSgeoutu6G', 'cesma');
+        
     } catch (Exception $e) {
         echo "Could not connect to database: ".$e->getMessage()."\n";
         die();
@@ -22,7 +23,6 @@
             $ip = $net['ip_range'];
             echo "Scanning ".$ip."\n";
             $result = exec("nmap -sn ".$ip, $output, $return);
-            // echo "Result: ".$return."\n";
         }
 
         echo "Took: ".(microtime(true)-$start)."sec\n";
