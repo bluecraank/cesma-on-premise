@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port PoE priority (PPP_)", 
+    "title": "PortPoePriority", 
+    "enum":
+    [
+        "PPP_CRITICAL", 
+        "PPP_HIGH", 
+        "PPP_LOW"
+    ]
+}

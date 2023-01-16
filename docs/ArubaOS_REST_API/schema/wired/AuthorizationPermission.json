@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Authorization Command level privilege", 
+    "title": "AuthorizationPermission", 
+    "enum":
+    [
+        "AZP_PERMIT", 
+        "AZP_DENY"
+    ]
+}

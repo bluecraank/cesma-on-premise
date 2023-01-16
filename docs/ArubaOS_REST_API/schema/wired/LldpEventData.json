@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP event data", 
+    "title": "LldpEventData", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_name":
+        {
+            "description": "Port Name", 
+            "type": "string"
+        }, 
+        "vid":
+        {
+            "description": "VLAN Id", 
+            "type": "integer"
+        }, 
+        "remote_port_name":
+        {
+            "description": "Remote Port Name", 
+            "type": "string"
+        }, 
+        "remote_vid":
+        {
+            "description": "Remote VLAN Id", 
+            "type": "integer"
+        }, 
+        "last_update_time":
+        {
+            "description": "Neighbour info last updated time", 
+            "type": "integer"
+        }, 
+        "total_additions":
+        {
+            "description": "Number of Neighbour additions", 
+            "type": "integer"
+        }, 
+        "total_deletes":
+        {
+            "description": "Number of Neighbour deletions", 
+            "type": "integer"
+        }, 
+        "total_drops":
+        {
+            "description": "Number of Neighbour drops", 
+            "type": "integer"
+        }, 
+        "total_ageouts":
+        {
+            "description": "Number of Neighbour ageouts", 
+            "type": "integer"
+        }
+    }
+}

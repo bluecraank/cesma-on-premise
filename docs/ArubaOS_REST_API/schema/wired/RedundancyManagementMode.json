@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Redundancy Management Mode (RMM_)", 
+    "title": "RedundancyManagementMode", 
+    "enum":
+    [
+        "RMM_NONSTOP_SWITCHING", 
+        "RMM_WARM_STANDBY", 
+        "RMM_DISABLE"
+    ]
+}

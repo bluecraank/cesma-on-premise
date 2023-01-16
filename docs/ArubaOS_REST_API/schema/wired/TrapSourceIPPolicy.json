@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SNMP Trap Source IP Policies", 
+    "title": "TrapSourceIPPolicy", 
+    "enum":
+    [
+        "TSIP_SPEC_IP", 
+        "TSIP_LOOPBACK", 
+        "TSIP_DEFAULT"
+    ]
+}

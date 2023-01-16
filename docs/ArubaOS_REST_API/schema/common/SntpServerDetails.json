@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNTP Server configuration data.", 
+    "title": "SntpServerDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "sntp_server_address":
+        {
+            "description": "Server Address", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "sntp_server_priority":
+        {
+            "description": "Priority of Server Address", 
+            "minimum": 1, 
+            "maximum": 3, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "sntp_server_version":
+        {
+            "description": "SNTP version of server.", 
+            "minimum": 1, 
+            "maximum": 7, 
+            "type": "integer", 
+            "default_value": 3
+        }, 
+        "sntp_server_is_oobm":
+        {
+            "description": "Use the OOBM interface to connect to the server.", 
+            "type": "boolean"
+        }
+    }
+}

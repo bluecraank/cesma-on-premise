@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Accounting Record Types", 
+    "title": "AccountingRecord", 
+    "enum":
+    [
+        "AR_NETWORK", 
+        "AR_EXEC", 
+        "AR_SYSTEM"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"DHCP Relay Action for Option 82", 
+    "title": "DhcpRelayOption82Action", 
+    "enum":
+    [
+        "DRO82A_DROP", 
+        "DRO82A_KEEP", 
+        "DRO82A_REPLACE"
+    ]
+}

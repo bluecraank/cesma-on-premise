@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP IP Range configuration data.", 
+    "title": "DhcpIpRange", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ip_start":
+        {
+            "description": "DHCP IP Range start.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "ip_end":
+        {
+            "description": "DHCP IP Range end.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }
+    }
+}

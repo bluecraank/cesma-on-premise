@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port Trunk Type (PTT_).", 
+    "title": "PortTrunkType", 
+    "enum":
+    [
+        "PTT_TRUNK", 
+        "PTT_LACP", 
+        "PTT_NONE"
+    ]
+}

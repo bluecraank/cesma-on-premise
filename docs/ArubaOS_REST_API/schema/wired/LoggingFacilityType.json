@@ -1,0 +1,32 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LoggingFacilityType", 
+    "title": "LoggingFacilityType", 
+    "enum":
+    [
+        "KERN", 
+        "USER", 
+        "MAIL", 
+        "DAEMON", 
+        "AUTH", 
+        "SYSLOG", 
+        "LPR", 
+        "NEWS", 
+        "UUCP", 
+        "SYS9", 
+        "SYS10", 
+        "SYS11", 
+        "SYS12", 
+        "SYS13", 
+        "SYS14", 
+        "CRON", 
+        "LOCAL0", 
+        "LOCAL1", 
+        "LOCAL2", 
+        "LOCAL3", 
+        "LOCAL4", 
+        "LOCAL5", 
+        "LOCAL6", 
+        "LOCAL7"
+    ]
+}

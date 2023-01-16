@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "CDP configuration per port", 
+    "title": "CdpPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "is_cdp_enabled_on_port":
+        {
+            "description": "Whether CDP is enabled/disabled in the port.", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "mode":
+        {
+            "description": "CDP Pre-standard-voice Mode", 
+            "$ref":"../../schema/common/CdpPreStandardVoiceMode.json", 
+            "default_value": "CPSVM_TX_AND_RX"
+        }
+    }
+}

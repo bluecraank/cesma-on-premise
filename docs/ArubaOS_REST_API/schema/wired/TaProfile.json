@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "TA Profile Configuration", 
+    "title": "TaProfile", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ta_name":
+        {
+            "description": "TA Name", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "ta_certificate_base64_encoded_pem":
+        {
+            "description": "base64 encoded TA certificate in PEM format", 
+            "type": "string", 
+            "minLength": 1
+        }, 
+        "status":
+        {
+            "description": "TA Certificate installation status", 
+            "$ref":"../../schema/wired/TaCertificateStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "tag_name":
+        {
+            "description": "Tag-name associated with TA Profile.", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1
+        }
+    }
+}

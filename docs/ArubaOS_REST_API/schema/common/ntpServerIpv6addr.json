@@ -1,0 +1,150 @@
+{
+  "title": "ntpServerIpv6addr",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ipv6addr": {
+      "type": "object",
+      "required": [
+        "ipv6addr_value"
+      ],
+      "properties": {
+        "ipv6addr_value": {
+          "type": "string",
+          "format": "ipv6"
+        },
+        "ipv6addr_reference": {
+          "$ref": "#/definitions/ipv6addr_ref_1"
+        }
+      },
+      "description": "The IPv6 address of the server."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "ipv6addr"
+  ],
+  "definitions": {
+    "ipv6addr_ref_1": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "min-poll"
+          ]
+        },
+        {
+          "required": [
+            "max-poll"
+          ]
+        },
+        {
+          "required": [
+            "key-id"
+          ]
+        },
+        {
+          "required": [
+            "burst"
+          ],
+          "not": {
+            "required": [
+              "iburst"
+            ]
+          }
+        },
+        {
+          "required": [
+            "iburst"
+          ],
+          "not": {
+            "required": [
+              "burst"
+            ]
+          }
+        },
+        {
+          "required": [
+            "oobm"
+          ]
+        }
+      ],
+      "properties": {
+        "min-poll": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "min-poll_value": {
+              "type": "integer",
+              "default": 6,
+              "minimum": 4,
+              "maximum": 17
+            }
+          },
+          "required": [
+            "min-poll_value"
+          ],
+          "description": "Configures the minimum time intervals in seconds."
+        },
+        "max-poll": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "max-poll_value": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 4,
+              "maximum": 17
+            }
+          },
+          "required": [
+            "max-poll_value"
+          ],
+          "description": "Configures the maximum time intervals in seconds."
+        },
+        "key-id": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "key-id_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4294967295
+            }
+          },
+          "required": [
+            "key-id_value"
+          ],
+          "description": "Set the authentication key to use for this server."
+        },
+        "burst": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enables burst mode."
+        },
+        "iburst": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enables initial burst (iburst) mode."
+        },
+        "oobm": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

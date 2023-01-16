@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Configuration for device-profile name", 
+    "title": "DeviceProfileConfig", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "device_profile_name":
+        {
+            "description": "device-profile Name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "allow_jumbo_frames":
+        {
+            "description": "Jumbo frame support for the device port", 
+            "type": "boolean"
+        }, 
+        "cos":
+        {
+            "description": "Class of Service (CoS) priority for traffic from the device", 
+            "minimum": 0, 
+            "maximum": 7, 
+            "type": "integer"
+        }, 
+        "egress_bandwidth":
+        {
+            "description": "egress maximum bandwidth for the device port", 
+            "minimum": 0, 
+            "maximum": 100, 
+            "type": "integer", 
+            "default_value": 100
+        }, 
+        "ingress_bandwidth":
+        {
+            "description": "ingress maximum bandwidth for the device port", 
+            "minimum": 0, 
+            "maximum": 100, 
+            "type": "integer", 
+            "default_value": 100
+        }, 
+        "poe_priority":
+        {
+            "description": "PoE priority for the device port", 
+            "$ref":"../../schema/wired/PortPoePriority.json", 
+            "default_value": "PPP_CRITICAL"
+        }, 
+        "speed_duplex":
+        {
+            "description": "Speed and duplex for the device port", 
+            "$ref":"../../schema/wired/SpeedDuplex.json", 
+            "default_value": "SD_AUTO"
+        }, 
+        "untagged_vlan_id":
+        {
+            "description": "Untagged VLAN-ID", 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "allow_tunneled_node":
+        {
+            "description": "Configuration to allow Tunneled Node when device profile is applied on port", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "mode":
+        {
+            "description": "Device profile Mode", 
+            "$ref":"../../schema/wired/ProfileMode.json", 
+            "default_value": "DPM_PORT"
+        }
+    }
+}

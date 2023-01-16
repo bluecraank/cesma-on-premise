@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "MAC Authentication Port data configuration.", 
+    "title": "MacAuthenticationPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID.", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "static_url": ["/system/status/switch#/blades/data_ports/port_name"], 
+            "dynamic_url": ["/system/status/switch#/blades/expansion_modules/data_ports/port_name"], 
+            "sql.not_null": true
+        }, 
+        "is_mac_authentication_enabled":
+        {
+            "description": "Whether MAC authentication is enabled on the Port.", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "reauthenticate":
+        {
+            "description": "Whether to reauthenticate.", 
+            "type": "boolean"
+        }, 
+        "mac_address_limit":
+        {
+            "description": "MAC Authentication address limit.", 
+            "minimum": 1, 
+            "maximum": 256, 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "unauthorized_vlan_id":
+        {
+            "description": "Unauthorized VLAN ID.If we are giving unauthorized_vlan_id as 0,it will remove the unauthorized_vlan_id configured.", 
+            "minimum": 0, 
+            "maximum": 4094, 
+            "type": "integer"
+        }
+    }
+}

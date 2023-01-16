@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Smartrate ports link speed status", 
+    "title": "PortLinksSpeedStatus", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "PLS_1000BASE_T":
+        {
+            "description": "Port Link Speed 1000BASE_T", 
+            "type": "boolean"
+        }, 
+        "PLS_2_5_G_NBASE_T":
+        {
+            "description": "Port Link Speed 2.5G_NBASE_T", 
+            "type": "boolean"
+        }, 
+        "PLS_5G_NBASE_T":
+        {
+            "description": "Port Link Speed 5G_NBASE_T", 
+            "type": "boolean"
+        }, 
+        "PLS_2_5_GBASE_T":
+        {
+            "description": "Port Link Speed 2.5GBASE_T", 
+            "type": "boolean"
+        }, 
+        "PLS_5GBASE_T":
+        {
+            "description": "Port Link Speed 5GBASE_T", 
+            "type": "boolean"
+        }, 
+        "PLS_10GBASE_T":
+        {
+            "description": "Port Link Speed 10GBASE_T", 
+            "type": "boolean"
+        }
+    }
+}

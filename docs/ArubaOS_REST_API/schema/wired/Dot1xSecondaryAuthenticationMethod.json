@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Dot1xSecondaryAuthenticationMethod", 
+    "title": "Dot1xSecondaryAuthenticationMethod", 
+    "enum":
+    [
+        "DSAM_NONE", 
+        "DSAM_AUTHORIZED", 
+        "DSAM_CACHED_REAUTH"
+    ]
+}

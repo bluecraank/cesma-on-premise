@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP Relay statistics data.", 
+    "title": "DhcpRelayStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "dhcp_valid_client_requests":
+        {
+            "description": "DHCP Relay Valid Client Requests", 
+            "type": "integer"
+        }, 
+        "dhcp_dropped_client_requests":
+        {
+            "description": "DHCP Relay Dropped Client Requests", 
+            "type": "integer"
+        }, 
+        "dhcp_valid_server_responses":
+        {
+            "description": "DHCP Relay Valid Server Responses", 
+            "type": "integer"
+        }, 
+        "dhcp_dropped_server_responses":
+        {
+            "description": "DHCP Relay Dropped Client Requests", 
+            "type": "integer"
+        }, 
+        "dhcp_option82_valid_client_requests":
+        {
+            "description": "DHCP Relay Option 82 Valid Client Requests", 
+            "type": "integer"
+        }, 
+        "dhcp_option82_dropped_client_requests":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "dhcp_option82_valid_server_responses":
+        {
+            "description": "DHCP Relay Option 82 Valid Server Responses", 
+            "type": "integer"
+        }, 
+        "dhcp_option82_dropped_server_responses":
+        {
+            "description": "DHCP Relay Option 82 Dropped Client Requests", 
+            "type": "integer"
+        }
+    }
+}

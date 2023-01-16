@@ -1,0 +1,16 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Trace Route Result (TRR_)", 
+    "title": "TraceRouteResult", 
+    "enum":
+    [
+        "TRR_OK", 
+        "TRR_ERROR", 
+        "TRR_UNABLE_TO_RESOLVE_HOST_NAME", 
+        "TRR_DNS_RESOLV_SVR_NOT_RESPOND", 
+        "TRR_DNS_RESOLV_SVR_NOT_CONFIG", 
+        "TRR_DNS_RESOLV_UNKNOWN_HOST", 
+        "TRR_IPV6_NOT_SUPPORTED", 
+        "TRR_INVALID_ADDRESS"
+    ]
+}

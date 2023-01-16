@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"CDP Pre Standard Voice Mode", 
+    "title": "CdpPreStandardVoiceMode", 
+    "enum":
+    [
+        "CPSVM_TX_AND_RX", 
+        "CPSVM_RX_ONLY"
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Mstp Port Role (MPR)", 
+    "title": "MstpPortRole", 
+    "enum":
+    [
+        "MPR_ROOT", 
+        "MPR_ALTERNATE", 
+        "MPR_DESIGNATED", 
+        "MPR_BACKUP", 
+        "MPR_DISABLED"
+    ]
+}

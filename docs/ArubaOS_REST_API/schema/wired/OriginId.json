@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"OriginId", 
+    "title": "OriginId", 
+    "enum":
+    [
+        "NONE", 
+        "HOSTNAME", 
+        "IPADDRESS"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps result information for a collection query.", 
+    "title": "CollectionResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "total_elements_count":
+        {
+            "description": "The total amount of elements in the model for the given type.", 
+            "type": "integer"
+        }, 
+        "filtered_elements_count":
+        {
+            "description": "The amount of elements in the model that match the given search/filter specifications.", 
+            "type": "integer"
+        }
+    }
+}

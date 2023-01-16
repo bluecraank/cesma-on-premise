@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Dot1x authenticator session counters", 
+    "title": "Dot1xAuthenticatorSessionCounters", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "frames_in":
+        {
+            "description": "Frames In", 
+            "type": "integer"
+        }, 
+        "frames_out":
+        {
+            "description": "Frames out", 
+            "type": "integer"
+        }, 
+        "session_time":
+        {
+            "description": "Session Time in seconds", 
+            "type": "integer"
+        }, 
+        "session_status":
+        {
+            "description": "Session status", 
+            "type": "string", 
+            "maxLength": 11
+        }, 
+        "user":
+        {
+            "description": "User", 
+            "type": "string", 
+            "maxLength": 64
+        }
+    }
+}

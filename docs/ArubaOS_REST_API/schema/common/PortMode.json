@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port Mode (POM_).", 
+    "title": "PortMode", 
+    "enum":
+    [
+        "POM_UNTAGGED", 
+        "POM_TAGGED_STATIC", 
+        "POM_FORBIDDEN"
+    ]
+}

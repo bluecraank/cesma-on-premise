@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SNMP MIB Type", 
+    "title": "SnmpMibType", 
+    "enum":
+    [
+        "SMT_INCLUDED", 
+        "SMT_EXCLUDED", 
+        "SMT_UNSECURED", 
+        "SMT_NO_UNSECURED"
+    ]
+}

@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "LocalUser", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "local_user_name":
+        {
+            "description": "local User name", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "group_name":
+        {
+            "description": "local user group name", 
+            "type": "string", 
+            "maxLength": 16, 
+            "minLength": 1
+        }, 
+        "password_type":
+        {
+            "description": "PasswordEntryType", 
+            "$ref":"../../schema/common/PasswordEntryType.json", 
+            "default_value": "PET_SHA1"
+        }, 
+        "password":
+        {
+            "description": "Password", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1
+        }, 
+        "aging_period":
+        {
+            "description": "aging period", 
+            "minimum": 1, 
+            "maximum": 365, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "min_pwd_len":
+        {
+            "description": "minimum-password-length", 
+            "minimum": 1, 
+            "maximum": 64, 
+            "type": "integer", 
+            "default_value": 8
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Installing Signed Certificate.", 
+    "title": "SignedCertificateDetail", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "signed_certificate_base64_encoded_pem":
+        {
+            "description": "Base64 encoded Signed Certificate Details in PEM format.", 
+            "type": "string", 
+            "minLength": 1, 
+            "sql.not_null": true
+        }
+    }
+}

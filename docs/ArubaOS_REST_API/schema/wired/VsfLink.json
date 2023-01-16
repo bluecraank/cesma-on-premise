@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VSF Link Configuration", 
+    "title": "VsfLink", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "VSF Member ID", 
+            "minimum": 1, 
+            "maximum": 8, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "link_id":
+        {
+            "description": "VSF Link ID", 
+            "minimum": 1, 
+            "maximum": 2, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "link_name":
+        {
+            "description": "VSF Link name", 
+            "type": "string", 
+            "maxLength": 10, 
+            "minLength": 1
+        }, 
+        "link_status":
+        {
+            "description": "VSF link Status", 
+            "$ref":"../../schema/wired/VsfLinkState.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "peer_member_id":
+        {
+            "description": "VSF link peer member ID", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "peer_member_link":
+        {
+            "description": "VSF peer member link", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

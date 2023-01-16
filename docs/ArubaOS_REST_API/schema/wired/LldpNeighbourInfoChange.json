@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Neighbour Info Change", 
+    "title": "LldpNeighbourInfoChange", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "last_update_time":
+        {
+            "description": "Neighbour info last updated time", 
+            "type": "integer"
+        }, 
+        "total_additions":
+        {
+            "description": "Number of Neighbour additions", 
+            "type": "integer"
+        }, 
+        "total_deletes":
+        {
+            "description": "Number of Neighbour deletions", 
+            "type": "integer"
+        }, 
+        "total_drops":
+        {
+            "description": "Number of Neighbour drops", 
+            "type": "integer"
+        }, 
+        "total_ageouts":
+        {
+            "description": "Number of Neighbour ageouts", 
+            "type": "integer"
+        }
+    }
+}

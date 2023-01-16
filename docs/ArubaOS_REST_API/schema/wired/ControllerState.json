@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Controller State", 
+    "title": "ControllerState", 
+    "enum":
+    [
+        "CS_PORT_DOWN", 
+        "CS_IN_PROGRESS", 
+        "CS_CONTROLLER_NOT_REACHABLE", 
+        "CS_FEATURE_IS_DISABLED", 
+        "CS_COMPLETE"
+    ]
+}

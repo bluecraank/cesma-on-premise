@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"HTTP access method for REST Authorization", 
+    "title": "HttpAccessMethod", 
+    "enum":
+    [
+        "HTTP_GET", 
+        "HTTP_PUT", 
+        "HTTP_POST", 
+        "HTTP_DELETE"
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Accounting Configuration", 
+    "title": "AccountingConfig", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "accounting_mode":
+        {
+            "description": "Accounting Mode - If set as AMO_NONE then sets default value for both accounting_mode and accounting_method", 
+            "$ref":"../../schema/wired/AccountingMode.json", 
+            "default_value": "AMO_NONE", 
+            "sql.not_null": true
+        }, 
+        "accounting_method":
+        {
+            "description": "Accounting Method - If set as AME_NONE then sets default value for both accounting_mode and accounting_method", 
+            "$ref":"../../schema/wired/AccountingMethod.json", 
+            "default_value": "AME_NONE", 
+            "sql.not_null": true
+        }, 
+        "server_group":
+        {
+            "description": "Server group name - server_group is not supported  when accounting_method is AME_TACACS", 
+            "type": "string", 
+            "maxLength": 12, 
+            "minLength": 0
+        }
+    }
+}

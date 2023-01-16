@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "File transfer status events", 
+    "title": "EventFileTransferStatus", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "status":
+        {
+            "description": "File Download status", 
+            "$ref":"../../schema/wired/FTStatus.json"
+        }, 
+        "status_message":
+        {
+            "description": "Reason for failure", 
+            "type": "string"
+        }, 
+        "requestId":
+        {
+            "description": "Rest request Id", 
+            "type": "string"
+        }, 
+        "sha":
+        {
+            "description": "SHA generated for the config", 
+            "type": "string"
+        }
+    }
+}

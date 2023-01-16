@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Global BPS Configuration", 
+    "title": "BpsGlobalConfig", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "stack_id":
+        {
+            "description": "Stack ID", 
+            "type": "string", 
+            "maxLength": 32, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "mac_address":
+        {
+            "description": "MAC Address", 
+            "$ref":"../../schema/common/MacAddress.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "stack_topology":
+        {
+            "description": "Stack Topology", 
+            "$ref":"../../schema/wired/StackTopology.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "stack_status":
+        {
+            "description": "Stack Status", 
+            "$ref":"../../schema/wired/StackStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "split_policy":
+        {
+            "description": "Split Policy", 
+            "$ref":"../../schema/wired/StackSplitPolicy.json", 
+            "default_value": "STACK_SPLIT_ONE_FRAGMENT_UP"
+        }, 
+        "uptime":
+        {
+            "description": "Stack Uptime", 
+            "$ref":"../../schema/wired/UpTime.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "software_version":
+        {
+            "description": "Software Version", 
+            "type": "string", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "name":
+        {
+            "description": "The system name.", 
+            "type": "string", 
+            "maxLength": 30, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "location":
+        {
+            "description": "Location where the system is installed.", 
+            "type": "string", 
+            "maxLength": 255, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "contact":
+        {
+            "description": "Contact information for the system.", 
+            "type": "string", 
+            "maxLength": 255, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

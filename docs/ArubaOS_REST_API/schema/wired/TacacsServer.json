@@ -1,0 +1,137 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "TACACS Server configuration - Maximum 3 servers are allowed", 
+    "title": "TacacsServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "server_ip":
+        {
+            "description": "TACACS Server IP Address.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "auth_key":
+        {
+            "description": "Authentication Key", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 0
+        }, 
+        "is_oobm":
+        {
+            "description": "Use oobm interface to connect the server", 
+            "type": "boolean"
+        }, 
+        "opens":
+        {
+            "description": "Opened sessions with TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "closes":
+        {
+            "description": "Closed sessions with TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "aborts":
+        {
+            "description": "Aborted sessions with TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "errors":
+        {
+            "description": "session errors with TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_pkts_in":
+        {
+            "description": "Authentication pkts RX-ed from TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_pkts_out":
+        {
+            "description": "Authentication pkts TX-ed to TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_pkts_timedout":
+        {
+            "description": "Authentication pkts timed out", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "autz_pkts_in":
+        {
+            "description": "Authorization pkts RX-ed from TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "autz_pkts_out":
+        {
+            "description": "Authorization pkts TX-ed to TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "autz_pkts_timedout":
+        {
+            "description": "Authorization pkts timed out", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_pkts_in":
+        {
+            "description": "Accounting pkts RX-ed from TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_pkts_out":
+        {
+            "description": "Accounting pkts TX-ed to TACACS+ server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_pkts_timedout":
+        {
+            "description": "Accounting pkts timed out", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

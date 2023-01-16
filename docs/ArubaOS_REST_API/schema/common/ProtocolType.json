@@ -1,0 +1,22 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Protocol Type (PT_)", 
+    "title": "ProtocolType", 
+    "enum":
+    [
+        "PT_GRE", 
+        "PT_ESP", 
+        "PT_AH", 
+        "PT_OSPF", 
+        "PT_PIM", 
+        "PT_VRRP", 
+        "PT_ICMP", 
+        "PT_IGMP", 
+        "PT_IP", 
+        "PT_SCTP", 
+        "PT_TCP", 
+        "PT_UDP", 
+        "PT_IP_IN_IP", 
+        "PT_IPV6_IN_IP"
+    ]
+}

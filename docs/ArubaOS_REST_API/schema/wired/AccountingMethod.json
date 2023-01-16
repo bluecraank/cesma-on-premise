@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Accounting Method", 
+    "title": "AccountingMethod", 
+    "enum":
+    [
+        "AME_NONE", 
+        "AME_TACACS", 
+        "AME_RADIUS", 
+        "AME_SYSLOG"
+    ]
+}

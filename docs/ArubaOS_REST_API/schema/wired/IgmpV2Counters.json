@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IGMP V2 Counters", 
+    "title": "IgmpV2Counters", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "all_host_query_rx":
+        {
+            "description": "All host query received count.", 
+            "type": "integer"
+        }, 
+        "all_host_query_tx":
+        {
+            "description": "All host query transmitted count.", 
+            "type": "integer"
+        }, 
+        "group_specific_query_rx":
+        {
+            "description": "Group specific query received count.", 
+            "type": "integer"
+        }, 
+        "group_specific_query_tx":
+        {
+            "description": "Group specific query transmitted count.", 
+            "type": "integer"
+        }, 
+        "v1_report_rx":
+        {
+            "description": "IGMP V1 report received count.", 
+            "type": "integer"
+        }, 
+        "v2_report_rx":
+        {
+            "description": "IGMP V2 report received count.", 
+            "type": "integer"
+        }, 
+        "v3_report_rx":
+        {
+            "description": "IGMP V3 report received count.", 
+            "type": "integer"
+        }, 
+        "leave_report_rx":
+        {
+            "description": "IGMP leave report received count.", 
+            "type": "integer"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"MAC Authentication Port State (MAPS_)", 
+    "title": "MacAuthenticationPortState", 
+    "enum":
+    [
+        "MAPS_AUTHENTICATED", 
+        "MAPS_UNAUTHENTICATED", 
+        "MAPS_AUTHENTICATIING", 
+        "MAPS_AUTH_REQ_REJECT_NO_VLAN", 
+        "MAPS_AUTH_REQ_REJECT_UNAUTH_VLAN", 
+        "MAPS_AUTH_REQ_TIMEOUT_NO_VLAN", 
+        "MAPS_AUTH_REQ_TIMEOUT_UNAUTH_VLAN"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Poe Operational Status (POS_)", 
+    "title": "PoeOperationalStatus", 
+    "enum":
+    [
+        "POS_ON", 
+        "POS_OFF", 
+        "POS_FAULTY"
+    ]
+}

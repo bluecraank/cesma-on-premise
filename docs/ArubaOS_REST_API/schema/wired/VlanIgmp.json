@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VLAN IGMP configuration data.", 
+    "title": "VlanIgmp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "vlan_id":
+        {
+            "description": "The unique ID of the VLAN where IGMP is configured", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "is_igmp_enabled":
+        {
+            "description": "Whether IGMP protocol is enabled on the VLAN", 
+            "type": "boolean", 
+            "default_value": false, 
+            "sql.not_null": true
+        }, 
+        "last_member_query_interval":
+        {
+            "description": "IGMP last member query interval. Value will be ignored if is_igmp_enabled is false", 
+            "minimum": 1, 
+            "maximum": 2, 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "querier":
+        {
+            "description": "IGMP Querier. Value will be ignored if is_igmp_enabled is false", 
+            "$ref":"../../schema/wired/IgmpQuerier.json"
+        }, 
+        "query_max_response_time":
+        {
+            "description": "IGMP query max response time. Value will be ignored if is_igmp_enabled is false", 
+            "minimum": 10, 
+            "maximum": 128, 
+            "type": "integer", 
+            "default_value": 10
+        }, 
+        "robustness":
+        {
+            "description": "IGMP robustness. Value will be ignored if is_igmp_enabled is false", 
+            "minimum": 1, 
+            "maximum": 8, 
+            "type": "integer", 
+            "default_value": 2
+        }, 
+        "version":
+        {
+            "description": "IGMP version. Value will be ignored if is_igmp_enabled is false", 
+            "minimum": 2, 
+            "maximum": 3, 
+            "type": "integer", 
+            "default_value": 2
+        }
+    }
+}

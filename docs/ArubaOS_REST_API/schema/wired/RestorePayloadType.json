@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Differentiate between configuration file and patch file (PT_)", 
+    "title": "RestorePayloadType", 
+    "enum":
+    [
+        "RPT_PATCH_FILE", 
+        "RPT_BACKUP_FILE"
+    ]
+}

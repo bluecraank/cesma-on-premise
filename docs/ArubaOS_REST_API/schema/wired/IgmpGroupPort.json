@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IGMP Group Port data.", 
+    "title": "IgmpGroupPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "The ID of the joined port.", 
+            "type": "string", 
+            "maxLength": 9
+        }
+    }
+}

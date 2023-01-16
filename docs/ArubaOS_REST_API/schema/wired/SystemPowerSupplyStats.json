@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "System Power Supply statistics data.", 
+    "title": "SystemPowerSupplyStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "power_supply_number":
+        {
+            "description": "Power-Supply number", 
+            "type": "integer"
+        }, 
+        "serial_number":
+        {
+            "description": "Power-Supply serial number", 
+            "type": "string"
+        }, 
+        "model_info":
+        {
+            "description": "Power-Supply model information", 
+            "type": "string"
+        }, 
+        "power_supply_state":
+        {
+            "description": "Power-Supply state", 
+            "$ref":"../../schema/wired/PowerSupplyState.json"
+        }, 
+        "voltage_description":
+        {
+            "description": "Voltage supplied", 
+            "type": "string"
+        }, 
+        "power_in_use_in_watts":
+        {
+            "description": "Power in use", 
+            "type": "integer"
+        }, 
+        "max_power_in_watts":
+        {
+            "description": "Maximum power", 
+            "type": "integer"
+        }, 
+        "member_id":
+        {
+            "description": "Stack Member ID. Applicable for Stacked switches", 
+            "type": "integer"
+        }
+    }
+}

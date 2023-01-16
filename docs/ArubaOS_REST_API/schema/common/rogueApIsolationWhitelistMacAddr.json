@@ -1,0 +1,20 @@
+{
+  "title": "rogueApIsolationWhitelistMacAddr",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mac-addr": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{6}-[a-fA-F0-9]{6}$",
+      "description": "Specify the MAC address of the device to be moved from the Rogue AP list to the whitelist."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "mac-addr"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA for DHCP Configuration", 
+    "title": "IpSlaDhcp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "vlan_id":
+        {
+            "description": "Source VLAN ID", 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

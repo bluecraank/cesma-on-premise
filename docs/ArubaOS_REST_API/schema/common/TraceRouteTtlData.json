@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Trace Route TTL Data. Contains the Trace Route output data for multiple probes  for a given TTL.  Default count of probes for a TTL is 3.", 
+    "title": "TraceRouteTtlData", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ttl_probe_data":
+        {
+            "description": "Contains the Trace Route output data for multiple probes for a given TTl.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/TraceRouteTtlProbeData.json"
+            }
+        }
+    }
+}

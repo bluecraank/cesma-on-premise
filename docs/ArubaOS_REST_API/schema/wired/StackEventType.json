@@ -1,0 +1,21 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Stack Event Type (STACK_)", 
+    "title": "StackEventType", 
+    "enum":
+    [
+        "STACK_MEMBER_JOIN_FAILED", 
+        "STACK_MERGE_FAILED", 
+        "STACK_STATE_MEMBER_REMOVED", 
+        "STACK_MEMBER_SW_CRASHED", 
+        "STACK_STATE_LOOPBACKED", 
+        "STACK_MEMBER_STATE_CHANGED", 
+        "STACK_FAILOVER_OCCURRED", 
+        "STACK_STATE_AND_TOPOLOGY", 
+        "STACK_SWITCHOVER_OCCURRED", 
+        "STACK_VSF_HANDSHAKE_STATUS", 
+        "STACK_VSF_PORT_AND_LINK_STATUS", 
+        "STACK_CONFIG_CHANGE_EVENT", 
+        "STACK_EVENT_TYPE_MAX"
+    ]
+}

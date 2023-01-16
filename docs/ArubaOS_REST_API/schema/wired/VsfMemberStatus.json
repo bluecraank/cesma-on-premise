@@ -1,0 +1,20 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"VSF Member Status", 
+    "title": "VsfMemberStatus", 
+    "enum":
+    [
+        "VMS_COMMANDER", 
+        "VMS_STANDBY", 
+        "VMS_PROVISIONED", 
+        "VMS_MISSING", 
+        "VMS_UNUSED_ID", 
+        "VMS_MEMBER", 
+        "VMS_SHUTDOWN", 
+        "VMS_BOOTING", 
+        "VMS_COMM_FAILURE", 
+        "VMS_INCOMAPTIBLE_OS", 
+        "VMS_UNKNOWN", 
+        "VMS_STANDBY_BOOTING"
+    ]
+}

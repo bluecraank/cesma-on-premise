@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Authentication for ssh", 
+    "title": "AuthenticationSsh", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "auth_ssh_login":
+        {
+            "description": "Configure login access to the switch for ssh", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }, 
+        "auth_ssh_enable":
+        {
+            "description": "Configure enable access to the switch for ssh", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }, 
+        "is_client_certificate_enabled":
+        {
+            "description": "Configure SSH client authentication for the switch Use the X.509 certificate for SSH client", 
+            "type": "boolean"
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Qos Match Status", 
+    "title": "QosMatchStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "traffic_class_id":
+        {
+            "description": "QoS Traffic Class Id", 
+            "type": "string"
+        }, 
+        "sequence_no":
+        {
+            "description": "Sequence Number for each QoS Class Match Record", 
+            "type": "integer"
+        }, 
+        "hitcount":
+        {
+            "description": "Hardware Hitcounts for each ClassMatch Record", 
+            "type": "integer"
+        }
+    }
+}

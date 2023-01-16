@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VXLAN Tunnel statistics data.", 
+    "title": "VxlanTunnelStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "tunnel_id":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "tunnel_name":
+        {
+            "description": "", 
+            "type": "string"
+        }, 
+        "tunnel_rx":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "tunnel_tx":
+        {
+            "description": "", 
+            "type": "integer"
+        }
+    }
+}

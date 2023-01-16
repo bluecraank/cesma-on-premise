@@ -1,0 +1,175 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "IP SLA Test Results": {
+            "SLA ID": {
+                "type": "integer"
+            },
+            "SLA Type": {
+                "type": "string"
+            },
+            "Probe ID": {
+                "type": "integer"
+            },
+            "Destination Hostname": {
+                "type": "string"
+            },
+            "Destination Port": {
+                "type": "integer"
+            },
+            "Source Interface": {
+                "type": "integer"
+            },
+            "Source Port": {
+                "type": "integer"
+            },
+            "Number of Packets Sent": {
+                "type": "integer"
+            },
+            "Number of Packets Received": {
+                "type": "integer"
+            },
+            "Last Succeeded Probe Time": {
+                "type": "string"
+            }
+        },
+        "Extended Results": {
+            "Packet Loss in Test": {
+                "type": "string"
+            }
+        },
+        "RTT Results": {
+            "Minimum RTT": {
+                "type": "integer"
+            },
+            "RTT Number": {
+                "type": "integer"
+            },
+            "Maximum RTT": {
+                "type": "integer"
+            },
+            "Average RTT": {
+                "type": "integer"
+            },
+            "Square-Sum of RTT": {
+                "type": "integer"
+            }
+        },
+        "UDP-Jitter Results": {
+            "Positive SD Sum": {
+                "type": "integer"
+            },
+            "Min Positive SD": {
+                "type": "integer"
+            },
+            "Min Positive DS": {
+                "type": "integer"
+            },
+            "Negative SD Square Sum": {
+                "type": "integer"
+            },
+            "Positive SD Average": {
+                "type": "integer"
+            },
+            "Positive DS Sum": {
+                "type": "integer"
+            },
+            "Max Positive SD": {
+                "type": "integer"
+            },
+            "Negative DS Number": {
+                "type": "integer"
+            },
+            "Max Positive DS": {
+                "type": "integer"
+            },
+            "Positive SD Number": {
+                "type": "integer"
+            },
+            "Min Negative SD": {
+                "type": "integer"
+            },
+            "Negative DS Sum": {
+                "type": "integer"
+            },
+            "Positive DS Number": {
+                "type": "integer"
+            },
+            "Positive DS Average": {
+                "type": "integer"
+            },
+            "Min Negative DS": {
+                "type": "integer"
+            },
+            "Positive SD Square Sum": {
+                "type": "integer"
+            },
+            "Positive DS Square Sum": {
+                "type": "integer"
+            },
+            "Max Negative SD": {
+                "type": "integer"
+            },
+            "Max Negative DS": {
+                "type": "integer"
+            },
+            "Negative SD Number": {
+                "type": "integer"
+            },
+            "Negative DS Average": {
+                "type": "integer"
+            },
+            "Negative SD Sum": {
+                "type": "integer"
+            },
+            "Negative SD Average": {
+                "type": "integer"
+            },
+            "Negative DS Square Sum": {
+                "type": "integer"
+            }
+        },
+        "One-way Results": {
+            "Max SD Delay": {
+                "type": "integer"
+            },
+            "Number of DS Delays": {
+                "type": "integer"
+            },
+            "Min DS Delay": {
+                "type": "integer"
+            },
+            "Max DS Delay": {
+                "type": "integer"
+            },
+            "Min SD Delay": {
+                "type": "integer"
+            },
+            "Sum of SD Delays": {
+                "type": "integer"
+            },
+            "Number of SD Delays": {
+                "type": "integer"
+            },
+            "Sum of DS Delays": {
+                "type": "integer"
+            },
+            "Square Sum of SD Delays": {
+                "type": "integer"
+            },
+            "Square Sum of DS Delays": {
+                "type": "integer"
+            }
+        },
+        "Voice Scores:": {
+            "ICPIF": {
+                "type": "integer"
+            },
+            "MOS": {
+                "type": "integer"
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Lldp Dot3 Med TlvType (LDMTT_)", 
+    "title": "LldpDot3MedTlvType", 
+    "enum":
+    [
+        "LDMTT_POEP", 
+        "LDMTT_MED", 
+        "LDMTT_NONE"
+    ]
+}

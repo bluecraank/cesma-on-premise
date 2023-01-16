@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Local Certificate Detail.", 
+    "title": "LocalCertificateDetail", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "local_cert_name":
+        {
+            "description": "Certificate Name", 
+            "type": "string", 
+            "maxLength": 20, 
+            "minLength": 1, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "ta_name":
+        {
+            "description": "Ta profile associated with the certificate.", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "type_of_cert":
+        {
+            "description": "Type of certificate.", 
+            "$ref":"../../schema/wired/CertType.json", 
+            "default_value": "CT_UNKNOWN_TYPE", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "certificate_detail_base64_encoded":
+        {
+            "description": "Base64 encoded PEM format of certificate or CSR.", 
+            "type": "string", 
+            "minLength": 1, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "cert_usage":
+        {
+            "description": "Intended usage of Certificate.", 
+            "$ref":"../../schema/wired/CsrApplications.json", 
+            "default_value": "CA_WEB", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "expiry_date":
+        {
+            "description": "Certificate Expiry Date. This is not displayed for CSRs.", 
+            "$ref":"../../schema/wired/CertDate.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

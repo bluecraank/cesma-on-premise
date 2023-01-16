@@ -1,0 +1,140 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA UDP Jitter/ Jitter-For-Voip results", 
+    "title": "IpSlaUdpJitterResults", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "rtt_number":
+        {
+            "description": "RTT number", 
+            "type": "integer"
+        }, 
+        "min_positive_sd":
+        {
+            "description": "Min positive SD", 
+            "type": "integer"
+        }, 
+        "max_positive_sd":
+        {
+            "description": "Max positive SD", 
+            "type": "integer"
+        }, 
+        "positive_sd_number":
+        {
+            "description": "Positive SD number", 
+            "type": "integer"
+        }, 
+        "positive_sd_sum":
+        {
+            "description": "Positive SD sum", 
+            "type": "integer"
+        }, 
+        "positive_sd_avg":
+        {
+            "description": "Positive SD average", 
+            "type": "integer"
+        }, 
+        "positive_sd_square_sum":
+        {
+            "description": "Positive SD square sum", 
+            "type": "integer"
+        }, 
+        "min_negative_sd":
+        {
+            "description": "Min negative SD", 
+            "type": "integer"
+        }, 
+        "max_negative_sd":
+        {
+            "description": "Max negative SD", 
+            "type": "integer"
+        }, 
+        "negative_sd_number":
+        {
+            "description": "Negative SD number", 
+            "type": "integer"
+        }, 
+        "negative_sd_sum":
+        {
+            "description": "Negative SD sum", 
+            "type": "integer"
+        }, 
+        "negative_sd_avg":
+        {
+            "description": "Negative SD average", 
+            "type": "integer"
+        }, 
+        "negative_sd_square_sum":
+        {
+            "description": "Negative SD square sum", 
+            "type": "integer"
+        }, 
+        "min_positive_ds":
+        {
+            "description": "Min positive DS", 
+            "type": "integer"
+        }, 
+        "max_positive_ds":
+        {
+            "description": "Max positive DS", 
+            "type": "integer"
+        }, 
+        "positive_ds_number":
+        {
+            "description": "Positive DS number", 
+            "type": "integer"
+        }, 
+        "positive_ds_sum":
+        {
+            "description": "Positive DS sum", 
+            "type": "integer"
+        }, 
+        "positive_ds_avg":
+        {
+            "description": "Positive DS average", 
+            "type": "integer"
+        }, 
+        "positive_ds_square_sum":
+        {
+            "description": "Positive DS square sum", 
+            "type": "integer"
+        }, 
+        "min_negative_ds":
+        {
+            "description": "Min negative DS", 
+            "type": "integer"
+        }, 
+        "max_negative_ds":
+        {
+            "description": "Max negative DS", 
+            "type": "integer"
+        }, 
+        "negative_ds_number":
+        {
+            "description": "Negative DS number", 
+            "type": "integer"
+        }, 
+        "negative_ds_sum":
+        {
+            "description": "Negative DS sum", 
+            "type": "integer"
+        }, 
+        "negative_ds_avg":
+        {
+            "description": "Negative DS average", 
+            "type": "integer"
+        }, 
+        "negative_ds_square_sum":
+        {
+            "description": "Negative DS square sum", 
+            "type": "integer"
+        }
+    }
+}

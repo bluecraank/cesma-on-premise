@@ -1,0 +1,23 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Show Tech Option (STO_)", 
+    "title": "ShowTechOption", 
+    "enum":
+    [
+        "STO_BASIC", 
+        "STO_ALL", 
+        "STO_BUFFERS", 
+        "STO_INSTRUMENTATION", 
+        "STO_MSTP", 
+        "STO_OOBM", 
+        "STO_RAPID_PVST", 
+        "STO_ROUTE", 
+        "STO_SMART_LINK", 
+        "STO_STATISTICS", 
+        "STO_TRANSCEIVERS", 
+        "STO_TUNNEL_INTERCEPT", 
+        "STO_TUNNEL_TAP", 
+        "STO_TUNNEL_VXLAN", 
+        "STO_COMPONENTS"
+    ]
+}

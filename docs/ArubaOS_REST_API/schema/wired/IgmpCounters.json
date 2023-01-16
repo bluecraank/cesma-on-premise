@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IGMP Counters", 
+    "title": "IgmpCounters", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "v2_counters":
+        {
+            "description": "Igmp V2 counters.", 
+            "$ref":"../../schema/wired/IgmpV2Counters.json"
+        }, 
+        "v3_counters":
+        {
+            "description": "Igmp V3 counters.", 
+            "$ref":"../../schema/wired/IgmpV3Counters.json"
+        }, 
+        "forward_to_routers_tx_counter":
+        {
+            "description": "Forward to Routers Tx Counter.", 
+            "type": "integer"
+        }, 
+        "forward_to_vlan_tx_counter":
+        {
+            "description": "Forward to Vlan Tx Counter.", 
+            "type": "integer"
+        }, 
+        "unknown_igmp_type_rx":
+        {
+            "description": "Unknown IGMP type Rx.", 
+            "type": "integer"
+        }, 
+        "unknown_pkt_rx":
+        {
+            "description": "Unknown packet Rx.", 
+            "type": "integer"
+        }, 
+        "port_fast_leave_counter":
+        {
+            "description": "Port Fast Leave Counter.", 
+            "type": "integer"
+        }, 
+        "port_forced_fast_leave_counter":
+        {
+            "description": "Port Forced Fast Leave Counter.", 
+            "type": "integer"
+        }, 
+        "port_membership_timeout_counter":
+        {
+            "description": "Port Membership Timeout Counter.", 
+            "type": "integer"
+        }
+    }
+}

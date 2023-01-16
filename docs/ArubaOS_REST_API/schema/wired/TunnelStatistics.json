@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Tunnel Statistics", 
+    "title": "TunnelStatistics", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "rx_packets":
+        {
+            "description": "RX Packets", 
+            "type": "integer"
+        }, 
+        "tx_packets":
+        {
+            "description": "TX packets", 
+            "type": "integer"
+        }, 
+        "rx_5minute_weighted_average_rate":
+        {
+            "description": "Rx 5 Minute Weighted Average Rate (Pkts/sec)", 
+            "type": "integer"
+        }, 
+        "tx_5minute_weighted_average_rate":
+        {
+            "description": "Tx 5 Minute Weighted Average Rate (Pkts/sec)", 
+            "type": "integer"
+        }
+    }
+}

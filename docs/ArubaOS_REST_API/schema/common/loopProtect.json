@@ -1,0 +1,201 @@
+{
+  "title": "loop-protect",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "port-list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "port-list_value"
+        ],
+        "properties": {
+          "port-list_value": {
+            "type": "string"
+          },
+          "cmd_no_form": {
+            "type": "boolean",
+            "default": false
+          },
+          "port-list_reference": {
+            "$ref": "#/definitions/port-list_ref_1"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "port-list_reference"
+            ],
+            "not": {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          },
+          {
+            "required": [
+              "cmd_no_form"
+            ],
+            "not": {
+              "required": [
+                "port-list_reference"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "port-list_reference",
+                "cmd_no_form"
+              ]
+            }
+          }
+        ]
+      },
+      "description": "Enable loop protection on the specified ports."
+    },
+    "transmit-interval": {
+      "type": "integer",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Set the number of seconds between loop detect packet transmissions."
+    },
+    "disable-timer": {
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 604800,
+      "description": "Set the number of seconds before disabled ports are automatically re-enabled."
+    },
+    "trap": {
+      "description": "Enable loop protection traps.",
+      "$ref": "#/definitions/trap_ref_2"
+    },
+    "mode": {
+      "description": "Set whether loop protection works on a port or VLAN basis.",
+      "$ref": "#/definitions/mode_ref_3"
+    },
+    "vlan": {
+      "type": "object",
+      "properties": {
+        "cmd_no_form": {
+          "type": "boolean",
+          "default": false
+        },
+        "vlan_value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "vlan_value"
+      ],
+      "description": "Enable loop protection on the specified VLANs."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "port-list"
+      ]
+    },
+    {
+      "required": [
+        "transmit-interval"
+      ]
+    },
+    {
+      "required": [
+        "disable-timer"
+      ]
+    },
+    {
+      "required": [
+        "trap"
+      ]
+    },
+    {
+      "required": [
+        "mode"
+      ]
+    },
+    {
+      "required": [
+        "vlan"
+      ]
+    }
+  ],
+  "definitions": {
+    "port-list_ref_1": {
+      "type": "object",
+      "properties": {
+        "receiver-action": {
+          "type": "string",
+          "default": "send-disable",
+          "enum": [
+            "send-disable",
+            "no-disable",
+            "send-recv-dis"
+          ],
+          "description": "Set the action to take when a loop is detected."
+        }
+      }
+    },
+    "trap_ref_2": {
+      "type": "object",
+      "required": [
+        "loop-detected"
+      ],
+      "properties": {
+        "loop-detected": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate a trap when a loop is detected."
+        }
+      }
+    },
+    "mode_ref_3": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "port"
+          ],
+          "not": {
+            "required": [
+              "vlan"
+            ]
+          }
+        },
+        {
+          "required": [
+            "vlan"
+          ],
+          "not": {
+            "required": [
+              "port"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "port": {
+          "type": "boolean",
+          "default": true,
+          "description": "Set loop protection to work on a port basis."
+        },
+        "vlan": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set loop protection to work on a VLAN basis."
+        }
+      }
+    }
+  }
+}

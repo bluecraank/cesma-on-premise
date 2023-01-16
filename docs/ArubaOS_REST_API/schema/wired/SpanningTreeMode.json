@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Spanning Tree Mode.", 
+    "title": "SpanningTreeMode", 
+    "enum":
+    [
+        "STM_MSTP", 
+        "STM_RPVST"
+    ]
+}

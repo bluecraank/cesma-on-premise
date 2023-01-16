@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP local device information", 
+    "title": "LldpLocalDevice", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "chassis_type":
+        {
+            "description": "Chassis Type", 
+            "$ref":"../../schema/common/LldpChassisType.json"
+        }, 
+        "chassis_id":
+        {
+            "description": "Chassis Id", 
+            "type": "string", 
+            "maxLength": 16
+        }, 
+        "system_name":
+        {
+            "description": "System Name", 
+            "type": "string", 
+            "maxLength": 32
+        }, 
+        "system_description":
+        {
+            "description": "System Description", 
+            "type": "string", 
+            "maxLength": 256
+        }, 
+        "capabilities_supported":
+        {
+            "description": "System Capabilities Supported. Bridge and router are supported by default.", 
+            "$ref":"../../schema/common/LldpSystemCapabilities.json"
+        }, 
+        "capabilities_enabled":
+        {
+            "description": "System Capabilities Enabled. Bridge is enabled by default.", 
+            "$ref":"../../schema/common/LldpSystemCapabilities.json"
+        }, 
+        "management_address":
+        {
+            "description": "Management Address", 
+            "type": "array", 
+            "minItems": 1, 
+            "maxItems": 2048, 
+            "items":
+            {
+                "$ref":"../../schema/common/ManagementAddress.json"
+            }
+        }, 
+        "oobm_management_address":
+        {
+            "description": "OOBM Management Address. Applicable for switches with OOBM support only.", 
+            "$ref":"../../schema/common/OOBMAddress.json"
+        }
+    }
+}

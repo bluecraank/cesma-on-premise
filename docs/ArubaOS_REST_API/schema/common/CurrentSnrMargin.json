@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Current SNR Margin (dB)", 
+    "title": "CurrentSnrMargin", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "current_SNR_chan1":
+        {
+            "description": "Current SNR Channel 1", 
+            "type": "number"
+        }, 
+        "current_SNR_chan2":
+        {
+            "description": "Current SNR Channel 2", 
+            "type": "number"
+        }, 
+        "current_SNR_chan3":
+        {
+            "description": "Current SNR Channel 3", 
+            "type": "number"
+        }, 
+        "current_SNR_chan4":
+        {
+            "description": "Current SNR Channel 4", 
+            "type": "number"
+        }
+    }
+}

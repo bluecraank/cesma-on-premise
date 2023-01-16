@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP TLV Params advertised", 
+    "title": "LldpTlvParams", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "basic_tlv_params":
+        {
+            "description": "LLDP basic TLV params", 
+            "$ref":"../../schema/common/LldpBasicTlvParams.json"
+        }, 
+        "dot1_tlv_params":
+        {
+            "description": "LLDP dot1 TLV params. Not applicable for OOBM port.", 
+            "$ref":"../../schema/common/LldpDot1TlvParams.json"
+        }, 
+        "dot3_tlv_params":
+        {
+            "description": "LLDP dot3 TLV params. Not applicable for OOBM port.", 
+            "$ref":"../../schema/common/LldpDot3TlvParams.json"
+        }, 
+        "med_tlv_params":
+        {
+            "description": "LLDP MED TLV params. Not applicable for OOBM port.", 
+            "$ref":"../../schema/common/LldpMedTlvParams.json"
+        }, 
+        "ip_address_tlv":
+        {
+            "description": "IpAddress Advertised. Input empty array [] to remove the configured ip addresses.", 
+            "type": "array", 
+            "minItems": 0, 
+            "maxItems": 2048, 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddress.json"
+            }
+        }, 
+        "med_port_location":
+        {
+            "description": "MED Port Location. Not applicable for OOBM port.", 
+            "$ref":"../../schema/common/LldpMedPortLocation.json"
+        }
+    }
+}

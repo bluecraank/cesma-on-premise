@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA Test Completion configuration data", 
+    "title": "IpSlaTestCompletion", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "action_type":
+        {
+            "description": "Configure action to trigger when threshold is hit", 
+            "$ref":"../../schema/wired/IpSlaActionType.json", 
+            "sql.not_null": true
+        }
+    }
+}

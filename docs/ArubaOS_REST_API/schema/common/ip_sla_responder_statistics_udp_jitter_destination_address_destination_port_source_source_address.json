@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "IP SLA Responder": {
+            "type": "string"
+        },
+        "Number of Packets Received": {
+            "type": "integer"
+        },
+        "Number of Packets Responded": {
+            "type": "integer"
+        }
+    }
+}

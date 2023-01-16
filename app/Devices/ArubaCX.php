@@ -558,7 +558,7 @@ class ArubaCX implements IDevice
         return json_encode(['success' => 'false', 'error' => 'Login failed']);
     }
 
-    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans): Array {
+    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $test): Array {
 
         $start = microtime(true);
         $not_found = [];
@@ -595,57 +595,59 @@ class ArubaCX implements IDevice
 
         $return['log'][] = "</br><b>[Log]</b></br>";
 
-        if(!$login_info = self::ApiLogin($device)) {
-            $return['log'][] = "<span class='tag is-danger'>API</span> Login fehlgeschlagen";
-            $return['time'] = number_format(microtime(true)-$start, 2);
-            return $return;
-        }
+        if(!$test) {
+            if(!$login_info = self::ApiLogin($device)) {
+                $return['log'][] = "<span class='tag is-danger'>API</span> Login fehlgeschlagen";
+                $return['time'] = number_format(microtime(true)-$start, 2);
+                return $return;
+            }
 
-        list($cookie, $api_version) = explode(";", $login_info);
+            list($cookie, $api_version) = explode(";", $login_info);
 
-        if($create_vlans) {
-            foreach($not_found as $key => $vlan) {
+            if($create_vlans) {
+                foreach($not_found as $key => $vlan) {
+                    $data = '{
+                        "name": '.$vlan->name.',
+                        "id": '.$vlan->vid.'
+                    }';
+                    
+                    $response = self::ApiPost($device->hostname, $cookie, "system/vlans", $api_version, $data);
+
+                    if($response['success']) {
+                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich erstellt";
+                        $i_vlan_created++;
+                    } else {
+                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht erstellt werden";
+                    }
+                }
+            }
+
+            foreach($chg_name as $vlan) {
                 $data = '{
-                    "name": '.$vlan->name.',
-                    "id": '.$vlan->vid.'
+                    "name": "'.$vlan->name.'"
                 }';
                 
-                $response = self::ApiPost($device->hostname, $cookie, "system/vlans", $api_version, $data);
+                $response = self::ApiPut($device->hostname, $cookie, "system/vlans/".$vlan->vid, $api_version, $data);
 
                 if($response['success']) {
-                    $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich erstellt";
-                    $i_vlan_created++;
+                    $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
+                    $i_vlan_chg_name++;
                 } else {
-                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht erstellt werden";
+                    if($vlan->vid != 1) {
+                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                    } else {
+                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> VLAN 1 kann nicht umbenannt werden (ArubaCX Einschränkung)";
+                    }
                 }
             }
+
+            $vlan_data = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlans'], $api_version)['data'];
+            $device->vlan_data = self::getVlanData($vlan_data);
+            $device->save();
+
+            self::ApiLogout($device->hostname, $cookie, $api_version);
         }
-
-        foreach($chg_name as $vlan) {
-            $data = '{
-                "name": "'.$vlan->name.'"
-            }';
-            
-            $response = self::ApiPut($device->hostname, $cookie, "system/vlans/".$vlan->vid, $api_version, $data);
-
-            if($response['success']) {
-                $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
-                $i_vlan_chg_name++;
-            } else {
-                if($vlan->vid != 1) {
-                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
-                } else {
-                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> VLAN 1 kann nicht umbenannt werden (ArubaCX Einschränkung)";
-                }
-            }
-        }
-
-        $vlan_data = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlans'], $api_version)['data'];
-        $device->vlan_data = self::getVlanData($vlan_data);
-        $device->save();
-
-        self::ApiLogout($device->hostname, $cookie, $api_version);
-
+        
         $return['log'][] = "</br><b>[Ergebnisse]</b></br>";
         $return['log'][] = $i_vlan_created." von ".$i_not_found." VLANs erstellt";
         $return['log'][] = $i_vlan_chg_name." von ".$i_chg_name." VLANs umbenannt";

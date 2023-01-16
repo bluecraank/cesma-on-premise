@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "RollbackToGoodCfg", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_config_rollbacked":
+        {
+            "description": "Indicates if switch has rollbacked config pushed from NMS.", 
+            "type": "boolean", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "is_rollback_supported":
+        {
+            "description": "Indicates if switch supports explicit config reversal on NMS connectivity failures. Can be false, if available config banks are occupied (can happen in brownfield scenarios).", 
+            "type": "boolean", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

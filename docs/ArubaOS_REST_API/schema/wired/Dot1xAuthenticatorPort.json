@@ -1,0 +1,135 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "802.1X Authenticator Port configuration data.", 
+    "title": "Dot1xAuthenticatorPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID.", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "is_authenticator_enabled":
+        {
+            "description": "802.1X Authenticator Port admin status.", 
+            "type": "boolean"
+        }, 
+        "control":
+        {
+            "description": "802.1X Authenticator Port operational control.", 
+            "$ref":"../../schema/wired/Dot1xAuthenticatorPortControl.json", 
+            "default_value": "DAPC_AUTO"
+        }, 
+        "unauthorized_vlan_id":
+        {
+            "description": "802.1X unauthorized VLAN ID. Displays 0 if not configured. Use 0 to reset unauthorized_vlan_id.", 
+            "minimum": 0, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "client_limit":
+        {
+            "description": "Client limit.", 
+            "minimum": 0, 
+            "maximum": 32, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "quiet_period":
+        {
+            "description": "Quiet period.", 
+            "minimum": 0, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "default_value": 60
+        }, 
+        "tx_period":
+        {
+            "description": "Tx period.", 
+            "minimum": 1, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "default_value": 30
+        }, 
+        "supplicant_timeout":
+        {
+            "description": "Supplicant timeout.", 
+            "minimum": 1, 
+            "maximum": 300, 
+            "type": "integer", 
+            "default_value": 30
+        }, 
+        "server_timeout":
+        {
+            "description": "Server timeout.", 
+            "minimum": 1, 
+            "maximum": 300, 
+            "type": "integer", 
+            "default_value": 300
+        }, 
+        "max_requests":
+        {
+            "description": "Max requests.", 
+            "minimum": 1, 
+            "maximum": 10, 
+            "type": "integer", 
+            "default_value": 2
+        }, 
+        "reauth_period":
+        {
+            "description": "Reauth period.", 
+            "minimum": 0, 
+            "maximum": 999999999, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "authorized_vlan_id":
+        {
+            "description": "802.1X authorized VLAN ID. Displays 0 if not configured. Use 0 to reset authorized_vlan_id", 
+            "minimum": 0, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "logoff_period":
+        {
+            "description": "Logoff period.", 
+            "minimum": 1, 
+            "maximum": 999999999, 
+            "type": "integer", 
+            "default_value": 300
+        }, 
+        "unauth_period":
+        {
+            "description": "Unauth period.", 
+            "minimum": 0, 
+            "maximum": 255, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "cached_reauth_period":
+        {
+            "description": "Cached reauth period.", 
+            "minimum": 0, 
+            "maximum": 2147483647, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "enforce_cache_reauth":
+        {
+            "description": "Authenticator enforce canched reauthentication.", 
+            "type": "boolean"
+        }
+    }
+}

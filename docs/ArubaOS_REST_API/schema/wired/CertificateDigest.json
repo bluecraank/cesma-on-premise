@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Local Certificate Digest Details", 
+    "title": "CertificateDigest", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "local_cert_name":
+        {
+            "description": "Certificate Name", 
+            "type": "string", 
+            "maxLength": 20, 
+            "minLength": 1, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "ta_name":
+        {
+            "description": "Ta profile associated with the certificate.", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "expiry_date":
+        {
+            "description": "Certificate Expiry Date.", 
+            "$ref":"../../schema/wired/CertDate.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "local_cert_md5":
+        {
+            "description": "Message Digest of Certificate.", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 0
+        }, 
+        "ta_status":
+        {
+            "description": "Certificate installation status of TA Profile.", 
+            "$ref":"../../schema/wired/TaCertificateStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "type_of_cert":
+        {
+            "description": "Type of certificate.", 
+            "$ref":"../../schema/wired/CertType.json", 
+            "default_value": "CT_UNKNOWN_TYPE", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

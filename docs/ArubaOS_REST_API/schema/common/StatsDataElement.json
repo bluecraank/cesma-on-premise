@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps statistics data element.", 
+    "title": "StatsDataElement", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "event":
+        {
+            "description": "An event.", 
+            "$ref":"../../schema/common/Event.json"
+        }, 
+        "lldp_system_stats":
+        {
+            "description": "LLDP system stats.", 
+            "$ref":"../../schema/common/LldpSystemStats.json"
+        }, 
+        "system_info_stats":
+        {
+            "description": "System info stats.", 
+            "$ref":"../../schema/common/SystemInfoStats.json"
+        }, 
+        "system_time_stats":
+        {
+            "description": "System time stats.", 
+            "$ref":"../../schema/common/SystemTimeStats.json"
+        }, 
+        "system_cpu_stats":
+        {
+            "description": "System CPU stats.", 
+            "$ref":"../../schema/common/SystemCpuStats.json"
+        }, 
+        "system_memory_stats":
+        {
+            "description": "System memory stats.", 
+            "$ref":"../../schema/common/SystemMemoryStats.json"
+        }, 
+        "system_storage_stats":
+        {
+            "description": "System storage stats.", 
+            "$ref":"../../schema/common/SystemStorageStats.json"
+        }, 
+        "port_stats":
+        {
+            "description": "Port stats.", 
+            "$ref":"../../schema/common/PortStats.json"
+        }, 
+        "dot1x_supplicant_port_stats":
+        {
+            "description": "802.1X Supplicant Port stats.", 
+            "$ref":"../../schema/common/Dot1xSupplicantPortStats.json"
+        }
+    }
+}

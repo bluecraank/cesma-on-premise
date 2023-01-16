@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Control Plane Statistics", 
+    "title": "ControlPlaneStatistics", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "bootstrap_packets_sent":
+        {
+            "description": "Bootstrap packets sent", 
+            "type": "integer"
+        }, 
+        "bootstrap_packets_received":
+        {
+            "description": "Bootstrap packets Received", 
+            "type": "integer"
+        }, 
+        "bootstrap_packets_invalid":
+        {
+            "description": "Invalid Bootstrap packets", 
+            "type": "integer"
+        }
+    }
+}

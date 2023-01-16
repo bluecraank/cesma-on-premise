@@ -1,0 +1,97 @@
+{
+  "title": "ipSlaResponderUdpJitter",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "udp-jitter": {
+      "description": "Configure responder for udp-jitter sla type.",
+      "$ref": "#/definitions/udp-jitter_ref_1"
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "udp-jitter"
+  ],
+  "definitions": {
+    "source_ref_4": {
+      "type": "object",
+      "required": [
+        "IP-ADDR"
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "string",
+          "format": "ipv4",
+          "description": "Configure the IPv4 address of the source sending SLA packets."
+        }
+      }
+    },
+    "PORT-NUM_ref_3": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the IPv4 address of the source sending SLA packets.",
+          "$ref": "#/definitions/source_ref_4"
+        }
+      }
+    },
+    "IP-ADDR_ref_2": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value",
+            "PORT-NUM_reference"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 65535
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_3"
+            }
+          },
+          "description": "Configure port number to listen for incoming SLA packets."
+        }
+      }
+    },
+    "udp-jitter_ref_1": {
+      "type": "object",
+      "required": [
+        "IP-ADDR"
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_2"
+            }
+          },
+          "description": "Configure the IPv4 address of the responder."
+        }
+      }
+    }
+  }
+}

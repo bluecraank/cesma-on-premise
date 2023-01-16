@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"BGP Peer Admin status", 
+    "title": "BgpPeerAdminStatus", 
+    "enum":
+    [
+        "BPAS_STOP", 
+        "BPAS_START"
+    ]
+}

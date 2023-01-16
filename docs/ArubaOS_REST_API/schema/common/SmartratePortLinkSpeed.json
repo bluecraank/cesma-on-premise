@@ -1,0 +1,15 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Smartrate Port link speed.", 
+    "title": "SmartratePortLinkSpeed", 
+    "enum":
+    [
+        "PLS_10BASE_T", 
+        "PLS_1000BASE_T", 
+        "PLS_2_5_G_NBASE_T", 
+        "PLS_2_5_GBASE_T", 
+        "PLS_5G_NBASE_T", 
+        "PLS_5GBASE_T", 
+        "PLS_10GBASE_T"
+    ]
+}

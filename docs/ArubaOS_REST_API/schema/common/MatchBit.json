@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"MatchBit (MB_)", 
+    "title": "MatchBit", 
+    "enum":
+    [
+        "MB_ACK", 
+        "MB_FIN", 
+        "MB_RST", 
+        "MB_SYN"
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP SLA responder statistics", 
+    "title": "IpSlaResponderStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_responder_active":
+        {
+            "description": "IP SLA Responder status", 
+            "type": "boolean"
+        }, 
+        "responder_type":
+        {
+            "description": "IP-SLA Responder Type", 
+            "$ref":"../../schema/wired/IpSlaResponderType.json"
+        }, 
+        "destination_address":
+        {
+            "description": "Destination IP Address", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "destination_port":
+        {
+            "description": "Destination Port", 
+            "type": "integer"
+        }, 
+        "source_address":
+        {
+            "description": "Source IP Address", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "packets_received":
+        {
+            "description": "Number of packets received", 
+            "type": "integer"
+        }, 
+        "packets_responded":
+        {
+            "description": "Number of packets responded", 
+            "type": "integer"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SwitchHardware Status (HS_)", 
+    "title": "SwitchHardwareStatus", 
+    "enum":
+    [
+        "SHS_OK", 
+        "SHS_ERROR", 
+        "SHS_NOT_CONNECTED", 
+        "SHS_ACTIVE", 
+        "SHS_STANDBY", 
+        "SHS_OFFLINE"
+    ]
+}

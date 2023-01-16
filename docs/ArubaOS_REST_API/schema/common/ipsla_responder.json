@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for show command",
+  "type": "object",
+  "properties": {
+    "destination_address": {
+      "type": "string"
+    },
+    "destination_port": {
+      "description": "Destination Port",
+      "minimum": 1024,
+      "maximum": 65535,
+      "type": "integer"
+    },
+    "source_address": {
+      "type": "string"
+    }
+  }
+}

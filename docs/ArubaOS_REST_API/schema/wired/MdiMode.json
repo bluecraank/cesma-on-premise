@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"MDI Mode", 
+    "title": "MdiMode", 
+    "enum":
+    [
+        "MM_MDI", 
+        "MM_MDIX", 
+        "MM_NONE"
+    ]
+}

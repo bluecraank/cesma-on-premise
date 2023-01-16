@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Global switch GET configuration", 
+    "title": "SwitchConfig", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "config_base64_encoded":
+        {
+            "description": "base64 encoded Config", 
+            "type": "string", 
+            "sql.not_null": true
+        }, 
+        "config_cert_digest":
+        {
+            "description": "Certificate and TA-Profile Digest details", 
+            "$ref":"../../schema/wired/CertificateTaProfileDigestdetails.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

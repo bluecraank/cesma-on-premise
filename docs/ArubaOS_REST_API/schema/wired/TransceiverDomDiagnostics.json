@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Transceiver DOM Diagnostics data.", 
+    "title": "TransceiverDomDiagnostics", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "temperature_in_degree_celsius":
+        {
+            "description": "Transceiver Temperature.", 
+            "type": "number"
+        }, 
+        "voltage_in_volts":
+        {
+            "description": "Transceiver Voltage.", 
+            "type": "number"
+        }, 
+        "tx_bias_in_milliampere":
+        {
+            "description": "Transceiver Tx Bias.", 
+            "type": "number"
+        }, 
+        "tx_power_in_dbm":
+        {
+            "description": "Transceiver Tx Power in dBm.", 
+            "type": "number"
+        }, 
+        "rx_power_in_dbm":
+        {
+            "description": "Transceiver Rx Power in dBm.", 
+            "type": "number"
+        }, 
+        "recent_alarms":
+        {
+            "description": "Recent Alarms", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/wired/TransceiverAlarms.json"
+            }
+        }, 
+        "recent_errors":
+        {
+            "description": "Recent Errors", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/wired/TransceiverErrors.json"
+            }
+        }, 
+        "timestamp":
+        {
+            "description": "Time when this diagnostics was last updated.", 
+            "type": "string"
+        }
+    }
+}

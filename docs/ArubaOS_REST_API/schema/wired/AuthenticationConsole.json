@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Authentication for console", 
+    "title": "AuthenticationConsole", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "auth_console_login":
+        {
+            "description": "Configure login access to the switch for console", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }, 
+        "auth_console_enable":
+        {
+            "description": "Configure enable access to the switch for console", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }
+    }
+}

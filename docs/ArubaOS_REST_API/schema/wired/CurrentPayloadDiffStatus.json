@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Display the current status of the diff operation performed using payload  as input.", 
+    "title": "CurrentPayloadDiffStatus", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "status":
+        {
+            "description": "Status of the operation performed using payload as input.", 
+            "$ref":"../../schema/wired/CfgRestoreStatus.json"
+        }
+    }
+}

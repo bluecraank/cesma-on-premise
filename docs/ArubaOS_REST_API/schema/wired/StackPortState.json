@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Stack Port State", 
+    "title": "StackPortState", 
+    "enum":
+    [
+        "SPS_UP", 
+        "SPS_DOWN", 
+        "SPS_DISABLED", 
+        "SPS_BLOCKED"
+    ]
+}

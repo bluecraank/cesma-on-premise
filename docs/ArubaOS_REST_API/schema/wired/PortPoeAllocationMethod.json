@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port PoE AllocationMethod (PPAM_)", 
+    "title": "PortPoeAllocationMethod", 
+    "enum":
+    [
+        "PPAM_USAGE", 
+        "PPAM_CLASS", 
+        "PPAM_VALUE"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Filter Action (FA_)", 
+    "title": "FilterAction", 
+    "enum":
+    [
+        "FA_ALLOW", 
+        "FA_BLOCK"
+    ]
+}

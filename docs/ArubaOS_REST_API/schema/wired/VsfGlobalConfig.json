@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VSF Global Configuration", 
+    "title": "VsfGlobalConfig", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_lldp_mad_enabled":
+        {
+            "description": "lldp_mad enable/disable", 
+            "type": "boolean"
+        }, 
+        "lldp_mad":
+        {
+            "description": "VSF LLDP_MAD Configuration. Valid only if is_lldp_mad_enabled = True", 
+            "$ref":"../../schema/wired/VsfLldpMadConfig.json"
+        }, 
+        "domain_id":
+        {
+            "description": "VSF Domain. Max value allowed is 4294967295.", 
+            "minimum": 1, 
+            "maximum": 4294967295, 
+            "type": "integer"
+        }, 
+        "port_speed":
+        {
+            "description": "VSF Port Speed", 
+            "$ref":"../../schema/wired/PortSpeed.json"
+        }, 
+        "mad_vlan":
+        {
+            "description": "VSF MAD Vlan. Return null if not configured", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer"
+        }, 
+        "is_oobm_mad_enabled":
+        {
+            "description": "VSF OOBM MAD enable/disable", 
+            "type": "boolean"
+        }, 
+        "stack_id":
+        {
+            "description": "VSF stack-id", 
+            "type": "string", 
+            "maxLength": 32, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

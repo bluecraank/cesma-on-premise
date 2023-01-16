@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"IGMP Querier State (IQS_)", 
+    "title": "IgmpQuerierState", 
+    "enum":
+    [
+        "IQS_NON_QUERIER", 
+        "IQS_QUERIER"
+    ]
+}

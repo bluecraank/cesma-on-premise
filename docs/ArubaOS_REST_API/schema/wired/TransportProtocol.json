@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"TransportProtocol", 
+    "title": "TransportProtocol", 
+    "enum":
+    [
+        "TP_UDP", 
+        "TP_TCP", 
+        "TP_TLS"
+    ]
+}

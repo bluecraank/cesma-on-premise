@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "BGP neighbor stats - Displays BGP and neighbor information.", 
+    "title": "BgpNeighborStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "nbr_ip_address":
+        {
+            "description": "Neighbor IP Address", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "nbr_as_number":
+        {
+            "description": "Neighbor AS Number", 
+            "type": "integer"
+        }, 
+        "nbr_state":
+        {
+            "description": "Neighbor state machine information", 
+            "$ref":"../../schema/wired/BgpPeerState.json"
+        }, 
+        "nbr_admin_status":
+        {
+            "description": "Neighbor Admin Status", 
+            "$ref":"../../schema/wired/BgpPeerAdminStatus.json"
+        }, 
+        "nbr_uptime_in_seconds":
+        {
+            "description": "BGP Peer session up time", 
+            "type": "integer"
+        }, 
+        "current_prefixes_sent":
+        {
+            "description": "No of prefixes advertised to this peer currently", 
+            "type": "integer"
+        }, 
+        "total_prefixes_sent":
+        {
+            "description": "No of prefixes advertised to this peer in total", 
+            "type": "integer"
+        }, 
+        "current_prefixes_received":
+        {
+            "description": "No of prefixes received from this peer currently", 
+            "type": "integer"
+        }, 
+        "total_prefixes_received":
+        {
+            "description": "No of prefixes received from this peer in total", 
+            "type": "integer"
+        }, 
+        "filtered_routemap_out":
+        {
+            "description": "No of out bound prefixes filtered by routemap", 
+            "type": "integer"
+        }, 
+        "filtered_routemap_in":
+        {
+            "description": "No of in bound prefixes filtered by routemap", 
+            "type": "integer"
+        }, 
+        "filtered_bad_lead_as_in":
+        {
+            "description": "No of in bound prefixes filtered due to bad leading AS number", 
+            "type": "integer"
+        }, 
+        "filtered_max_prefix_exceeded_in":
+        {
+            "description": "No of in bound prefixes filtered as the max  number of allowed  prefixes exceeded", 
+            "type": "integer"
+        }, 
+        "filtered_allow_as_in_exceeded_in":
+        {
+            "description": "No of in bound prefixes filtered due to exceeding the AS number allowed times in the AS path attribute", 
+            "type": "integer"
+        }, 
+        "filtered_total_in":
+        {
+            "description": "Total no of in bound prefixes filtered", 
+            "type": "integer"
+        }, 
+        "filtered_total_out":
+        {
+            "description": "Total no of out bound prefixes filtered", 
+            "type": "integer"
+        }
+    }
+}

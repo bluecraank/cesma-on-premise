@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Modules Information", 
+    "title": "Module", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "interop_mode":
+        {
+            "description": "Module interoperability.", 
+            "$ref":"../../schema/wired/InteropMode.json"
+        }, 
+        "module_info":
+        {
+            "description": "Installed Modules Information.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/ModuleInfo.json"
+            }
+        }
+    }
+}

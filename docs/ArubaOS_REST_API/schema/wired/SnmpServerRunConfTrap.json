@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMP Server Running Config related Trap", 
+    "title": "SnmpServerRunConfTrap", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "running_conf_change_trap":
+        {
+            "description": "Traps mode for running config change.", 
+            "$ref":"../../schema/wired/SnmpTrapMode.json", 
+            "default_value": "STM_DISABLE"
+        }, 
+        "trap_interval":
+        {
+            "description": "The time delay between consecutive running config change traps.", 
+            "minimum": 0, 
+            "maximum": 2147483647, 
+            "type": "integer", 
+            "default_value": 0
+        }
+    }
+}

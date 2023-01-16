@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"DHCP-SNOOP TRUSTED PORT", 
+    "title": "DhcpSnoopPortTrust", 
+    "enum":
+    [
+        "DSNOOP_TRUSTED", 
+        "DSNOOP_UNTRUSTED"
+    ]
+}

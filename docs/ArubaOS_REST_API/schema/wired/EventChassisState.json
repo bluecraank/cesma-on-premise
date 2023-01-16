@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Chassis State", 
+    "title": "EventChassisState", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "chassis_slot_name":
+        {
+            "description": "Chassis Slot Name", 
+            "type": "string"
+        }, 
+        "chassis_fab_name":
+        {
+            "description": "Chassis Fabric Name", 
+            "type": "string"
+        }, 
+        "chassis_error":
+        {
+            "description": "Chassis Error", 
+            "type": "integer"
+        }, 
+        "Failure_count":
+        {
+            "description": "Chassis Failure Count", 
+            "type": "integer"
+        }, 
+        "image_id":
+        {
+            "description": "Image Id", 
+            "type": "integer"
+        }, 
+        "lost_comm":
+        {
+            "description": "Lost Communication", 
+            "type": "string"
+        }, 
+        "chassis_module_name":
+        {
+            "description": "Chassis Module Name", 
+            "type": "string"
+        }, 
+        "chassis_port_name":
+        {
+            "description": "Chassis Port Name", 
+            "type": "string"
+        }
+    }
+}

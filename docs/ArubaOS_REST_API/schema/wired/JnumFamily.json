@@ -1,0 +1,25 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Jnum Family Numbers (JF_JL2XXA and JF_JL55XA for 2930F and JF_J985XA for 5400R)", 
+    "title": "JnumFamily", 
+    "enum":
+    [
+        "JF_JL253A", 
+        "JF_JL254A", 
+        "JF_JL255A", 
+        "JF_JL256A", 
+        "JF_JL258A", 
+        "JF_JL259A", 
+        "JF_JL260A", 
+        "JF_JL261A", 
+        "JF_JL262A", 
+        "JF_JL263A", 
+        "JF_JL264A", 
+        "JF_JL557A", 
+        "JF_JL558A", 
+        "JF_JL559A", 
+        "JF_J9850A", 
+        "JF_J9851A", 
+        "JF_JL693A"
+    ]
+}

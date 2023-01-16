@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Event Config Error", 
+    "title": "EventConfigError", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "product_file_version":
+        {
+            "description": "Product File Version", 
+            "type": "string"
+        }, 
+        "config_file_version":
+        {
+            "description": "Config File Version", 
+            "type": "string"
+        }, 
+        "product_sys_version":
+        {
+            "description": "Product System Version", 
+            "type": "string"
+        }, 
+        "config_sys_msg":
+        {
+            "description": "Config System Version", 
+            "type": "string"
+        }, 
+        "config_qa_msg":
+        {
+            "description": "Config Qa Message", 
+            "type": "string"
+        }, 
+        "config_error_msg":
+        {
+            "description": "Config Error Message", 
+            "type": "string"
+        }
+    }
+}

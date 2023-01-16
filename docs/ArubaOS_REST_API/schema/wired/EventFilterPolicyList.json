@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Event filter policy list", 
+    "title": "EventFilterPolicyList", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "collection_result":
+        {
+            "description": "Collection result info.", 
+            "$ref":"../../schema/common/CollectionResult.json"
+        }, 
+        "filter_table_element":
+        {
+            "description": "Subscription status", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/EventFilterPolicy.json"
+            }
+        }
+    }
+}

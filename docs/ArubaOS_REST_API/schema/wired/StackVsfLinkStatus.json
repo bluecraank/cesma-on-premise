@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Stack VSF Link Status (VSF_)", 
+    "title": "StackVsfLinkStatus", 
+    "enum":
+    [
+        "VSF_LINK_UP", 
+        "VSF_LINK_DOWN"
+    ]
+}

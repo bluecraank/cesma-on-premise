@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Locator LED Result", 
+    "title": "LocatorLedResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "VSF/BPS Member Id", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "status":
+        {
+            "description": "LED Status", 
+            "$ref":"../../schema/wired/LedStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "duration_in_seconds":
+        {
+            "description": "Configured duration if LedBlinkTime = LBT_STARTUP", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "when":
+        {
+            "description": "Configuration information related to the led blink settings at startup", 
+            "$ref":"../../schema/wired/LedBlinkTime.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "remaining_seconds":
+        {
+            "description": "Remaining Time in seconds", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

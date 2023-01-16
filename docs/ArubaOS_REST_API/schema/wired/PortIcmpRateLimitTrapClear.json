@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Trap-clear for ICMP rate-limit on a port.", 
+    "title": "PortIcmpRateLimitTrapClear", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "sql.not_null": true
+        }, 
+        "icmp_traffic_type":
+        {
+            "description": "Icmp Traffic type", 
+            "$ref":"../../schema/wired/PortIcmpTrafficType.json"
+        }
+    }
+}

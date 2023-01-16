@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Member system status information", 
+    "title": "MemberSystemStatusInfo", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "Stack member ID", 
+            "type": "integer"
+        }, 
+        "serial_number":
+        {
+            "description": "System serial number.", 
+            "type": "string"
+        }, 
+        "hardware_revision":
+        {
+            "description": "Hardware platform revision.", 
+            "type": "string"
+        }, 
+        "product_model":
+        {
+            "description": "Product model.", 
+            "$ref":"../../schema/common/ProductModel.json"
+        }, 
+        "mac_address":
+        {
+            "description": "MAC address of the stack member.", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "total_memory_in_bytes":
+        {
+            "description": "The total memory (RAM) available to the system.", 
+            "type": "integer"
+        }, 
+        "total_poe_consumption":
+        {
+            "description": "The total PoE consumption It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "sys_temp":
+        {
+            "description": "The system temperature", 
+            "type": "string"
+        }, 
+        "sys_temp_threshold":
+        {
+            "description": "The system temperature threshold", 
+            "type": "string"
+        }, 
+        "sys_fan_status":
+        {
+            "description": "The system fan status", 
+            "type": "boolean"
+        }
+    }
+}

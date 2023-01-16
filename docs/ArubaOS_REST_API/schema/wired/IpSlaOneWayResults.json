@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA UDP Jitter/ Jitter-For-Voip one way results", 
+    "title": "IpSlaOneWayResults", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "max_sd_delay":
+        {
+            "description": "Max SD delay", 
+            "type": "integer"
+        }, 
+        "min_sd_delay":
+        {
+            "description": "Min SD delay", 
+            "type": "integer"
+        }, 
+        "number_of_sd_delay":
+        {
+            "description": "Number of SD delay", 
+            "type": "integer"
+        }, 
+        "sum_of_sd_delay":
+        {
+            "description": "Sum of SD delay", 
+            "type": "integer"
+        }, 
+        "square_sum_of_sd_delay":
+        {
+            "description": "Square sum of SD delay", 
+            "type": "integer"
+        }, 
+        "max_ds_delay":
+        {
+            "description": "Max DS delay", 
+            "type": "integer"
+        }, 
+        "min_ds_delay":
+        {
+            "description": "Min DS delay", 
+            "type": "integer"
+        }, 
+        "number_of_ds_delay":
+        {
+            "description": "Number of DS delay", 
+            "type": "integer"
+        }, 
+        "sum_of_ds_delay":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "square_sum_of_ds_delay":
+        {
+            "description": "Square sum of DS delay", 
+            "type": "integer"
+        }
+    }
+}

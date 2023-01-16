@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Dsnoop Untrusted Policy", 
+    "title": "DsnoopUntrustedPolicy", 
+    "enum":
+    [
+        "DUP_DROP", 
+        "DUP_KEEP", 
+        "DUP_REPLACE"
+    ]
+}

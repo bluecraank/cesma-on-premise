@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port PoE Detection Status (PPDS_)", 
+    "title": "PortPoeDetectionStatus", 
+    "enum":
+    [
+        "PPDS_DISABLE", 
+        "PPDS_SEARCHING", 
+        "PPDS_DELIVERING", 
+        "PPDS_FAULT", 
+        "PPDS_TEST", 
+        "PPDS_OTHER_FAULT"
+    ]
+}

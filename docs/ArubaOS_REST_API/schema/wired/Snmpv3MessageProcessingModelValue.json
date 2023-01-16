@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Snmpv3 message processing model value", 
+    "title": "Snmpv3MessageProcessingModelValue", 
+    "enum":
+    [
+        "SMPMV_VER1", 
+        "SMPMV_VER2C", 
+        "SMPMV_VER3"
+    ]
+}

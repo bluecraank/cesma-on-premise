@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "REST session Idle timeout.", 
+    "title": "RestSessionIdleTimeout", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "timeout":
+        {
+            "description": "REST session idle timeout in seconds.", 
+            "minimum": 120, 
+            "maximum": 7200, 
+            "type": "integer", 
+            "default_value": 600, 
+            "sql.not_null": true
+        }
+    }
+}

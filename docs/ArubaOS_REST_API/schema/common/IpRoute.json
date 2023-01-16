@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP Route configuration data.", 
+    "title": "IpRoute", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "id":
+        {
+            "description": "The unique ID of the IP Route.", 
+            "type": "string", 
+            "readonly": true, 
+            "sql.auto_generated": true, 
+            "sql.primary_key": true
+        }, 
+        "destination":
+        {
+            "description": "Traffic addressed to this IP address or subnet will be routed. Value 0.0.0.0 is used to establish the default gateway.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "mask":
+        {
+            "description": "Traffic addressed to this IP address or subnet will be routed. Value 0.0.0.0 is used to establish the default gateway.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "ip_route_mode":
+        {
+            "description": "The IP route mode. Wireless devices only support IRM_GATEWAY.", 
+            "$ref":"../../schema/common/IpRouteMode.json", 
+            "sql.not_null": true
+        }, 
+        "gateway":
+        {
+            "description": "The IP address of the gateway to forward routed traffic to, when IP route mode is IRM_GATEWAY.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "destination_vlan":
+        {
+            "description": "The destination VLAN. This is mandatory when IP route mode is IRM_VLAN.", 
+            "$ref":"../../schema/common/VlanInfo.json"
+        }, 
+        "metric":
+        {
+            "description": "The priority of the route.", 
+            "minimum": 1, 
+            "maximum": 255, 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "distance":
+        {
+            "description": "The administrative distance to associate with this route.", 
+            "minimum": 1, 
+            "maximum": 255, 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "name":
+        {
+            "description": "Name of the static route. Only name and tag can be modified after configuring the route.", 
+            "type": "string", 
+            "maxLength": 16, 
+            "minLength": 1
+        }, 
+        "tag":
+        {
+            "description": "Tag that can be used to filter redistribution of this route via route-maps. Only name and tag can be modified after configuring the route.", 
+            "minimum": 1, 
+            "maximum": 4294967295, 
+            "type": "integer"
+        }, 
+        "bfd_ip_address":
+        {
+            "description": "Enable BFD for Static Route. This field is applicable for Lava and Bolt platforms only. Specify the local source ip address for BFD when the route mode is IRM_GATEWAY. Specify the destination ip address for BFD when the route mode is IRM_VLAN.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "logging":
+        {
+            "description": "Specify if the packets received on the route need to be logged, when the route mode is IRM_BLACK_HOLE. This is applicable for Lava and Bolt platforms only.", 
+            "type": "boolean"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Lacp Operation Status (LOS_)", 
+    "title": "LacpOperStatus", 
+    "enum":
+    [
+        "LOS_SUCCESS", 
+        "LOS_FAILURE"
+    ]
+}

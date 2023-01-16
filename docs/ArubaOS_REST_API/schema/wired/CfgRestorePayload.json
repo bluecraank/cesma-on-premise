@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "cfg-restore using payload Configuration. config download to the switch as payload  and perform config restore.", 
+    "title": "CfgRestorePayload", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "config_base64_encoded":
+        {
+            "description": "Base64 encoded configuration.", 
+            "type": "string", 
+            "sql.not_null": true
+        }, 
+        "is_forced_reboot_enabled":
+        {
+            "description": "Apply the configuration with reboot if the configuration has reboot required commands.", 
+            "type": "boolean"
+        }, 
+        "is_recoverymode_enabled":
+        {
+            "description": "To enable or disable recovery mode. Not applicable if is_forced_reboot_enabled is true.", 
+            "type": "boolean", 
+            "default_value": true
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Time Server Protocol (TSP_)", 
+    "title": "TimeServerProtocol", 
+    "enum":
+    [
+        "TSP_NTP", 
+        "TSP_SNTP"
+    ]
+}

@@ -1,0 +1,124 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP System statistics data. LLDP-MIB (lldpLocalSystemData, lldpRemoteSystemData)", 
+    "title": "LldpSystemStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "chassis_id_subtype":
+        {
+            "description": "The type of encoding used to identify the chassis associated with the system. LLDP-MIB (lldpLocChassisIdSubtype, lldpRemChassisIdSubtype)", 
+            "$ref":"../../schema/common/LldpChassisIdSubtype.json"
+        }, 
+        "chassis_id":
+        {
+            "description": "The string value used to identify the chassis component associated with the system. LLDP-MIB (lldpLocChassisId, lldpRemChassisId)", 
+            "type": "string"
+        }, 
+        "system_name":
+        {
+            "description": "The string value used to identify the system name of the system. LLDP-MIB (lldpLocSysName, lldpRemSysName)", 
+            "type": "string"
+        }, 
+        "system_description":
+        {
+            "description": "The string value used to identify the system description of the system. LLDP-MIB (lldpLocSysDesc, lldpRemSysDesc)", 
+            "type": "string"
+        }, 
+        "supported_system_capability":
+        {
+            "description": "The list of system capabilities supported on the system. LLDP-MIB (lldpLocSysCapSupported, lldpRemSysCapSupported)", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/common/LldpSystemCapability.json"
+            }
+        }, 
+        "enabled_system_capability":
+        {
+            "description": "The list of system capabilities enabled on the system. LLDP-MIB (lldpLocSysCapEnabled, lldpRemSysCapEnabled)", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/common/LldpSystemCapability.json"
+            }
+        }, 
+        "local_port_number":
+        {
+            "description": "The index value used to identify the port component. LLDP-MIB (lldpLocPortNum, lldpRemLocalPortNum)", 
+            "type": "string"
+        }, 
+        "port":
+        {
+            "description": "The list of port information associated with the system known to the agent. LLDP-MIB (lldpLocPortTable)", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpPort.json"
+            }
+        }, 
+        "management_address":
+        {
+            "description": "The list of management address information on the system known to the agent. LLDP-MIB (lldpLocManAddrTable, lldpRemManAddrTable)", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpManagementAddress.json"
+            }
+        }, 
+        "remote_time_mark":
+        {
+            "description": "A TimeFilter for this entry. See the TimeFilter textual convention in IETF RFC 4502  (REMOTE only). LLDP-MIB (lldpRemTimeMark)", 
+            "type": "integer"
+        }, 
+        "remote_index":
+        {
+            "description": "An arbitrary local integer value used by the agent to identify a particular connection instance (REMOTE only). LLDP-MIB (lldpRemIndex)", 
+            "type": "integer"
+        }, 
+        "remote_port_vlan_id_tlv":
+        {
+            "description": "The integer value used to identify the port's VLAN identifier associated with the remote system on the remote port.", 
+            "type": "integer"
+        }, 
+        "med_network_policy":
+        {
+            "description": "Voice Vlan ID,Voice Traffic Priority and Voice Vlan DSCP value", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpMedNetworkPolicy.json"
+            }
+        }, 
+        "med_power_management":
+        {
+            "description": "LLDP MED power information", 
+            "$ref":"../../schema/common/LldpMedPowerManagement.json"
+        }, 
+        "med_inventory_management":
+        {
+            "description": "LLDP MED inventory Data", 
+            "$ref":"../../schema/common/LldpMedInventoryManagement.json"
+        }, 
+        "mac_address":
+        {
+            "description": "MAC address of the LLDP client.", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "vlanAttr":
+        {
+            "description": "VLAN Derivation", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/VlanAttributes.json"
+            }
+        }
+    }
+}

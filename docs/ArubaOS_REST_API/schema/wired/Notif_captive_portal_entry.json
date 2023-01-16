@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Captive Portal Redirect URL for clients", 
+    "title": "Notif_captive_portal_entry", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "cp_redirect_url":
+        {
+            "description": "", 
+            "type": "string"
+        }
+    }
+}

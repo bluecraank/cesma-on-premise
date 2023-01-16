@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Auth Order Priority (AOP_)", 
+    "title": "AuthOrderPriority", 
+    "enum":
+    [
+        "AOP_8021X", 
+        "AOP_MAC_BASED"
+    ]
+}

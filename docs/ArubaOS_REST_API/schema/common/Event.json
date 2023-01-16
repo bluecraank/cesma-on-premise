@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Event statistics data.", 
+    "title": "Event", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "id":
+        {
+            "description": "The unique ID of the event.", 
+            "type": "integer"
+        }, 
+        "severity":
+        {
+            "description": "The event severity.", 
+            "$ref":"../../schema/common/EventSeverity.json"
+        }, 
+        "occurrence_time":
+        {
+            "description": "The occurrence time of the event.", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "description":
+        {
+            "description": "The event description.", 
+            "type": "string"
+        }, 
+        "source":
+        {
+            "description": "The event source.", 
+            "$ref":"../../schema/common/EventSource.json"
+        }
+    }
+}

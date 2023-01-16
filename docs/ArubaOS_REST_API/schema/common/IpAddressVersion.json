@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"IP Address Version (IAV_).", 
+    "title": "IpAddressVersion", 
+    "enum":
+    [
+        "IAV_IP_V4", 
+        "IAV_IP_V6"
+    ]
+}

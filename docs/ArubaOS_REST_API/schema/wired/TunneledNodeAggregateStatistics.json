@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Tunneled Node Server aggregate Statistics", 
+    "title": "TunneledNodeAggregateStatistics", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "heartbeat_packets_sent":
+        {
+            "description": "Heartbeat packets sent", 
+            "type": "integer"
+        }, 
+        "heartbeat_packets_received":
+        {
+            "description": "Heartbeat packets received", 
+            "type": "integer"
+        }, 
+        "heartbeat_packets_invalid":
+        {
+            "description": "Invalid Heartbeat packets", 
+            "type": "integer"
+        }, 
+        "fragmented_packets_dropped":
+        {
+            "description": "Dropped Fragmented packets", 
+            "type": "integer"
+        }, 
+        "packets_to_non_existent_tunnel":
+        {
+            "description": "Packets to Non-Existent Tunnel", 
+            "type": "integer"
+        }, 
+        "mtu_violation_drop":
+        {
+            "description": "MTU violation drop", 
+            "type": "integer"
+        }
+    }
+}

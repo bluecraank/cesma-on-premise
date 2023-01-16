@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "System Power Consumption statistics data.", 
+    "title": "SystemPowerConsumptionStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "slot_name":
+        {
+            "description": "Power-Supply slot name. Applicable for 5400R", 
+            "type": "string"
+        }, 
+        "psu_model_description":
+        {
+            "description": "Model description", 
+            "type": "string"
+        }, 
+        "current_power_in_watts":
+        {
+            "description": "Current Power", 
+            "type": "integer"
+        }, 
+        "member_id":
+        {
+            "description": "Member Id. Applicable for Stacked switches", 
+            "type": "integer"
+        }
+    }
+}

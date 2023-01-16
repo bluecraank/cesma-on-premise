@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "L2 MAC Table entry data.", 
+    "title": "MacTableEntry", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "mac_address":
+        {
+            "description": "Learned MAC address.", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "vlan_id":
+        {
+            "description": "VLAN ID on which the MAC address was learned.", 
+            "type": "integer"
+        }, 
+        "port_id":
+        {
+            "description": "Port ID on which the MAC address was learned.", 
+            "type": "string", 
+            "maxLength": 9
+        }
+    }
+}

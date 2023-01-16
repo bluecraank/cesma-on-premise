@@ -1,0 +1,91 @@
+{
+  "title": "rogue-ap-isolation",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "enable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable the rogue AP Isolation."
+    },
+    "disable": {
+      "type": "boolean",
+      "default": "false",
+      "description": "Disable the rogue AP Isolation."
+    },
+    "action": {
+      "description": "Configure the action to take for rogue AP packets.",
+      "$ref": "#/definitions/action_ref_1"
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "enable"
+      ],
+      "not": {
+        "required": [
+          "disable"
+        ]
+      }
+    },
+    {
+      "required": [
+        "disable"
+      ],
+      "not": {
+        "required": [
+          "enable"
+        ]
+      }
+    },
+    {
+      "required": [
+        "action"
+      ]
+    }
+  ],
+  "definitions": {
+    "action_ref_1": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "block"
+          ],
+          "not": {
+            "required": [
+              "log"
+            ]
+          }
+        },
+        {
+          "required": [
+            "log"
+          ],
+          "not": {
+            "required": [
+              "block"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "block": {
+          "type": "boolean",
+          "default": true,
+          "description": "Block and log traffic to or from any rogue access point."
+        },
+        "log": {
+          "type": "boolean",
+          "description": "Log traffic to or from any rogue access point."
+        }
+      }
+    }
+  }
+}

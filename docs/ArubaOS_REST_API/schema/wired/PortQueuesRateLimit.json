@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Egress Queues Rate limit configuration for port", 
+    "title": "PortQueuesRateLimit", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID. port_id and queues_direction are required to uniquely identify the queue_rate_percentage to be set", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "queues_direction":
+        {
+            "description": "Queue traffic direction. port_id and queues_direction are required to uniquely identify the queue_rate_percentage to be set", 
+            "$ref":"../../schema/wired/PortQueuesTrafficDirection.json", 
+            "sql.not_null": true
+        }, 
+        "queue_rate_percentage":
+        {
+            "description": "Rate limit for each egress queue in percentage Apply the default value on all queues to reset the configuration", 
+            "type": "array", 
+            "minItems": 8, 
+            "maxItems": 8, 
+            "items":
+            {
+                "minimum": 0, 
+                "maximum": 100, 
+                "default_value": 100, 
+                "type" : "integer"
+            }, 
+            "sql.not_null": true
+        }
+    }
+}

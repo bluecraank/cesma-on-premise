@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Corrected LDPC errors", 
+    "title": "CorrectedLdpcErrors", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ldpc_iteration1":
+        {
+            "description": "LDPC iteration 1", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration2":
+        {
+            "description": "LDPC iteration 2", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration3":
+        {
+            "description": "LDPC iteration 3", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration4":
+        {
+            "description": "LDPC iteration 4", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration5":
+        {
+            "description": "LDPC iteration 5", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration6":
+        {
+            "description": "LDPC iteration 6", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration7":
+        {
+            "description": "LDPC iteration 7", 
+            "type": "integer"
+        }, 
+        "ldpc_iteration8":
+        {
+            "description": "LDPC iteration 8", 
+            "type": "integer"
+        }
+    }
+}

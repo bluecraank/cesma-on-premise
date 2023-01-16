@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VSF Member Configuration", 
+    "title": "VsfMember", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "VSF Member ID", 
+            "minimum": 1, 
+            "maximum": 8, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "priority":
+        {
+            "description": "VSF Member Priority", 
+            "minimum": 1, 
+            "maximum": 255, 
+            "type": "integer", 
+            "default_value": 128
+        }, 
+        "type":
+        {
+            "description": "Configure the family of the VSF member-switch being provisioned. type is mandatory for provisioning a member. type cannot be changed once it is provisioned.", 
+            "$ref":"../../schema/wired/JnumFamily.json"
+        }, 
+        "mac_address":
+        {
+            "description": "Configure the Mac Address of the VSF member-switch being provisioned. type is mandatory for  configuring mac_address", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "status":
+        {
+            "description": "VSF Member Status", 
+            "$ref":"../../schema/wired/VsfMemberStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "model":
+        {
+            "description": "VSF Member Product Model", 
+            "type": "string", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

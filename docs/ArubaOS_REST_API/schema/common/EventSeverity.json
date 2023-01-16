@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Event Severity (ES_).", 
+    "title": "EventSeverity", 
+    "enum":
+    [
+        "ES_CRITICAL", 
+        "ES_INFORMATIONAL", 
+        "ES_MAJOR", 
+        "ES_MINOR"
+    ]
+}

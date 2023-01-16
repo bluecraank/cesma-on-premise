@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Allow unsupported transceiver configuration data.", 
+    "title": "AllowUnsupportedTransceiver", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_allow_unsupported_transceiver_enabled":
+        {
+            "description": "Allow unsupported transceiver status.", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }
+    }
+}

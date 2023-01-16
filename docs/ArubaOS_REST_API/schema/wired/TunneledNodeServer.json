@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Tunneled Node Server configuration data", 
+    "title": "TunneledNodeServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_tn_server_configured":
+        {
+            "description": "Tunneled node server configuration status", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "controller_ip":
+        {
+            "description": "Primary Tunneled Node server address. Input controller_ip as null to reset", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "backup_controller_ip":
+        {
+            "description": "Backup Tunneled Node server address. Input backup_controller_ip as null to reset", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "tn_server_status":
+        {
+            "description": "Enable or Disable Tunneled Node server communication When tunnel-node-server is enabled only then we see default value defined in schema.", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "keepalive_interval":
+        {
+            "description": "The time interval between two successive keepalive messages sent to the controller. When tunnel-node-server is enabled only then we see default value defined in schema.", 
+            "minimum": 1, 
+            "maximum": 8, 
+            "type": "integer", 
+            "default_value": 8
+        }, 
+        "mode":
+        {
+            "description": "Tunneled node server mode. When tunnel-node-server is enabled only then we see default value defined in schema.", 
+            "$ref":"../../schema/wired/TnServerMode.json", 
+            "default_value": "TNSM_PORT_BASED"
+        }
+    }
+}

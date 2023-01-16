@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "ACL configuration data.", 
+    "title": "Acl", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "id":
+        {
+            "description": "The unique ID of this ACL.", 
+            "type": "string", 
+            "maxLength": 90, 
+            "readonly": true, 
+            "sql.auto_generated": true, 
+            "sql.primary_key": true
+        }, 
+        "acl_name":
+        {
+            "description": "The ACL name.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "acl_type":
+        {
+            "description": "The ACL type.", 
+            "$ref":"../../schema/common/AclType.json", 
+            "sql.not_null": true
+        }
+    }
+}

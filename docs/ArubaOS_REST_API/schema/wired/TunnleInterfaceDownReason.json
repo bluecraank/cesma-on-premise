@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Tunnel Interface Down Reason (TIDR_)", 
+    "title": "TunnleInterfaceDownReason", 
+    "enum":
+    [
+        "TIDR_INTERFACE_ADMIN_DOWN", 
+        "TIDR_TEP_NOT_REACHABLE", 
+        "TIDR_RESOURCE_UNAVAILABLE"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"BGP Peer State Machine Information", 
+    "title": "BgpPeerState", 
+    "enum":
+    [
+        "BPS_IDLE", 
+        "BPS_CONNECT", 
+        "BPS_ACTIVE", 
+        "BPS_OPENSENT", 
+        "BPS_OPENCONFIRM", 
+        "BPS_ESTABLISHED"
+    ]
+}

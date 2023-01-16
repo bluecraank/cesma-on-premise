@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "User login session Id.", 
+    "title": "RestLoginSessionsResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "cookie":
+        {
+            "description": "The User login session id.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "sql.not_null": true
+        }
+    }
+}

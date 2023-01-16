@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Switch event data pushed to remote server.", 
+    "title": "DeviceEvent", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "serial_number":
+        {
+            "description": "Serial Number of Switch", 
+            "type": "string", 
+            "maxLength": 40, 
+            "sql.not_null": true
+        }, 
+        "event_type":
+        {
+            "description": "Event Type", 
+            "$ref":"../../schema/wired/SubscribeEventType.json", 
+            "sql.not_null": true
+        }, 
+        "syslog_message":
+        {
+            "description": "Syslog Message", 
+            "type": "string", 
+            "maxLength": 512, 
+            "sql.not_null": true
+        }, 
+        "event_data":
+        {
+            "description": "Event Data in syslog message.", 
+            "$ref":"../../schema/wired/SyslogMessageData.json"
+        }, 
+        "stack_id":
+        {
+            "description": "Stack-Id for BPS/VSF", 
+            "type": "string", 
+            "maxLength": 20, 
+            "minLength": 1
+        }, 
+        "stack_member_id":
+        {
+            "description": "Stack Member ID, applicable for stack switch", 
+            "type": "integer"
+        }, 
+        "domain_id":
+        {
+            "description": "VSF domain-id", 
+            "minimum": 1, 
+            "maximum": 4294967295, 
+            "type": "integer"
+        }
+    }
+}

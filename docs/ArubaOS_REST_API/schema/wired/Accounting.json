@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Accounting", 
+    "title": "Accounting", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "accounting_commands":
+        {
+            "description": "Commands Accounting Configuration accounting_commands does not accept AMO_START_STOP as accounting_mode", 
+            "$ref":"../../schema/wired/AccountingConfig.json"
+        }, 
+        "accounting_network":
+        {
+            "description": "Network Accounting Configuration", 
+            "$ref":"../../schema/wired/AccountingConfig.json"
+        }, 
+        "update_interval":
+        {
+            "description": "Update interval for accounting.", 
+            "minimum": 0, 
+            "maximum": 525600, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "accounting_exec":
+        {
+            "description": "Execute Accounting Configuration", 
+            "$ref":"../../schema/wired/AccountingConfig.json"
+        }, 
+        "accounting_system":
+        {
+            "description": "system  Accounting Configuration", 
+            "$ref":"../../schema/wired/AccountingConfig.json"
+        }, 
+        "session_id":
+        {
+            "description": "Configure how accounting sessions are identified", 
+            "$ref":"../../schema/wired/AccountingSessionId.json", 
+            "default_value": "ASI_UNIQUE"
+        }, 
+        "is_supress_null_user":
+        {
+            "description": "Suppress accounting for certain null user", 
+            "type": "boolean"
+        }, 
+        "accounting_rest":
+        {
+            "description": "REST-URI accounting", 
+            "$ref":"../../schema/wired/AccountingConfig.json"
+        }
+    }
+}

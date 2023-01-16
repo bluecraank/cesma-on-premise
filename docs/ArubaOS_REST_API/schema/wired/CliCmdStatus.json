@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Cli command execution status", 
+    "title": "CliCmdStatus", 
+    "enum":
+    [
+        "CCS_SUCCESS", 
+        "CCS_FAILURE"
+    ]
+}

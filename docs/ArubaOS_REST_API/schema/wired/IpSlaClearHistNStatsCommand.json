@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Parameters to execute clear command for an IPSLA", 
+    "title": "IpSlaClearHistNStatsCommand", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ipsla_id":
+        {
+            "description": "IP SLA ID", 
+            "type": "integer"
+        }, 
+        "clear_ipsla_hist":
+        {
+            "description": "Clear IPSLA History and Message Statistics", 
+            "type": "boolean"
+        }
+    }
+}

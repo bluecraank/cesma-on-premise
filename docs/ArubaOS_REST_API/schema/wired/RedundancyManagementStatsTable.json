@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Redundancy Management statistics data.", 
+    "title": "RedundancyManagementStatsTable", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "current_state":
+        {
+            "description": "Current Redundancy Management State. Applicable for Redundant Management switches", 
+            "$ref":"../../schema/wired/RedundancyManagementState.json"
+        }, 
+        "rapid_switchover_stale_time_in_seconds":
+        {
+            "description": "Rapid Switchover Stale Timer", 
+            "type": "integer"
+        }, 
+        "failovers":
+        {
+            "description": "Failovers", 
+            "type": "integer"
+        }, 
+        "last_failover":
+        {
+            "description": "Last Failover", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "redundancy_management_entry":
+        {
+            "description": "The Redundancy Management entry list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/RedundancyManagementStatsEntry.json"
+            }
+        }
+    }
+}

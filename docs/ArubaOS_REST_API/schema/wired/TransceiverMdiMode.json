@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"TransceiverMdiMode (TMM_)", 
+    "title": "TransceiverMdiMode", 
+    "enum":
+    [
+        "TMM_MDI", 
+        "TMM_MDIX", 
+        "TMM_UNKNOWN"
+    ]
+}

@@ -1,0 +1,60 @@
+{
+  "title": "ipSlaResponderTcpConnect",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "tcp-connect": {
+      "description": "Configure responder for tcp-connect sla type.",
+      "$ref": "#/definitions/tcp-connect_ref_1"
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "tcp-connect"
+  ],
+  "definitions": {
+    "IP-ADDR_ref_2": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "Configure port number to listen for incoming packets."
+        }
+      }
+    },
+    "tcp-connect_ref_1": {
+      "type": "object",
+      "required": [
+        "IP-ADDR"
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_2"
+            }
+          },
+          "description": "Configure IP address to listen for incoming packets."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Switch Config Cmd result", 
+    "title": "SwitchConfigResult", 
+    "enum":
+    [
+        "SCR_INITIATED", 
+        "SCR_ALREADY_IN_PROGRESS"
+    ]
+}

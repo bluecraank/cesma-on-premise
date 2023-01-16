@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"VLAN Type (VT_).", 
+    "title": "VlanType", 
+    "enum":
+    [
+        "VT_STATIC", 
+        "VT_STATIC_SVLAN", 
+        "VT_GVRP", 
+        "VT_DEV_PROF"
+    ]
+}

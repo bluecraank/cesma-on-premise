@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "BPS Member Shutdown Command", 
+    "title": "BpsMemberShutdownCommand", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "BPS Member ID", 
+            "minimum": 1, 
+            "maximum": 10, 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

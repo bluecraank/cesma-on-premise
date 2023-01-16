@@ -56,6 +56,6 @@ use Illuminate\Http\Client\Request;
 
         static function updatePortVlanUntagged($vlans, $ports, $device): String;
 
-        static function updateVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans): Array;
+        static function updateVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $test_mode): Array;
     }
 ?>

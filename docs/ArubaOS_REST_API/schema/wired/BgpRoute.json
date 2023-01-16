@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "BgpRoute", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "status_valid":
+        {
+            "description": "Status", 
+            "type": "boolean"
+        }, 
+        "status_best":
+        {
+            "description": "best route", 
+            "type": "boolean"
+        }, 
+        "route_type":
+        {
+            "description": "routetype status", 
+            "$ref":"../../schema/wired/BgpRouteType.json"
+        }, 
+        "status_stale":
+        {
+            "description": "state route", 
+            "type": "boolean"
+        }, 
+        "network":
+        {
+            "description": "network", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "mask":
+        {
+            "description": "network mask", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "nexthop":
+        {
+            "description": "nexthop", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "metric":
+        {
+            "description": "metric", 
+            "type": "integer"
+        }, 
+        "local_preference":
+        {
+            "description": "local preference", 
+            "type": "integer"
+        }, 
+        "weight":
+        {
+            "description": "weight", 
+            "type": "integer"
+        }, 
+        "aspath":
+        {
+            "description": "AS-path", 
+            "type": "string"
+        }, 
+        "community_list":
+        {
+            "description": "Community list", 
+            "type": "string"
+        }, 
+        "origin":
+        {
+            "description": "origin", 
+            "$ref":"../../schema/wired/BgpRouteOriginType.json"
+        }
+    }
+}

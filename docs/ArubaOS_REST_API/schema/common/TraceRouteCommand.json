@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the parameters to execute a trace route.", 
+    "title": "TraceRouteCommand", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "destination":
+        {
+            "description": "The trace route destination.", 
+            "$ref":"../../schema/common/NetworkHost.json"
+        }
+    }
+}

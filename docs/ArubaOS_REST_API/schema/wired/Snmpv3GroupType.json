@@ -1,0 +1,17 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Snmpv3 group type", 
+    "title": "Snmpv3GroupType", 
+    "enum":
+    [
+        "SGT_MANAGERPRIV", 
+        "SGT_MANAGERAUTH", 
+        "SGT_OPERATORAUTH", 
+        "SGT_OPERATORNOAUTH", 
+        "SGT_COMMANAGERRW", 
+        "SGT_COMMANAGERR", 
+        "SGT_COMOPERATORRW", 
+        "SGT_COMOPERATORR", 
+        "SGT_NONE"
+    ]
+}

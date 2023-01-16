@@ -1,0 +1,123 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "PoeStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "plc_power_class_type":
+        {
+            "description": "Power class and type during physical layer classification.", 
+            "type": "string"
+        }, 
+        "dlc_power_class_type":
+        {
+            "description": "Power class and type during data link layer classification.", 
+            "type": "string"
+        }, 
+        "poe_priority":
+        {
+            "description": "PoE Priority.", 
+            "$ref":"../../schema/wired/PortPoePriority.json"
+        }, 
+        "pre_standard_detect":
+        {
+            "description": "PRE-STD Detect enabled/disabled.", 
+            "type": "boolean"
+        }, 
+        "alloc_by_config":
+        {
+            "description": "Configured PoE power allocation method.", 
+            "$ref":"../../schema/wired/PortPoeAllocationMethod.json"
+        }, 
+        "alloc_by_actual":
+        {
+            "description": "Actual PoE power allocation method used.", 
+            "$ref":"../../schema/wired/ActualPortPoeAllocatedMethod.json"
+        }, 
+        "port_configured_type":
+        {
+            "description": "Port Configured Type.", 
+            "type": "string"
+        }, 
+        "poe_value":
+        {
+            "description": "PoE Value configured.", 
+            "type": "integer"
+        }, 
+        "over_current_count":
+        {
+            "description": "Counter is incremented when the PSE state diagram enters the state ERROR_DELAY_OVER.", 
+            "type": "integer"
+        }, 
+        "mps_absent_count":
+        {
+            "description": "Counter is incremented when the PSE state diagram transitions directly from the state POWER_ON to the state IDLE.", 
+            "type": "integer"
+        }, 
+        "power_denied_count":
+        {
+            "description": "Counter is incremented when the PSE state diagram enters the state POWER_DENIED.", 
+            "type": "integer"
+        }, 
+        "short_count":
+        {
+            "description": "Counter is incremented when the PSE state diagram enters the state ERROR_DELAY_SHORT.", 
+            "type": "integer"
+        }, 
+        "med_lldp_detect_status":
+        {
+            "description": "PoE LLDP Detection status.", 
+            "$ref":"../../schema/common/LldpMedPowerAllocation.json"
+        }, 
+        "pse_configured_tlv":
+        {
+            "description": "TLV that switch port is configured to send out to PD", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/wired/LldpDot3MedTlvType.json"
+            }
+        }, 
+        "pse_sent_type_tlv":
+        {
+            "description": "TLVs that are actually sent to PSE", 
+            "$ref":"../../schema/wired/LldpDot3MedTlvType.json"
+        }, 
+        "pd_sent_type_tlv":
+        {
+            "description": "TLVs that are actually sent from PD.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/wired/LldpDot3MedTlvType.json"
+            }
+        }, 
+        "reserved_power_in_watts":
+        {
+            "description": "Power supplied at this port.", 
+            "type": "number"
+        }, 
+        "power_drawn_in_watts":
+        {
+            "description": "Actual power drained by the device connected to this port.", 
+            "type": "number"
+        }, 
+        "port_voltage_in_volts":
+        {
+            "description": "Voltage supplied at this port.", 
+            "type": "number"
+        }, 
+        "amperage_drawn_in_milliamps":
+        {
+            "description": "Current supplied at this port.", 
+            "type": "number"
+        }
+    }
+}

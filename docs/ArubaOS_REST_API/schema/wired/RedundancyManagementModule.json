@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Redundancy Management Module (RMMD_)", 
+    "title": "RedundancyManagementModule", 
+    "enum":
+    [
+        "RMMD_FIRST_MGMT_MODULE", 
+        "RMMD_SECOND_MGMT_MODULE"
+    ]
+}

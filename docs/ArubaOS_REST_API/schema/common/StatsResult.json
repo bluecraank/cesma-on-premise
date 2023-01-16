@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps a list of samples resulting from a StatsQuery.", 
+    "title": "StatsResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "sample":
+        {
+            "description": "Resulting samples.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/StatsSample.json"
+            }
+        }
+    }
+}

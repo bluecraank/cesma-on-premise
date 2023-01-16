@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Private Vlan Type (PVT_)", 
+    "title": "PrivateVlanType", 
+    "enum":
+    [
+        "PVT_NORMAL", 
+        "PVT_PRIMARY", 
+        "PVT_ISOLATED", 
+        "PVT_COMMUNITY"
+    ]
+}

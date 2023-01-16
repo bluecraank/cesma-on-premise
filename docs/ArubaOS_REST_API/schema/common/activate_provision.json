@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Activate Provision Service": {
+            "type": "string"
+        },
+        "Activate Server Address": {
+            "type": "string"
+        },
+        "Activation Key": {
+            "type": "string"
+        },
+        "Time Sync Status": {
+            "type": "string"
+        },
+        "Error Reason": {
+            "type": "string"
+        },
+        "Activate DNS Lookup": {
+            "type": "string"
+        },
+        "Activate Connection Status": {
+            "type": "string"
+        },
+        "Proxy Server DNS Lookup": {
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Scheduling parameters for IP-SLA", 
+    "title": "IpSlaSchedule", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_schedule_now":
+        {
+            "description": "Schedule the IP SLA immediately", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "start_date":
+        {
+            "description": "Configure the Start Date for the IP SLA if is_schedule_now is false", 
+            "$ref":"../../schema/wired/IpSlaScheduleTime.json", 
+            "sql.not_null": true
+        }, 
+        "recurrence":
+        {
+            "description": "Configure IP-SLA recurrence schedule", 
+            "$ref":"../../schema/wired/Recurrence.json", 
+            "sql.not_null": true
+        }, 
+        "frequency":
+        {
+            "description": "Frequency in seconds", 
+            "minimum": 5, 
+            "maximum": 604800, 
+            "type": "integer"
+        }
+    }
+}

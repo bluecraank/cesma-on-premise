@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNTP configuration data.", 
+    "title": "Sntp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "sntp_client_operation_mode":
+        {
+            "description": "The mode in which clients are sending packets to SNTP server.", 
+            "$ref":"../../schema/common/SntpClientOperationMode.json", 
+            "default_value": "SNTP_DHCP_MODE", 
+            "sql.not_null": true
+        }, 
+        "sntp_config_poll_interval":
+        {
+            "description": "The number of seconds between updates of the system  clock using SNTP.", 
+            "minimum": 30, 
+            "maximum": 720, 
+            "type": "integer", 
+            "default_value": 720
+        }
+    }
+}

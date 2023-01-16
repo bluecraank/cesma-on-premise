@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Management Address. LLDP-MIB (lldpLocManAddrEntry, lldpRemManAddrEntry)", 
+    "title": "LldpManagementAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "address_subtype":
+        {
+            "description": "The type of management address identifier encoding used in the 'address' field. LLDP-MIB (lldpLocManAddrSubtype, lldpRemManAddrSubtype)", 
+            "$ref":"../../schema/common/AddressFamily.json"
+        }, 
+        "address":
+        {
+            "description": "The string value used to identify the management address component associated with the system. LLDP-MIB (lldpLocManAddr, lldpRemManAddr)", 
+            "type": "string"
+        }, 
+        "interface_id_subtype":
+        {
+            "description": "The enumeration value that identifies the interface numbering method used for defining the interface number, associated with the system. LLDP-MIB (lldpLocManAddrIfSubtype, lldpRemManAddrIfSubtype)", 
+            "$ref":"../../schema/common/LldpInterfaceIdSubtype.json"
+        }, 
+        "interface_id":
+        {
+            "description": "The integer value used to identify the interface number regarding the management address component associated with the system. LLDP-MIB (lldpLocManAddrIfId, lldpRemManAddrIfId)", 
+            "type": "integer"
+        }
+    }
+}

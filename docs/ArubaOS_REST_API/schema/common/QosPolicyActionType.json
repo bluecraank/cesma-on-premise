@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"QoS Policy Action Type (QPAT_)", 
+    "title": "QosPolicyActionType", 
+    "enum":
+    [
+        "QPAT_PRIORITY", 
+        "QPAT_DSCP_VALUE", 
+        "QPAT_RATE_LIMIT"
+    ]
+}

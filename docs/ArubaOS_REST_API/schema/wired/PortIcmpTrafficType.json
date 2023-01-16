@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port ICMP traffic type", 
+    "title": "PortIcmpTrafficType", 
+    "enum":
+    [
+        "PITT_IP_ALL", 
+        "PITT_IP_V4", 
+        "PITT_IP_V6"
+    ]
+}

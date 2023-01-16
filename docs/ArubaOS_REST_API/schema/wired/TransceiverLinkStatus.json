@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"TransceiverLinkStatus (TLS_)", 
+    "title": "TransceiverLinkStatus", 
+    "enum":
+    [
+        "TLS_DOWN", 
+        "TLS_UP"
+    ]
+}

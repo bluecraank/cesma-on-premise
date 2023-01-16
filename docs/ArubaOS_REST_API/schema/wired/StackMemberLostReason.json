@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Stack Member Lost Reason (STACK_)", 
+    "title": "StackMemberLostReason", 
+    "enum":
+    [
+        "HEARTBEAT_TIMEOUT", 
+        "COMMUNICATION_LOST", 
+        "MAX_MEMBER_LOST_REASON"
+    ]
+}

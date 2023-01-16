@@ -1,0 +1,16 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LLDP Chassis ID Subtype (LCIS_). Assigned tags must match the corresponding ID subtype number specified in the standard document: IEEE Std 802.1AB-2009 (Table 8-2) http://standards.ieee.org/getieee802/download/802.1AB-2009.pdf", 
+    "title": "LldpChassisIdSubtype", 
+    "enum":
+    [
+        "LCIS_RESERVED", 
+        "LCIS_CHASSIS_COMPONENT", 
+        "LCIS_INTERFACE_ALIAS", 
+        "LCIS_PORT_COMPONENT", 
+        "LCIS_MAC_ADDRESS", 
+        "LCIS_NETWORK_ADDRESS", 
+        "LCIS_INTERFACE_NAME", 
+        "LCIS_LOCALLY_ASSIGNED"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"CLI batch execution last status", 
+    "title": "CliBatchLastStatus", 
+    "enum":
+    [
+        "CLS_COMPLETED", 
+        "CLS_IN_PROGRESS"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LLDP Admin Status (LAS_)", 
+    "title": "LldpAdminStatus", 
+    "enum":
+    [
+        "LLAS_ENABLED", 
+        "LLAS_DISABLED"
+    ]
+}

@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP Lease Time configuration data.", 
+    "title": "DhcpLeaseTime", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "days":
+        {
+            "description": "Days (dd)", 
+            "minimum": 0, 
+            "maximum": 365, 
+            "type": "integer", 
+            "default_value": 1, 
+            "sql.not_null": true
+        }, 
+        "hours":
+        {
+            "description": "Hour (hh)", 
+            "minimum": 0, 
+            "maximum": 23, 
+            "type": "integer", 
+            "default_value": 0, 
+            "sql.not_null": true
+        }, 
+        "minutes":
+        {
+            "description": "Minute (mm)", 
+            "minimum": 0, 
+            "maximum": 59, 
+            "type": "integer", 
+            "default_value": 0, 
+            "sql.not_null": true
+        }, 
+        "infinite":
+        {
+            "description": "Infinite. days, hours or minutes will not be saved, if set true", 
+            "type": "boolean"
+        }
+    }
+}

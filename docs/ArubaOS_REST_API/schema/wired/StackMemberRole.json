@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Switch type for stacking", 
+    "title": "StackMemberRole", 
+    "enum":
+    [
+        "MEMBER_ROLE_UNKNOWN", 
+        "MEMBER_ROLE_COMMANDER", 
+        "MEMBER_ROLE_STANDBY", 
+        "MEMBER_ROLE_MEMBER", 
+        "MEMBER_ROLE_PROVISION", 
+        "MEMBER_ROLE_MAX"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the reference to a field inside a PB message.", 
+    "title": "MessageFieldReference", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "name":
+        {
+            "description": "Name of the field inside the message.", 
+            "type": "string"
+        }, 
+        "list_index":
+        {
+            "description": "Index of the field inside a list structure (in case 'name' refers to a repeated field).", 
+            "type": "integer"
+        }
+    }
+}

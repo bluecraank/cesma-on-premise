@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "CsrSubjectDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "common_name":
+        {
+            "description": "Common name for Certificate Request", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "country":
+        {
+            "description": "Two letter ISO 3166-1 country code", 
+            "type": "string", 
+            "maxLength": 2, 
+            "minLength": 1
+        }, 
+        "locality":
+        {
+            "description": "Locality", 
+            "type": "string", 
+            "maxLength": 128, 
+            "minLength": 1
+        }, 
+        "organisation_name":
+        {
+            "description": "Organisation name", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1
+        }, 
+        "organisation_unit":
+        {
+            "description": "Organisation Unit", 
+            "type": "string", 
+            "maxLength": 100, 
+            "minLength": 1
+        }, 
+        "state":
+        {
+            "description": "State", 
+            "type": "string", 
+            "maxLength": 128, 
+            "minLength": 1
+        }
+    }
+}

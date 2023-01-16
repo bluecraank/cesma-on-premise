@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Device Operation Mode (DOM_)", 
+    "title": "DeviceOperationMode", 
+    "enum":
+    [
+        "DOM_CLOUD", 
+        "DOM_CLOUD_WITH_SUPPORT", 
+        "DOM_AUTONOMOUS"
+    ]
+}

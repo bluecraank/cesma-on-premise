@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "IP-SLA_responder_details": {
+            "type": "array",
+            "items": {
+                "SLA type": {
+                    "type": "string"
+                },
+                "Listening Address": {
+                    "type": "string"
+                },
+                "Listening Port": {
+                    "type": "string"
+                }
+            }
+        },
+        "IP-SLA_jitter_responder_details": {
+            "type": "array",
+            "items": {
+                "SLA type": {
+                    "type": "string"
+                },
+                "Listening Address": {
+                    "type": "string"
+                },
+                "Listening Port": {
+                    "type": "string"
+                },
+                "Source Address": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Dsnoop Remote Id", 
+    "title": "DsnoopRemoteId", 
+    "enum":
+    [
+        "DRI_MAC", 
+        "DRI_SUBNET_IP", 
+        "DRI_MGMT_IP"
+    ]
+}

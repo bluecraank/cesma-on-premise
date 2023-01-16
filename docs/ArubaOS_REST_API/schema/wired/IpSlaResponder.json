@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA Responder Configuration", 
+    "title": "IpSlaResponder", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "responder_type":
+        {
+            "description": "IP-SLA Responder Type", 
+            "$ref":"../../schema/wired/IpSlaResponderType.json", 
+            "sql.not_null": true
+        }, 
+        "destination_address":
+        {
+            "description": "Destination IP Address", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "destination_port":
+        {
+            "description": "Destination Port", 
+            "minimum": 1024, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "source_address":
+        {
+            "description": "Source IP Address", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }
+    }
+}

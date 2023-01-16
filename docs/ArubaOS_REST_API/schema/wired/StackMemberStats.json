@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Stack member stats", 
+    "title": "StackMemberStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "system_info_stats":
+        {
+            "description": "", 
+            "$ref":"../../schema/common/SystemInfoStats.json"
+        }, 
+        "cpu_stats":
+        {
+            "description": "", 
+            "$ref":"../../schema/common/SystemCpuStats.json"
+        }, 
+        "memory_stats":
+        {
+            "description": "", 
+            "$ref":"../../schema/common/SystemMemoryStats.json"
+        }, 
+        "system_time_stats":
+        {
+            "description": "", 
+            "$ref":"../../schema/common/SystemTimeStats.json"
+        }, 
+        "port_stats":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/PortStats.json"
+            }
+        }, 
+        "is_commander":
+        {
+            "description": "", 
+            "type": "boolean"
+        }
+    }
+}

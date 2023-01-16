@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "ACL Hit Count statistics for a specific Policy, Port and Direction", 
+    "title": "AclPortPolicyStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "rule_port_statistics":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/AclRuleStats.json"
+            }
+        }
+    }
+}

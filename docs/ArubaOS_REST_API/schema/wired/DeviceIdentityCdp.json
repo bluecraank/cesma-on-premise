@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Configuration for CDP-Bypass device identity", 
+    "title": "DeviceIdentityCdp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "device_name":
+        {
+            "description": "Device identity name.", 
+            "type": "string", 
+            "maxLength": 20, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "cdp_type":
+        {
+            "description": "CDP type. Only voip-vlan-query type is supported.", 
+            "$ref":"../../schema/wired/CdpType.json", 
+            "sql.not_null": true
+        }, 
+        "cdp_value":
+        {
+            "description": "CDP value.", 
+            "type": "string", 
+            "maxLength": 256, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "associated_device_profile":
+        {
+            "description": "Associated device_profile name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1
+        }, 
+        "is_device_profile_enabled":
+        {
+            "description": "Whether device-type is enabled/disabled", 
+            "type": "boolean"
+        }
+    }
+}

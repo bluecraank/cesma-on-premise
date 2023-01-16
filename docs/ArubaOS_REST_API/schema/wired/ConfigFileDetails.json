@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Details of backup configuration files available in the flash.", 
+    "title": "ConfigFileDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "id":
+        {
+            "description": "Record Id. Index of the stored file.", 
+            "type": "integer"
+        }, 
+        "time_stamp":
+        {
+            "description": "Time Stamp. Time at which the file is stored.", 
+            "type": "string", 
+            "maxLength": 26
+        }, 
+        "file_name":
+        {
+            "description": "Stored file name.", 
+            "type": "string", 
+            "maxLength": 59
+        }, 
+        "version":
+        {
+            "description": "Build Version.", 
+            "type": "string", 
+            "maxLength": 257
+        }, 
+        "file_size_in_bytes":
+        {
+            "description": "Size of file stored in flash.", 
+            "type": "integer"
+        }
+    }
+}

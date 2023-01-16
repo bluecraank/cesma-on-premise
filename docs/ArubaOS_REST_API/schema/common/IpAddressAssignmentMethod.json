@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Ip Address Assignment Method (IAAM_).", 
+    "title": "IpAddressAssignmentMethod", 
+    "enum":
+    [
+        "IAAM_DISABLED", 
+        "IAAM_STATIC", 
+        "IAAM_DHCP"
+    ]
+}

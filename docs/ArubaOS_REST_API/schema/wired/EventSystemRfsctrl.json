@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "System Rfsctrl", 
+    "title": "EventSystemRfsctrl", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "system_memory":
+        {
+            "description": "System Memory", 
+            "type": "string"
+        }, 
+        "system_os":
+        {
+            "description": "System OS", 
+            "type": "string"
+        }, 
+        "sync_status":
+        {
+            "description": "Sync Status", 
+            "type": "string"
+        }, 
+        "boot_update":
+        {
+            "description": "Boot Update", 
+            "type": "string"
+        }
+    }
+}

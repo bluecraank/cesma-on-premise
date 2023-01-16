@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Enable different DHCP options processing", 
+    "title": "DhcpOptions", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_config_file_update_enabled":
+        {
+            "description": "Enable DHCP option 66 and 67 processing for configuration file updates", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "is_host_name_option_enabled":
+        {
+            "description": "Enable DHCP option 12 to include the device hostname", 
+            "type": "boolean"
+        }, 
+        "is_image_file_update_enabled":
+        {
+            "description": "Enable vendor-specific option processing for image file updates", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "is_vendor_specific_option_enabled":
+        {
+            "description": "Enable DHCP vendor-specific option processing", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "is_tr69_acs_url_enabled":
+        {
+            "description": "Enable to receive the ACS URL via DHCP", 
+            "type": "boolean", 
+            "default_value": true
+        }
+    }
+}

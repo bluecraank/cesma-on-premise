@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"MAC Address Version (MAV_).", 
+    "title": "MacAddressVersion", 
+    "enum":
+    [
+        "MAV_EUI_48", 
+        "MAV_EUI_64"
+    ]
+}

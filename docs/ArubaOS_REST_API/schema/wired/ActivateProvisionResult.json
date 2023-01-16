@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Activate Service Response", 
+    "title": "ActivateProvisionResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "result":
+        {
+            "description": "The status response for requested Activate operation.", 
+            "$ref":"../../schema/wired/ActivateProvisionResponse.json"
+        }
+    }
+}

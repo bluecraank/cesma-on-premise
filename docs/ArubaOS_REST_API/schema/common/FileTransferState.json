@@ -1,0 +1,17 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"File transfer state (FTS_)", 
+    "title": "FileTransferState", 
+    "enum":
+    [
+        "FTS_COMPLETED", 
+        "FTS_IN_PROGRESS", 
+        "FTS_CORRUPT_FILE", 
+        "FTS_IDENTICAL_FILE", 
+        "FTS_WRONG_FILE", 
+        "FTS_CONN_FAILED", 
+        "FTS_FILE_NOT_FOUND", 
+        "FTS_WRONG_PATH", 
+        "FTS_GENERIC_ERR"
+    ]
+}

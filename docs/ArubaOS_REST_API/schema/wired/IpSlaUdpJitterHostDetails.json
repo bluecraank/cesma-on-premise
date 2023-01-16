@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA UDP-Jitter and UDP-Jitter-For-Voip Host Details", 
+    "title": "IpSlaUdpJitterHostDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "destination_address":
+        {
+            "description": "Destination Address (IP Address or Hostname)", 
+            "type": "string", 
+            "maxLength": 255, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "destination_port":
+        {
+            "description": "Destination port for the IP SLA", 
+            "minimum": 1024, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "source_address":
+        {
+            "description": "Source IP Address (Valid only if source_vlan is null or not present)", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "source_vlan":
+        {
+            "description": "Source VLAN (Valid only if source_address is null or not present)", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "source_port":
+        {
+            "description": "Source port for the IP SLA", 
+            "minimum": 1024, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

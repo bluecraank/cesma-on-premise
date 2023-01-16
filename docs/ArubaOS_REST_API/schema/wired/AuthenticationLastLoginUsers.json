@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Authentication last-login user details", 
+    "title": "AuthenticationLastLoginUsers", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "user_name":
+        {
+            "description": "User-name.", 
+            "type": "string", 
+            "maxLength": 64
+        }, 
+        "user_priv":
+        {
+            "description": "Privilege.", 
+            "$ref":"../../schema/wired/PrivilegeLevel.json", 
+            "default_value": "PL_OPER"
+        }, 
+        "succ_time":
+        {
+            "description": "Last Login Time.", 
+            "type": "string", 
+            "maxLength": 26
+        }, 
+        "login_ip":
+        {
+            "description": "Last Login IP Address.", 
+            "type": "string", 
+            "maxLength": 46
+        }, 
+        "num_fails":
+        {
+            "description": "Number of Fails.", 
+            "minimum": 0, 
+            "maximum": 3, 
+            "type": "integer"
+        }, 
+        "last_failed":
+        {
+            "description": "Last Failed Attempt.", 
+            "type": "string", 
+            "maxLength": 26
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP Server configuration data.", 
+    "title": "DhcpServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_dhcp_server_enabled":
+        {
+            "description": "Whether the DHCP Server is enabled.", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }
+    }
+}

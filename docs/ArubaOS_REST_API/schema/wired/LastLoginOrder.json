@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Last Login Order Types.", 
+    "title": "LastLoginOrder", 
+    "enum":
+    [
+        "LLO_BY_SEQ", 
+        "LLO_BY_TIME"
+    ]
+}

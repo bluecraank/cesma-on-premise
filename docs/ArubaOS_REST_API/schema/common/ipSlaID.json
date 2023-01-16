@@ -1,0 +1,2541 @@
+{
+  "title": "ipSlaID",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ID": {
+      "type": "object",
+      "required": [
+        "ID_value"
+      ],
+      "properties": {
+        "ID_value": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255
+        },
+        "ID_reference": {
+          "$ref": "#/definitions/ID_ref_1"
+        }
+      },
+      "description": "Configure the ID of IP Service Level Agreement (SLA)."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "ID"
+  ],
+  "definitions": {
+    "IP-ADDR_ref_5": {
+      "type": "object",
+      "properties": {
+        "payload-size": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "payload-size_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            }
+          },
+          "required": [
+            "payload-size_value"
+          ],
+          "description": "Payload size value."
+        }
+      }
+    },
+    "source_ref_4": {
+      "type": "object",
+      "required": [
+        "IP-ADDR"
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_5"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "IP-ADDR_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "IP-ADDR_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "IP-ADDR_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Source IPv4 address for the IP SLA."
+        }
+      }
+    },
+    "vlan_ref_7": {
+      "type": "object",
+      "required": [
+        "VLAN-ID"
+      ],
+      "properties": {
+        "VLAN-ID": {
+          "type": "object",
+          "required": [
+            "VLAN-ID_value"
+          ],
+          "properties": {
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "VLAN-ID_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_5"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "VLAN-ID_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "VLAN-ID_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "VLAN-ID_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": " "
+        }
+      }
+    },
+    "source-interface_ref_6": {
+      "type": "object",
+      "required": [
+        "vlan"
+      ],
+      "properties": {
+        "vlan": {
+          "description": "Source VLAN for the IP SLA.",
+          "$ref": "#/definitions/vlan_ref_7"
+        }
+      }
+    },
+    "IP-ADDR_ref_3": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "source"
+          ],
+          "not": {
+            "required": [
+              "source-interface"
+            ]
+          }
+        },
+        {
+          "required": [
+            "source-interface"
+          ],
+          "not": {
+            "required": [
+              "source"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "source": {
+          "description": "Source IPv4 address for the IP SLA.",
+          "$ref": "#/definitions/source_ref_4"
+        },
+        "source-interface": {
+          "description": "Source interface for the IP SLA.",
+          "$ref": "#/definitions/source-interface_ref_6"
+        }
+      }
+    },
+    "icmp-echo_ref_2": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "host-name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "host-name"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_3"
+            }
+          },
+          "description": "Destination IPv4 address for the IP SLA."
+        },
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_3"
+            }
+          },
+          "description": "Hostname of the destination."
+        }
+      }
+    },
+    "IP-ADDR_ref_13": {
+      "type": "object",
+      "required": [
+        "payload-size"
+      ],
+      "properties": {
+        "payload-size": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "payload-size_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            }
+          },
+          "required": [
+            "payload-size_value"
+          ],
+          "description": "Payload size value."
+        }
+      }
+    },
+    "source_ref_12": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "VLAN-ID"
+            ]
+          }
+        },
+        {
+          "required": [
+            "VLAN-ID"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_13"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "IP-ADDR_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "IP-ADDR_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "IP-ADDR_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Source IPv4 address for the IP SLA."
+        },
+        "VLAN-ID": {
+          "type": "object",
+          "required": [
+            "VLAN-ID_value"
+          ],
+          "properties": {
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "VLAN-ID_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_13"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "VLAN-ID_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "VLAN-ID_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "VLAN-ID_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "VLAN Identifier."
+        }
+      }
+    },
+    "PORT-NUM_ref_11": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the source IPv4 Address/VLAN ID for the IP SLA test.",
+          "$ref": "#/definitions/source_ref_12"
+        }
+      }
+    },
+    "IP-ADDR_ref_10": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value",
+            "PORT-NUM_reference"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_11"
+            }
+          },
+          "description": "Destination port for the IP SLA."
+        }
+      }
+    },
+    "destination_ref_9": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "host-name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "host-name"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_10"
+            }
+          },
+          "description": "Destination IPv4 address for the IP SLA."
+        },
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_10"
+            }
+          },
+          "description": "Hostname of the destination."
+        }
+      }
+    },
+    "udp-echo_ref_8": {
+      "type": "object",
+      "required": [
+        "destination"
+      ],
+      "properties": {
+        "destination": {
+          "description": "Configure the destination IPv4 Address/hostname followed by             port number for the IP SLA test.",
+          "$ref": "#/definitions/destination_ref_9"
+        }
+      }
+    },
+    "IP-ADDR_ref_19": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "PORT-NUM_value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "PORT-NUM_value"
+          ],
+          "description": "Source port for the IP SLA."
+        }
+      }
+    },
+    "source_ref_18": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "VLAN-ID"
+            ]
+          }
+        },
+        {
+          "required": [
+            "VLAN-ID"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_19"
+            }
+          },
+          "description": "Source IPv4 address for the IP SLA."
+        },
+        "VLAN-ID": {
+          "type": "object",
+          "required": [
+            "VLAN-ID_value",
+            "VLAN-ID_reference"
+          ],
+          "properties": {
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            },
+            "VLAN-ID_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_19"
+            }
+          },
+          "description": "VLAN Identifier."
+        }
+      }
+    },
+    "PORT-NUM_ref_17": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the source IPv4 Address/VLAN ID followed by port             number for the IP SLA test.",
+          "$ref": "#/definitions/source_ref_18"
+        }
+      }
+    },
+    "IP-ADDR_ref_16": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value",
+            "PORT-NUM_reference"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_17"
+            }
+          },
+          "description": "Destination port for the IP SLA."
+        }
+      }
+    },
+    "destination_ref_15": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "host-name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "host-name"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_16"
+            }
+          },
+          "description": "Destination IPv4 address for the IP SLA."
+        },
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_16"
+            }
+          },
+          "description": "Hostname of the destination."
+        }
+      }
+    },
+    "tcp-connect_ref_14": {
+      "type": "object",
+      "required": [
+        "destination"
+      ],
+      "properties": {
+        "destination": {
+          "description": "Configure the destination IPv4 Address/hostname followed by             port number for the IP SLA test.",
+          "$ref": "#/definitions/destination_ref_15"
+        }
+      }
+    },
+    "PORT-NUM_ref_26": {
+      "type": "object",
+      "properties": {
+        "payload-size": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "payload-size_value": {
+              "type": "integer",
+              "default": 68,
+              "minimum": 68,
+              "maximum": 8100
+            }
+          },
+          "required": [
+            "payload-size_value"
+          ],
+          "description": "Payload size value."
+        },
+        "num-of-packets": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "num-of-packets_value": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "num-of-packets_value"
+          ],
+          "description": "Value for number of packets."
+        },
+        "packet-interval": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "packet-interval_value": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 60000
+            }
+          },
+          "required": [
+            "packet-interval_value"
+          ],
+          "description": "Value for packet interval in milliseconds."
+        }
+      }
+    },
+    "IP-ADDR_ref_25": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_26"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "PORT-NUM_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "PORT-NUM_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "PORT-NUM_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Source port for the IP SLA."
+        }
+      }
+    },
+    "source_ref_24": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "VLAN-ID"
+            ]
+          }
+        },
+        {
+          "required": [
+            "VLAN-ID"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_25"
+            }
+          },
+          "description": "Source IPv4 address for the IP SLA."
+        },
+        "VLAN-ID": {
+          "type": "object",
+          "required": [
+            "VLAN-ID_value",
+            "VLAN-ID_reference"
+          ],
+          "properties": {
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            },
+            "VLAN-ID_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_25"
+            }
+          },
+          "description": "VLAN Identifier."
+        }
+      }
+    },
+    "PORT-NUM_ref_23": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the source IPv4 Address/VLAN ID followed by port             number for the IP SLA test.",
+          "$ref": "#/definitions/source_ref_24"
+        }
+      }
+    },
+    "IP-ADDR_ref_22": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value",
+            "PORT-NUM_reference"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_23"
+            }
+          },
+          "description": "Destination port for the IP SLA."
+        }
+      }
+    },
+    "destination_ref_21": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "host-name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "host-name"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_22"
+            }
+          },
+          "description": "Destination IPv4 address for the IP SLA."
+        },
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_22"
+            }
+          },
+          "description": "Hostname of the destination."
+        }
+      }
+    },
+    "udp-jitter_ref_20": {
+      "type": "object",
+      "required": [
+        "destination"
+      ],
+      "properties": {
+        "destination": {
+          "description": "Configure the destination IPv4 Address/hostname followed by             port number for the IP SLA test.",
+          "$ref": "#/definitions/destination_ref_21"
+        }
+      }
+    },
+    "advantage-factor_ref_34": {
+      "type": "object",
+      "properties": {
+        "advantage-factor": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "advantage-factor_value": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          "required": [
+            "advantage-factor_value"
+          ],
+          "description": "Configure the advantage factor value."
+        }
+      }
+    },
+    "codec-type_ref_35": {
+      "type": "object",
+      "properties": {
+        "codec-type": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "codec-type_value": {
+              "type": "string",
+              "enum": [
+                "g711a",
+                "g711u",
+                "g729a"
+              ]
+            }
+          },
+          "required": [
+            "codec-type_value"
+          ]
+        }
+      }
+    },
+    "PORT-NUM_ref_33": {
+      "type": "object",
+      "properties": {
+        "advantage-factor": {
+          "description": "Configure acceptable degradation in voice quality.",
+          "$ref": "#/definitions/advantage-factor_ref_34"
+        },
+        "codec-type": {
+          "description": "Configure the codec-type for the VoIP SLA test.",
+          "$ref": "#/definitions/codec-type_ref_35"
+        }
+      }
+    },
+    "IP-ADDR_ref_32": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_33"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "PORT-NUM_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "PORT-NUM_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "PORT-NUM_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Source port for the IP SLA."
+        }
+      }
+    },
+    "source_ref_31": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "VLAN-ID"
+            ]
+          }
+        },
+        {
+          "required": [
+            "VLAN-ID"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_32"
+            }
+          },
+          "description": "Source IPv4 address for the IP SLA."
+        },
+        "VLAN-ID": {
+          "type": "object",
+          "required": [
+            "VLAN-ID_value",
+            "VLAN-ID_reference"
+          ],
+          "properties": {
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            },
+            "VLAN-ID_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_32"
+            }
+          },
+          "description": "VLAN Identifier."
+        }
+      }
+    },
+    "PORT-NUM_ref_30": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the source IPv4 Address/VLAN ID followed by port             number for the IP SLA test.",
+          "$ref": "#/definitions/source_ref_31"
+        }
+      }
+    },
+    "IP-ADDR_ref_29": {
+      "type": "object",
+      "required": [
+        "PORT-NUM"
+      ],
+      "properties": {
+        "PORT-NUM": {
+          "type": "object",
+          "required": [
+            "PORT-NUM_value",
+            "PORT-NUM_reference"
+          ],
+          "properties": {
+            "PORT-NUM_value": {
+              "type": "integer"
+            },
+            "PORT-NUM_reference": {
+              "$ref": "#/definitions/PORT-NUM_ref_30"
+            }
+          },
+          "description": "Destination port for the IP SLA."
+        }
+      }
+    },
+    "destination_ref_28": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "IP-ADDR"
+          ],
+          "not": {
+            "required": [
+              "host-name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "host-name"
+          ],
+          "not": {
+            "required": [
+              "IP-ADDR"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "required": [
+            "IP-ADDR_value",
+            "IP-ADDR_reference"
+          ],
+          "properties": {
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            },
+            "IP-ADDR_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_29"
+            }
+          },
+          "description": "Destination IPv4 address for the IP SLA."
+        },
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/IP-ADDR_ref_29"
+            }
+          },
+          "description": "Configure the destination IPv4 Address/hostname followed by             port number for the IP SLA test."
+        }
+      }
+    },
+    "udp-jitter-voip_ref_27": {
+      "type": "object",
+      "required": [
+        "destination"
+      ],
+      "properties": {
+        "destination": {
+          "description": "Configure the destination IPv4 Address/hostname followed by             port number for the IP SLA test.",
+          "$ref": "#/definitions/destination_ref_28"
+        }
+      }
+    },
+    "source_ref_37": {
+      "type": "object",
+      "required": [
+        "VLAN-ID"
+      ],
+      "properties": {
+        "VLAN-ID": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "VLAN-ID_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4094
+            }
+          },
+          "required": [
+            "VLAN-ID_value"
+          ],
+          "description": "VLAN Identifier."
+        }
+      }
+    },
+    "dhcp_ref_36": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "description": "Configure the source VLAN ID for the IP SLA test.",
+          "$ref": "#/definitions/source_ref_37"
+        }
+      }
+    },
+    "name-server_ref_41": {
+      "type": "object",
+      "required": [
+        "IP-ADDR"
+      ],
+      "properties": {
+        "IP-ADDR": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "IP-ADDR_value": {
+              "type": "string",
+              "format": "ipv4"
+            }
+          },
+          "required": [
+            "IP-ADDR_value"
+          ],
+          "description": "IP address of the name server."
+        }
+      }
+    },
+    "host-name_ref_40": {
+      "type": "object",
+      "required": [
+        "name-server"
+      ],
+      "properties": {
+        "name-server": {
+          "description": "Configure the name server for the IP SLA test.",
+          "$ref": "#/definitions/name-server_ref_41"
+        }
+      }
+    },
+    "target-hostname_ref_39": {
+      "type": "object",
+      "required": [
+        "host-name"
+      ],
+      "properties": {
+        "host-name": {
+          "type": "object",
+          "required": [
+            "host-name_value",
+            "host-name_reference"
+          ],
+          "properties": {
+            "host-name_value": {
+              "type": "string"
+            },
+            "host-name_reference": {
+              "$ref": "#/definitions/host-name_ref_40"
+            }
+          },
+          "description": "Hostname of the target."
+        }
+      }
+    },
+    "dns_ref_38": {
+      "type": "object",
+      "required": [
+        "target-hostname"
+      ],
+      "properties": {
+        "target-hostname": {
+          "description": "Configure the target hostname for the IP SLA test.",
+          "$ref": "#/definitions/target-hostname_ref_39"
+        }
+      }
+    },
+    "frequency_ref_48": {
+      "type": "object",
+      "required": [
+        "FREQUENCY"
+      ],
+      "properties": {
+        "FREQUENCY": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "FREQUENCY_value": {
+              "type": "integer",
+              "default": 60,
+              "minimum": 5,
+              "maximum": 604800
+            }
+          },
+          "required": [
+            "FREQUENCY_value"
+          ],
+          "description": "Value of frequency in seconds."
+        }
+      }
+    },
+    "COUNT_ref_47": {
+      "type": "object",
+      "properties": {
+        "frequency": {
+          "description": "Value of frequency in seconds.",
+          "$ref": "#/definitions/frequency_ref_48"
+        }
+      }
+    },
+    "repetitions_ref_46": {
+      "type": "object",
+      "required": [
+        "COUNT"
+      ],
+      "properties": {
+        "COUNT": {
+          "type": "object",
+          "required": [
+            "COUNT_value"
+          ],
+          "properties": {
+            "COUNT_value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "COUNT_reference": {
+              "$ref": "#/definitions/COUNT_ref_47"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "COUNT_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "COUNT_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "COUNT_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Number of times to run the IP SLA tests."
+        }
+      }
+    },
+    "date_ref_50": {
+      "type": "object",
+      "required": [
+        "time"
+      ],
+      "properties": {
+        "time": {
+          "type": "object",
+          "required": [
+            "time_value"
+          ],
+          "properties": {
+            "time_value": {
+              "type": "string",
+              "pattern": "^([0-2][0-3]):([0-5][0-9]):([0-5][0-9])$"
+            },
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "time_reference": {
+              "$ref": "#/definitions/COUNT_ref_47"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "time_reference"
+              ],
+              "not": {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ],
+              "not": {
+                "required": [
+                  "time_reference"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "time_reference",
+                  "cmd_no_form"
+                ]
+              }
+            }
+          ],
+          "description": "Date and time to stop the SLA test."
+        }
+      }
+    },
+    "stopTime_ref_49": {
+      "type": "object",
+      "required": [
+        "date"
+      ],
+      "properties": {
+        "date": {
+          "type": "object",
+          "required": [
+            "date_value",
+            "date_reference"
+          ],
+          "properties": {
+            "date_value": {
+              "type": "string",
+              "pattern": "^((0[0-9]|1[0-2]){1})/((0[0-9]|1[0-9]|2[0-9]|3[0-1]){1})/((19|20)[0-9]{2})"
+            },
+            "date_reference": {
+              "$ref": "#/definitions/date_ref_50"
+            }
+          },
+          "description": "Date and time to stop the SLA test."
+        }
+      }
+    },
+    "time_ref_45": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "repetitions"
+          ]
+        },
+        {
+          "required": [
+            "stopTime"
+          ]
+        },
+        {
+          "required": [
+            "forever"
+          ]
+        }
+      ],
+      "properties": {
+        "repetitions": {
+          "description": "Configure the number of times the test to be repeated.",
+          "$ref": "#/definitions/repetitions_ref_46"
+        },
+        "stopTime": {
+          "description": "Configure the Stop Time for the IP SLA.",
+          "$ref": "#/definitions/stopTime_ref_49"
+        },
+        "forever": {
+          "type": "object",
+          "required": [
+            "forever_value"
+          ],
+          "properties": {
+            "forever_value": {
+              "type": "boolean"
+            },
+            "forever_reference": {
+              "$ref": "#/definitions/COUNT_ref_47"
+            }
+          },
+          "description": "Schedule to run the IP SLA forever."
+        }
+      }
+    },
+    "date_ref_44": {
+      "type": "object",
+      "required": [
+        "time"
+      ],
+      "properties": {
+        "time": {
+          "type": "object",
+          "required": [
+            "time_value",
+            "time_reference"
+          ],
+          "properties": {
+            "time_value": {
+              "type": "string",
+              "pattern": "^([0-2][0-3]):([0-5][0-9]):([0-5][0-9])$"
+            },
+            "time_reference": {
+              "$ref": "#/definitions/time_ref_45"
+            }
+          },
+          "description": "Date and time to start the SLA test."
+        }
+      }
+    },
+    "startTime_ref_43": {
+      "type": "object",
+      "required": [
+        "date"
+      ],
+      "properties": {
+        "date": {
+          "type": "object",
+          "required": [
+            "date_value",
+            "date_reference"
+          ],
+          "properties": {
+            "date_value": {
+              "type": "string",
+              "pattern": "^((0[0-9]|1[0-2]){1})/((0[0-9]|1[0-9]|2[0-9]|3[0-1]){1})/((19|20)[0-9]{2})"
+            },
+            "date_reference": {
+              "$ref": "#/definitions/date_ref_44"
+            }
+          },
+          "description": "Date and time to start the SLA test."
+        }
+      }
+    },
+    "schedule_ref_42": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "startTime"
+          ]
+        },
+        {
+          "required": [
+            "now"
+          ]
+        }
+      ],
+      "properties": {
+        "startTime": {
+          "description": "Configure the Start Time for the IP SLA.",
+          "$ref": "#/definitions/startTime_ref_43"
+        },
+        "now": {
+          "description": "Schedule the IP SLA immediately.",
+          "$ref": "#/definitions/time_ref_45"
+        }
+      }
+    },
+    "action-type_ref_59": {
+      "type": "object",
+      "required": [
+        "act_type"
+      ],
+      "properties": {
+        "act_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "trap",
+            "log",
+            "trap-log"
+          ]
+        }
+      }
+    },
+    "lower-limit_ref_58": {
+      "type": "object",
+      "required": [
+        "action-type"
+      ],
+      "properties": {
+        "action-type": {
+          "description": "Configure action to trigger when threshold is hit.",
+          "$ref": "#/definitions/action-type_ref_59"
+        }
+      }
+    },
+    "upper-limit_ref_57": {
+      "type": "object",
+      "required": [
+        "lower-limit"
+      ],
+      "properties": {
+        "lower-limit": {
+          "type": "object",
+          "required": [
+            "lower-limit_value",
+            "lower-limit_reference"
+          ],
+          "properties": {
+            "lower-limit_value": {
+              "type": "integer"
+            },
+            "lower-limit_reference": {
+              "$ref": "#/definitions/lower-limit_ref_58"
+            }
+          },
+          "description": "Configure lower threshold limit."
+        }
+      }
+    },
+    "threshold-value_ref_56": {
+      "type": "object",
+      "required": [
+        "upper-limit"
+      ],
+      "properties": {
+        "upper-limit": {
+          "type": "object",
+          "required": [
+            "upper-limit_value",
+            "upper-limit_reference"
+          ],
+          "properties": {
+            "upper-limit_value": {
+              "type": "integer"
+            },
+            "upper-limit_reference": {
+              "$ref": "#/definitions/upper-limit_ref_57"
+            }
+          },
+          "description": "Configure upper threshold limit."
+        }
+      }
+    },
+    "immediate_ref_55": {
+      "type": "object",
+      "required": [
+        "threshold-value"
+      ],
+      "properties": {
+        "threshold-value": {
+          "description": "Configure threshold values.",
+          "$ref": "#/definitions/threshold-value_ref_56"
+        }
+      }
+    },
+    "consecutive_ref_60": {
+      "type": "object",
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "object",
+          "required": [
+            "count_value",
+            "count_reference"
+          ],
+          "properties": {
+            "count_value": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 1024
+            },
+            "count_reference": {
+              "$ref": "#/definitions/immediate_ref_55"
+            }
+          },
+          "description": "Configure Number of times threshold to be hit before             triggering action."
+        }
+      }
+    },
+    "threshold-type_ref_54": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "immediate"
+          ],
+          "not": {
+            "required": [
+              "consecutive",
+              "aggregated"
+            ]
+          }
+        },
+        {
+          "required": [
+            "consecutive"
+          ],
+          "not": {
+            "required": [
+              "immediate",
+              "aggregated"
+            ]
+          }
+        },
+        {
+          "required": [
+            "aggregated"
+          ],
+          "not": {
+            "required": [
+              "immediate",
+              "consecutive"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "immediate": {
+          "description": "Trigger action immediately when the threshold is hit.",
+          "$ref": "#/definitions/immediate_ref_55"
+        },
+        "consecutive": {
+          "description": "Trigger action after threshold is hit consecutively for             configured number of times.",
+          "$ref": "#/definitions/consecutive_ref_60"
+        },
+        "aggregated": {
+          "description": "Trigger action when aggregated probes hit the threshold.",
+          "$ref": "#/definitions/immediate_ref_55"
+        }
+      }
+    },
+    "conf_ref_53": {
+      "type": "object",
+      "required": [
+        "threshold-type"
+      ],
+      "properties": {
+        "threshold-type": {
+          "description": "Configure threshold-type to decide when to trigger.",
+          "$ref": "#/definitions/threshold-type_ref_54"
+        }
+      }
+    },
+    "threshold-config_ref_52": {
+      "type": "object",
+      "required": [
+        "conf"
+      ],
+      "properties": {
+        "conf": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "conf_value"
+            ],
+            "properties": {
+              "conf_value": {
+                "type": "string",
+                "enum": [
+                  "rtt",
+                  "srcTodstTime",
+                  "dstTosrcTime",
+                  "mos",
+                  "icpif",
+                  "sd-jitter-pos",
+                  "ds-jitter-pos"
+                ]
+              },
+              "cmd_no_form": {
+                "type": "boolean",
+                "default": false
+              },
+              "conf_reference": {
+                "$ref": "#/definitions/conf_ref_53"
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "conf_reference"
+                ]
+              },
+              {
+                "required": [
+                  "cmd_no_form"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "consecutive_ref_63": {
+      "type": "object",
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "object",
+          "required": [
+            "count_value",
+            "count_reference"
+          ],
+          "properties": {
+            "count_value": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 1024
+            },
+            "count_reference": {
+              "$ref": "#/definitions/lower-limit_ref_58"
+            }
+          },
+          "description": "Configure Number of times threshold to be hit before             triggering action."
+        }
+      }
+    },
+    "threshold-type_ref_62": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "immediate"
+          ],
+          "not": {
+            "required": [
+              "consecutive"
+            ]
+          }
+        },
+        {
+          "required": [
+            "consecutive"
+          ],
+          "not": {
+            "required": [
+              "immediate"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "immediate": {
+          "description": "Trigger action immediately when the threshold is hit.",
+          "$ref": "#/definitions/lower-limit_ref_58"
+        },
+        "consecutive": {
+          "description": "Trigger action after threshold is hit consecutively for             configured number of times.",
+          "$ref": "#/definitions/consecutive_ref_63"
+        }
+      }
+    },
+    "packet-loss_ref_61": {
+      "type": "object",
+      "required": [
+        "threshold-type"
+      ],
+      "properties": {
+        "threshold-type": {
+          "description": "Configure threshold-type to decide when to trigger.",
+          "$ref": "#/definitions/threshold-type_ref_62"
+        }
+      }
+    },
+    "monitor_ref_51": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "threshold-config"
+          ],
+          "not": {
+            "required": [
+              "packet-loss",
+              "test-completion"
+            ]
+          }
+        },
+        {
+          "required": [
+            "packet-loss"
+          ],
+          "not": {
+            "required": [
+              "threshold-config",
+              "test-completion"
+            ]
+          }
+        },
+        {
+          "required": [
+            "test-completion"
+          ],
+          "not": {
+            "required": [
+              "threshold-config",
+              "packet-loss"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "threshold-config": {
+          "description": "Set upper and lower threshold parameters.",
+          "$ref": "#/definitions/threshold-config_ref_52"
+        },
+        "packet-loss": {
+          "description": "Configure threshold-action values when packet loss happens.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "packet-loss_reference": {
+              "$ref": "#/definitions/packet-loss_ref_61"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "packet-loss_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "test-completion": {
+          "description": "Configure action to be taken when test gets completed.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "test-completion_reference": {
+              "$ref": "#/definitions/lower-limit_ref_58"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "test-completion_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "clear_ref_64": {
+      "type": "object",
+      "required": [
+        "records"
+      ],
+      "properties": {
+        "records": {
+          "type": "boolean",
+          "description": "To clear history records, message statistics and threshold              counters of particular SLA entry."
+        }
+      }
+    },
+    "ID_ref_1": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "icmp-echo"
+          ],
+          "not": {
+            "required": [
+              "udp-echo",
+              "tcp-connect",
+              "udp-jitter",
+              "udp-jitter-voip",
+              "dhcp",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "udp-echo"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "tcp-connect",
+              "udp-jitter",
+              "udp-jitter-voip",
+              "dhcp",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "tcp-connect"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "udp-echo",
+              "udp-jitter",
+              "udp-jitter-voip",
+              "dhcp",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "udp-jitter"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "udp-echo",
+              "tcp-connect",
+              "udp-jitter-voip",
+              "dhcp",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "udp-jitter-voip"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "udp-echo",
+              "tcp-connect",
+              "udp-jitter",
+              "dhcp",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "dhcp"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "udp-echo",
+              "tcp-connect",
+              "udp-jitter",
+              "udp-jitter-voip",
+              "dns"
+            ]
+          }
+        },
+        {
+          "required": [
+            "dns"
+          ],
+          "not": {
+            "required": [
+              "icmp-echo",
+              "udp-echo",
+              "tcp-connect",
+              "udp-jitter",
+              "udp-jitter-voip",
+              "dhcp"
+            ]
+          }
+        },
+        {
+          "required": [
+            "tos"
+          ]
+        },
+        {
+          "required": [
+            "history-size"
+          ]
+        },
+        {
+          "required": [
+            "schedule"
+          ]
+        },
+        {
+          "required": [
+            "monitor"
+          ]
+        },
+        {
+          "required": [
+            "clear"
+          ]
+        },
+        {
+          "required": [
+            "enable"
+          ],
+          "not": {
+            "required": [
+              "disable"
+            ]
+          }
+        },
+        {
+          "required": [
+            "disable"
+          ],
+          "not": {
+            "required": [
+              "enable"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "icmp-echo": {
+          "description": "Configure ICMP echo as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "icmp-echo_reference": {
+              "$ref": "#/definitions/icmp-echo_ref_2"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "icmp-echo_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "udp-echo": {
+          "description": "Configure UDP echo as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "udp-echo_reference": {
+              "$ref": "#/definitions/udp-echo_ref_8"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "udp-echo_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "tcp-connect": {
+          "description": "Configure TCP connect as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "tcp-connect_reference": {
+              "$ref": "#/definitions/tcp-connect_ref_14"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "tcp-connect_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "udp-jitter": {
+          "description": "Configure UDP jitter as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "udp-jitter_reference": {
+              "$ref": "#/definitions/udp-jitter_ref_20"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "udp-jitter_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "udp-jitter-voip": {
+          "description": "Configure UDP jitter for VoIP as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "udp-jitter-voip_reference": {
+              "$ref": "#/definitions/udp-jitter-voip_ref_27"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "udp-jitter-voip_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "dhcp": {
+          "description": "Configure DHCP as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "dhcp_reference": {
+              "$ref": "#/definitions/dhcp_ref_36"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "dhcp_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "dns": {
+          "description": "Configure DNS as the IP SLA test mechanism.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "dns_reference": {
+              "$ref": "#/definitions/dns_ref_38"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "dns_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "tos": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "tos_value": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          },
+          "required": [
+            "tos_value"
+          ],
+          "description": "Configure the Type of Service value to be set in the test              packet for the IP SLA."
+        },
+        "history-size": {
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "history-size_value": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "history-size_value"
+          ],
+          "description": "Configure the number of history records to be stored for the             IP SLA."
+        },
+        "schedule": {
+          "description": "Configure the start time, stop time, lifetime and frequency             of run for the IP SLA.",
+          "type": "object",
+          "properties": {
+            "cmd_no_form": {
+              "type": "boolean",
+              "default": false
+            },
+            "schedule_reference": {
+              "$ref": "#/definitions/schedule_ref_42"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "schedule_reference"
+              ]
+            },
+            {
+              "required": [
+                "cmd_no_form"
+              ]
+            }
+          ]
+        },
+        "monitor": {
+          "description": "Configure monitoring parameters and respective              threshold-action values.",
+          "$ref": "#/definitions/monitor_ref_51"
+        },
+        "clear": {
+          "description": "To clear history records, message statistics and threshold              counters of particular SLA entry.",
+          "$ref": "#/definitions/clear_ref_64"
+        },
+        "enable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable the IP SLA."
+        },
+        "disable": {
+          "type": "boolean",
+          "description": "Disable the IP SLA."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMP Server Link Change Trap", 
+    "title": "SnmpServerLinkChangeTrap", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Name of the port on which link change trap is to be enabled.", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "is_enabled":
+        {
+            "description": "Whether to enable or disable the link change trap for this port.", 
+            "type": "boolean", 
+            "default_value": true, 
+            "sql.not_null": true
+        }
+    }
+}

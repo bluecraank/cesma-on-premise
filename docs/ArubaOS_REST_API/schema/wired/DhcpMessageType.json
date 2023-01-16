@@ -1,0 +1,17 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"DHCP MESSAGE TYPE", 
+    "title": "DhcpMessageType", 
+    "enum":
+    [
+        "DMT_DISCOVER", 
+        "DMT_OFFER", 
+        "DMT_REQUEST", 
+        "DMT_DECLINE", 
+        "DMT_ACK", 
+        "DMT_NAK", 
+        "DMT_RELEASE", 
+        "DMT_INFORM", 
+        "DMT_FORCERENEW"
+    ]
+}

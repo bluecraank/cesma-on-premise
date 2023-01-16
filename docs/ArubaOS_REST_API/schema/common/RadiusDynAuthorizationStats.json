@@ -1,0 +1,213 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "RadiusDynAuthorizationStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "nas_id":
+        {
+            "description": "NAS-Identifier", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1
+        }, 
+        "invalid_client_addresses_coareq":
+        {
+            "description": "Number of COA-Request received from unknown addresses", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "invalid_client_addresses_discreq":
+        {
+            "description": "Number of DISCONNECT-Request received from unknown addresses", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "radius_server_id":
+        {
+            "description": "The unique ID of the RADIUS Profile.", 
+            "minimum": 1, 
+            "maximum": 15, 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true, 
+            "sql.primary_key": true
+        }, 
+        "address":
+        {
+            "description": "The Server's IP address.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "disconnect_reqs":
+        {
+            "description": "Number of Disconnect-Requests received from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_req_autz_only":
+        {
+            "description": "Number of Disconnect-Requests that include a Service-Type attribute with value 'Authorize Only' received from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_acks":
+        {
+            "description": "Number of Disconnect-ACKs sent to server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_naks":
+        {
+            "description": "Number of Disconnect-NACKs sent to server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_naks_autz_only":
+        {
+            "description": "Number of Disconnect-NACKs sent to server that include a Service-Type attribute with value 'Authorize Only'", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_naks_no_session":
+        {
+            "description": "Number of Disconnect-NACKs sent to server becoz no session context found", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_req_session_removed":
+        {
+            "description": "Number of user sessions removed for the DISCONNECT request recieved from the server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_req_malformed":
+        {
+            "description": "Number of malformed Disconnect-Requests recieved from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_bad_authenticator":
+        {
+            "description": "Number of Disconnect-Requests that contains invalid Authenticatore fields.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "disconnect_req_discard":
+        {
+            "description": "Number of incoming Disconnect-Requests discarded", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_reqs":
+        {
+            "description": "Number of COA-Requests received from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_req_autz_only":
+        {
+            "description": "Number of COA-Requests that include a Service-Type attribute with value 'Authorize Only' received from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_acks":
+        {
+            "description": "Number of COA-ACKs sent to server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_naks":
+        {
+            "description": "Number of COA-NACKs sent to server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_naks_autz_only":
+        {
+            "description": "Number of COA-NACKs sent to server that include a Service-Type attribute with value 'Authorize Only'", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_naks_no_session":
+        {
+            "description": "Number of COA-NACKs sent to server becoz no session context found", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_req_session_changed":
+        {
+            "description": "Number of user sessions changed for the COA request recieved from the server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_req_malformed":
+        {
+            "description": "Number of malformed COA-Requests recieved from server", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_bad_authenticator":
+        {
+            "description": "Number of COA-Requests that contains invalid Authenticator fields.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "coa_req_discard":
+        {
+            "description": "Number of incoming COA-Requests discarded", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

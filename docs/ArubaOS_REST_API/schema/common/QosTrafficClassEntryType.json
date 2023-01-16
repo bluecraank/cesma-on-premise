@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"QoS Traffic Class Entry Type (QTCET_) This enumeration is meant to declare more values in future releases.", 
+    "title": "QosTrafficClassEntryType", 
+    "enum":
+    [
+        "QTCET_MATCH", 
+        "QTCET_IGNORE"
+    ]
+}

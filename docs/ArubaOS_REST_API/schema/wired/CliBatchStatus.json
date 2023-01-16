@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"CLI Batch status", 
+    "title": "CliBatchStatus", 
+    "enum":
+    [
+        "CBS_INITIALTED", 
+        "CBS_ALREADY_INPROGRESS"
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "OOBM IP data.", 
+    "title": "OobmIp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "member_id":
+        {
+            "description": "Stack Member Id. Mandatory for stacked switches.  Not considered for standalone switches and global IP.", 
+            "minimum": 1, 
+            "maximum": 10, 
+            "type": "integer"
+        }, 
+        "ip_address_mode":
+        {
+            "description": "The subnet's IP mode.", 
+            "$ref":"../../schema/common/IpAddressAssignmentMethod.json", 
+            "default_value": "IAAM_DHCP"
+        }, 
+        "ip_address":
+        {
+            "description": "OOBM IP address. This parameter is valid only when ip_address_mode is IAAM_STATIC", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "ip_mask":
+        {
+            "description": "OOBM IP mask. This parameter is valid only when  ip_address_mode is IAAM_STATIC and ip_address is present", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "default_gateway":
+        {
+            "description": "OOBM default gateway. This parameter is valid only when  ip_address_mode is IAAM_STATIC", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }
+    }
+}

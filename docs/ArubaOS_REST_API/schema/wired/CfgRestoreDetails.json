@@ -1,0 +1,121 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Last run cfg-restore status.", 
+    "title": "CfgRestoreDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "status":
+        {
+            "description": "cfg-restore status.", 
+            "$ref":"../../schema/wired/CfgRestoreStatus.json"
+        }, 
+        "file_name":
+        {
+            "description": "Config File Name.", 
+            "type": "string"
+        }, 
+        "source":
+        {
+            "description": "cfg-restore source.", 
+            "$ref":"../../schema/wired/CfgRestoreSource.json"
+        }, 
+        "time_taken_in_seconds":
+        {
+            "description": "Time taken for cfg-restore.", 
+            "type": "integer"
+        }, 
+        "last_run":
+        {
+            "description": "Last Run time", 
+            "type": "string"
+        }, 
+        "is_recoverymode_enabled":
+        {
+            "description": "Recovery mode status.", 
+            "type": "boolean"
+        }, 
+        "failure_reason":
+        {
+            "description": "Failure Reason for cfg-restore.", 
+            "type": "string"
+        }, 
+        "no_of_added_commands":
+        {
+            "description": "Number of add commands.", 
+            "type": "integer"
+        }, 
+        "no_of_removed_commands":
+        {
+            "description": "Number of remove commands.", 
+            "type": "integer"
+        }, 
+        "time_to_calculate_diff_in_seconds":
+        {
+            "description": "Time taken for calculating diff.", 
+            "type": "integer"
+        }, 
+        "time_to_add_commands_in_seconds":
+        {
+            "description": "Time taken for adding commands.", 
+            "type": "integer"
+        }, 
+        "time_to_remove_commands_in_seconds":
+        {
+            "description": "Time taken for removing commands.", 
+            "type": "integer"
+        }, 
+        "failed_to_remove_commands":
+        {
+            "description": "List of Commands Failed to remove", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/CommandStatus.json"
+            }
+        }, 
+        "failed_to_add_commands":
+        {
+            "description": "List of Commands Failed to add", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/CommandStatus.json"
+            }
+        }, 
+        "failed_to_add_commands_recovery":
+        {
+            "description": "List of Commands Failed to add in recovery-mode.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/CommandStatus.json"
+            }
+        }, 
+        "failed_to_remove_commands_recovery":
+        {
+            "description": "List of Commands Failed to remove in recovery-mode.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/CommandStatus.json"
+            }
+        }, 
+        "is_patch_file_present":
+        {
+            "description": "Patch file status.", 
+            "type": "boolean"
+        }, 
+        "failure_command":
+        {
+            "description": "First reboot required command or system-wide change command in the list  which requires 'force' option for the restore to be success.", 
+            "type": "string"
+        }
+    }
+}

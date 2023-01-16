@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SNTP CLIENT OPERATION MODE", 
+    "title": "SntpClientOperationMode", 
+    "enum":
+    [
+        "SNTP_DISABLE", 
+        "SNTP_UNICAST_MODE", 
+        "SNTP_BROADCAST_MODE", 
+        "SNTP_DHCP_MODE"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"VLAN assignment status", 
+    "title": "VlanAssignStatus", 
+    "enum":
+    [
+        "VLAN_ASSIGN_INVALID", 
+        "VLAN_ASSIGN_STATIC", 
+        "VLAN_ASSIGN_DYN"
+    ]
+}

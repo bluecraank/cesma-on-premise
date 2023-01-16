@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Primary Authentication Method", 
+    "title": "PrimaryAuthMethod", 
+    "enum":
+    [
+        "PAM_LOCAL", 
+        "PAM_TACACS", 
+        "PAM_RADIUS", 
+        "PAM_EAP_CHAPV2_RADIUS", 
+        "PAM_CHAP_RADIUS", 
+        "PAM_PUBLIC_KEY"
+    ]
+}

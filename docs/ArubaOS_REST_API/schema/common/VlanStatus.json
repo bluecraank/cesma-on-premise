@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"VLAN Status (VS_).", 
+    "title": "VlanStatus", 
+    "enum":
+    [
+        "VS_PORT_BASED", 
+        "VS_PROTOCOL_BASED", 
+        "VS_DYNAMIC"
+    ]
+}

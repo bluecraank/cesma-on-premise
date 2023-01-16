@@ -1,0 +1,254 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "RADIUS Server configuration data.", 
+    "title": "RadiusServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "radius_server_id":
+        {
+            "description": "The unique ID of the RADIUS Profile.", 
+            "minimum": 1, 
+            "maximum": 15, 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true, 
+            "sql.primary_key": true
+        }, 
+        "address":
+        {
+            "description": "The Server's IP address.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "shared_secret":
+        {
+            "description": "The RADIUS server shared secret.", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 0
+        }, 
+        "authentication_port":
+        {
+            "description": "The RADIUS server authentication port.", 
+            "minimum": 1, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "default_value": 1812
+        }, 
+        "accounting_port":
+        {
+            "description": "The RADIUS server accounting port.", 
+            "minimum": 1, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "default_value": 1813
+        }, 
+        "is_dyn_authorization_enabled":
+        {
+            "description": "The RADIUS server is_dyn_authorization_enabled.", 
+            "type": "boolean"
+        }, 
+        "time_window_type":
+        {
+            "description": "The RADIUS server time_window_type.", 
+            "$ref":"../../schema/common/TimeWindowType.json", 
+            "default_value": "TW_POSITIVE_TIME_WINDOW"
+        }, 
+        "time_window":
+        {
+            "description": "The RADIUS server time_window.", 
+            "minimum": 0, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "default_value": 300
+        }, 
+        "is_oobm":
+        {
+            "description": "is_oobm .", 
+            "type": "boolean"
+        }, 
+        "auth_round_trip_time":
+        {
+            "description": "Time interval between most recent access reply and access-request. These values are calculated at runtime", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_pend_req":
+        {
+            "description": "Number of access request destined to server which are not yet timedout or not yet received response. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_retransmits":
+        {
+            "description": "Number of RADIUS Access-Request retransmitted to this server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_timeouts":
+        {
+            "description": "The number of authentication timeouts to the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_malform_resp":
+        {
+            "description": "Number of malformed response received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_bad_authen":
+        {
+            "description": "Number of RADIUS Access-Response contains invalid Signature attributes. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_unknown_type":
+        {
+            "description": "Number of RADIUS packets of unknown type received on authentication port. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_pkts_dropped":
+        {
+            "description": "Number of RADIUS packets dropped. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_access_req":
+        {
+            "description": "Number of RADIUS Access-Request sent to the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_access_challenge":
+        {
+            "description": "Number of RADIUS Access-challenges received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_access_accept":
+        {
+            "description": "Number of RADIUS Access-accept received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "auth_access_reject":
+        {
+            "description": "Number of RADIUS Access-reject received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_round_trip_time":
+        {
+            "description": "Time interval between most recent accounting response and accounting request. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_pend_req":
+        {
+            "description": "Number of accounting request destined to server which are not yet timedout or not yet received response. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_retransmits":
+        {
+            "description": "Number of RADIUS Accounting-Request retransmitted to this server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_timeouts":
+        {
+            "description": "The number of accounting timeouts to the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_malform_resp":
+        {
+            "description": "Number of malformed response received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_bad_authen":
+        {
+            "description": "Number of RADIUS Accounting-Response contains invalid Signature attributes. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_unknown_type":
+        {
+            "description": "Number of RADIUS packets of unknown type received on accounting port. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_pkts_dropped":
+        {
+            "description": "Number of RADIUS packets dropped. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_req":
+        {
+            "description": "Number of RADIUS Accounting-Request sent to the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "acct_resp":
+        {
+            "description": "Number of RADIUS Accounting-Response received from the server. These values are calculated at runtime.", 
+            "type": "integer", 
+            "default_value": 0, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP MED port location (Either civic or elin address)", 
+    "title": "LldpMedPortLocation", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "civic_address":
+        {
+            "description": "Civic address to send out this port. User can remove this config by giving 'null' as an input for this parameter.", 
+            "$ref":"../../schema/common/LldpCivicAddress.json"
+        }, 
+        "elin_address":
+        {
+            "description": "ELIN address to send out this port. User can remove this config by giving 'null' as an input for this parameter.", 
+            "type": "string", 
+            "maxLength": 25, 
+            "minLength": 1
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Authentication for REST", 
+    "title": "AuthenticationRest", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "auth_rest_login":
+        {
+            "description": "Configure login access to the switch via REST interface", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }, 
+        "auth_rest_enable":
+        {
+            "description": "Configure enable access to the switch via REST interface", 
+            "$ref":"../../schema/wired/AuthenticationLoginConfig.json"
+        }
+    }
+}

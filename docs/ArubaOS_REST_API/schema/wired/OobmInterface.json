@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "OOBM Interface configuration data.", 
+    "title": "OobmInterface", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "admin_status":
+        {
+            "description": "OOBM Interface status.", 
+            "type": "boolean", 
+            "default_value": true, 
+            "sql.not_null": true
+        }, 
+        "speed_duplex":
+        {
+            "description": "OOBM port speed duplex.", 
+            "$ref":"../../schema/common/PortConfigMode.json", 
+            "default_value": "PCM_AUTO"
+        }, 
+        "member_id":
+        {
+            "description": "Stack Member Id. Mandatory for stacked switches.  Return null for standalone switches", 
+            "minimum": 1, 
+            "maximum": 10, 
+            "type": "integer"
+        }
+    }
+}

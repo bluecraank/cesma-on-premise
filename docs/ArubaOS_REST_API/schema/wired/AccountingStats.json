@@ -1,0 +1,70 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Accounting Statistics data.", 
+    "title": "AccountingStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "udp_port":
+        {
+            "description": "The UDP Port Number used for Accounting.", 
+            "type": "integer"
+        }, 
+        "round_trip_time_in_seconds":
+        {
+            "description": "The Round Trip Time Taken by the RADIUS Server for Accounting.", 
+            "type": "integer"
+        }, 
+        "pending_requests":
+        {
+            "description": "Number of Accounting Request packets pending on the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "retransmitted_requests":
+        {
+            "description": "Number of Accounting Request packets retransmitted to the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "timeouts":
+        {
+            "description": "Number of Accounting timeouts to the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "malformed_responses":
+        {
+            "description": "Number of malformed Accounting Response packets received from the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "bad_authenticators":
+        {
+            "description": "Number of Accounting Response packets received with invalid authenticators  from the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "unknown_types":
+        {
+            "description": "Number of packets received with unknown type from the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "packets_dropped":
+        {
+            "description": "Number of packets dropped from the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "total_requests":
+        {
+            "description": "Number of Accounting Request packets sent to the RADIUS Server.", 
+            "type": "integer"
+        }, 
+        "total_responses":
+        {
+            "description": "Number of Accounting Response packets received from the RADIUS Server.", 
+            "type": "integer"
+        }
+    }
+}

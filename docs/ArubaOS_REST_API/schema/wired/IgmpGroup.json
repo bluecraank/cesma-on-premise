@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IGMP Group data.", 
+    "title": "IgmpGroup", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "group_address":
+        {
+            "description": "IGMP Group address.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "expires":
+        {
+            "description": "IGMP Group expires.", 
+            "type": "string"
+        }, 
+        "uptime":
+        {
+            "description": "IGMP Group uptime.", 
+            "type": "string"
+        }, 
+        "type":
+        {
+            "description": "IGMP Group type.", 
+            "type": "string"
+        }, 
+        "reports":
+        {
+            "description": "IGMP Group reports.", 
+            "type": "integer"
+        }, 
+        "queries":
+        {
+            "description": "IGMP Group queries.", 
+            "type": "integer"
+        }, 
+        "last_reporter":
+        {
+            "description": "IGMP Group last reporter.", 
+            "type": "string"
+        }, 
+        "port":
+        {
+            "description": "List of joined ports.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/IgmpGroupPort.json"
+            }
+        }
+    }
+}

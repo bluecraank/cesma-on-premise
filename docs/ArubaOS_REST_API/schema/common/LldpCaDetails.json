@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP CA", 
+    "title": "LldpCaDetails", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "type":
+        {
+            "description": "CA Type", 
+            "minimum": 0, 
+            "maximum": 255, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "value":
+        {
+            "description": "CA Value", 
+            "type": "string", 
+            "maxLength": 69, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "length":
+        {
+            "description": "CA Length", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

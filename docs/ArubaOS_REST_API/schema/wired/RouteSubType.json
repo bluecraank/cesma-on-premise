@@ -1,0 +1,16 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Route Sub Type for OSPF and BGP", 
+    "title": "RouteSubType", 
+    "enum":
+    [
+        "RST_INTRA_AREA", 
+        "RST_INTER_AREA", 
+        "RST_EXTERNAL1", 
+        "RST_EXTERNAL2", 
+        "RST_NSSA_EXT1", 
+        "RST_NSSA_EXT2", 
+        "RST_INTERNAL", 
+        "RST_EXTERNAL"
+    ]
+}

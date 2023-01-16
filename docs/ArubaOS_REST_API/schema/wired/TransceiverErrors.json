@@ -1,0 +1,25 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"TransceiverErrors (TE_)", 
+    "title": "TransceiverErrors", 
+    "enum":
+    [
+        "TE_IO_ERROR", 
+        "TE_CHECKSUM_ERROR", 
+        "TE_TYPE_AND_POST_CONFIG_MISMATCH", 
+        "TE_TYPE_NOT_SUPPORTED_BY_PORT_HARDWARE", 
+        "TE_WIS_LOCAL_FAULT", 
+        "TE_RECV_OPTICAL_POWER_FAULT", 
+        "TE_PMA_PMD_RECEIVER_LOCAL_FAULT", 
+        "TE_PCS_RX_LOCAL_FAULT", 
+        "TE_PHY_XS_RECEIVE_LOCAL_FAULT", 
+        "TE_LASER_BIAS_CURRENT_FAULT", 
+        "TE_LASER_TEMPERATURE_FAULT", 
+        "TE_LASER_OUTPUT_POWER_FAULT", 
+        "TE_TX_FAULT", 
+        "TE_PMA_PMD_TRANSMITTER_LOCAL_FAULT", 
+        "TE_PCS_TX_LOCAL_FAULT", 
+        "TE_PHY_XS_TX_LOCAL_FAULT", 
+        "TE_RX_LOSS_OF_SIGNAL"
+    ]
+}

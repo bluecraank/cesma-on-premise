@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"ACL Direction (AD_)", 
+    "title": "AclDirection", 
+    "enum":
+    [
+        "AD_INBOUND", 
+        "AD_OUTBOUND", 
+        "AD_VLAN_INBOUND", 
+        "AD_VLAN_OUTBOUND", 
+        "AD_CRF"
+    ]
+}

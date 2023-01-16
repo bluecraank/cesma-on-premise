@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Port Match configuration data.", 
+    "title": "PortMatch", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_not_equal":
+        {
+            "description": "Applies to all ports but the one specified on this field. port_not_equal should be non-zero when port_range_start and port_range_end are zero.", 
+            "minimum": 0, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true, 
+            "device.is_wired_only": true
+        }, 
+        "port_range_start":
+        {
+            "description": "Applies to all ports starting at the one specified on this field. If it applies to a single port, then start and end values should be equal. port_range_start should be non zero, when port_not_equal is zero.", 
+            "minimum": 0, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "port_range_end":
+        {
+            "description": "Applies to all ports ending at the one specified on this field. If it applies to a single port, then start and end values should be equal. port_range_end should be non zero, when port_not_equal is zero.", 
+            "minimum": 0, 
+            "maximum": 65535, 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

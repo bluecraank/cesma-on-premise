@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Tunneled Node Server configuration data", 
+    "title": "TunneledNodePort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "is_tn_server_applied":
+        {
+            "description": "Tunneled node server applied on port status", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "is_fallback_local_switching":
+        {
+            "description": "Apply fallback option when communication with the controller fails", 
+            "type": "boolean"
+        }, 
+        "active_controller_ip_address":
+        {
+            "description": "Active controller ip address", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "state":
+        {
+            "description": "State", 
+            "$ref":"../../schema/wired/ControllerState.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

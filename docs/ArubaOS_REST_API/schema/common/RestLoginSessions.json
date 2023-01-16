@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "User login data.", 
+    "title": "RestLoginSessions", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "userName":
+        {
+            "description": "The User Name of the user.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "password":
+        {
+            "description": "The Password for the user.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Accounting session Id", 
+    "title": "AccountingSessionId", 
+    "enum":
+    [
+        "ASI_UNIQUE", 
+        "ASI_COMMON"
+    ]
+}

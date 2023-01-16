@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "NTP_Associations_Entries": {
+            "type": "array",
+            "items": {
+                "Remote": {
+                    "type": "string"
+                },
+                "St": {
+                    "type": "integer"
+                },
+                "T": {
+                    "type": "integer"
+                },
+                "When": {
+                    "type": "integer"
+                },
+                "Poll": {
+                    "type": "integer"
+                },
+                "Reach": {
+                    "type": "integer"
+                },
+                "Delay": {
+                    "type": "string"
+                },
+                "Offset": {
+                    "type": "string"
+                },
+                "Dispersion": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

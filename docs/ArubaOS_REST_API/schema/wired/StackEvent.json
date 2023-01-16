@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Stack specific event statistics data.", 
+    "title": "StackEvent", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "stack_event_type":
+        {
+            "description": "Stack Event Type", 
+            "$ref":"../../schema/wired/StackEventType.json"
+        }, 
+        "stack_event_reason":
+        {
+            "description": "Stack Event Reason", 
+            "$ref":"../../schema/wired/StackEventReason.json"
+        }, 
+        "stack_event_data":
+        {
+            "description": "Stack Event Data", 
+            "$ref":"../../schema/wired/StackEventData.json"
+        }
+    }
+}

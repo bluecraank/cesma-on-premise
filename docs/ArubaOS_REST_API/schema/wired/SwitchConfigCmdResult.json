@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SwitchConfigCmd execution result.", 
+    "title": "SwitchConfigCmdResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "status":
+        {
+            "description": "Switch Config Cmd result", 
+            "$ref":"../../schema/wired/SwitchConfigResult.json", 
+            "sql.not_null": true
+        }
+    }
+}

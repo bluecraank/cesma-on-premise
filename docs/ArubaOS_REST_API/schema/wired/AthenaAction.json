@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Indicate device_info update", 
+    "title": "AthenaAction", 
+    "enum":
+    [
+        "ADD", 
+        "DELETE", 
+        "UPDATE"
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Time configuration data.", 
+    "title": "Time", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "hour":
+        {
+            "description": "Hour (hh)", 
+            "minimum": 0, 
+            "maximum": 23, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "minute":
+        {
+            "description": "Minute (mm)", 
+            "minimum": 0, 
+            "maximum": 59, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "second":
+        {
+            "description": "Second (ss)", 
+            "minimum": 0, 
+            "maximum": 59, 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

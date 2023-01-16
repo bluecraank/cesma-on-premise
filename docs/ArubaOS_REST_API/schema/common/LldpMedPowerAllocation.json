@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LLDP MED Power Allocation (LMPA_)", 
+    "title": "LldpMedPowerAllocation", 
+    "enum":
+    [
+        "LMPA_DISABLE", 
+        "LMPA_ENABLE"
+    ]
+}

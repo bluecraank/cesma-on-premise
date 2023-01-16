@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Rogue_AP_MAC_Information": {
+            "type": "array",
+            "items": {
+                "Rogue AP MAC": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

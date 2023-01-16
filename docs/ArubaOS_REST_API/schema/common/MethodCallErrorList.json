@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps a list of method call errors.", 
+    "title": "MethodCallErrorList", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "error":
+        {
+            "description": "The errors.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/MethodCallError.json"
+            }
+        }
+    }
+}

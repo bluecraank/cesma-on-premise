@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "VLAN configuration data.", 
+    "title": "Vlan", 
+    "type": "object", 
+    "sql.max_rows": 4094, 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "vlan_id":
+        {
+            "description": "The unique ID of the VLAN. IEEE 802.1Q VLAN identifier (VID)", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "name":
+        {
+            "description": "Name of the VLAN. While creating a Vlan If name is given as empty string, default value (VLANx, where x is the vlan_id) will be configured. Empty string will not be accepted while modifying a Vlan.", 
+            "type": "string", 
+            "maxLength": 32, 
+            "sql.not_null": true, 
+            "sql.unique": true
+        }, 
+        "status":
+        {
+            "description": "The status of the VLAN.", 
+            "$ref":"../../schema/common/VlanStatus.json", 
+            "default_value": "VS_PORT_BASED", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "type":
+        {
+            "description": "The type of the VLAN.", 
+            "$ref":"../../schema/common/VlanType.json", 
+            "default_value": "VT_STATIC", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "is_jumbo_enabled":
+        {
+            "description": "Whether Jumbo is enabled.", 
+            "type": "boolean", 
+            "default_value": false
+        }, 
+        "is_voice_enabled":
+        {
+            "description": "Whether Voice is enabled.", 
+            "type": "boolean", 
+            "default_value": false
+        }, 
+        "is_dsnoop_enabled":
+        {
+            "description": "Whether DSNOOP is enabled.", 
+            "type": "boolean", 
+            "default_value": false
+        }, 
+        "is_dhcp_server_enabled":
+        {
+            "description": "Whether DHCP SERVER is enabled.", 
+            "type": "boolean", 
+            "default_value": false
+        }, 
+        "is_management_vlan":
+        {
+            "description": "Whether vlan is a management vlan", 
+            "type": "boolean", 
+            "default_value": false
+        }
+    }
+}

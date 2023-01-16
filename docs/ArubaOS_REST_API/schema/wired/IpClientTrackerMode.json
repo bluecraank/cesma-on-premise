@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Ip Client Tracker Mode", 
+    "title": "IpClientTrackerMode", 
+    "enum":
+    [
+        "ICTM_NONE", 
+        "ICTM_ALL", 
+        "ICTM_TRUSTED", 
+        "ICTM_UNTRUSTED"
+    ]
+}

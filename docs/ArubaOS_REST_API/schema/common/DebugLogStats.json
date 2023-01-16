@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Debug Log statistics data and Debug destinations data.", 
+    "title": "DebugLogStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "debug_destination":
+        {
+            "description": "The set of debug destinations currently enabled.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/common/DebugDestination.json"
+            }
+        }, 
+        "enabled_filters":
+        {
+            "description": "The set of debug log filters currently enabled.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref": "../../schema/common/DebugLogFilter.json"
+            }
+        }
+    }
+}

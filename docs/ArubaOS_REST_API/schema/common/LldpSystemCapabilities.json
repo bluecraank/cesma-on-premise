@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP System Capabilities", 
+    "title": "LldpSystemCapabilities", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "repeater":
+        {
+            "description": "Repeater", 
+            "type": "boolean"
+        }, 
+        "bridge":
+        {
+            "description": "Bridge", 
+            "type": "boolean"
+        }, 
+        "wlan_access_point":
+        {
+            "description": "WLAN Access Point", 
+            "type": "boolean"
+        }, 
+        "router":
+        {
+            "description": "Router", 
+            "type": "boolean"
+        }, 
+        "telephone":
+        {
+            "description": "Telephone", 
+            "type": "boolean"
+        }, 
+        "cable_device":
+        {
+            "description": "Cable Device", 
+            "type": "boolean"
+        }, 
+        "station_only":
+        {
+            "description": "Station Only", 
+            "type": "boolean"
+        }
+    }
+}

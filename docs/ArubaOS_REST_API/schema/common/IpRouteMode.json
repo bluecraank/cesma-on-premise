@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"IP Route Mode (IRM_).", 
+    "title": "IpRouteMode", 
+    "enum":
+    [
+        "IRM_GATEWAY", 
+        "IRM_REJECT", 
+        "IRM_BLACK_HOLE", 
+        "IRM_VLAN", 
+        "IRM_TUNNEL_ARUBA_VPN", 
+        "IRM_LOOPBACK"
+    ]
+}

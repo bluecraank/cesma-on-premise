@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Auth_Order_For_Clients": {
+            "type": "array",
+            "items": {
+                "Port": {
+                    "type": "string"
+                },
+                "First Auth Method": {
+                    "type": "string"
+                },
+                "Second Auth Method": {
+                    "type": "string"
+                },
+                "LMA Fallback": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

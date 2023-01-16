@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"IGMP Lookup mode", 
+    "title": "IgmpLookupMode", 
+    "enum":
+    [
+        "ILM_MAC", 
+        "ILM_IP"
+    ]
+}

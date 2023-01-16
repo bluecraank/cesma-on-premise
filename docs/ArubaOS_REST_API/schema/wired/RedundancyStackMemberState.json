@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Redundancy Stack Member State (RSS_)", 
+    "title": "RedundancyStackMemberState", 
+    "enum":
+    [
+        "RSS_MEMBER_COMMANDER", 
+        "RSS_MEMBER_STANDBY"
+    ]
+}

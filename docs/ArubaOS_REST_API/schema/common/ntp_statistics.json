@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "NTP In Packets": {
+            "type": "integer"
+        },
+        "NTP Out Packets": {
+            "type": "integer"
+        },
+        "NTP Bad Version Packets": {
+            "type": "integer"
+        },
+        "NTP Protocol Error Packets": {
+            "type": "integer"
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"AUTH Failure Reason (AFR_)", 
+    "title": "auth_fail_reason", 
+    "enum":
+    [
+        "AFR_UNKNOWN_FAILURE", 
+        "AFR_SERVER_REJECT", 
+        "AFR_SERVER_TIMEOUT", 
+        "AFR_CLIENT_TIMEOUT", 
+        "AFR_EAP_FAILURE", 
+        "AFR_CLIENT_LIM_REACHED", 
+        "AFR_FORCE_UNAUTH", 
+        "AFR_ACL_APPLY_FAIL", 
+        "AFR_ROLE_ERROR", 
+        "AFR_NO_RADIUS_SERVER", 
+        "AFR_RADIUS_ATTRIBUTES_ERROR"
+    ]
+}

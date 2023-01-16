@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SNMP Trap Level", 
+    "title": "SnmpTrapLevel", 
+    "enum":
+    [
+        "STL_ALL", 
+        "STL_CRITICAL", 
+        "STL_NOT_INFO", 
+        "STL_DEBUG", 
+        "STL_NONE"
+    ]
+}

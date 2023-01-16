@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the results of the trace route execution.", 
+    "title": "TraceRouteCommandResult", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "result":
+        {
+            "description": "Trace route execution outcome.", 
+            "$ref":"../../schema/common/TraceRouteResult.json"
+        }, 
+        "ttl_data":
+        {
+            "description": "The set of TTL data.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/TraceRouteTtlData.json"
+            }
+        }
+    }
+}

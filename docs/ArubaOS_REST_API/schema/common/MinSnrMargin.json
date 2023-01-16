@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Minimum SNR Margin (dB)", 
+    "title": "MinSnrMargin", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "min_SNR_chan1":
+        {
+            "description": "Minimum SNR Channel 1", 
+            "type": "number"
+        }, 
+        "min_SNR_chan2":
+        {
+            "description": "Minimum SNR Channel 2", 
+            "type": "number"
+        }, 
+        "min_SNR_chan3":
+        {
+            "description": "Minimum SNR Channel 3", 
+            "type": "number"
+        }, 
+        "min_SNR_chan4":
+        {
+            "description": "Minimum SNR Channel 4", 
+            "type": "number"
+        }
+    }
+}

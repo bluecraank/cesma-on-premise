@@ -1,0 +1,174 @@
+{
+  "title": "ntpAuthenticationKeyIdInt",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "int": {
+      "type": "object",
+      "required": [
+        "int_value"
+      ],
+      "properties": {
+        "int_value": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
+        "int_reference": {
+          "$ref": "#/definitions/int_ref_1"
+        }
+      },
+      "description": "The authentication key-id."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "int"
+  ],
+  "definitions": {
+    "key_ref_5": {
+      "type": "object",
+      "properties": {
+        "trusted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this authentication key as trusted."
+        }
+      }
+    },
+    "key-value_ref_4": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "type": "object",
+          "required": [
+            "key_value"
+          ],
+          "properties": {
+            "key_value": {
+              "type": "string"
+            },
+            "key_reference": {
+              "$ref": "#/definitions/key_ref_5"
+            }
+          },
+          "description": "Enter a string to be set as the NTP authentication key."
+        }
+      }
+    },
+    "md5_ref_3": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "key-value"
+          ],
+          "not": {
+            "required": [
+              "encrypted-key"
+            ]
+          }
+        },
+        {
+          "required": [
+            "encrypted-key"
+          ],
+          "not": {
+            "required": [
+              "key-value"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "key-value": {
+          "description": "Set the NTP authentication key.",
+          "$ref": "#/definitions/key-value_ref_4"
+        },
+        "encrypted-key": {
+          "type": "object",
+          "required": [
+            "encrypted-key_value"
+          ],
+          "properties": {
+            "encrypted-key_value": {
+              "type": "string"
+            },
+            "encrypted-key_reference": {
+              "$ref": "#/definitions/key_ref_5"
+            }
+          },
+          "description": "password."
+        }
+      }
+    },
+    "authentication-mode_ref_2": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "md5"
+          ],
+          "not": {
+            "required": [
+              "sha1"
+            ]
+          }
+        },
+        {
+          "required": [
+            "sha1"
+          ],
+          "not": {
+            "required": [
+              "md5"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "md5": {
+          "description": "Authenticate using MD5.",
+          "$ref": "#/definitions/md5_ref_3"
+        },
+        "sha1": {
+          "description": "Authenticate using SHA1.",
+          "$ref": "#/definitions/md5_ref_3"
+        }
+      }
+    },
+    "int_ref_1": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "authentication-mode"
+          ]
+        },
+        {
+          "required": [
+            "trusted"
+          ]
+        }
+      ],
+      "properties": {
+        "authentication-mode": {
+          "description": "Set the NTP authentication mode.",
+          "$ref": "#/definitions/authentication-mode_ref_2"
+        },
+        "trusted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this authentication key as trusted."
+        }
+      }
+    }
+  }
+}

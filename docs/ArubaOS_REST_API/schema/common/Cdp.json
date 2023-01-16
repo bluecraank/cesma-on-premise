@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Global Cisco Discovery Protocol (CDP) configuration data.", 
+    "title": "Cdp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_cdp_enabled":
+        {
+            "description": "Whether CDP Global status is enabled/disabled.", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "mode":
+        {
+            "description": "CDP Mode", 
+            "$ref":"../../schema/common/CiscoDiscProtocolMode.json", 
+            "default_value": "CDPM_RXONLY"
+        }
+    }
+}

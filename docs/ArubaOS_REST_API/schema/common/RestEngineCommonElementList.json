@@ -1,0 +1,123 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps a list of elements resulting from a CommonCollectionQuery.", 
+    "title": "RestEngineCommonElementList", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "ntpAuthenticationKeyIdInt_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ntpAuthenticationKeyIdInt.json"
+            }
+        }, 
+        "ntpServerIp4addr_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ntpServerIp4addr.json"
+            }
+        }, 
+        "ntpServerIpv6addr_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ntpServerIpv6addr.json"
+            }
+        }, 
+        "ntpServerNameASCIISTR_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ntpServerNameASCIISTR.json"
+            }
+        }, 
+        "ipSlaResponderUdpEcho_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ipSlaResponderUdpEcho.json"
+            }
+        }, 
+        "ipSlaResponderTcpConnect_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ipSlaResponderTcpConnect.json"
+            }
+        }, 
+        "ipSlaResponderUdpJitter_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ipSlaResponderUdpJitter.json"
+            }
+        }, 
+        "ipSlaResponderUdpJitterVoip_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ipSlaResponderUdpJitterVoip.json"
+            }
+        }, 
+        "ipSlaID_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/ipSlaID.json"
+            }
+        }, 
+        "rogueApIsolationWhitelistMacAddr_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/rogueApIsolationWhitelistMacAddr.json"
+            }
+        }, 
+        "proxyExceptionIpIpAddr_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/proxyExceptionIpIpAddr.json"
+            }
+        }, 
+        "proxyExceptionHostHostName_element":
+        {
+            "description": "", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/proxyExceptionHostHostName.json"
+            }
+        }
+    }
+}

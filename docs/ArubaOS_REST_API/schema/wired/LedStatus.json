@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LED Blink Status", 
+    "title": "LedStatus", 
+    "enum":
+    [
+        "LS_BLINK", 
+        "LS_ON", 
+        "LS_OFF"
+    ]
+}

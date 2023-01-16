@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"INTERFACE POE STATUS", 
+    "title": "InterfacePoeStatus", 
+    "enum":
+    [
+        "POE_ENABLED", 
+        "POE_DISABLED"
+    ]
+}

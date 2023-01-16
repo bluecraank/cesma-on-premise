@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Host system memory statistics data.", 
+    "title": "SystemMemoryStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "current_free_memory_in_bytes":
+        {
+            "description": "The current amount of free memory (RAM) for system use.", 
+            "type": "integer"
+        }, 
+        "average_free_memory_in_bytes":
+        {
+            "description": "The average amount of free memory (RAM) during the sample period.", 
+            "type": "number"
+        }, 
+        "current_buffer_memory_in_bytes":
+        {
+            "description": "The current amount of memory (RAM) allocated to buffers.", 
+            "type": "integer"
+        }, 
+        "average_buffer_memory_in_bytes":
+        {
+            "description": "The average amount of memory (RAM) allocated to buffers during the sample period.", 
+            "type": "number"
+        }, 
+        "current_cache_memory_in_bytes":
+        {
+            "description": "The current amount of memory (RAM) for file cache.", 
+            "type": "integer"
+        }, 
+        "average_cache_memory_in_bytes":
+        {
+            "description": "The average amount of memory (RAM) for file cache during the sample period.", 
+            "type": "number"
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Med Inventory details", 
+    "title": "LldpMedInventoryManagement", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "hardware_revision_tlv":
+        {
+            "description": "The vendor-specific hardware revision string as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "firmware_revision_tlv":
+        {
+            "description": "The vendor-specific Firmware revision string as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "software_revision_tlv":
+        {
+            "description": "The vendor-specific software revision string as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "serial_number_tlv":
+        {
+            "description": "The vendor-specific serial number as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "manufacturer_name_tlv":
+        {
+            "description": "The vendor-specific manufacturer name as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "model_name_tlv":
+        {
+            "description": "The vendor-specific model name as advertised by the endpoint", 
+            "type": "string"
+        }, 
+        "asset_id_tlv":
+        {
+            "description": "The vendor-specific asset tracking identifier as advertised by the endpoint", 
+            "type": "string"
+        }
+    }
+}

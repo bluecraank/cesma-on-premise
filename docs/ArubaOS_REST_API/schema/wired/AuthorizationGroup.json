@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "AuthorizationGroup", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "group_name":
+        {
+            "description": "Command Authorization group name", 
+            "type": "string", 
+            "maxLength": 24, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "seq_num":
+        {
+            "description": "Command Authorization sequence number", 
+            "minimum": 1, 
+            "maximum": 2147483647, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "match_cmd":
+        {
+            "description": "Match command to authorize", 
+            "type": "string", 
+            "maxLength": 247, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "cmd_permission":
+        {
+            "description": "Match command action Permit/deny", 
+            "$ref":"../../schema/wired/AuthorizationPermission.json", 
+            "default_value": "AZP_PERMIT", 
+            "sql.not_null": true
+        }, 
+        "is_log_enabled":
+        {
+            "description": "Action routine to log the matched command", 
+            "type": "boolean", 
+            "default_value": false
+        }, 
+        "privilege_level":
+        {
+            "description": "authorization group privilege level", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

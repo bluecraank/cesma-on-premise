@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "User role derivation", 
+    "title": "UserRoleDerivation", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "userRole":
+        {
+            "description": "", 
+            "type": "string"
+        }, 
+        "status":
+        {
+            "description": "", 
+            "$ref":"../../schema/wired/UserRoleStatus.json"
+        }, 
+        "derivation":
+        {
+            "description": "", 
+            "$ref":"../../schema/wired/UserDerivation.json"
+        }
+    }
+}

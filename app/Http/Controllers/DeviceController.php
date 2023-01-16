@@ -487,6 +487,7 @@ class DeviceController extends Controller
         $results = [];
 
         $create_vlan = ($request->input('create-if-not-exists') == "on") ? true : false;
+        $test = ($request->input('test-mode') == "on") ? true : false;
 
         $start = microtime(true);
         foreach($devices as $device) {
@@ -499,12 +500,12 @@ class DeviceController extends Controller
             $results[$device->id] = [];
 
             $class = self::$models[$device->type];
-            $results[$device->id] = $class::updateVlans($vlans, $vlans_switch, $device, $create_vlan);
+            $results[$device->id] = $class::updateVlans($vlans, $vlans_switch, $device, $create_vlan, $test);
         }
 
         $elapsed = microtime(true)-$start;
 
-        if($request->input('show_results') == "on") {
+        if($request->input('show-results') == "on") {
         return view('vlan.sync', compact('devices', 'results', 'elapsed'));
         } else {
             return redirect()->back()->with('success', 'Vlans synced');

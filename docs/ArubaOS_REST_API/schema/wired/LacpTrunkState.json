@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LACP Trunk Status Event", 
+    "title": "LacpTrunkState", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "trunk_group":
+        {
+            "description": "Trunk Group", 
+            "type": "string"
+        }, 
+        "trunk_status":
+        {
+            "description": "Trunk Status", 
+            "$ref":"../../schema/wired/LacpTrunkStatus.json"
+        }
+    }
+}

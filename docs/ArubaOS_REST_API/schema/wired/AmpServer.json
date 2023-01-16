@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Amp Server Configuration", 
+    "title": "AmpServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "amp_ip":
+        {
+            "description": "amp server IP", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "amp_group":
+        {
+            "description": "amp server group", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "amp_folder":
+        {
+            "description": "amp server folder", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "amp_secret":
+        {
+            "description": "amp server secret", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }
+    }
+}

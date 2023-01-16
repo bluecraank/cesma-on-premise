@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Host system time statistics data.", 
+    "title": "SystemTimeStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "current_time":
+        {
+            "description": "Current time in the system.", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "uptime_in_seconds":
+        {
+            "description": "Amount of time since last system reboot.", 
+            "type": "integer"
+        }, 
+        "operation_time_in_seconds":
+        {
+            "description": "Amount of time the system has been in operation.", 
+            "type": "integer"
+        }
+    }
+}

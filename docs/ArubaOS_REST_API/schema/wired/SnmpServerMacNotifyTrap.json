@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMP Server Mac Notify Trap", 
+    "title": "SnmpServerMacNotifyTrap", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "mac_move_notify_mode":
+        {
+            "description": "Traps for move MAC address table changes.", 
+            "$ref":"../../schema/wired/SnmpTrapMode.json", 
+            "default_value": "STM_DISABLE"
+        }, 
+        "trap_interval":
+        {
+            "description": "The interval in seconds between sending notifications.", 
+            "minimum": 0, 
+            "maximum": 120, 
+            "type": "integer", 
+            "default_value": 30
+        }, 
+        "mac_notify_mode":
+        {
+            "description": "Traps for mac notify.", 
+            "$ref":"../../schema/wired/SnmpTrapMode.json", 
+            "default_value": "STM_DISABLE"
+        }
+    }
+}

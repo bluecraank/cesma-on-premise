@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Loop protect port status", 
+    "title": "LoopProtectPortStatus", 
+    "enum":
+    [
+        "LPPS_UP", 
+        "LPPS_DOWN", 
+        "LPPS_TESTING", 
+        "LPPS_UNKNOWN", 
+        "LPPS_DORMANT"
+    ]
+}

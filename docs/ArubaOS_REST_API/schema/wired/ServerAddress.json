@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Server address.", 
+    "title": "ServerAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "host_name":
+        {
+            "description": "Hostname of the server in which the file is stored.", 
+            "type": "string", 
+            "maxLength": 255
+        }, 
+        "ip_address":
+        {
+            "description": "Ip address of the server in which the file is stored.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Encrypt-credentials key-type", 
+    "title": "EncryptCredKeyType", 
+    "enum":
+    [
+        "ECK_PLAINTEXT", 
+        "ECK_HEX"
+    ]
+}

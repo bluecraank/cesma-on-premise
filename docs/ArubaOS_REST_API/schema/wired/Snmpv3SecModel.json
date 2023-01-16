@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Snmpv3 sec-model", 
+    "title": "Snmpv3SecModel", 
+    "enum":
+    [
+        "SSM_VER1", 
+        "SSM_VER2C", 
+        "SSM_VER3"
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP events", 
+    "title": "EventDhcp", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "dhcp_msg_type":
+        {
+            "description": "DHCP Action", 
+            "$ref":"../../schema/wired/DhcpMessageType.json"
+        }, 
+        "vid":
+        {
+            "description": "", 
+            "type": "integer"
+        }, 
+        "server_ip":
+        {
+            "description": "Server IP", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "client_haddr":
+        {
+            "description": "Client Mac", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "alloted_ip":
+        {
+            "description": "Alloted IP for the DHCP Message Types", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }
+    }
+}

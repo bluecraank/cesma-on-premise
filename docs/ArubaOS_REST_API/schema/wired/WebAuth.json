@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Web Authentication configuration data", 
+    "title": "WebAuth", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "override_ewa_servers":
+        {
+            "description": "Whether the EWA servers shall be used instead of the ones configured already", 
+            "type": "boolean"
+        }, 
+        "ewa_server_1":
+        {
+            "description": "IP or hostname of the ewa-server 1 configured", 
+            "type": "string", 
+            "maxLength": 159, 
+            "minLength": 0, 
+            "sql.not_null": true
+        }, 
+        "ewa_server_2":
+        {
+            "description": "IP or hostname of the ewa-server 2 configured", 
+            "type": "string", 
+            "maxLength": 159, 
+            "minLength": 0, 
+            "sql.not_null": true
+        }, 
+        "ewa_server_3":
+        {
+            "description": "IP or hostname of the ewa-server 3 configured", 
+            "type": "string", 
+            "maxLength": 159, 
+            "minLength": 0, 
+            "sql.not_null": true
+        }, 
+        "dhcp_ip":
+        {
+            "description": "Base address and mask for the temporary pool used by DHCP", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "dhcp_ip_netmask":
+        {
+            "description": "NetMask for the temporary pool used by DHCP", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "dhcp_lease":
+        {
+            "description": "DHCP Lease", 
+            "minimum": 5, 
+            "maximum": 25, 
+            "type": "integer", 
+            "default_value": 10
+        }, 
+        "use_radius_response_msg":
+        {
+            "description": "Text in the 'reply-message' of the RADIUS response on login failure", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "access_denied_message":
+        {
+            "description": "String for access denied message", 
+            "type": "string", 
+            "maxLength": 250, 
+            "minLength": 0, 
+            "sql.not_null": true
+        }
+    }
+}

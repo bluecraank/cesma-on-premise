@@ -284,6 +284,13 @@
 
                     <div class="field">
                         <label class="checkbox">
+                            <input type="checkbox" name="test-mode">
+                            {{ __('Switch.Sync.TestMode') }}
+                        </label>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox">
                             <input type="checkbox" name="show-results" checked>
                             {{ __('Switch.Sync.ShowResults') }}
                         </label>

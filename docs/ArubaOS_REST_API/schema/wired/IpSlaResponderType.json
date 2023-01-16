@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"IP-SLA Responder Type", 
+    "title": "IpSlaResponderType", 
+    "enum":
+    [
+        "IRT_UDP_JITTER", 
+        "IRT_VOIP_JITTER"
+    ]
+}

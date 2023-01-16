@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Device Management User configuration data.", 
+    "title": "DeviceManagementUser", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "type":
+        {
+            "description": "The type of the User.", 
+            "$ref":"../../schema/common/UserType.json", 
+            "sql.not_null": true
+        }, 
+        "name":
+        {
+            "description": "The User Name of the user.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "password":
+        {
+            "description": "The Password for the user.", 
+            "type": "string", 
+            "maxLength": 64, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "password_type":
+        {
+            "description": "The Type of Password Entered.", 
+            "$ref":"../../schema/common/PasswordEntryType.json", 
+            "sql.not_null": true
+        }
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IpSla DhcpMessages", 
+    "title": "IpSlaDhcpMessages", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "successful_dhcp_resolutions":
+        {
+            "description": "Number of Successful DHCP Resolutions", 
+            "type": "integer"
+        }, 
+        "failed_dhcp_resolutions":
+        {
+            "description": "Number of Failed DHCP Resolutions", 
+            "type": "integer"
+        }, 
+        "dhcp_offer_not_received":
+        {
+            "description": "DHCP Offer Not Received", 
+            "type": "integer"
+        }, 
+        "internal_error":
+        {
+            "description": "Internal Error", 
+            "type": "integer"
+        }, 
+        "local_interface_is_down":
+        {
+            "description": "Local Interface is Down", 
+            "type": "integer"
+        }, 
+        "nack_received":
+        {
+            "description": "NACK Received", 
+            "type": "integer"
+        }
+    }
+}

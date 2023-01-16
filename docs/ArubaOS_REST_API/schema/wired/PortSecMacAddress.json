@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Authorized mac addresses on a port. Maximum 64 addresses can be configured.", 
+    "title": "PortSecMacAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "mac_address":
+        {
+            "description": "authorized mac address to be configured.", 
+            "$ref":"../../schema/common/MacAddress.json", 
+            "sql.not_null": true
+        }
+    }
+}

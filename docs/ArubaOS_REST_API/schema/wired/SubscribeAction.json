@@ -1,0 +1,15 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Subscription Action (SA_).", 
+    "title": "SubscribeAction", 
+    "enum":
+    [
+        "SA_PERIODIC_UPDATE", 
+        "SA_GET_ONE_TIME", 
+        "SA_EVENT_CHANGE", 
+        "SA_DELETE", 
+        "SA_PAUSE", 
+        "SA_RESUME", 
+        "SA_GET_SUBS_LIST"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"SwitchHardwareType (SHT_)", 
+    "title": "SwitchHardwareType", 
+    "enum":
+    [
+        "SHT_FAN", 
+        "SHT_PS", 
+        "SHT_EPS", 
+        "SHT_RPS", 
+        "SHT_XPS", 
+        "SHT_TEMP", 
+        "SHT_MM1", 
+        "SHT_MM2", 
+        "SHT_SRV_MODULE", 
+        "SHT_HDD", 
+        "SHT_CF", 
+        "SHT_FABRIC_MODULE1", 
+        "SHT_FABRIC_MODULE2"
+    ]
+}

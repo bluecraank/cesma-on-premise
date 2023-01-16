@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMPv3 target address.", 
+    "title": "SnmpV3TargetAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "target_address_name":
+        {
+            "description": "The snmpv3 target-address name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "parameter_name":
+        {
+            "description": "The snmpv3 parameter name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "dest_ip_address":
+        {
+            "description": "The destination IP address.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "snmpv3_filter":
+        {
+            "description": "The snmpv3 filter.", 
+            "$ref":"../../schema/wired/Snmpv3Filter.json", 
+            "default_value": "SF_NONE"
+        }, 
+        "is_oobm":
+        {
+            "description": "Whether to use the OOBM port for snmpv3.", 
+            "type": "boolean"
+        }, 
+        "tag_list":
+        {
+            "description": "The snmpv3 tag-list. We can configure multiple tags till we reach the max_length limit(255).", 
+            "type": "array", 
+            "minItems": 1, 
+            "items":
+            {
+                "type": "string", 
+                "maxLength": 255
+            }
+        }
+    }
+}

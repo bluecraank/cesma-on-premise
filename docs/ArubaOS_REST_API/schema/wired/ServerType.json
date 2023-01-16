@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"ServerType", 
+    "title": "ServerType", 
+    "enum":
+    [
+        "ST_FLASH", 
+        "ST_TFTP", 
+        "ST_SFTP"
+    ]
+}

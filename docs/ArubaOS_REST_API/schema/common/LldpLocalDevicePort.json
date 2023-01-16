@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP local device port information", 
+    "title": "LldpLocalDevicePort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_name":
+        {
+            "description": "Port Name", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "port_type":
+        {
+            "description": "Port Type", 
+            "$ref":"../../schema/common/LldpPortType.json"
+        }, 
+        "port_id":
+        {
+            "description": "Port Id", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "port_description":
+        {
+            "description": "Port Description", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "pvid":
+        {
+            "description": "Pvid", 
+            "type": "integer"
+        }
+    }
+}

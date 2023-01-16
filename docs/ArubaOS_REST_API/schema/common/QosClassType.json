@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"QoS Class Type (QCT_) This enumeration is meant to declare more values in future releases.", 
+    "title": "QosClassType", 
+    "enum":
+    [
+        "QCT_IP_V4", 
+        "QCT_IP_V6"
+    ]
+}

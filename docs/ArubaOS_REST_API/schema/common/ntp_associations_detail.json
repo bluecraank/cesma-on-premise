@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "IP Address": {
+            "type": "string"
+        },
+        "Peer Mode": {
+            "type": "string"
+        },
+        "Status": {
+            "type": "string"
+        },
+        "Peer Poll Intvl": {
+            "type": "integer"
+        },
+        "Stratum": {
+            "type": "integer"
+        },
+        "Root Delay": {
+            "type": "string"
+        },
+        "Ref Assoc ID": {
+            "type": "integer"
+        },
+        "Root Dispersion": {
+            "type": "string"
+        },
+        "Assoc Name": {
+            "type": "string"
+        },
+        "Reach": {
+            "type": "integer"
+        },
+        "Reference ID": {
+            "type": "string"
+        },
+        "Delay": {
+            "type": "string"
+        },
+        "Our Mode": {
+            "type": "string"
+        },
+        "Offset": {
+            "type": "string"
+        },
+        "Our Poll Intvl": {
+            "type": "integer"
+        },
+        "Precision": {
+            "type": "string"
+        },
+        "Dispersion": {
+            "type": "string"
+        },
+        "Association In Packets": {
+            "type": "integer"
+        },
+        "Association Out Packets": {
+            "type": "integer"
+        },
+        "Association Error Packets": {
+            "type": "integer"
+        },
+        "Origin Time": {
+            "type": "string"
+        },
+        "Receive Time": {
+            "type": "string"
+        },
+        "Transmit Time": {
+            "type": "string"
+        }
+    }
+}

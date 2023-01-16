@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"BGP Route Type", 
+    "title": "BgpRouteType", 
+    "enum":
+    [
+        "BRT_UNKNOWN", 
+        "BRT_INTERNAL", 
+        "BRT_EXTERNAL"
+    ]
+}

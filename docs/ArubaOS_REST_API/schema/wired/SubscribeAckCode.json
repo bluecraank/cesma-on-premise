@@ -1,0 +1,23 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Subscription Acknowledgement Code (SAC_).", 
+    "title": "SubscribeAckCode", 
+    "enum":
+    [
+        "SAC_SUCCESS", 
+        "SAC_DECODE_ERROR", 
+        "SAC_INTERVAL_MISSING", 
+        "SAC_INVALID_ACTION", 
+        "SAC_INVALID_SUB_INTERVAL", 
+        "SAC_MAX_SUB_REACHED", 
+        "SAC_MISSING_SUB_ID", 
+        "SAC_SUB_DELETE_FAIL", 
+        "SAC_INVALID_SUB_ID", 
+        "SAC_EXISTING_SUB_ID", 
+        "SAC_INVALID_SUB_TIMEOUT_TIME", 
+        "SAC_MISSING_SUB_DNL", 
+        "SAC_UNSUPPORTED_SUB_DNL", 
+        "SAC_INVALID_PORT_SUB_DNL", 
+        "SAC_ALARM_FAILURE"
+    ]
+}

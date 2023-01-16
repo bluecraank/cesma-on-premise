@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Loop protect mode", 
+    "title": "LoopProtectMode", 
+    "enum":
+    [
+        "LPM_PORT", 
+        "LPM_VLAN"
+    ]
+}

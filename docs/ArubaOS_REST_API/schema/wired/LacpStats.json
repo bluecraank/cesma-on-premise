@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LACP Stats", 
+    "title": "LacpStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port Number", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "trunk_group":
+        {
+            "description": "Trunk Group", 
+            "type": "string"
+        }, 
+        "partner_status":
+        {
+            "description": "LACP Partner Status", 
+            "$ref":"../../schema/wired/LacpPartnerStatus.json"
+        }, 
+        "oper_status":
+        {
+            "description": "LACP Oper Status", 
+            "$ref":"../../schema/wired/LacpOperStatus.json"
+        }
+    }
+}

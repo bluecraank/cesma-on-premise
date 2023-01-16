@@ -1,0 +1,272 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps a list of elements resulting from a CommonCollectionQuery.", 
+    "title": "CommonElementList", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "collection_result":
+        {
+            "description": "Collection result info.", 
+            "$ref":"../../schema/common/CollectionResult.json"
+        }, 
+        "vlan_element":
+        {
+            "description": "VLAN list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/Vlan.json"
+            }
+        }, 
+        "ip_address_subnet_element":
+        {
+            "description": "IP Address Subnet list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddressSubnet.json"
+            }
+        }, 
+        "radius_server_element":
+        {
+            "description": "RADIUS Server list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/RadiusServer.json"
+            }
+        }, 
+        "vlan_port_element":
+        {
+            "description": "VLAN Port list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/VlanPort.json"
+            }
+        }, 
+        "port_element":
+        {
+            "description": "Port list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/Port.json"
+            }
+        }, 
+        "ip_route_element":
+        {
+            "description": "IP Route list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/IpRoute.json"
+            }
+        }, 
+        "lldp_local_port_element":
+        {
+            "description": "LLDP Local Port list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpLocalPort.json"
+            }
+        }, 
+        "qos_dscp_map_element":
+        {
+            "description": "QoS DSCP Map list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/QosDscpMap.json"
+            }
+        }, 
+        "qos_traffic_class_element":
+        {
+            "description": "QoS Traffic Class list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/QosTrafficClass.json"
+            }
+        }, 
+        "qos_class_match_element":
+        {
+            "description": "QoS Class Match list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/QosClassMatch.json"
+            }
+        }, 
+        "qos_policy_element":
+        {
+            "description": "QoS Policy list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/QosPolicy.json"
+            }
+        }, 
+        "qos_policy_action_element":
+        {
+            "description": "QoS Policy Action list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/QosPolicyAction.json"
+            }
+        }, 
+        "acl_element":
+        {
+            "description": "ACL list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/Acl.json"
+            }
+        }, 
+        "acl_rule_element":
+        {
+            "description": "ACL Rule list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/AclRule.json"
+            }
+        }, 
+        "device_management_user_element":
+        {
+            "description": "Device Management User list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/DeviceManagementUser.json"
+            }
+        }, 
+        "dot1x_supplicant_port_element":
+        {
+            "description": "802.1X Supplicant Port list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/Dot1xSupplicantPort.json"
+            }
+        }, 
+        "port_statistics_element":
+        {
+            "description": "Port Statistics list", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/PortStatistics.json"
+            }
+        }, 
+        "lldp_remote_device_element":
+        {
+            "description": "LLDP remote device info", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpRemoteDevice.json"
+            }
+        }, 
+        "dot1x_supplicant_stats_element":
+        {
+            "description": "802.1X Supplicant statistics list.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/Dot1xSupplicantStats.json"
+            }
+        }, 
+        "sntp_servers":
+        {
+            "description": "SNTP server details A maximum of three SNTP servers can be configured.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/SntpServerDetails.json"
+            }
+        }, 
+        "smartrate_port_element":
+        {
+            "description": "Smartrate ports details", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/SmartratePort.json"
+            }
+        }, 
+        "cdp_port_element":
+        {
+            "description": "Cisco Discovery Portocol details for all ports", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/CdpPort.json"
+            }
+        }, 
+        "lldp_port_stats_element":
+        {
+            "description": "LLDP port stats", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpPortStats.json"
+            }
+        }, 
+        "lldp_local_device_port_element":
+        {
+            "description": "LLDP local device port", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/LldpLocalDevicePort.json"
+            }
+        }, 
+        "system_stats_element":
+        {
+            "description": "System information for stacked switches.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/MemberSystemStatusInfo.json"
+            }
+        }, 
+        "private_vlans":
+        {
+            "description": "Private Vlan details", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/PrivateVlan.json"
+            }
+        }, 
+        "private_vlan_promiscous_ports":
+        {
+            "description": "Promiscous port details", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/PromiscuousPorts.json"
+            }
+        }, 
+        "private_vlan_isl_ports":
+        {
+            "description": "Isl port details", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/IslPorts.json"
+            }
+        }
+    }
+}

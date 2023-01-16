@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Neighbour Statistics", 
+    "title": "LldpDeviceStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "last_updated":
+        {
+            "description": "Neighbour Entries List Last Updated.", 
+            "type": "string", 
+            "maxLength": 16
+        }, 
+        "new_entry_count":
+        {
+            "description": "New Neighbour Entries Count", 
+            "type": "integer"
+        }, 
+        "deleted_count":
+        {
+            "description": "Neighbour Entries Deleted Count", 
+            "type": "integer"
+        }, 
+        "dropped_count":
+        {
+            "description": "Neighbour Entries Dropped Count", 
+            "type": "integer"
+        }, 
+        "aged_out_count":
+        {
+            "description": "Neighbour Entries AgeOut Count", 
+            "type": "integer"
+        }
+    }
+}

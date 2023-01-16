@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Global DSNOOP Authorized Servers configuration. Maximum 20 Addresses allowed", 
+    "title": "DsnoopAuthServer", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "authorized_server":
+        {
+            "description": "Authorized DHCP server addresses.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }
+    }
+}

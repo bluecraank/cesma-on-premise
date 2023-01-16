@@ -1,0 +1,14 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Qos Trust modes", 
+    "title": "QosTrustMode", 
+    "enum":
+    [
+        "QTM_DEFAULT", 
+        "QTM_DEVICE", 
+        "QTM_DOT1P", 
+        "QTM_DSCP", 
+        "QTM_IP_PREC", 
+        "QTM_NONE"
+    ]
+}

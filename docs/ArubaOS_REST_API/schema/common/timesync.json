@@ -1,0 +1,82 @@
+{
+  "title": "timesync",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "sntp": {
+      "type": "boolean",
+      "default": false,
+      "description": "Update the system clock using SNTP."
+    },
+    "timep": {
+      "type": "boolean",
+      "default": false,
+      "description": "Update the system clock using TIMEP."
+    },
+    "timep-or-sntp": {
+      "type": "boolean",
+      "default": true,
+      "description": "Update the system clock using TIMEP or SNTP."
+    },
+    "ntp": {
+      "type": "boolean",
+      "default": false,
+      "description": "Update the system clock using NTP."
+    },
+    "uri": {
+      "type": "string",
+      "description": "The URI of the configuration entity",
+      "readOnly": true
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "sntp"
+      ],
+      "not": {
+        "required": [
+          "timep",
+          "timep-or-sntp",
+          "ntp"
+        ]
+      }
+    },
+    {
+      "required": [
+        "timep"
+      ],
+      "not": {
+        "required": [
+          "sntp",
+          "timep-or-sntp",
+          "ntp"
+        ]
+      }
+    },
+    {
+      "required": [
+        "timep-or-sntp"
+      ],
+      "not": {
+        "required": [
+          "sntp",
+          "timep",
+          "ntp"
+        ]
+      }
+    },
+    {
+      "required": [
+        "ntp"
+      ],
+      "not": {
+        "required": [
+          "sntp",
+          "timep",
+          "timep-or-sntp"
+        ]
+      }
+    }
+  ]
+}

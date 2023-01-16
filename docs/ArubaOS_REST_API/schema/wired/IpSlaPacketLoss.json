@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA Packet Loss configuration data", 
+    "title": "IpSlaPacketLoss", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "threshold_type":
+        {
+            "description": "Configure threshold-type for packet loss to decide when to trigger", 
+            "$ref":"../../schema/wired/IpSlaThresholdType.json", 
+            "sql.not_null": true
+        }, 
+        "consecutive_count":
+        {
+            "description": "Configure Number of times threshold to be hit before triggering action - Applicable if threshold_type is ISLT_CONSECUTIVE", 
+            "minimum": 2, 
+            "maximum": 1024, 
+            "type": "integer"
+        }, 
+        "action_type":
+        {
+            "description": "Configure action to trigger when threshold is hit", 
+            "$ref":"../../schema/wired/IpSlaActionType.json", 
+            "sql.not_null": true
+        }
+    }
+}

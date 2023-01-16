@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"User Type(UT_).", 
+    "title": "UserType", 
+    "enum":
+    [
+        "UT_OPERATOR", 
+        "UT_MANAGER", 
+        "UT_OPERATOR_SHA256", 
+        "UT_MANAGER_SHA256"
+    ]
+}

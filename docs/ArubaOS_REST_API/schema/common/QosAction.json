@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "QoS Action configuration data.", 
+    "title": "QosAction", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "action_type":
+        {
+            "description": "Specifies action type.", 
+            "$ref":"../../schema/common/QosPolicyActionType.json", 
+            "sql.not_null": true
+        }, 
+        "new_dscp_value":
+        {
+            "description": "If action is to change DSCP value, this field specifies the new value.", 
+            "minimum": 0, 
+            "maximum": 63, 
+            "type": "integer", 
+            "device.is_wired_only": true
+        }, 
+        "new_priority":
+        {
+            "description": "If action is to change priority value, this field specifies the new value. VLAN priority for wired, WLAN priority for wireless.", 
+            "minimum": 0, 
+            "maximum": 7, 
+            "type": "integer"
+        }, 
+        "rate_limit_in_kbps":
+        {
+            "description": "If action is to limit traffic, this field specifies the rate in kilobits per second.", 
+            "minimum": 0, 
+            "maximum": 10000000, 
+            "type": "integer"
+        }
+    }
+}

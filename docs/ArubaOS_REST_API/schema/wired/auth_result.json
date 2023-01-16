@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"AUTH Result (AUTH_)", 
+    "title": "auth_result", 
+    "enum":
+    [
+        "AUTH_UNKNOWN", 
+        "AUTH_FAILURE", 
+        "AUTH_SUCCESS"
+    ]
+}

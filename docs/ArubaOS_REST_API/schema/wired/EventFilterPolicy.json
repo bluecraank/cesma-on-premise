@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Event filter policy", 
+    "title": "EventFilterPolicy", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "filter_name":
+        {
+            "description": "Filter name", 
+            "type": "string", 
+            "maxLength": 16, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "system_module":
+        {
+            "description": "Subscribe for syslog message from specific system modules", 
+            "type": "array", 
+            "minItems": 1, 
+            "maxItems": 139, 
+            "items":
+            {
+                "$ref": "../../schema/wired/LoggingSystemModuleType.json", 
+                "default_value": "ALL_PASS"
+            }
+        }, 
+        "severity_type":
+        {
+            "description": "Syslog Severity Type", 
+            "$ref":"../../schema/wired/LoggingSeverityType.json", 
+            "default_value": "DEBUG"
+        }, 
+        "event_filter":
+        {
+            "description": "Event id filter table. Input event_filter as null to reset.", 
+            "$ref":"../../schema/wired/EventIdFilter.json"
+        }
+    }
+}

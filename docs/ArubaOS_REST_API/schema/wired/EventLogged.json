@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Download/query logged events", 
+    "title": "EventLogged", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "system_module":
+        {
+            "description": "Events logged specific to system module", 
+            "type": "array", 
+            "maxItems": 10, 
+            "items":
+            {
+                "$ref": "../../schema/wired/LoggingSystemModuleType.json", 
+                "default_value": "ALL_PASS"
+            }
+        }, 
+        "severity_type":
+        {
+            "description": "Severity Type", 
+            "$ref":"../../schema/wired/LoggingSeverityType.json", 
+            "default_value": "DEBUG"
+        }, 
+        "date_time":
+        {
+            "description": "Timestamp to filter events", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "event_filter":
+        {
+            "description": "Event id filter table", 
+            "$ref":"../../schema/wired/EventIdFilter.json"
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Dot1x_Bypass_Config": {
+            "type": "array",
+            "items": {
+                "Port": {
+                    "type": "string"
+                },
+                "Enabled": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

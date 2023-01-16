@@ -1,0 +1,13 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Blacklist codes. \"lockout-mac\" command blacklists a MAC", 
+    "title": "BlacklistCode", 
+    "enum":
+    [
+        "BL_UNKNOWN", 
+        "BL_ADD", 
+        "BL_ADD_FAILURE", 
+        "BL_REMOVE", 
+        "BL_REMOVE_FAILURE"
+    ]
+}

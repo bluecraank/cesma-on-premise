@@ -1,0 +1,20 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"802.1X Authenticator Port State (DAPS_)", 
+    "title": "Dot1xAuthenticatorPortState", 
+    "enum":
+    [
+        "DAPS_INITIALIZE", 
+        "DAPS_DISCONNECTED", 
+        "DAPS_CONNECTING", 
+        "DAPS_AUTHENTICATING", 
+        "DAPS_AUTHENTICATED", 
+        "DAPS_ABORTING", 
+        "DAPS_HELD", 
+        "DAPS_FORCE_AUTH", 
+        "DAPS_FORCE_UNAUTH", 
+        "DAPS_RESTART", 
+        "DAPS_HELD_NO_VLAN", 
+        "DAPS_HELD_UNAUTH_VLAN"
+    ]
+}

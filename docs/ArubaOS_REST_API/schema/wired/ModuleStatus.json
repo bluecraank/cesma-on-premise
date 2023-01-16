@@ -1,0 +1,17 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Module Status", 
+    "title": "ModuleStatus", 
+    "enum":
+    [
+        "MODULE_STATUS_ACTIVE", 
+        "MODULE_STATUS_STANDBY", 
+        "MODULE_STATUS_ENABLED", 
+        "MODULE_STATUS_DISABLED", 
+        "MODULE_STATUS_UP", 
+        "MODULE_STATUS_FAILED", 
+        "MODULE_STATUS_UNKNOWN", 
+        "MODULE_STATUS_BOOTING", 
+        "MODULE_STATUS_OFFLINE"
+    ]
+}

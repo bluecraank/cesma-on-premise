@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "", 
+    "title": "deviceFingerprinting", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port":
+        {
+            "description": "", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "static_url": ["/system/status/switch#/blades/data_ports/port_name"], 
+            "dynamic_url": ["/system/status/switch#/blades/expansion_modules/data_ports/port_name"], 
+            "sql.not_null": true
+        }, 
+        "mac":
+        {
+            "description": "", 
+            "type": "string"
+        }, 
+        "device_name":
+        {
+            "description": "", 
+            "type": "string"
+        }, 
+        "device_category":
+        {
+            "description": "", 
+            "type": "string"
+        }, 
+        "device_family":
+        {
+            "description": "", 
+            "type": "string"
+        }
+    }
+}

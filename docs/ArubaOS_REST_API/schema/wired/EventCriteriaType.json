@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"EventCriteriaType", 
+    "title": "EventCriteriaType", 
+    "enum":
+    [
+        "REG_EXPR", 
+        "EVENT_NUMBER", 
+        "SEVERITY"
+    ]
+}

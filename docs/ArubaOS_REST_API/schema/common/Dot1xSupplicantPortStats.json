@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "802.1X Supplicant Port statistics data.", 
+    "title": "Dot1xSupplicantPortStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Physical port id", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "is_supplicant_enabled":
+        {
+            "description": "Port-access supplicant activated on the port", 
+            "type": "boolean"
+        }
+    }
+}

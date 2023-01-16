@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Secondary Vlan Type (SVT_)", 
+    "title": "SecondaryVlanType", 
+    "enum":
+    [
+        "SVT_ISOLATED", 
+        "SVT_COMMUNITY"
+    ]
+}

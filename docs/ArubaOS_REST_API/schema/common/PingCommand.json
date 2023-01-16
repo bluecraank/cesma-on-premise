@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the parameters to execute a ping.", 
+    "title": "PingCommand", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "destination":
+        {
+            "description": "Destination", 
+            "$ref":"../../schema/common/NetworkHost.json", 
+            "sql.not_null": true
+        }, 
+        "timeout_in_seconds":
+        {
+            "description": "Timeout in seconds", 
+            "minimum": 1, 
+            "maximum": 60, 
+            "type": "integer", 
+            "default_value": 3
+        }
+    }
+}

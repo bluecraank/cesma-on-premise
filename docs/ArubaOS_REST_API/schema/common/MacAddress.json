@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the version and octets for a MAC address. Default value is 00:00:00:00:00:00 (EUI-48).", 
+    "title": "MacAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "version":
+        {
+            "description": "EUI address version", 
+            "$ref":"../../schema/common/MacAddressVersion.json", 
+            "sql.not_null": true
+        }, 
+        "octets":
+        {
+            "description": "Most significant to least significant octet order The amount of octets shall correspond to the specified EUI version.", 
+            "type": "string", 
+            "maxLength": 23, 
+            "sql.not_null": true
+        }
+    }
+}

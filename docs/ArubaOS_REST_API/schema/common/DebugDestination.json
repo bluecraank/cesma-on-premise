@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Debug Destination.", 
+    "title": "DebugDestination", 
+    "enum":
+    [
+        "DD_DESTINATION_LOGGING", 
+        "DD_DESTINATION_BUFFER"
+    ]
+}

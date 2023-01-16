@@ -1,0 +1,123 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Host system info statistics data.", 
+    "title": "SystemInfoStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "name":
+        {
+            "description": "System name.", 
+            "type": "string"
+        }, 
+        "serial_number":
+        {
+            "description": "System serial number.", 
+            "type": "string"
+        }, 
+        "firmware_version":
+        {
+            "description": "Version of running firmware.", 
+            "type": "string"
+        }, 
+        "hardware_revision":
+        {
+            "description": "Hardware platform revision.", 
+            "type": "string"
+        }, 
+        "product_model":
+        {
+            "description": "Product model.", 
+            "$ref":"../../schema/common/ProductModel.json"
+        }, 
+        "base_ethernet_address":
+        {
+            "description": "MAC address of the base Ethernet interface.", 
+            "$ref":"../../schema/common/MacAddress.json"
+        }, 
+        "current_ip_address":
+        {
+            "description": "Current IP address is a vlan ip address connected to Cloud Manager/Central. It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "total_memory_in_bytes":
+        {
+            "description": "The total memory (RAM) available to the system.", 
+            "type": "integer"
+        }, 
+        "total_poe_consumption":
+        {
+            "description": "The total PoE consumption It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "sys_temp":
+        {
+            "description": "The system temperature", 
+            "type": "integer"
+        }, 
+        "sys_temp_threshold":
+        {
+            "description": "The system temperature threshold", 
+            "type": "integer"
+        }, 
+        "sys_fan_status":
+        {
+            "description": "The system fan status", 
+            "type": "boolean"
+        }, 
+        "uplink_port":
+        {
+            "description": "The uplink port(port_id) of switch connected to Cloud Manager/Central. It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "string"
+        }, 
+        "total_poe_available":
+        {
+            "description": "The total PoE power available. It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "total_poe_failover":
+        {
+            "description": "The total PoE failover available. It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "total_poe_redundancy":
+        {
+            "description": "The total PoE redundancy It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "total_poe_drawn":
+        {
+            "description": "The total PoE drawn It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "total_poe_remaining":
+        {
+            "description": "The total PoE remaining It will be displayed only when switch is connected to Cloud Manager/Central.", 
+            "type": "integer"
+        }, 
+        "slot_poe_stats":
+        {
+            "description": "PoE Slot Information This data will be sent only when a switch is connected to Central.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/PoeSlotStats.json"
+            }
+        }, 
+        "fan_status":
+        {
+            "description": "Individual System Fan Status", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/FanStatusInfo.json"
+            }
+        }
+    }
+}

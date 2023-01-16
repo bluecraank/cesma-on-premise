@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Port Statistics", 
+    "title": "LldpPortStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_name":
+        {
+            "description": "Port Name", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "discarded_frames":
+        {
+            "description": "Frames Discarded", 
+            "type": "integer"
+        }, 
+        "invalid_frames":
+        {
+            "description": "Frames Invalid", 
+            "type": "integer"
+        }, 
+        "received_frames":
+        {
+            "description": "Frames Received", 
+            "type": "integer"
+        }, 
+        "sent_frames":
+        {
+            "description": "Frames Sent", 
+            "type": "integer"
+        }, 
+        "unrecognized_tlvs":
+        {
+            "description": "TLVs Unrecognized", 
+            "type": "integer"
+        }, 
+        "discarded_tlvs":
+        {
+            "description": "TLVs Discarded", 
+            "type": "integer"
+        }, 
+        "neighbor_ageouts":
+        {
+            "description": "Neighbour Ageouts", 
+            "type": "integer"
+        }
+    }
+}

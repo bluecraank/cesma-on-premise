@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP OOBM Configuration", 
+    "title": "LldpOobmPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_name":
+        {
+            "description": "Physical Port Number", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "admin_status":
+        {
+            "description": "LLDP per port operational status.", 
+            "$ref":"../../schema/common/LldpPortAdminStatus.json", 
+            "default_value": "LPAS_TX_AND_RX"
+        }, 
+        "notification_enable":
+        {
+            "description": "LLDP Enable notification", 
+            "type": "boolean"
+        }, 
+        "med_trap_enable":
+        {
+            "description": "LLDP MED trap enable notification", 
+            "type": "boolean", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "tlv_params":
+        {
+            "description": "TLVS Advertised. Only basic_tlv_params applicable for OOBM port.", 
+            "$ref":"../../schema/common/LldpTlvParams.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

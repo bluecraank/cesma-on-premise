@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Aruba VPN configuration.", 
+    "title": "ArubaVpn", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "type":
+        {
+            "description": "Aruba VPN type", 
+            "$ref":"../../schema/wired/ArubaVPNType.json", 
+            "sql.not_null": true
+        }, 
+        "peer_ip_address":
+        {
+            "description": "Aruba VPN Peer IP.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "copy_tos_from_ipv4_header":
+        {
+            "description": "Flag for setting Aruba VPN tos to default value [Value from IPv4 header]. If this value is true then tos value is not valid.", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "tos":
+        {
+            "description": "Aruba VPN tos", 
+            "minimum": 0, 
+            "maximum": 63, 
+            "type": "integer"
+        }, 
+        "ttl":
+        {
+            "description": "Aruba VPN ttl", 
+            "minimum": 1, 
+            "maximum": 255, 
+            "type": "integer", 
+            "default_value": 64
+        }, 
+        "backup_peer_ip_address":
+        {
+            "description": "Aruba VPN Backup Peer IP. Supported from v5 and onwards.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }
+    }
+}

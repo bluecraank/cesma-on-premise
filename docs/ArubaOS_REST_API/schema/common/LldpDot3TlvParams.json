@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "LLDP Dot3 TLV Params advertised", 
+    "title": "LldpDot3TlvParams", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "mac_physical_config":
+        {
+            "description": "MAC Physical Config", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "poeplus_config":
+        {
+            "description": "Power Via MDI Config", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "eee_config":
+        {
+            "description": "EEE Config", 
+            "type": "boolean", 
+            "default_value": true
+        }
+    }
+}

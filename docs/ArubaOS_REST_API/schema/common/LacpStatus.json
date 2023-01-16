@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"LACP Status (LAS_).", 
+    "title": "LacpStatus", 
+    "enum":
+    [
+        "LAS_DISABLED", 
+        "LAS_ACTIVE", 
+        "LAS_PASSIVE"
+    ]
+}

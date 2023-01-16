@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Authentication Server Type (AST_).", 
+    "title": "AuthenticationServerType", 
+    "enum":
+    [
+        "AST_RADIUS", 
+        "AST_AD", 
+        "AST_LDAP"
+    ]
+}

@@ -1,0 +1,108 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Smartrate ports info and stats", 
+    "title": "SmartratePort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Physical Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "readonly": true, 
+            "sql.primary_key": true
+        }, 
+        "model":
+        {
+            "description": "Model Name", 
+            "type": "string"
+        }, 
+        "chip":
+        {
+            "description": "Chip Name", 
+            "type": "string"
+        }, 
+        "firmware":
+        {
+            "description": "Firmware version", 
+            "type": "string"
+        }, 
+        "provisioning":
+        {
+            "description": "Provisioning string", 
+            "type": "string"
+        }, 
+        "curr_snr_margin":
+        {
+            "description": "Current SNR Margin (dB)", 
+            "$ref":"../../schema/common/CurrentSnrMargin.json"
+        }, 
+        "min_snr_margin":
+        {
+            "description": "Minimum SNR Margin (dB)", 
+            "$ref":"../../schema/common/MinSnrMargin.json"
+        }, 
+        "fcs_errors":
+        {
+            "description": "Ethernet FCS errors", 
+            "type": "integer"
+        }, 
+        "uncorrected_ldpc_errors":
+        {
+            "description": "Uncorrected LDPC errors", 
+            "type": "integer"
+        }, 
+        "corrected_ldpc_errors":
+        {
+            "description": "Corrected LDPC errors", 
+            "$ref":"../../schema/common/CorrectedLdpcErrors.json"
+        }, 
+        "total_RFI_cancel_event":
+        {
+            "description": "Number of RFI Cancellation Events", 
+            "type": "integer"
+        }, 
+        "total_link_recovery_event":
+        {
+            "description": "Number of Link Recovery Events", 
+            "type": "integer"
+        }, 
+        "fast_retain_time":
+        {
+            "description": "Accumulated time (ms) spent in Fast Retrain", 
+            "type": "integer"
+        }, 
+        "link_speed":
+        {
+            "description": "Established link speed", 
+            "$ref":"../../schema/common/SmartratePortLinkSpeed.json"
+        }, 
+        "attempts":
+        {
+            "description": "Number of attempts to establish link", 
+            "type": "integer"
+        }, 
+        "uptime":
+        {
+            "description": "Uptime since link was established", 
+            "type": "integer"
+        }, 
+        "local_capabilities":
+        {
+            "description": "Local Port advertised capabilities", 
+            "$ref":"../../schema/common/PortLinksSpeedStatus.json"
+        }, 
+        "link_capabilities":
+        {
+            "description": "Link Partner advertised capabilities", 
+            "$ref":"../../schema/common/PortLinksSpeedStatus.json"
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Hardware Information.", 
+    "title": "SwitchHardwareStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "hardware_type":
+        {
+            "description": "SwitchHardware type.", 
+            "$ref":"../../schema/wired/SwitchHardwareType.json"
+        }, 
+        "status":
+        {
+            "description": "SwitchHardware status.", 
+            "$ref":"../../schema/wired/SwitchHardwareStatus.json"
+        }
+    }
+}

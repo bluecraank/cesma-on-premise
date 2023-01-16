@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP Option configuration data.", 
+    "title": "DhcpOption", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "option_code":
+        {
+            "description": "DHCP Option code.", 
+            "minimum": 2, 
+            "maximum": 254, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "option_type":
+        {
+            "description": "DHCP Option type.", 
+            "$ref":"../../schema/wired/DhcpOptionType.json", 
+            "sql.not_null": true
+        }, 
+        "ascii_value":
+        {
+            "description": "ascii string value.", 
+            "type": "string", 
+            "sql.not_null": true
+        }, 
+        "hex_value":
+        {
+            "description": "hex string value.", 
+            "type": "string", 
+            "sql.not_null": true
+        }, 
+        "ip_value":
+        {
+            "description": "Ip values.", 
+            "type": "array", 
+            "minItems": 1, 
+            "maxItems": 234, 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddress.json"
+            }, 
+            "sql.not_null": true
+        }
+    }
+}

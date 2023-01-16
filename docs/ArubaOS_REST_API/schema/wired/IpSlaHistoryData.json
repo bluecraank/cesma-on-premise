@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA Stats and History", 
+    "title": "IpSlaHistoryData", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "start_time":
+        {
+            "description": "Start Date and Time", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "status":
+        {
+            "description": "Status", 
+            "$ref":"../../schema/wired/IpSlaHistStatus.json"
+        }, 
+        "rtt":
+        {
+            "description": "RTT", 
+            "type": "integer"
+        }, 
+        "resolved_or_leased_ip":
+        {
+            "description": "Resolved Ip(DNS) or Leased IP (DHCP)", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "description":
+        {
+            "description": "Description", 
+            "type": "string"
+        }
+    }
+}

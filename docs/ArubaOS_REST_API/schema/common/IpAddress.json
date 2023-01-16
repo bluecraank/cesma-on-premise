@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the version and octets for an IP address. Default value is 0.0.0.0 (IPv4).", 
+    "title": "IpAddress", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "version":
+        {
+            "description": "IP address version", 
+            "$ref":"../../schema/common/IpAddressVersion.json", 
+            "sql.not_null": true
+        }, 
+        "octets":
+        {
+            "description": "Most significant to least significant octet order The amount of octets shall correspond to the specified IP version.", 
+            "type": "string", 
+            "maxLength": 45, 
+            "sql.not_null": true
+        }
+    }
+}

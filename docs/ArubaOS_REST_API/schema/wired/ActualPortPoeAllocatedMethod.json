@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Actual Port PoE AllocatedMethod (APPAM_)", 
+    "title": "ActualPortPoeAllocatedMethod", 
+    "enum":
+    [
+        "APPAM_USAGE", 
+        "APPAM_CLASS", 
+        "APPAM_VALUE", 
+        "APPAM_LLDP"
+    ]
+}

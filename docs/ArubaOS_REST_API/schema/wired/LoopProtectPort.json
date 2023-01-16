@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Loop protection on the specified ports.", 
+    "title": "LoopProtectPort", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID.", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "is_loop_protection_enabled":
+        {
+            "description": "Enable/Disable loop protection on the specified ports.", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "receiver_action":
+        {
+            "description": "Set the action to take when a loop is detected. is_loop_protection_enabled must be true to update the receiver_action.", 
+            "$ref":"../../schema/wired/LoopProtectReceiverAction.json", 
+            "default_value": "LPRA_SEND_DISABLE"
+        }, 
+        "is_loop_detected":
+        {
+            "description": "Loop detected on the specified port.", 
+            "type": "boolean", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "detected_on_vlan":
+        {
+            "description": "Vlan on which loop is detected.", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "loop_count":
+        {
+            "description": "Loop count", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "time_since_last_loop":
+        {
+            "description": "Time since last loop.", 
+            "type": "string", 
+            "maxLength": 20, 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "port_status":
+        {
+            "description": "Port status", 
+            "$ref":"../../schema/wired/LoopProtectPortStatus.json", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

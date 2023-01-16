@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"VLAN tag types", 
+    "title": "VlanTagStatus", 
+    "enum":
+    [
+        "VLAN_INVALID_TAG", 
+        "VLAN_UNTAGGED_VLAN", 
+        "VLAN_TAGGED_VLAN"
+    ]
+}

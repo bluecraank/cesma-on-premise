@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Configuration for device_profile status", 
+    "title": "DeviceProfileStatus", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port":
+        {
+            "description": "Port", 
+            "type": "string", 
+            "maxLength": 9
+        }, 
+        "device_profile_type":
+        {
+            "description": "device type", 
+            "$ref":"../../schema/wired/DeviceProfileType.json"
+        }, 
+        "applied_device_profile":
+        {
+            "description": "Applied device profile", 
+            "type": "string"
+        }
+    }
+}

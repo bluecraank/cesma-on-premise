@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Publish message - Response for the Subscription request.", 
+    "title": "LiveMonitoringPublish", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "dev_info":
+        {
+            "description": "Device Information", 
+            "$ref":"../../Athena/DeviceInfo.json"
+        }, 
+        "subscription_id":
+        {
+            "description": "Subscription ID", 
+            "type": "string", 
+            "maxLength": 64, 
+            "readonly": true, 
+            "sql.primary_key": true
+        }, 
+        "pub_data_set":
+        {
+            "description": "Publish Data Set - The data set which was subcribed by the client                    in subcription request.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/common/StatsDataElement.json"
+            }
+        }, 
+        "sub_req_list":
+        {
+            "description": "Subscription Request List - This is the list of subscription requests                             available in the system currently.", 
+            "type": "array", 
+            "items":
+            {
+                "$ref":"../../schema/wired/LiveMonitoringSubscriptionRequest.json"
+            }
+        }
+    }
+}

@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Syslog configuration data.", 
+    "title": "Syslog", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "severity":
+        {
+            "description": "The Severity level.", 
+            "$ref":"../../schema/wired/LoggingSeverityType.json", 
+            "default_value": "DEBUG"
+        }, 
+        "facility":
+        {
+            "description": "The Logging facility.", 
+            "$ref":"../../schema/wired/LoggingFacilityType.json", 
+            "default_value": "USER"
+        }, 
+        "system_module":
+        {
+            "description": "The Logging system-module.", 
+            "$ref":"../../schema/wired/LoggingSystemModuleType.json", 
+            "default_value": "ALL_PASS"
+        }, 
+        "notify_running_config_change":
+        {
+            "description": "notify the running config change.", 
+            "type": "boolean"
+        }, 
+        "transmission_interval":
+        {
+            "description": "setting the  transmission-interval.", 
+            "minimum": 0, 
+            "maximum": 4294967295, 
+            "type": "integer", 
+            "default_value": 0
+        }, 
+        "priority_descr":
+        {
+            "description": "setting the priority-description..", 
+            "type": "string", 
+            "maxLength": 255, 
+            "minLength": 0
+        }, 
+        "origin_id":
+        {
+            "description": "setting the origin id", 
+            "$ref":"../../schema/wired/OriginId.json", 
+            "default_value": "IPADDRESS"
+        }
+    }
+}

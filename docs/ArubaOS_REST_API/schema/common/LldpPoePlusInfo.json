@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Poe Plus Information Detail", 
+    "title": "LldpPoePlusInfo", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "poe_device_type":
+        {
+            "description": "Poe Device Type", 
+            "$ref":"../../schema/common/LldpPoeDeviceType.json"
+        }, 
+        "power_source":
+        {
+            "description": "Power Source", 
+            "$ref":"../../schema/common/LldpPowerSource.json"
+        }, 
+        "power_priority":
+        {
+            "description": "Power Priority", 
+            "$ref":"../../schema/common/LldpPowerPriority.json"
+        }, 
+        "requested_power_in_watts":
+        {
+            "description": "Requested Power Value in Watts", 
+            "type": "string", 
+            "maxLength": 12
+        }, 
+        "actual_power_in_watts":
+        {
+            "description": "Actual Power Value in Watts", 
+            "type": "string", 
+            "maxLength": 12
+        }
+    }
+}

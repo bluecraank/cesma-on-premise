@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the field types that can be used to filter, and/or limit a set of stats samples.", 
+    "title": "StatsQuery", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "min_sample_time":
+        {
+            "description": "Only samples after the given time.", 
+            "$ref":"../../schema/common/Timestamp.json"
+        }, 
+        "sample_period_in_seconds":
+        {
+            "description": "Only samples with the given period.", 
+            "type": "integer"
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMPv3 params.", 
+    "title": "SnmpV3Param", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "parameter_name":
+        {
+            "description": "The snmpv3 parameter name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "user_name":
+        {
+            "description": "The snmpv3 user name", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "snmpv3_sec_model":
+        {
+            "description": "The snmpv3 SEC-model.", 
+            "$ref":"../../schema/wired/Snmpv3SecModel.json", 
+            "sql.not_null": true
+        }, 
+        "snmpv3_message_processing_model_value":
+        {
+            "description": "The snmpv3 message processing model value.", 
+            "$ref":"../../schema/wired/Snmpv3MessageProcessingModelValue.json", 
+            "sql.not_null": true
+        }, 
+        "snmpv3_authentication":
+        {
+            "description": "The snmpv3 authentication type.", 
+            "$ref":"../../schema/wired/AuthTypeValue.json", 
+            "default_value": "ATV_NOAUTH", 
+            "sql.not_null": true
+        }
+    }
+}

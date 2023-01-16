@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"TransceiverDiagnosticSupport (TDS_)", 
+    "title": "TransceiverDiagnosticSupport", 
+    "enum":
+    [
+        "TDS_NONE", 
+        "TDS_DOM", 
+        "TDS_VCT", 
+        "TDS_OTHER"
+    ]
+}

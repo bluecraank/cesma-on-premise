@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA recurrence schedule configuration data", 
+    "title": "Recurrence", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "is_schedule_forever":
+        {
+            "description": "Schedule to run the IP SLA forever.", 
+            "type": "boolean", 
+            "sql.not_null": true
+        }, 
+        "stop_date":
+        {
+            "description": "Configure the Stop Date for the IP SLA if is_schedule_forever is false", 
+            "$ref":"../../schema/wired/IpSlaScheduleTime.json", 
+            "sql.not_null": true
+        }, 
+        "repetitions":
+        {
+            "description": "Number of times to run the IP SLA tests (Configure only if is_schedule_forever is false and stop_date is null)", 
+            "type": "integer", 
+            "sql.not_null": true
+        }
+    }
+}

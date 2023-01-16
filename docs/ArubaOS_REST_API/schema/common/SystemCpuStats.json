@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Host system CPU statistics data.", 
+    "title": "SystemCpuStats", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "current_cpu_usage_percentage":
+        {
+            "description": "The current CPU usage in the system.", 
+            "type": "integer"
+        }, 
+        "max_cpu_usage_percentage":
+        {
+            "description": "The maximum CPU usage percentage during the sample period.", 
+            "type": "integer"
+        }, 
+        "average_cpu_usage_percentage":
+        {
+            "description": "The average CPU usage percentage during the sample period.", 
+            "type": "number"
+        }, 
+        "cpu_threshold_percentage":
+        {
+            "description": "The CPU threshold percentage during the sample period.", 
+            "type": "integer"
+        }
+    }
+}

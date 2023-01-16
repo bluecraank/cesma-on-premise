@@ -1,0 +1,10 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Qos Port Policy Direction (QPPD_)", 
+    "title": "QosPortPolicyDirection", 
+    "enum":
+    [
+        "QPPD_INBOUND", 
+        "QPPD_OUTBOUND"
+    ]
+}

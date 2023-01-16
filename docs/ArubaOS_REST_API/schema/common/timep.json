@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Time Sync Mode": {
+            "type": "string"
+        },
+        "TIMEP Mode": {
+            "type": "string"
+        },
+        "Poll Interval (min)": {
+            "type": "integer"
+        }
+    }
+}

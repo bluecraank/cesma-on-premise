@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for show command",
+    "type": "object",
+    "properties": {
+        "Device_Identity_Cdp_Information": {
+            "type": "array",
+            "items": {
+                "Index": {
+                    "type": "string"
+                },
+                "Device name": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

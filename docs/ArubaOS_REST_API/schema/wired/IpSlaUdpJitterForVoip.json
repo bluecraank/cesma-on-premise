@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA for UDP-Jitter-For-Voip", 
+    "title": "IpSlaUdpJitterForVoip", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "host_details":
+        {
+            "description": "Source and Destination Details", 
+            "$ref":"../../schema/wired/IpSlaUdpJitterHostDetails.json", 
+            "sql.not_null": true
+        }, 
+        "codec_type":
+        {
+            "description": "The codec-type for the VoIP SLA test", 
+            "$ref":"../../schema/wired/IpSlaCodecType.json", 
+            "default_value": "ISCT_G711A"
+        }, 
+        "advantage_factor":
+        {
+            "description": "Acceptable degradation in voice quality", 
+            "minimum": 0, 
+            "maximum": 20, 
+            "type": "integer", 
+            "default_value": 0
+        }
+    }
+}

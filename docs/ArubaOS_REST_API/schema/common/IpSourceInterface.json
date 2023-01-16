@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP Source Interface configuration data.", 
+    "title": "IpSourceInterface", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "protocol":
+        {
+            "description": "Protocol", 
+            "$ref":"../../schema/common/IpSourceInterfaceProtocolOption.json", 
+            "sql.not_null": true
+        }, 
+        "ip_address":
+        {
+            "description": "Source-Interface IP Address. If both ip_addess and vlan_id are null, configuration will be removed based on protocol. If both valid ip_address and vlan_id are given in REST request, ip_address will have preference over vlan_id.", 
+            "$ref":"../../schema/common/IpAddress.json"
+        }, 
+        "vlan_id":
+        {
+            "description": "Vlan-ID. If both ip_addess and vlan_id are null, configuration will be removed based on protocol. If both valid ip_address and vlan_id are given in REST request, ip_address will have preference over vlan_id.", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer"
+        }
+    }
+}

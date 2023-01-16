@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "SNMPv3 notify name.", 
+    "title": "SnmpV3NotifyName", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "notify_name":
+        {
+            "description": "The snmpv3 notify", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "tagvalue":
+        {
+            "description": "The snmpv3 tagvalue", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1
+        }
+    }
+}

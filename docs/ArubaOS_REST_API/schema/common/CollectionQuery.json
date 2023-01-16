@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Wraps the field types that can be used to search, filter, sort, and/or paginate a collection of elements.", 
+    "title": "CollectionQuery", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "offset":
+        {
+            "description": "Skip the given amount of elements from the beginning of the resulting list after having search/filter/order.", 
+            "type": "integer"
+        }, 
+        "limit":
+        {
+            "description": "Only the given amount of elements from the beginning of the resulting list after having search/filter/order/offset.", 
+            "type": "integer"
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Uptime for system", 
+    "title": "UpTime", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "days":
+        {
+            "description": "Days (dd)", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "hours":
+        {
+            "description": "Hour (hh)", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }, 
+        "minutes":
+        {
+            "description": "Minute (mm)", 
+            "type": "integer", 
+            "readonly": true, 
+            "sql.auto_generated": true
+        }
+    }
+}

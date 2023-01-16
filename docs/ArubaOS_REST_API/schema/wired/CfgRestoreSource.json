@@ -1,0 +1,12 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"CfgRestoreSource", 
+    "title": "CfgRestoreSource", 
+    "enum":
+    [
+        "CFS_TFTP", 
+        "CFS_SFTP", 
+        "CFS_FLASH", 
+        "CFS_PAYLOAD"
+    ]
+}

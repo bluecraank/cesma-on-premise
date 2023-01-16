@@ -1,0 +1,11 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"DNS configuration Mode (DCM_).", 
+    "title": "DnsConfigMode", 
+    "enum":
+    [
+        "DCM_DHCP", 
+        "DCM_MANUAL", 
+        "DCM_DISABLED"
+    ]
+}

@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "Port Security", 
+    "title": "PortSecurityPolicy", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "port_id":
+        {
+            "description": "Port ID", 
+            "type": "string", 
+            "maxLength": 9, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "violation_action":
+        {
+            "description": "The action in case of an intrusion detection", 
+            "$ref":"../../schema/wired/PortSecViolationAction.json", 
+            "default_value": "PSA_NONE"
+        }, 
+        "address_limit":
+        {
+            "description": "The number of authorized addresses on the ports", 
+            "minimum": 1, 
+            "maximum": 64, 
+            "type": "integer", 
+            "default_value": 1
+        }, 
+        "clear_intrusion_flag":
+        {
+            "description": "Clear the intrusion indicator for the port", 
+            "type": "boolean"
+        }, 
+        "eavesdrop_prevention":
+        {
+            "description": "Enable Eavesdrop Prevention", 
+            "type": "boolean", 
+            "default_value": true
+        }, 
+        "learn_mode":
+        {
+            "description": "Define the mode for acquiring authorized MAC addresses", 
+            "$ref":"../../schema/wired/PortSecurityLearnMode.json", 
+            "default_value": "PSLM_CONTINUOUS"
+        }
+    }
+}

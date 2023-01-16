@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "QoS Policy Allocation to a VLAN.", 
+    "title": "QosVlanPolicy", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "vlan_id":
+        {
+            "description": "The VLAN ID.", 
+            "minimum": 1, 
+            "maximum": 4094, 
+            "type": "integer", 
+            "sql.not_null": true
+        }, 
+        "policy_id":
+        {
+            "description": "The QoS Policy ID.", 
+            "type": "string", 
+            "maxLength": 72, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }
+    }
+}

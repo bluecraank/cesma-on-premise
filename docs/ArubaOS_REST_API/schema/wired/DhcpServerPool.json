@@ -1,0 +1,96 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "DHCP Server Pool configuration data.", 
+    "title": "DhcpServerPool", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "pool_name":
+        {
+            "description": "Pool name.Only alphanumeric characters and hyphens are allowed.", 
+            "type": "string", 
+            "maxLength": 32, 
+            "minLength": 1, 
+            "sql.not_null": true
+        }, 
+        "network_ip":
+        {
+            "description": "Network IP Address.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "network_mask":
+        {
+            "description": "Network Mask.", 
+            "$ref":"../../schema/common/IpAddress.json", 
+            "sql.not_null": true
+        }, 
+        "default_routers":
+        {
+            "description": "Default Routers for this pool.", 
+            "type": "array", 
+            "minItems": 0, 
+            "maxItems": 8, 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddress.json"
+            }
+        }, 
+        "dns_servers":
+        {
+            "description": "DNS Servers for this pool.", 
+            "type": "array", 
+            "minItems": 0, 
+            "maxItems": 8, 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddress.json"
+            }
+        }, 
+        "netbios_servers":
+        {
+            "description": "NETBIOS Servers.( aka. WINS Servers ) for this pool.", 
+            "type": "array", 
+            "minItems": 0, 
+            "maxItems": 8, 
+            "items":
+            {
+                "$ref":"../../schema/common/IpAddress.json"
+            }
+        }, 
+        "lease_time":
+        {
+            "description": "DHCP Lease Time for this pool.", 
+            "$ref":"../../schema/wired/DhcpLeaseTime.json"
+        }, 
+        "ip_range":
+        {
+            "description": "DHCP IP Address Range for this pool.", 
+            "type": "array", 
+            "minItems": 1, 
+            "maxItems": 64, 
+            "items":
+            {
+                "$ref":"../../schema/wired/DhcpIpRange.json"
+            }, 
+            "sql.not_null": true
+        }, 
+        "options":
+        {
+            "description": "DHCP Options for this pool.", 
+            "type": "array", 
+            "minItems": 0, 
+            "maxItems": 234, 
+            "items":
+            {
+                "$ref":"../../schema/wired/DhcpOption.json"
+            }
+        }
+    }
+}

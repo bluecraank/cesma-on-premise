@@ -1,0 +1,9 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"ACL Type (AT_)", 
+    "title": "AclType", 
+    "enum":
+    [
+        "AT_STANDARD"
+    ]
+}

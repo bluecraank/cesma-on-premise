@@ -1,0 +1,21 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema#", 
+    "description":"Port Operational Mode", 
+    "title": "OperMode", 
+    "enum":
+    [
+        "OM_10_HDX", 
+        "OM_10_FDX", 
+        "OM_OTHER", 
+        "OM_RESERVED", 
+        "OM_100_HDX", 
+        "OM_100_FDX", 
+        "OM_1000_FDX", 
+        "OM_1000_HDX", 
+        "OM_10_GIG_FD", 
+        "OM_5_GIG_FD", 
+        "OM_2500_FDX", 
+        "OM_5000_FDX", 
+        "OM_40_GIG_FD"
+    ]
+}

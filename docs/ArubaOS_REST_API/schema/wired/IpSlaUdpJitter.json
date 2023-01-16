@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#", 
+    "description": "IP-SLA for UDP-Jitter", 
+    "title": "IpSlaUdpJitter", 
+    "type": "object", 
+    "properties":
+    {
+        "uri":
+        {
+            "description": "The URI of the configuration entity", 
+            "type": "string", 
+            "readonly": true
+        }, 
+        "host_details":
+        {
+            "description": "Source and Destination Details", 
+            "$ref":"../../schema/wired/IpSlaUdpJitterHostDetails.json", 
+            "sql.not_null": true
+        }, 
+        "payload_size":
+        {
+            "description": "The payload size to be generated", 
+            "minimum": 68, 
+            "maximum": 8100, 
+            "type": "integer", 
+            "default_value": 68
+        }, 
+        "number_of_packets":
+        {
+            "description": "Number of packets to be sent in one probe", 
+            "minimum": 10, 
+            "maximum": 10000, 
+            "type": "integer", 
+            "default_value": 10
+        }, 
+        "packet_interval":
+        {
+            "description": "Inter packet interval in milliseconds", 
+            "minimum": 10, 
+            "maximum": 60000, 
+            "type": "integer", 
+            "default_value": 20
+        }
+    }
+}
