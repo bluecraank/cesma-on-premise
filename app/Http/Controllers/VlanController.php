@@ -52,13 +52,14 @@ class VlanController extends Controller
             $found_on = false;
             $vlans = json_decode($device->vlan_port_data, true);
             $port_data = json_decode($device->port_data, true);
+            
             foreach($vlans as $port_vlan_key => $port_vlan) {
                 if($port_vlan['vlan_id'] == $vlan) {
                     if(!$found_on) {
                         $found_on = true;
                         $has_vlan++;
                     }
-                    // var_dump($port_vlan);
+
                     if(isset($port_vlan['is_tagged']) and !$port_vlan['is_tagged']) {
                         $count_untagged++;
                         $ports[$device->name]['untagged'][] = $port_vlan['port_id'];
@@ -67,16 +68,12 @@ class VlanController extends Controller
                             $count_online++;
                         }
                     } else {
-                        // $ports[$device->name]['tagged'][] = $port_vlan['port_id'];
                         $count_tagged++;
                     }
                 }
             }
         }
 
-
-        // ddd($ports);
-        // return;
         return view('vlan.details', compact(
             'ports',
             'has_vlan',
@@ -85,48 +82,6 @@ class VlanController extends Controller
             'count_online',
             'vlan_db'
         ));
-    }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreVlanRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreVlanRequest $request)
-    {
-        
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Vlan  $vlan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Vlan $vlan)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Vlan  $vlan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Vlan $vlan)
-    {
-        //
     }
 
     /**

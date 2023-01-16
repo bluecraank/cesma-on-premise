@@ -7,11 +7,10 @@ use App\ClientProviders\SNMP_Routers;
 use App\Models\Device;
 use App\Models\Client;
 use App\Models\MacAddress;
-use App\Models\UnknownClient;
 use Carbon\Carbon;
+
 class ClientController extends Controller
 {
-
     public function index() {
         $clients = Client::where('vlan_id', '!=', 3056)->get();
         $devices = Device::all()->keyBy('id');
@@ -82,16 +81,6 @@ class ClientController extends Controller
         return json_encode(['success' => 'true', 'error' => 'Clients successfully updated ('.number_format(microtime(true) - $start, 2).'s)']);
     }
 
-    static function cleanUpClientsOnUplinks() {
-        $devices = Device::all();
-        foreach($devices as $device) {
-            $uplinks = json_decode($device->uplinks, true);
-            foreach($uplinks as $uplink) {
-                Client::where('switch_id', $device->id)->where('port_id', $uplink)->delete();
-            }
-        }      
-    }
-
     static function getClientType($mac) {
         $type = "client";
             
@@ -110,56 +99,38 @@ class ClientController extends Controller
     }
 
     static function checkOnlineStatus() {
-        $clients = Client::all();
+        $clients = Client::all()->keyBy('id');
 
         $start = microtime(true);
-        $clients2 = [];
-        $ipc = 15;
-        for($i = 0; $i < count($clients); $i++) {
-            if($clients[$i]->ip_address == "") {
-                $try = gethostbyname($clients[$i]->hostname);
-                if($try != $clients[$i]->hostname) {
-                    $clients[$i]->ip_address = $try;
-                    $clients[$i]->save();
-                } else {
-                    $clients2[$i] = "12.13.14.".$ipc;
-                    $ipc++;
-                }
-            } else {
-                $clients2[$i] = $clients[$i]->ip_address;
-            }
+
+        $clients_ips = [];
+        foreach($clients as $key => $client) {
+            $clients_ips[$key] = $client->ip_address;
         }
 
-        $pingclients = implode(" ", $clients2);
-        $result = exec("fping -i 50 ".$pingclients." 2> /dev/null", $output, $return);
+        $client_ip_addresses = implode(" ", $clients_ips);
+
+        $result = exec("fping -i 50 ".$client_ip_addresses." 2> /dev/null", $output, $return);
 
         foreach($output as $client) {
             $data = explode(" ", $client);
-            $key = array_search($data[0], $clients2);
+            $key = array_search($data[0], $clients_ips);
             if($key !== false or $key == 0) {
-                // $key = array_search($data[0], $clients2);
-                if($data[0] == "12.13.14.15") {
-                    $clients[$key]->online = 0;
-                }
-
                 if($data[2] == "alive") {
                     $clients[$key]->online = 1;
                 } else {
                     $clients[$key]->online = 0;
                 }
-
+                
                 if($clients[$key]->created_at->diffInDays(Carbon::now()) > 7) {
                     $clients[$key]->online = 2;
                 }
-
-                echo $clients[$key]->hostname . " | " . $clients2[$key]." | ". $clients[$key]->online."\n";
-
 
                 $clients[$key]->save();
             }
         }
 
         $elapsed = microtime(true) - $start;
-        echo ($elapsed."sec");
+        dd('Clients pinged in '.$elapsed." seconds");
     }
 }

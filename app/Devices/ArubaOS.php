@@ -25,7 +25,6 @@ class ArubaOS implements IDevice
         "ports" => 'ports',
         "portstats" => 'port-statistics',
         "vlanport" => 'vlans-ports',
-        // "mac" => 'mac-table',
     ];
 
     static function GetApiVersions($hostname): string
@@ -225,11 +224,6 @@ class ArubaOS implements IDevice
         ];
     }
 
-    public function test($device) {
-        $device = Device::find($device);
-        // dd($device->hostname);
-    }
-
     static function getVlanData($vlans): Array
     {
         $return = [];
@@ -380,7 +374,6 @@ class ArubaOS implements IDevice
     }
 
     static function getTrunks($device): Array {
-
         $trunks = [];
         $ports = json_decode($device->port_data, true);
         foreach($ports as $port) {

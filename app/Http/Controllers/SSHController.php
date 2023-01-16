@@ -21,9 +21,8 @@ class SSHController extends Controller
     {
         $devices = Device::all();
         $locations = Location::all();
-        $require_private_key_text = (config('app.ssh_private_key') == "true") ? 'Passphrase für Privatekey' : 'Passwort vom Switch';
 
-        return view('switch.ssh-execute', compact('devices', 'locations', 'require_private_key_text'));
+        return view('switch.ssh-execute', compact('devices', 'locations'));
     }
 
     public function encrypt_key_index() {
@@ -172,7 +171,7 @@ class SSHController extends Controller
 
     static function checkCommand($command) {
 
-        $blacklisted = array('sh ru', 'aaa');
+        $blacklisted = array('sh ru', 'aaa', 'no ip', 'no rest-interface', 'no ip ssh');
         foreach($blacklisted as $blacklistedCommand) {
             if(str_contains($command, $blacklistedCommand)) {
                 return false;

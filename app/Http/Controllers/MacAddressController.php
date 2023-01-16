@@ -23,9 +23,10 @@ class MacAddressController extends Controller
         return false;
     }
 
-    static function cleanUpMacTable($id, $data, $uplinks) {
+    static function refreshMacDataFromSwitch($id, $data, $json_uplinks) {
         MacAddress::where("device_id", $id)->delete();
 
+        $uplinks = json_decode($json_uplinks, true);
         foreach($data['mac_table_data'] as $mac) {
             if(!in_array($mac['port'], $uplinks)) {
 
