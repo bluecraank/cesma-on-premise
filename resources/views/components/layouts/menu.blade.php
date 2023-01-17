@@ -22,7 +22,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('backups') }}" class="{{ (request()->is('backups')) ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('backups') }}" class="{{ (request()->is('switch/backups')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> {{ __('Menu.Backups') }}
                         </a>
                     </li>
@@ -32,7 +32,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('uplinks') }}" class="{{ (request()->is('uplinks')) ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('uplinks') }}" class="{{ (request()->is('switch/uplinks')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-up-down"></i></span> {{ __('Menu.Uplinks') }}
                         </a>
                     </li>
@@ -46,7 +46,7 @@
                 <p class="menu-label">{{ __('Menu.Label.Data') }}</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('trunks') }}" class="{{ (request()->is('trunks')) ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('trunks') }}" class="{{ (request()->is('switch/trunks')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-circle-nodes"></i></span> {{ __('Menu.Trunks') }}
                         </a>
                     </li>

@@ -21,8 +21,9 @@ class ArubaCX implements IDevice
         "ports" => 'system/interfaces?attributes=ifindex,link_state,description&depth=2',
         "portstats" => 'system/interfaces?attributes=ifindex,link_speed,description&depth=2',
         "vlanport" => 'system/interfaces?attributes=ifindex,vlan_mode,vlan_tag,vlan_trunks&depth=2',
-        // "mac" => 'system/vlans?attributes=name,id,macs&depth=3',
     ];
+
+    static $port_if_uri = "system/interfaces/1%2F1%2F";
 
     static function GetApiVersions($hostname): string
     {
@@ -89,7 +90,6 @@ class ArubaCX implements IDevice
     static function ApiPut($hostname, $cookie, $api, $version, $data): Array
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
-
         try {
             $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                 'Cookie' => "$cookie",
@@ -101,7 +101,7 @@ class ArubaCX implements IDevice
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -141,6 +141,26 @@ class ArubaCX implements IDevice
             }
         } catch (\Exception $e) {
             dd($e->getMessage());   
+        }
+    }
+
+    static function ApiDelete($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json',
+                'Cookie' => "$cookie",
+            ])->delete($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => $response->json()];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
         }
     }
 
@@ -530,8 +550,7 @@ class ArubaCX implements IDevice
                     ]
                   }';
 
-                $uri = "system/interfaces/1%2F1%2F".$port;
-
+                $uri = self::$port_if_uri.$port;
                 $result = self::ApiPatch($device->hostname, $cookie, $uri, $api_version, $data);
 
                 if($result['success']) {
@@ -557,6 +576,71 @@ class ArubaCX implements IDevice
         }
 
         return json_encode(['success' => 'false', 'error' => 'Login failed']);
+    }
+
+    static function updatePortVlanTagged($vlans, $port, $device): Array {
+        $return = [];
+        $uri = "system/interfaces/1%2F1%2F".$port;
+
+        if($login_info = self::ApiLogin($device)) {
+    
+            list($cookie, $api_version) = explode(";", $login_info);
+
+            $data_builder = [];
+            $data_builder['vlan_mode'] = "native-untagged";
+
+            $rest_vlans_uri = "/rest/".$api_version."/system/vlans/";
+
+            $alreadyTaggedVlans = json_decode($device->vlan_port_data, true);
+            foreach($alreadyTaggedVlans as $taggedVlan) {
+                if(!$taggedVlan['is_tagged'] and $taggedVlan['port_id'] == $port) {
+                    $data_builder['vlan_trunks'][] = $rest_vlans_uri.$taggedVlan['vlan_id'];
+                    $data_builder['vlan_tag'] = $rest_vlans_uri.$taggedVlan['vlan_id'];
+                }
+            }
+
+            foreach($vlans as $vlan) {
+                if(!in_array($rest_vlans_uri.$vlan, $data_builder['vlan_trunks'])) {
+                    $data_builder['vlan_trunks'][] = $rest_vlans_uri.$vlan;
+                }
+            }
+            
+            $data = json_encode($data_builder);
+            
+            $uri = self::$port_if_uri.$port;
+            $result = self::ApiPut($device->hostname, $cookie, $uri, $api_version, $data);
+
+            if($result['success']) {
+                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData);
+                $device->save();
+
+                foreach($data_builder['vlan_trunks'] as $vlan) {
+                    $vlan = explode("/", $vlan);
+                    $vlan = end($vlan);
+                    $return[] = [
+                        'success' => true,
+                        'error' => '['. $port .'] Tagged VLAN '.$vlan,
+                    ];
+                }
+            } else {
+                $return[] = [
+                    'success' => false,
+                    'error' => '['. $port .'] Not Tagged VLAN '. $vlan,
+                ];
+            }
+
+            self::ApiLogout($device->hostname, $cookie, $api_version);
+            return $return;
+        
+        }
+
+        $return[] = [
+            'success' => false,
+            'error' => 'API Login failed',
+        ];  
+
+        return $return; 
     }
 
     static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $test): Array {

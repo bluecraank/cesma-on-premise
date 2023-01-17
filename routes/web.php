@@ -84,7 +84,9 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::put('/{id}/refresh', [DeviceController::class, 'refresh']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
     Route::put('/uplinks/update', [DeviceController::class, 'updateUplinks']);
-    Route::post('/{id}/ports/update', [DeviceController::class, 'updateUntaggedPorts']);
+    Route::post('/{id}/port-vlans/untagged', [DeviceController::class, 'setUntaggedVlanToPort']);
+    Route::post('/{id}/port-vlans/tagged', [DeviceController::class, 'setTaggedVlanToPort']);
+
 
 
     // Posts for actions on all Switches

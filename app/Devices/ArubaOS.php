@@ -149,6 +149,26 @@ class ArubaOS implements IDevice
         }
     }
 
+    static function ApiDelete($hostname, $cookie, $api, $version, $data): Array
+    {
+        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
+
+        try {
+            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json',
+                'Cookie' => "$cookie",
+            ])->delete($api_url);
+
+            if($response->successful()) {
+                return ['success' => true, 'data' => $response->json()];
+            } else {
+                return ['success' => false, 'data' => $response->json()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'data' => []];
+        }
+    }
+
     static function ApiPost($hostname, $cookie, $api, $version, $data): Array
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
@@ -587,6 +607,92 @@ class ArubaOS implements IDevice
         }
 
         return json_encode(['success' => 'false', 'error' => 'API Login failed']);
+    }
+
+    static function updatePortVlanTagged($vlans, $port, $device): Array {
+            if($login_info = self::ApiLogin($device)) {
+    
+                list($cookie, $api_version) = explode(";", $login_info);
+    
+                $return = [];
+
+                $compare = [];
+                $alreadyTaggedVlans = json_decode($device->vlan_port_data);
+                foreach($alreadyTaggedVlans as $tagged) {
+                    if($tagged->is_tagged == 1 && $tagged->port_id == $port)
+                        $compare[] = $tagged->vlan_id;
+                }
+
+                // Add vlan tagged to port
+                foreach($vlans as $vlan) {
+                    if(!in_array($vlan, $compare)) {
+                        $data = '{
+                            "vlan_id": '.$vlan.', 
+                            "port_id": "'.$port.'", 
+                            "port_mode":"POM_TAGGED_STATIC"
+                        }';
+
+                        $result = self::ApiPost($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+                        
+                        if($result['success']) {
+                            $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                            $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
+                            $device->save();
+
+                            $return[] = [
+                                'success' => true,
+                                'error' => '['. $port .'] Tagged VLAN '. $vlan,
+                            ];
+                        } else {
+                            $return[] = [
+                                'success' => false,
+                                'error' => '['. $port .'] Not Tagged VLAN '. $vlan,
+                            ];
+                        }
+                    }
+                }
+
+                // Remove vlan tagged from port
+                if(count($vlans) < count($compare)) {
+                    foreach($compare as $vlan) {
+                        if(!in_array($vlan, $vlans)) {
+                            $data = '{
+                                "vlan_id": '.$vlan.', 
+                                "port_id": "'.$port.'", 
+                                "port_mode":"POM_TAGGED_STATIC"
+                            }';
+
+                            $result = self::ApiDelete($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+                            
+                            if($result['success']) {
+                                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
+                                $device->save();
+
+                                $return[] = [
+                                    'success' => true,
+                                    'error' => '['. $port .'] Tagged VLAN '. $vlan.' removed',
+                                ];
+                            } else {
+                                $return[] = [
+                                    'success' => false,
+                                    'error' => '['. $port .'] Tagged VLAN '. $vlan.' not removed',
+                                ];
+                            }
+                        }
+                    }
+                }
+
+                self::ApiLogout($device->hostname, $cookie, $api_version);
+                return $return;
+            }
+            
+            $return[] = [
+                'success' => false,
+                'error' => 'API Login failed',
+            ];  
+
+            return $return;
     }
 
     static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $test): Array {

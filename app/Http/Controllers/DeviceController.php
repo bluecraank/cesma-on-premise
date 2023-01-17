@@ -514,7 +514,7 @@ class DeviceController extends Controller
         return redirect()->back();
     }
 
-    static function updateUntaggedPorts(Request $request) {
+    static function setUntaggedVlanToPort(Request $request) {
 
         $device = Device::find($request->input('device'));
 
@@ -532,6 +532,38 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);
         }
         return json_encode(['success' => 'false', 'error' => 'Device not found']);
+    }
+
+    static function setTaggedVlanToPort(Request $request) {
+        $device_id = $request->input('device');
+
+        if($device = Device::find($device_id)) {
+            $vlans = json_decode($request->input('vlans'), true);
+            $port = $request->input('port');
+
+
+            $success_c = 0;
+            $failed_c = 0;
+            $ins = 0;
+
+            $class = self::$models[$device->type];
+            $return = ['error' => ''];
+            $result = $class::updatePortVlanTagged($vlans, $port, $device);
+            foreach($result as $success) {
+                $return['error'] .= "<br>".$success['error'];
+                if($success['success'] == false) {
+                    $failed_c++;
+                } else {
+                    $success_c++;
+                }
+                $ins++;
+            }
+
+            return json_encode(['success' => 'true', 'error' => "Updated ".$success_c." of ".$ins." vlans on port ".$port . $return['error']]);
+        }
+        return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);
+
+
     }
 
     static function restoreBackup(Request $request) {

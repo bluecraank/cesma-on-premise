@@ -189,7 +189,7 @@ function updateUntaggedPorts(id) {
     formData.append('device', device);
     formData.append('_token', token);
 
-    let uri = '/switch/'+device+'/ports/update';
+    let uri = '/switch/'+device+'/port-vlans/untagged';
 
     $(".live-body").css('opacity', '0.5');
     fetch(uri, {
@@ -220,6 +220,78 @@ function updateUntaggedPorts(id) {
     $(".port-vlan-select").each(function() {
         $(this).prop('disabled', true);
     });
+}
+
+function updateTaggedModal(vlans, port, id) {
+    let vlansSplitted = vlans.split(',');
+
+    let modal = $('.modal-vlan-tagging');
+    modal.find('.port_id').val(port);
+    modal.find('.device_id').val(id);
+
+    modal.find('.modal-card-body span.tag').removeClass('is-primary');
+
+    vlansSplitted.forEach(function(vlan) {
+        modal.find('.modal-card-body span.tag[data-id="'+vlan+'"]').addClass('is-primary');
+    });
+
+    modal.show();
+}
+
+$(".modal-vlan-tagging .modal-card-body span.tag").click(function () {
+    $(this).toggleClass('is-primary');
+});
+
+function updateTaggedVlans() {
+    let modal = $('.modal-vlan-tagging');
+    let port = modal.find('.port_id').val();
+    let device = modal.find('.device_id').val();
+    let token = $('meta[name="csrf-token"]').attr('content');
+
+    let vlans = [];
+
+    let i = 0;
+    modal.find('.modal-card-body span.tag.is-primary').each(function() {
+        let vid = $(this).attr('data-id');
+        vlans[i] = vid;
+        i++;
+    });
+
+    let formData = new FormData();
+    formData.append('port', port);
+    formData.append('vlans', JSON.stringify(vlans));
+    formData.append('device', device);
+    formData.append('_token', token);
+
+    let uri = '/switch/'+device+'/port-vlans/tagged';
+
+    $(".modal-vlan-tagging .is-cancel").addClass('is-hidden');
+    $(".modal-vlan-tagging .is-info").removeClass('is-hidden');
+    $(".modal-vlan-tagging .is-submit").addClass('is-loading');
+    fetch(uri, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        $(".response-update-vlan").removeClass('is-success');
+        $(".response-update-vlan").removeClass('is-danger');
+        if(data.success == "true") {
+            $(".response-update-vlan").addClass('is-success');
+            $(".response-update-vlan-text").html("<b>Success:</b> " + data.error);
+        } else {
+            $(".response-update-vlan").addClass('is-danger');
+            $(".response-update-vlan-text").html("<b>Error:</b> " + data.error);
+        }
+        modal.hide();
+        modal.find('.is-cancel').removeClass('is-hidden');
+        modal.find('.is-info').addClass('is-hidden');
+        modal.find('.is-submit').removeClass('is-loading');
+        $(".save-vlans").addClass('is-hidden');
+        $(".edit-vlans").removeClass('is-hidden');
+        $(".response-update-vlan").removeClass('is-hidden');
+    });
+
 }
 
 function refreshSwitch(ele) {
@@ -344,10 +416,29 @@ $(document).ready(function() {
 });
 
 // Table Sorting
-$('th').click(function () {
+$('th').click(function (e) {
+    if(e.target !== e.currentTarget) return;
     var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+    var rows = table.find('tr:gt(1)').toArray().sort(comparer($(this).index()))
     this.asc = !this.asc
+    if (!this.asc) { rows = rows.reverse() }
+    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+})
+
+$('th label').click(function (e) {
+    // if(e.target !== e.currentTarget) return;
+    var table = $(this).parents('table').eq(0)
+    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).attr('data-row')))
+
+    console.log($(this).index());
+
+    $('th label').children().addClass('is-hidden');
+    $(this).children().removeClass('is-hidden');
+    $(this).children().toggleClass('fa-angle-down');
+    $(this).children().toggleClass('fa-angle-up');
+
+    this.asc = !this.asc
+
     if (!this.asc) { rows = rows.reverse() }
     for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
 })

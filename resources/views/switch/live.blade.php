@@ -173,18 +173,32 @@
 
 
         <div class="column is-8">
+            <script>
+                function enableEditing() {
+                    $('.port-vlan-select').each(function() {
+                        $( this ).prop('disabled', false);
+                    });
+                    $('.save-vlans').removeClass('is-hidden');
+                    $('.edit-vlans').addClass('is-hidden');
+                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', false); 
+                }
+
+                function disableEditing() {
+                    $('.port-vlan-select').each(function() {
+                        $( this ).prop('disabled', true);
+                    });
+                    $('.save-vlans').addClass('is-hidden');
+                    $('.edit-vlans').removeClass('is-hidden');
+                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true); 
+                }
+            </script>
+
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }} 
-                    <span onclick="$('.port-vlan-select').each(function() {
-                        $( this ).prop('disabled', true);
-                      });$('.save-vlans').addClass('is-hidden');$('.edit-vlans').removeClass('is-hidden');" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
-                <span onclick="updateUntaggedPorts('{{ $device->id }}')" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
-                <span onclick="$('.port-vlan-select').each(function() {
-                    $( this ).prop('disabled', false);
-                  });$('.save-vlans').removeClass('is-hidden');$('.edit-vlans').addClass('is-hidden');
-                   " class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
-                   
-                   </h2>
+                    <span onclick="disableEditing();" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
+                    <span onclick="updateUntaggedPorts('{{ $device->id }}')" class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
+                    <span onclick="enableEditing();" class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
+                </h2>
 
                 <div class="notification response-update-vlan is-hidden is-success">
                     <button class="delete" onclick="$('.response-update-vlan').addClass('is-hidden');"></button>
@@ -230,7 +244,7 @@
                             <td>
                                 {{ $port['name'] }}
                             </td>
-                            <td>
+                            <td style="width:80px   ">
                                 @if(str_contains($untagged[$port['id']], 'Trk')) 
                                 {{ $untagged[$port['id']] }}
                                 @else
@@ -245,32 +259,8 @@
                                 </div>
                                 @endif
                             </td>
-                            <td>
-                                <div class="dropdown is-down is-small">
-                                    <div class="dropdown-trigger" onclick="$(this).parent().toggleClass('is-active');">
-                                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu7">
-                                            <span> {{ count($tagged[$port['id']]) }} VLANs</span>
-                                            <span class="icon is-small">
-                                                <i class="fas fa-angle-up" aria-hidden="true"></i>
-                                            </span>
-                                        </button>
-                                    </div>
-                                    <div class="dropdown-menu" id="dropdown-menu7" role="menu">
-                                        <div class="dropdown-content">
-                                            <div class="dropdown-item">
-        
-                                                <div class="tags">
-                                                    @php sort($vlans) @endphp
-                                                    @foreach ($vlans as $vlan)
-                                                
-                                                    <span class="tag is-blue is-clickable has-text-weight-bold has-text-white"><input type="checkbox" {{ (in_array($vlan['vlan_id'], $tagged[$port['id']])) ? 'checked' : '' }} name="selectednames[]" value="4" class="mr-2" /> {{ $vlan['vlan_id'] }}</span>
-                                                    
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <td style="width:100px" class="is-clickable">
+                                <a onclick="updateTaggedModal('{{ implode(',', $tagged[$port['id']]) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count($tagged[$port['id']]) }} VLANs</a>
                             </td>
                             <td class="has-text-centered">
                                 @if ($port_statistic[$port['id']]['port_speed_mbps'] == 0)
@@ -292,5 +282,36 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div class="modal modal-vlan-tagging">
+        <form action="/switch/ports/update" onsubmit="event.preventDefault(); updateTaggedVlans();" id="form-vlan-tagging" method="post">
+            @csrf
+            <div class="modal-background"></div>
+            <div style="margin-top: 40px" class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Port A4 - VLAN Tagging</p>
+                    <span class="tag">NOT TAGGED</span>
+                    <span class="tag is-primary">TAGGED</span>
+                </header>
+                <section class="modal-card-body">   
+                    <input type="hidden" name="device_id" class="device_id" value="{{ $device->id }}">
+
+                    <label class="label is-small">Ausgewählter Port</label>
+                    <input type="text" class="input is-small port_id" name="port_id" readonly="true">
+                    <br><br>
+
+                    <label class="label is-small">Verfügbare VLANs</label>
+                    @foreach($vlans as $key => $vlan)
+                        <span class="is-clickable tag" data-id="{{ $key }}">{{ $key }}</span>
+                    @endforeach
+                </section>
+                <footer class="modal-card-foot">
+                    <button disabled class="button is-submit is-primary">{{ __('Button.Save') }}</button>
+                    <button onclick="$('.modal-vlan-tagging').hide();return false;" type="button"
+                        class="is-cancel button">{{ __('Button.Cancel') }}</button>
+                    <span class="is-info is-hidden">Speichern...</span>
+                </footer>
+            </div>
+        </form>
     </div>
     </x-layouts>

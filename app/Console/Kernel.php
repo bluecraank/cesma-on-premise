@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // API abfragen
-        $schedule->command('updater')->everyTenMinutes()->between('06:00', '20:00')->appendOutputTo(storage_path('logs/updater.log'));
+        $schedule->command('updater')->everyTenMinutes()->appendOutputTo(storage_path('logs/updater.log'));
 
         $schedule->command('clients:ping')->everyFifteenMinutes()->between('06:00', '20:00')->appendOutputTo(storage_path('logs/ping.log'));        
 

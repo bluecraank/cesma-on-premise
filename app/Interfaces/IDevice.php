@@ -28,6 +28,8 @@ use Illuminate\Http\Client\Request;
 
         static function ApiPost(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
+        static function ApiDelete(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+        
         static function ApiPatch(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
         static function ApiGetAcceptPlain(String $hostname, String $cookie, String $api, String $api_version): Array;
@@ -55,6 +57,8 @@ use Illuminate\Http\Client\Request;
         static function uploadPubkeys($device, $pubkeys): String;
 
         static function updatePortVlanUntagged($vlans, $ports, $device): String;
+
+        static function updatePortVlanTagged($vlans, $ports, $device): Array;
 
         static function updateVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $test_mode): Array;
     }
