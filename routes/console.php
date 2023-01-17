@@ -50,8 +50,14 @@ Artisan::command('clients:ping', function () {
     $this->comment('--- END PINGING CLIENTS ---');
 })->purpose('Ping Clients');
 
-Artisan::command('clients:vendors', function () {
+Artisan::command('clients:macvendors', function () {
     $this->comment('--- GET MAC VENDORS ---');
     $this->comment(MacAddressController::getMacVendor());
     $this->comment('--- END FETCHING MAC VENDORS ---');
 })->purpose('Get Mac Vendors');
+
+Artisan::command('updater', function () {
+    $this->comment('--- start group ---');
+    $this->comment(ClientController::groupUpdater());
+    $this->comment('--- end group ---');
+})->purpose('Grouped switch and client updater');

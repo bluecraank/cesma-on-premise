@@ -24,12 +24,7 @@ class SearchClients extends Component
     public function render()
     {
         $devices = Device::all()->keyBy('id');
-        $count_clients = Client::where(function($query) {
-            $vlans = explode(",", config('app.hide_vlans'));
-            foreach($vlans as $vlan) {
-                $query->where('vlan_id', '!=', $vlan);
-            }
-        })->count();
+        $count_clients = Client::count();
         $vlans = Vlan::all()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendors::all()->keyBy('mac_prefix');
         
@@ -69,11 +64,6 @@ class SearchClients extends Component
             }
             if ($type and $type != 'all') {
                 $query->where('type', '=', $type);
-            }
-        })->where(function($query) {
-            $vlans = explode(",", config('app.hide_vlans'));
-            foreach($vlans as $vlan) {
-                $query->where('vlan_id', '!=', $vlan);
             }
         })->paginate(500);
 

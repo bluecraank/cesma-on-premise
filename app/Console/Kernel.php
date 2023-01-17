@@ -16,26 +16,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // API abfragen
-        $schedule->command('switch:refresh')
-        ->everyFifteenMinutes()
-        ->between('6:00', '20:00')
-        ->timezone('Europe/Berlin')
-        ->appendOutputTo(storage_path('logs/switch-refresh.log'));
-        
-        // Daten aus der DB verarbeiten und Clients finden / updaten
-        $schedule->command('clients:update')
-        ->everyThirtyMinutes()
-        ->between('6:00', '20:00')
-        ->timezone('Europe/Berlin')
-        ->appendOutputTo(storage_path('logs/clients-update.log'));
+        $schedule->command('updater')->everyTenMinutes()->between('06:00', '20:00')->appendOutputTo(storage_path('logs/updater.log'));
 
-        // Clients anpingen, um den Status anzuzeigen
-        $schedule->command('clients:ping')
-        ->everyTenMinutes()
-        ->timezone('Europe/Berlin')
-        ->appendOutputTo(storage_path('logs/client-ping.log'));
+        $schedule->command('clients:ping')->everyFifteenMinutes()->between('06:00', '20:00')->appendOutputTo(storage_path('logs/ping.log'));        
 
-        $schedule->command('client:vendor')
+        $schedule->command('clients:macvendors')
         ->daily()
         ->at('04:00')
         ->appendOutputTo(storage_path('logs/mac-vendors.log'));

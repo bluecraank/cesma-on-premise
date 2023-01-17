@@ -8,7 +8,18 @@ use App\Models\MacVendors;
 use Illuminate\Support\Facades\Http;
 
 class MacAddressController extends Controller
-{
+{   
+    public function index() {
+        $macs = MacAddress::all();
+        $wifi_macs = explode(",", config('app.wifi_macs'));
+        foreach($macs as $mac) {
+            if(in_array(substr($mac->mac_address, 0, 6), $wifi_macs)) {
+                echo $mac->mac_address . " is a wifi mac<br>";
+            }
+        }
+        return count($macs);
+    }
+
     static function store($mac, $port, $vlan, $device_id) {
 
         $newMacAddress = MacAddress::create([
@@ -26,10 +37,11 @@ class MacAddressController extends Controller
     }
 
     static function refreshMacDataFromSwitch($id, $data, $json_uplinks) {
-        MacAddress::where("device_id", $id)->delete();
+        // MacAddress::where("device_id", $id)->delete();
 
         $uplinks = json_decode($json_uplinks, true);
         foreach($data as $mac) {
+            $delete = MacAddress::where('mac_address', $mac['mac'])->where('device_id', $id)->delete();
             if(!in_array($mac['port'], $uplinks)) {
 
                 MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);
@@ -75,5 +87,13 @@ class MacAddressController extends Controller
 
                 usleep(600000);
         }
+    }
+
+    static function debugQuery() {
+        $mactable = MacAddress::all()->sortBy('vlan_id');
+        foreach($mactable as $cl) {
+            echo $cl->vlan_id . "\n";
+        }
+        echo count($mactable);
     }
 }

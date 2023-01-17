@@ -86,6 +86,7 @@
                         <option value="client">CLIENT</option>
                         <option value="printer">PRINTER</option>
                         <option value="phone">PHONE</option>
+                        <option value="wifi">WIFI</option>
                     </select>
                 </div>
             </div>
@@ -128,6 +129,7 @@
                 if($client->type == "client") $type = 'computer';
                 if($client->type == "printer") $type = 'print';
                 if($client->type == "phone") $type = 'phone';
+                if($client->type == "wifi") $type = 'wifi';
 
                 $chunks = str_split(strtoupper($client->mac_address), 2);
                 $end = implode(':', $chunks);

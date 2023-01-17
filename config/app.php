@@ -31,12 +31,13 @@ return [
     'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
     
-    'hide_vlans' => env('HIDE_VLANS_IN_CLIENT_PAGE', ''),
+    'ignore_vlans' => env('IGNORE_VLANS', ''),
     'snmp_routers' => env('SNMP_ROUTERS', ''),
     'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
 
     'printer_macs' => env('PRINTER_MACS', ''),
     'phone_macs' => env('PHONE_MACS', ''),
+    'wifi_macs' => env('WIFI_MACS', ''),
 
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 

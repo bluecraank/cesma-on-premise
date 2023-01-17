@@ -3,7 +3,6 @@
 
     // Ping clients just for ARP Cache in Gateway and switches
     // This script runs forever (cesma-scanner.service)            
-    $start = microtime(true);
 
     try {
         $db = new MySQLi('localhost', 'root', 'mQK62mNSgeoutu6G', 'cesma');
@@ -15,6 +14,7 @@
     
     while (true) {
         usleep(2000);
+        $start = microtime(true);
 
         $result = $db->query("SELECT * FROM `vlans` WHERE `scan` = 1");
         $subnets = $result->fetch_all(MYSQLI_ASSOC);

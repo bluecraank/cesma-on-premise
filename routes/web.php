@@ -15,6 +15,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
 use App\Devices\ArubaOS;
+use App\Http\Controllers\MacAddressController;
 use App\Http\Controllers\SnmpCollectorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +95,10 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
 });
 
 Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function() {
-
+    Route::get('/macaddresses', [MacAddressController::class, 'index'])->name('macaddresses');
+    Route::get('/snmpcollector', [ClientController::class, 'getClientDataFromProviders'])->name('snmpcollector');
+    Route::get('/router', [SNMP_Routers::class, 'debugQuery'])->name('router');
+    Route::get('/mac', [MacAddressController::class, 'debugQuery'])->name('mac');
 });
 
 // Login
