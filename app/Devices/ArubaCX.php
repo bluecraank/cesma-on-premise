@@ -149,16 +149,7 @@ class ArubaCX implements IDevice
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' .$api;
 
         try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-                'Cookie' => "$cookie",
-            ])->delete($api_url);
 
-            if($response->successful()) {
-                return ['success' => true, 'data' => $response->json()];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
         } catch (\Exception $e) {
             return ['success' => false, 'data' => []];
         }
@@ -606,7 +597,7 @@ class ArubaCX implements IDevice
             }
             
             $data = json_encode($data_builder);
-            
+
             $uri = self::$port_if_uri.$port;
             $result = self::ApiPut($device->hostname, $cookie, $uri, $api_version, $data);
 
