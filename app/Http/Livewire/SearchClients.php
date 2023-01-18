@@ -69,7 +69,7 @@ class SearchClients extends Component
 
         $count_result = count($clients);
 
-        return view('client.index_', [
+        return view('client.client-overview-livew', [
             'devices' => $devices,
             'vlans' => $vlans,
             'count_clients' => $count_clients,

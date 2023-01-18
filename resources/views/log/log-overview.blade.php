@@ -1,3 +1,3 @@
 <x-layouts.main>
-    @livewire('search-log')
+    @livewire('search-logs')
 </x-layouts>

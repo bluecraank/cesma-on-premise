@@ -1,9 +1,5 @@
 <?php
 
-use App\ClientProviders\Baramundi;
-use App\ClientProviders\SNMP_Routers;
-use App\ClientProviders\SNMP_Sophos_XG;
-use App\Devices\ArubaCX;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
@@ -14,9 +10,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
-use App\Devices\ArubaOS;
-use App\Http\Controllers\MacAddressController;
-use App\Http\Controllers\SnmpCollectorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +29,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
-    Route::get('/perform-ssh', [SSHController::class, 'overview'])->name('perform-ssh');
     Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
     Route::get('/system', [UserController::class, 'index_system'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
@@ -60,33 +52,35 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 });
 
 
-Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function() {
+Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function () {
     // Allgemein
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
-    Route::get('/trunks', [DeviceController::class, 'index_trunks'])->name('trunks');
-    Route::get('/uplinks', [DeviceController::class, 'index_uplinks'])->name('uplinks');
+    Route::get('/trunks', [DeviceController::class, 'view_trunks'])->name('trunks');
+    Route::get('/uplinks', [DeviceController::class, 'view_uplinks'])->name('uplinks');
+    Route::get('/execute', [SSHController::class, 'index'])->name('perform-ssh');
 
     // Switch specific
     Route::get('/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch');
-    Route::get('/{id}/live', [DeviceController::class, 'index_live'])->name('live');
+    Route::get('/{id}', [DeviceController::class, 'view_details'])->name('details');
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');;
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH']);
     Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch']);
-    
+    Route::post('/{id}/refresh', [DeviceController::class, 'refresh']);
+    Route::post('/{id}/port-vlans/untagged', [DeviceController::class, 'setUntaggedVlanToPort']);
+    Route::post('/{id}/port-vlans/tagged', [DeviceController::class, 'setTaggedVlanToPort']);
+
+
     // Switch backups
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
     Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);
     Route::delete('/backup/delete', [BackupController::class, 'destroy']);
 
+
     // Standard CRUD operations
     Route::post('/create', [DeviceController::class, 'store']);
     Route::put('/update', [DeviceController::class, 'update']);
-    Route::put('/{id}/refresh', [DeviceController::class, 'refresh']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
     Route::put('/uplinks/update', [DeviceController::class, 'updateUplinks']);
-    Route::post('/{id}/port-vlans/untagged', [DeviceController::class, 'setUntaggedVlanToPort']);
-    Route::post('/{id}/port-vlans/tagged', [DeviceController::class, 'setTaggedVlanToPort']);
-
 
 
     // Posts for actions on all Switches
@@ -94,13 +88,6 @@ Route::prefix('switch')->middleware('auth:sanctum', 'verified')->group(function(
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
     Route::post('/every/vlans', [DeviceController::class, 'updateVlansAllDevices'])->name('Sync VLAN Results');
-});
-
-Route::prefix('debug')->middleware('auth:sanctum', 'verified')->group(function() {
-    Route::get('/macaddresses', [MacAddressController::class, 'index'])->name('macaddresses');
-    Route::get('/snmpcollector', [ClientController::class, 'getClientDataFromProviders'])->name('snmpcollector');
-    Route::get('/router', [SNMP_Routers::class, 'debugQuery'])->name('router');
-    Route::get('/mac', [MacAddressController::class, 'debugQuery'])->name('mac');
 });
 
 // Login

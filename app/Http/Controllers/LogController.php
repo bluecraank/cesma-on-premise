@@ -13,7 +13,7 @@ class LogController extends Controller
     public function index()
     {
         $logs = Log::all()->sortByDesc('created_at');
-        return view('log.index', compact('logs'));
+        return view('log.log-overview', compact('logs'));
     }
 
     static function log($msg, $data = null)

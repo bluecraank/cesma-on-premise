@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    <form action="/user/update" method="post" id="executeForm">
+    <form action="/user/update" method="post">
       @csrf
       @method('PUT')
       <div class="columns" style="margin-top: 70px;">

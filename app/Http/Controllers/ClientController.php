@@ -15,7 +15,7 @@ class ClientController extends Controller
         $clients = Client::where('vlan_id', '!=', 3056)->get();
         $devices = Device::all()->keyBy('id');
 
-        return view('client.index', compact('clients', 'devices'));
+        return view('client.client-overview', compact('clients', 'devices'));
     }
 
     static function getClientDataFromProviders() { 

@@ -26,11 +26,11 @@ class BackupController extends Controller
         $devices = Device::all()->keyBy('id');
 
 
-        foreach($devices as $device) {
+        foreach ($devices as $device) {
             $device->last_backup = $backups->where('device_id', $device->id)->last();
         }
 
-        return view('switch.index_backups', compact('backups', 'devices'));
+        return view('switch.view_backups', compact('backups', 'devices'));
     }
 
     /**
@@ -42,22 +42,23 @@ class BackupController extends Controller
     public function destroy(Request $request)
     {
         $find = Backup::find($request->input('id'));
-        if($find->delete()) {
+        if ($find->delete()) {
             LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
             return redirect()->back()->with('success', 'Backup deleted successfully');
         }
-        
-        return redirect()->back()->withErrors(['error' => 'Backup could not be deleted']);
 
+        return redirect()->back()->withErrors(['error' => 'Backup could not be deleted']);
     }
 
-    static function getSwitchBackups($id) {
+    static function getSwitchBackups($id)
+    {
         $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
         $device = Device::find($id);
-        return view('switch.backups', compact('backups', 'device'));
+        return view('switch.switch-backups', compact('backups', 'device'));
     }
 
-    static function backupAll() {
+    static function backupAll()
+    {
         $time = microtime(true);
         Device::all()->each(function ($device) {
             switch ($device->type) {
@@ -65,31 +66,32 @@ class BackupController extends Controller
                     $start = microtime(true);
                     ArubaOS::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo "Backup created: " . $device->name . " (". $elapsed ."sec)\n";
+                    echo "Backup created: " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 case 'aruba-cx':
                     $start = microtime(true);
-                    ArubaCX::createBackup($device);  
+                    ArubaCX::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo "Backup created: " . $device->name . " (". $elapsed ."sec)\n";               
+                    echo "Backup created: " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 default:
                     echo "Error: Unknown device type: " . $device->type . "\n";
             }
-            
         });
 
-        echo "Backups finished in ".number_format(microtime(true)-$time, 2)." seconds\n";
+        echo "Backups finished in " . number_format(microtime(true) - $time, 2) . " seconds\n";
     }
 
-    static function downloadBackup($id) {
+    static function downloadBackup($id)
+    {
         $backup = Backup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
         return response($backup->data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    static function sendMail() {
+    static function sendMail()
+    {
 
         $backups = Backup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
@@ -97,7 +99,7 @@ class BackupController extends Controller
         $modDevices = [];
         $totalError = true;
 
-        foreach($devices as $key => $device) {
+        foreach ($devices as $key => $device) {
             $modDevices[$key] = new \stdClass();
             $modDevices[$key]->name = $device->name;
             $modDevices[$key]->backups = $backups->where('device_id', $device->id)->count();
@@ -106,7 +108,7 @@ class BackupController extends Controller
             $modDevices[$key]->fail = $backups->where('device_id', $device->id)->where('status', 0)->where('created_at', '>', Carbon::now()->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())->count();
             $modDevices[$key]->success_total = ($modDevices[$key]->fail == 0) ? 1 : 0;
 
-            if($modDevices[$key]->success_total == 0) {
+            if ($modDevices[$key]->success_total == 0) {
                 $totalError = false;
             }
         }
@@ -116,4 +118,3 @@ class BackupController extends Controller
         dd('Success! Email has been sent successfully.');
     }
 }
-

@@ -294,17 +294,6 @@ function updateTaggedVlans() {
 
 }
 
-function refreshSwitch(ele) {
-    $(ele).addClass('is-loading');
-    let form = $("#refresh-form").serialize();
-    let id = $("#refresh-form .device_id").val();
-
-    let uri = '/switch/'+id+'/refresh';
-    let cssclass = 'fa-rotate';
-
-    fetcher(uri, form, ele, cssclass, true);
-}
-
 function restoreBackup(id, created_at, device,  name) {
     let modal = $('.modal-upload-backup');
     modal.find('.id').val(id);
@@ -314,22 +303,24 @@ function restoreBackup(id, created_at, device,  name) {
     modal.show()
 }
 
-function device_live_actions(ele, type) {
-    let form = $("#actions-form").serialize();
-    let id = $("#actions-form .device_id").val();
-
+function sw_actions(ele, type, id) {
     let uri = '/switch/'+id+'/backup/create';
     let cssclass = "fa-hdd";
+    let reload = false;
 
-    if(type == "clients") {
-        uri = '/switch/'+id+'/clients';
-        cssclass = "fa-computer";
+    if(type == "refresh") {
+        uri = '/switch/'+id+'/refresh';
+        cssclass = "fa-sync";
+        reload = true
     } else if(type == "pubkeys") {
         uri = '/switch/'+id+'/ssh/pubkeys';
-        cssclass = "fa-sync";
+        cssclass = "fa-key";
     }
 
-    fetcher(uri, form, ele, cssclass);    
+    let formData = new FormData();
+    formData.append('device_id', id);
+
+    fetcher(uri, formData, ele, cssclass, reload);    
 }
 
 function device_overview_actions(type, ele) {
@@ -357,12 +348,13 @@ function syncPubkeys() {
 
 // Fetcher function
 function fetcher(uri, form, ele, cssclass, timeout = false) {
+
+    let token = $('meta[name="csrf-token"]').attr('content');
+    form.append('_token', token);
+
     $(ele).addClass('is-loading');
     fetch(uri, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
         body: form
     }).then(response => response.json())
         .then(data => {

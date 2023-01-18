@@ -11,27 +11,28 @@ use App\Traits\WithLogin;
 
 use Livewire\Component;
 
-class SearchSwitch extends Component
+class SearchDevices extends Component
 {
     use WithLogin;
 
     public $searchTerm = "";
 
-    public function mount() {
+    public function mount()
+    {
         $this->checkLogin();
-    } 
+    }
 
     public function render()
     {
-        $searchTerm = '%'.$this->searchTerm.'%';
+        $searchTerm = '%' . $this->searchTerm . '%';
         $https = config('app.https', 'http://');
 
         $devices = Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id');
-        foreach($devices as $device) {
+        foreach ($devices as $device) {
             $device->online = DeviceController::isOnline($device->hostname);
         }
 
-        return view('switch.index_',[
+        return view('switch.switch-overview-livew', [
             'devices' => $devices,
             'locations' => Location::all()->keyBy('id'),
             'buildings' => Building::all()->keyBy('id'),
