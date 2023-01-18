@@ -695,7 +695,7 @@ class ArubaOS implements IDevice
             return $return;
     }
 
-    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $test): Array {
+    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $overwrite, $test): Array {
 
         $start = microtime(true);
         $not_found = [];
@@ -759,19 +759,21 @@ class ArubaOS implements IDevice
                 }
             }
 
-            foreach($chg_name as $vlan) {
-                $data = '{
-                    "vlan_id": '.$vlan->vid.', 
-                    "name": "'.$vlan->name.'"
-                }';
-                
-                $response = self::ApiPut($device->hostname, $cookie, "vlans/".$vlan->vid, $api_version, $data);
+            if($overwrite) {
+                foreach($chg_name as $vlan) {
+                    $data = '{
+                        "vlan_id": '.$vlan->vid.', 
+                        "name": "'.$vlan->name.'"
+                    }';
+                    
+                    $response = self::ApiPut($device->hostname, $cookie, "vlans/".$vlan->vid, $api_version, $data);
 
-                if($response['success']) {
-                    $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
-                    $i_vlan_chg_name++;
-                } else {
-                    $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                    if($response['success']) {
+                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
+                        $i_vlan_chg_name++;
+                    } else {
+                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                    }
                 }
             }
 
@@ -790,5 +792,3 @@ class ArubaOS implements IDevice
         return $return;
     }
 }
-
-?>

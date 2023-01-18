@@ -16,6 +16,13 @@
                     <label class="label">{{ __('Options') }}</label>
                     <div class="field">
                         <label class="checkbox">
+                            <input checked type="checkbox" name="overwrite-vlan-name">
+                            {{ __('Switch.Sync.OverwriteName') }}
+                        </label>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox">
                             <input type="checkbox" name="create-if-not-exists">
                             {{ __('Switch.Sync.CreateVlans') }}
                         </label>

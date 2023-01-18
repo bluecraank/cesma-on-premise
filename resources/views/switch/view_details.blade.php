@@ -87,15 +87,15 @@
                 @csrf
                 <div class="buttons are-small">
                     <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
-                        <i class="mr-2 fa-solid fa-sync"></i> Refresh now
+                        <i class="mr-2 fa-solid fa-sync"></i> Refresh
+                    </a>
+
+                    <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
+                        <i class="mr-2 fa-solid fa-hdd"></i> Backup
                     </a>
 
                     <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
                         <i class="mr-2 fa-solid fa-key"></i> Sync Pubkeys
-                    </a>
-
-                    <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
-                        <i class="mr-2 fa-solid fa-hdd"></i> Create Backup
                     </a>
                 </div>
             </div>

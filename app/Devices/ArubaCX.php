@@ -634,7 +634,7 @@ class ArubaCX implements IDevice
         return $return; 
     }
 
-    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $test): Array {
+    static function updateVlans($vlans, $vlans_switch, $device, $create_vlans, $overwrite, $test): Array {
 
         $start = microtime(true);
         $not_found = [];
@@ -698,21 +698,23 @@ class ArubaCX implements IDevice
                 }
             }
 
-            foreach($chg_name as $vlan) {
-                $data = '{
-                    "name": "'.$vlan->name.'"
-                }';
-                
-                $response = self::ApiPut($device->hostname, $cookie, "system/vlans/".$vlan->vid, $api_version, $data);
+            if($overwrite) {
+                foreach($chg_name as $vlan) {
+                    $data = '{
+                        "name": "'.$vlan->name.'"
+                    }';
+                    
+                    $response = self::ApiPut($device->hostname, $cookie, "system/vlans/".$vlan->vid, $api_version, $data);
 
-                if($response['success']) {
-                    $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
-                    $i_vlan_chg_name++;
-                } else {
-                    if($vlan->vid != 1) {
-                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                    if($response['success']) {
+                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan->vid}</span> erfolgreich umbenannt";
+                        $i_vlan_chg_name++;
                     } else {
-                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> VLAN 1 kann nicht umbenannt werden (ArubaCX Einschränkung)";
+                        if($vlan->vid != 1) {
+                            $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> konnte nicht umbenannt werden";
+                        } else {
+                            $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> VLAN 1 kann nicht umbenannt werden (ArubaCX Einschränkung)";
+                        }
                     }
                 }
             }
@@ -732,5 +734,3 @@ class ArubaCX implements IDevice
         return $return;
     }
 }
-
-?>
