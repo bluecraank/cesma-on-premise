@@ -1,15 +1,15 @@
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Trunks') }}</h1>
-    
+
         <div class="is-pulled-right ml-4">
-            
+
         </div>
-    
+
         <div class="is-pulled-right">
 
         </div>
-    
+
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">
             <thead>
                 <tr>
@@ -19,13 +19,13 @@
             </thead>
             <tbody>
                 @foreach ($data as $device)
-                <tr>
-                    <td>{{ $device['name'] }}</td>
-                    <td>{!! implode(', ', $device['trunks']) !!}</td>
-                </tr>
+                    <tr>
+                        <td>{{ $device['name'] }}</td>
+                        <td>{!! implode(', ', $device['trunks']) !!}</td>
+                    </tr>
                 @endforeach
         </table>
-    
-        <span  class='has-text-link has-size-7'>{{ __('Trunk.Info.ArubaCX') }}</span>
+
+        <span class='has-text-link has-size-7'>{{ __('Trunk.Info.ArubaCX') }}</span>
     </div>
-</x-layouts>
+    </x-layouts>
