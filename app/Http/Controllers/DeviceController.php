@@ -480,8 +480,9 @@ class DeviceController extends Controller
 
     static function updateVlansAllDevices(Request $request)
     {
-        $devices = Device::all()->keyBy('id');
-        $vlans = Vlan::where('sync', '!=', '0')->get()->keyBy('vid');
+        $locid = $request->input('location_id');
+        $devices = Device::where('location', $locid)->get()->keyBy('id');
+        $vlans = Vlan::where('sync', '!=', '0')->where('location_id', $locid)->get()->keyBy('vid');
         $results = [];
 
         $create_vlan = ($request->input('create-if-not-exists') == "on") ? true : false;

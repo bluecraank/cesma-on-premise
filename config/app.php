@@ -18,6 +18,7 @@ return [
     'name' => env('APP_NAME', 'Cesma'),
     'company' => env('APP_COMPANY', 'Default Company'),
     'version' => env('APP_VERSION', '1.0.0'),
+
     'api_username' => env('APP_API_USERNAME', 'admin'),
     'ssh_private_key' => env('APP_SSH_PRIVATE_KEY', 'false'),
     'ssh_username' => env('APP_SSH_USERNAME', 'false'),
@@ -31,10 +32,24 @@ return [
     'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
     
+    // Hard code which ip subnet belongs to which device type
+    'ip_subnet_to_type' => [
+        '192.168.200' => 'printer',
+        '192.168.120' => 'phone',
+        '192.168.95' => 'wifi',
+        '10.50.15' => 'printer'
+    ],
+
+    // Ignore these vlans because they are not needed (e.g private clients in wifi)
     'ignore_vlans' => env('IGNORE_VLANS', ''),
+
+    // Get snmp data from these routers
     'snmp_routers' => env('SNMP_ROUTERS', ''),
+
+    // Replace the domain name in the hostname lookup
     'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
 
+    // Specify which mac vendors are which device type
     'printer_macs' => env('PRINTER_MACS', ''),
     'phone_macs' => env('PHONE_MACS', ''),
     'wifi_macs' => env('WIFI_MACS', ''),

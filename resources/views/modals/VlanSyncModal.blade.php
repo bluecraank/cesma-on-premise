@@ -13,6 +13,20 @@
                         <br>
                     </p>
 
+                    <div class="field">
+                        <label class="label">Standort</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="location_id">
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                    </div>
+
+                    <br>
+
                     <label class="label">{{ __('Options') }}</label>
                     <div class="field">
                         <label class="checkbox">

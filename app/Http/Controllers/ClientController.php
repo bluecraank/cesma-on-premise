@@ -74,6 +74,14 @@ class ClientController extends Controller
                         'type' => self::getClientType($mac),
                     ];
 
+                    // Check for predefined ip subnet types
+                    $ip_subnets_types = config('app.ip_subnet_to_type');
+                    foreach($ip_subnets_types as $key => $ip_subnet_type) {
+                        if(str_contains($client['ip_address'], $key)) {
+                            $insert_data['type'] = $ip_subnet_type;
+                        }
+                    }
+
                     // Check if client already exists in database
                     $client_in_db = Client::find($mac);
                     if($client_in_db) {
