@@ -90,7 +90,7 @@
                 </ul>
 
 
-                <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->name }}<br>CESMA {{ config('app.version') }}</p>
+                <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->getName() }}<br>CESMA {{ config('app.version') }}</p>
             </div>
 
         </div>

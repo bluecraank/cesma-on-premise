@@ -20,7 +20,7 @@
                     <div class="field">
                         <label class="label">Email address</label>
                         <p class="control has-icons-left">
-                            <input required autocomplete="email" id="email" class="input form-control @error('email') is-invalid @enderror" type="email" value="{{ old('email') }}" name="email">
+                            <input required id="username" class="input form-control @error('username') is-invalid @enderror" type="text" value="{{ old('username') }}" name="username">
                             <span class="icon is-small is-left">
                                 <i class="fas fa-user"></i>
                             </span>
