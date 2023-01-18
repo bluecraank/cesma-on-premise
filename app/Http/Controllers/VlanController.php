@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVlanRequest;
 use App\Http\Requests\UpdateVlanRequest;
 use App\Models\Device;
+use App\Models\Location;
 use App\Models\Vlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VlanController extends Controller
 {
@@ -18,9 +20,11 @@ class VlanController extends Controller
     public function index()
     {
         $vlans = Vlan::all()->sortBy('vid');
+        $locations = Location::all()->sortBy('id');
 
         return view('vlan.vlan-overview', compact(
-            'vlans'
+            'vlans',
+            'locations'
         ));
     }
 
@@ -87,6 +91,50 @@ class VlanController extends Controller
         ));
     }
 
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vid' => 'required|integer|unique:vlans',
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'ip_range' => 'nullable|string',
+            'scan' => 'nullable|string',
+            'sync' => 'nullable|string',
+            'location' => 'required|integer|exists:locations,id'
+        ])->validate();
+
+        if ($request->input('scan') == "on") {
+            $scan = true;
+        } else {
+            $scan = false;
+        }
+
+        if ($request->input('sync') == "on") {
+            $sync = true;
+        } else {
+            $sync = false;
+        }
+
+        if (!empty($request->input('ip_range')) and (!str_contains($request->input('ip_range'), '/') or substr_count($request->input('ip_range'), '.') != 3)) {
+            return redirect()->back()->withErrors(['error' => 'IP range is not valid']);
+        }
+
+        if ($vlan = Vlan::create([
+            'vid' => $request['vid'],
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'ip_range' => $request['ip_range'] ?? null,
+            'scan' => $scan,
+            'sync' => $sync,
+            'location_id' => $request['location']
+        ])) {
+            LogController::log('VLAN erstellt', '{"name": "' .  $request['name'] . '", "vid": "' . $request['vid'] . '", "description": "' . $request['description'] . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
+            return redirect()->route('vlan.index')->with('success', 'VLAN ' . $vlan->name . ' created');
+        }
+
+        return redirect()->back()->withErrors(['error' => 'VLAN could not be created']);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -96,15 +144,32 @@ class VlanController extends Controller
      */
     public function update(UpdateVlanRequest $request, Vlan $vlan)
     {
+
+        if (!empty($request->input('ip_range')) and (!str_contains($request->input('ip_range'), '/') or substr_count($request->input('ip_range'), '.') != 3)) {
+            return redirect()->back()->withErrors(['error' => 'IP range is not valid']);
+        }
+
+        if ($request->input('scan') == "on") {
+            $scan = true;
+        } else {
+            $scan = false;
+        }
+
+        if ($request->input('sync') == "on") {
+            $sync = true;
+        } else {
+            $sync = false;
+        }
+
         if (Vlan::whereId($request['id'])->update([
             'name' => $request['name'],
             'description' => $request['description'],
             'ip_range' => $request['ip_range'] ?? null,
-            'scan' => ($request['scan'] == "on") ? true : false,
-            'sync' => ($request['sync'] == "on") ? true : false
+            'scan' => $scan,
+            'sync' => $sync
         ])) {
             $vlanD = Vlan::whereId($request['id'])->first();
-            LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '"}');
+            LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
 
             return redirect()->back()->with('success', 'VLAN updated successfully');
         }
@@ -121,7 +186,7 @@ class VlanController extends Controller
     {
         $find = Vlan::find($vlan->id);
         if ($find->delete()) {
-            LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '", "description": "' . $find->description . '"}');
+            LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '"}');
 
             return redirect()->back()->with('success', 'VLAN deleted');
         }

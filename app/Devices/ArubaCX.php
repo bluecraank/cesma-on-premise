@@ -5,6 +5,7 @@ namespace App\Devices;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
+use App\Http\Controllers\LogController;
 use App\Models\Backup;
 
 class ArubaCX implements IDevice
@@ -545,6 +546,8 @@ class ArubaCX implements IDevice
                 $result = self::ApiPatch($device->hostname, $cookie, $uri, $api_version, $data);
 
                 if($result['success']) {
+                    LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Untagged VLAN geändert", "port": "'.$port.'", "vlan": "'.$vlans[$key].'"}');
+
                     $success++;
                 } else {
                     $failed++;
@@ -602,6 +605,8 @@ class ArubaCX implements IDevice
             $result = self::ApiPut($device->hostname, $cookie, $uri, $api_version, $data);
 
             if($result['success']) {
+                LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLANs geändert", "port": "'.$port.'", "vlan": "'.implode(",", $vlans).'"}');
+
                 $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
                 $device->vlan_port_data =  self::getVlanPortData($newVlanPortData);
                 $device->save();

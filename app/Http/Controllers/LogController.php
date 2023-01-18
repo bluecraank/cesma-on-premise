@@ -18,10 +18,11 @@ class LogController extends Controller
 
     static function log($msg, $data = null)
     {
+        $user = Auth::user()->getName();
         $log = new Log();
         $log->message = $msg;
         $log->data = $data;
-        $log->user = Auth::user()->id;
+        $log->user = ''.$user.'';
         $log->save();
     }
 }

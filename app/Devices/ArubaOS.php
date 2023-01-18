@@ -6,6 +6,7 @@ use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\KeyController;
+use App\Http\Controllers\LogController;
 use App\Models\Backup;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
@@ -584,6 +585,8 @@ class ArubaOS implements IDevice
                 $result = self::ApiPost($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
                 if($result['success']) {
+                    LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Untagged VLAN geändert", "port": "'.$port.'", "vlan": "'.$vlans[$key].'"}');
+
                     $success++;
                 } else {
                     $failed++;
@@ -635,9 +638,7 @@ class ArubaOS implements IDevice
                         $result = self::ApiPost($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
                         
                         if($result['success']) {
-                            $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
-                            $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
-                            $device->save();
+                            LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLAN hinzugefügt", "port": "'.$port.'", "vlan": "'.$vlan.'"}');
 
                             $return[] = [
                                 'success' => true,
@@ -665,9 +666,7 @@ class ArubaOS implements IDevice
                             $result = self::ApiDelete($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
                             
                             if($result['success']) {
-                                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
-                                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
-                                $device->save();
+                                LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLAN entfernt", "port": "'.$port.'", "vlan": "'.$vlan.'"}');
 
                                 $return[] = [
                                     'success' => true,
@@ -682,6 +681,10 @@ class ArubaOS implements IDevice
                         }
                     }
                 }
+
+                $newVlanPortData = self::ApiGet($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version)['data'];
+                $device->vlan_port_data =  self::getVlanPortData($newVlanPortData['vlan_port_element']);
+                $device->save();
 
                 self::ApiLogout($device->hostname, $cookie, $api_version);
                 return $return;

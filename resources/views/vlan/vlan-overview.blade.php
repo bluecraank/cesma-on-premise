@@ -12,6 +12,8 @@
         </div>
     </div>
 
+    @include('modals.VlanAddModal')
+
     @include('modals.VlanEditModal')
 
     @include('modals.VlanDeleteModal')

@@ -2,7 +2,7 @@
     <h1 class="title is-pulled-left">{{ __('Header.Vlans') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        <button class="button is-success is-small"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="$('.modal-add-vlan').show();" class="button is-success is-small"><i class="fa-solid fa-plus"></i></button>
     </div>
 
 

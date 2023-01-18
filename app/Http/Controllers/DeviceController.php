@@ -397,6 +397,8 @@ class DeviceController extends Controller
             $backup = $class::createBackup($device);
 
             if ($backup) {
+                LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
+
                 return json_encode(['success' => 'true', 'error' => 'Backup created']);
             } else {
                 return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
@@ -528,6 +530,8 @@ class DeviceController extends Controller
             $uplinks = explode(',', $uplinks);
             $device->uplinks = json_encode($uplinks);
             $device->save();
+            LogController::log('Uplinks aktualisiert', '{"switch": "' .  $device->name . '", "uplinks": "'.$request->input('uplinks').'"}');
+
         }
 
         return redirect()->back();
@@ -544,6 +548,7 @@ class DeviceController extends Controller
 
             if (is_array($vlans) and is_array($ports) and count($vlans) != 0 and count($vlans) == count($ports)) {
                 $class = self::$models[$device->type];
+
                 return $class::updatePortVlanUntagged($vlans, $ports, $device);
             } else {
                 return json_encode(['success' => 'false', 'error' => 'No changes found']);
@@ -596,6 +601,8 @@ class DeviceController extends Controller
             if (Hash::check($password, Auth::user()->password)) {
                 $class = self::$models[$device->type];
                 $restore = $class::restoreBackup($device, $backup, $password_switch);
+                LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "'.$backup->created_at.'", "restored": "'.$restore['success'].'"}');
+
                 return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
             } else {
                 return json_encode(['success' => 'false', 'error' => 'Your password is wrong']);
