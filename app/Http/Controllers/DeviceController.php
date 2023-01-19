@@ -597,17 +597,13 @@ class DeviceController extends Controller
         $backup = Backup::find($request->input('id'));
 
         if ($device and $backup) {
-            $password = $request->input('password');
             $password_switch = $request->input('password-switch');
-            if (Hash::check($password, Auth::user()->password)) {
-                $class = self::$models[$device->type];
-                $restore = $class::restoreBackup($device, $backup, $password_switch);
-                LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "'.$backup->created_at.'", "restored": "'.$restore['success'].'"}');
+            $class = self::$models[$device->type];
+            $restore = $class::restoreBackup($device, $backup, $password_switch);
+            
+            LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "'.$backup->created_at.'", "restored": "'.$restore['success'].'"}');
 
-                return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
-            } else {
-                return json_encode(['success' => 'false', 'error' => 'Your password is wrong']);
-            }
+            return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
         }
     }
 

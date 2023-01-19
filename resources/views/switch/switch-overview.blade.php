@@ -22,7 +22,7 @@
 
     @include('modals.SwitchDeleteModal')
 
-    @include('modals.SwitchSyncPubkeysModal')
+    @include('modals.PubkeySyncModal')
 
     @include('modals.VlanSyncModal')
     </x-layouts>

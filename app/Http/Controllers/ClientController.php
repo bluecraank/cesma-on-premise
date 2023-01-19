@@ -11,7 +11,9 @@ use Carbon\Carbon;
 
 class ClientController extends Controller
 {
+
     public function index() {
+
         $clients = Client::where('vlan_id', '!=', 3056)->get();
         $devices = Device::all()->keyBy('id');
 
@@ -59,16 +61,13 @@ class ClientController extends Controller
         // Get unique endpoints based on mac address
         foreach($endpoints as $client) {
             foreach($client['mac_addresses'] as $mac) {
-                if(in_array(substr($mac, 0, 6), explode(",", config('app.wifi_macs') ) )) {
-                    echo "----- " .$mac . " | ".$client['ip_address'] ."is a wifi mac\n";
-                }
-
                 if(!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !in_array($mactable[$mac]['vlan_id'], explode(",", config('app.ignore_vlans')) )) {
                     $unique_endpoints[$mac] = true;
 
                     $insert_data = [
                         'hostname' => $client['hostname'],
                         'ip_address' => $client['ip_address'],
+                        'switch_id' => $mactable[$mac]['device_id'],
                         'port_id' => $mactable[$mac]['port_id'],
                         'vlan_id' => $mactable[$mac]['vlan_id'],
                         'type' => self::getClientType($mac),
@@ -90,7 +89,6 @@ class ClientController extends Controller
                     } else {
                         $insert_data['id'] = $mac;
                         $insert_data['mac_address'] = $mac;
-                        $insert_data['switch_id'] = $mactable[$mac]['device_id'];
                         Client::create($insert_data);
                         $created++;
                     }

@@ -20,10 +20,9 @@ $('select[name="fast-command"]').on('change', function () {
 });
 
 $("button[name='executeSwitchCommand'").click(async function () {
-    if ($("select[name='execute-switch-select']").val() && $("input[name='execute-passphrase']").val() && $("textarea[name='execute-command']").val()) {
+    if ($("select[name='execute-switch-select']").val() && $("textarea[name='execute-command']").val()) {
 
         let command = $("textarea[name='execute-command']").val();
-        let passphrase = $("input[name='execute-passphrase']").val();
         let which_switch = $("input[name='which_switch']").val();
         let api_token = $("input[name='_token']").val();
 
@@ -42,20 +41,19 @@ $("button[name='executeSwitchCommand'").click(async function () {
         $(".output-buttons").children().remove();
         $(".outputs").children().remove();
 
-        execute(switches, command, passphrase, which_switch, api_token);
+        execute(switches, command, which_switch, api_token);
     }
 });
 
-async function execute(switches, command, passphrase, type, api_token) {
+async function execute(switches, command, type, api_token) {
     $.each(switches, async function (index, value) {
         $(".output-buttons").append(`<button class='is-loading button' data-id='${value.id}'>${value.name}</button>`);
 
         let formData = new FormData();
+        let token = $('meta[name="csrf-token"]').attr('content');
+        formData.append('_token', token);
         formData.append("command", command);
-        formData.append("passphrase", passphrase);
         formData.append("id", value.id);
-        formData.append("_token", api_token);
-        formData.append("api_token", $('#executeForm').find('input[name="api_token"]').val())
 
         fetch(
             '/switch/'+value.id+'/ssh/execute',

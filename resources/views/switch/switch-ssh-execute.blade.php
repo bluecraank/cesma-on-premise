@@ -70,16 +70,6 @@
                             <textarea required="true" spellcheck="false" required name="execute-command" class="textarea" placeholder="Kommando..."></textarea>
                             <p class="help is-danger">{{ __('Switch.SSH.Info') }}</p>
                         </div>
-                        <div class="mt-5 field">
-                            <label class="label">{{ __('Switch.SSH.YourPassword') }}</label>
-                            <p class="control has-icons-left">
-                                <input required="true" class="input" type="password" required name="execute-passphrase"
-                                    placeholder="Passphrase">
-                                <span class="icon is-small is-left">
-                                    <i class="fas fa-lock"></i>
-                                </span>
-                            </p>
-                        </div>
 
                         <button
                             onclick="$('.modal-confirmation-command').show();$('.confirmation-content').val($('textarea[name=\'execute-command\']').val());"

@@ -71,11 +71,6 @@ class SSHController extends Controller
                 }
                 $key = PublicKeyLoader::load($decrypt);
 
-                if (!Hash::check($request->input('passphrase'), Auth::user()->password)) {
-                    $return->status = 'xmark';
-                    $return->output = 'Passwort falsch';
-                    return json_encode($return, true);
-                }
             } else {
                 $key = $request->input('passphrase');
             }

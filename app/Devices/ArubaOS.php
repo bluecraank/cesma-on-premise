@@ -466,11 +466,11 @@ class ArubaOS implements IDevice
     static function restoreBackup($device, $backup, $password_switch): Array
     {
         if($password_switch != EncryptionController::decrypt($device->password)) {
-            return ['success' => false, 'data' => 'Wrong password for switch'];
+            return ['success' => false, 'data' => 'Switch password incorrect'];
         }
 
         if(!$login_info = self::ApiLogin($device)) {
-            return ['success' => false, 'data' => 'Login failed'];
+            return ['success' => false, 'data' => 'API Login failed'];
         }
 
         list($cookie, $api_version) = explode(";", $login_info);
@@ -479,7 +479,7 @@ class ArubaOS implements IDevice
 
         $api_url = $https . $device->hostname . '/rest/' . $api_version . '/system/config/cfg_restore/payload';
 
-        $restore = Http::withoutVerifying()->withHeaders([
+        $restore = Http::connectTimeout(10)->withoutVerifying()->withHeaders([
             'Cookie' => $cookie,
         ])->post($api_url, [
             'config_base64_encoded' => base64_encode($backup->data),

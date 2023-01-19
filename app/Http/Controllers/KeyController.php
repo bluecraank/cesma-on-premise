@@ -21,7 +21,6 @@ class KeyController extends Controller
     static function getPubkeysAsText()
     {
         $keys = Key::all();
-        $users = User::all();
 
         $keys2 = "";
         $i = 0;
@@ -36,27 +35,11 @@ class KeyController extends Controller
             $i++;
         }
 
-        foreach($users as $user) {
-
-            if($user->privatekey !== NULL and !empty($user->privatekey)) {
-                $format_key = explode(" ", EncryptionController::decrypt($user->privatekey));
-
-                if($format_key !== NULL and !empty($format_key)) {  
-                    $desc = $format_key[2] ?? "Imported";
-                    $correct = $desc. " " . $format_key[0] . " " . $format_key[1];
-                    $keys2 .= $correct . "\n";
-
-                    $i++;
-                }
-            }
-        }
-
         return $keys2;
     }
 
     static function getPubkeysAsArray() {
         $keys = Key::all();
-        $users = User::all();
 
         $keys2 = [];
         $i = 1;
@@ -68,25 +51,11 @@ class KeyController extends Controller
             $i++;
         }
 
-        foreach($users as $user) {
-
-            if($user->privatekey !== NULL and !empty($user->privatekey)) {
-                $format_key = EncryptionController::decrypt($user->privatekey);
-
-                if($format_key !== NULL and !empty($format_key)) {  
-                    $keys2[$i] = $format_key;
-
-                    $i++;
-                }
-            }
-        }
-
         return $keys2;     
     }
 
     static function getPubkeysDesc() {
         $keys_db = Key::all();
-        $users = User::all();
 
         $keys = [];
         $i = 1;
@@ -95,15 +64,6 @@ class KeyController extends Controller
             $keys[$i] = $key->description;
 
             $i++;
-        }
-
-        foreach($users as $user) {
-
-            if($user->privatekey !== NULL and !empty($user->privatekey)) {
-                    $keys[$i] = "User: ".$user->name;
-
-                    $i++;
-            }
         }
 
         return $keys;

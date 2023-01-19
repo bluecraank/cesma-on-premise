@@ -5,11 +5,11 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
+use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,26 +29,21 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports');
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
-    Route::get('/user-settings', [UserController::class, 'index'])->name('user-settings');
-    Route::get('/system', [UserController::class, 'index_system'])->name('system');
+    Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
+    Route::get('/system', [SystemController::class, 'index_system'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
     Route::post('/location/create', [LocationController::class, 'store']);
     Route::post('/building/create', [BuildingController::class, 'store']);
     Route::post('/vlan/create', [VlanController::class, 'store']);
-    Route::post('/user/create', [UserController::class, 'store']);
     Route::post('/pubkey/add', [KeyController::class, 'store']);
     Route::delete('/building/delete', [BuildingController::class, 'destroy']);
     Route::delete('/location/delete', [LocationController::class, 'destroy']);
     Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
-    Route::delete('/user/delete', [UserController::class, 'destroy']);
-    Route::delete('/user/delete-pubkey', [UserController::class, 'deletePubkey']);
     Route::delete('/pubkey/delete', [KeyController::class, 'destroy']);
     Route::put('/building/update', [BuildingController::class, 'update']);
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
-    Route::put('/user/update', [UserController::class, 'update']);
-    Route::put('/user/pubkey', [UserController::class, 'addPubkey']);
 });
 
 

@@ -34,12 +34,12 @@
 
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
 
-    "Menu.Clients": "Geräte",
+    "Menu.Clients": "Endgeräte",
     "Menu.Vlans": "VLANs",
     "Menu.Switches": "Switche",
     "Menu.System": "Einstellungen",
     "Menu.Logout": "Abmelden",
-    "Menu.Usersettings": "Benutzer",
+    "Menu.Usersettings": "Anpassen",
     "Menu.Backups": "Backups",
     "Menu.Locations": "Standorte",
     "Menu.Trunks": "Trunks",
@@ -82,7 +82,7 @@
     "Mail.Switch": "Switch",
     "Mail.Last successful backup": "Letztes erfolgreiches Backup",
 
-    "System.Addititional Pubkeys": "Weitere öffentliche Schlüssel",
+    "System.Addititional Pubkeys": "Öffentliche Schlüssel",
     "System.Desc": "Beschreibung",
     "System.Key": "Schlüssel",
     "System.Username": "Benutzername",

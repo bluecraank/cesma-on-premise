@@ -38,6 +38,7 @@
         <div class="is-clearfix"></div>
     </div>
 
+    @include('modals.PubkeySyncModal')
     @include('modals.PubkeyDeleteModal')
     @include('modals.PubkeyAddModal')
     

@@ -10,16 +10,23 @@ use App\Traits\WithLogin;
 
 
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class SearchClients extends Component
 {
     use WithLogin;
+    use WithPagination;
 
     public $cHOSTNAME, $cIP, $cMAC, $cVLAN, $cSWITCH, $cPORT, $cSTATUS, $cTYPE;
 
     public function mount() {
         $this->checkLogin();
     } 
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -28,7 +35,6 @@ class SearchClients extends Component
         $vlans = Vlan::all()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendors::all()->keyBy('mac_prefix');
         
-
         $hostname = $this->cHOSTNAME;
         $ip = $this->cIP;
         $mac = $this->cMAC;
@@ -65,7 +71,9 @@ class SearchClients extends Component
             if ($type and $type != 'all') {
                 $query->where('type', '=', $type);
             }
-        })->paginate(500);
+        });
+
+        $clients = $clients->paginate(50);
 
         $count_result = count($clients);
 
