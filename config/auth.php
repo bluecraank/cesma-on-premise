@@ -40,10 +40,6 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-        ],
-        'api' => [
-            'driver' => 'session',
-            'provider' => 'users',
         ]
     ],
 
@@ -65,10 +61,6 @@ return [
     */
 
     'providers' => [
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\User::class,
-        // ],
         'users' => [
             'driver' => 'ldap',
             'model' => LdapRecord\Models\ActiveDirectory\User::class,
@@ -84,10 +76,6 @@ return [
                 ],
             ],
         ],
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*

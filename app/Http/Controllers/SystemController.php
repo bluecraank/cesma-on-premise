@@ -35,5 +35,7 @@ class SystemController extends Controller
         if($request->input('theme')) {
             setcookie('theme', $request->input('theme'), time() + (86400 * 30), "/"); // 86400 = 1 day
         }
-    }
+
+        return redirect()->back()->with('success', 'Theme updated!');
+   }
 }

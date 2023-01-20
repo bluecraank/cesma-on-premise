@@ -5,7 +5,6 @@
             </h2>
 
             <div class="menu-items">
-                @if (Auth::user()->role == 'admin')
                 <p class="menu-label">{{ __('Menu.Label.Action') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -14,7 +13,6 @@
                         </a>
                     </li>
                 </ul>
-                @endif
                 <p class="menu-label">{{ __('Menu.Label.Management') }}</p>
                 <ul class="menu-list">
                     <li>
