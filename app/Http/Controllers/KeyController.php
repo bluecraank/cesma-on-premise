@@ -3,13 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\UpdateKeyRequest;
 use App\Models\Key;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
 
 class KeyController extends Controller
 {
@@ -25,11 +20,11 @@ class KeyController extends Controller
         $keys2 = "";
         $i = 0;
 
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $format_key = explode(" ", EncryptionController::decrypt($key->key));
 
             $desc = $format_key[2] ?? "Imported";
-            $correct = $desc. " " . $format_key[0] . " " . $format_key[1];
+            $correct = $desc . " " . $format_key[0] . " " . $format_key[1];
             $keys2 .= $correct . "\n";
 
             $i++;
@@ -38,29 +33,31 @@ class KeyController extends Controller
         return $keys2;
     }
 
-    static function getPubkeysAsArray() {
+    static function getPubkeysAsArray()
+    {
         $keys = Key::all();
 
         $keys2 = [];
         $i = 1;
 
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $format_key = EncryptionController::decrypt($key->key);
             $keys2[$i] = $format_key;
 
             $i++;
         }
 
-        return $keys2;     
+        return $keys2;
     }
 
-    static function getPubkeysDesc() {
+    static function getPubkeysDesc()
+    {
         $keys_db = Key::all();
 
         $keys = [];
         $i = 1;
 
-        foreach($keys_db as $key) {
+        foreach ($keys_db as $key) {
             $keys[$i] = $key->description;
 
             $i++;
@@ -102,13 +99,12 @@ class KeyController extends Controller
     public function destroy(Request $key)
     {
         $key = Key::find($key->input('id'));
-        if($key) {
+        if ($key) {
             $key->delete();
             LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
             return redirect()->back()->with('success', 'Key deleted successfully!');
         } else {
             return redirect()->back()->with('error', 'Key not found!');
         }
-
     }
 }

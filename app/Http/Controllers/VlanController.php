@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreVlanRequest;
 use App\Http\Requests\UpdateVlanRequest;
 use App\Models\Device;
 use App\Models\Location;

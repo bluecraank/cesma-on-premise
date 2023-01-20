@@ -7,7 +7,7 @@ use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\LogController;
-use App\Models\Backup;
+use App\Http\Controllers\MacAddressController;
 
 class ArubaCX implements IDevice
 {
@@ -730,5 +730,26 @@ class ArubaCX implements IDevice
 
         $return['time'] = number_format(microtime(true)-$start, 2);
         return $return;
+    }
+
+    static function refresh($device): Bool {
+        $device_data = self::getApiData($device);
+
+        if (isset($device_data['success']) and $device_data['success'] == false) {
+            // return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
+            return false;
+        }
+
+        MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
+
+        $device->update([
+            'mac_table_data' => json_encode($device_data['mac_table_data'], true),
+            'vlan_data' => json_encode($device_data['vlan_data'], true),
+            'port_data' => json_encode($device_data['ports_data'], true),
+            'port_statistic_data' => json_encode($device_data['portstats_data'], true),
+            'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
+            'system_data' => json_encode($device_data['sysstatus_data'], true)
+        ]);
+        return true;
     }
 }

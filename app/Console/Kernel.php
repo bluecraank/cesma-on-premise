@@ -16,26 +16,39 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // API abfragen
-        $schedule->command('updater')->everyTenMinutes()->appendOutputTo(storage_path('logs/updater.log'));
+        $schedule->command('device:refresh-all')
+        ->everyFiveMinutes()
+        ->appendOutputTo(storage_path('logs/device-refresh-all.log'))
+        ->runInBackground();
 
-        $schedule->command('clients:ping')->everyFifteenMinutes()->between('06:00', '20:00')->appendOutputTo(storage_path('logs/ping.log'));        
+        $schedule->command('clients:update')
+        ->everyFifteenMinutes()
+        ->appendOutputTo(storage_path('logs/clients-update.log'))
+        ->runInBackground();
 
-        $schedule->command('clients:macvendors')
+        $schedule->command('clients:ping')
+        ->everyFifteenMinutes()
+        ->between('05:00', '21:00')
+        ->runInBackground();
+
+        $schedule->command('clients:resolve-mac-vendors')
         ->daily()
         ->at('04:00')
-        ->appendOutputTo(storage_path('logs/mac-vendors.log'));
+        ->appendOutputTo(storage_path('logs/clients-resolve-mac-vendors.log'))
+        ->runInBackground();
         
         // Backups erstellen
-        $schedule->command('switch:backup')
+        $schedule->command('device:backup')
         ->dailyAt('08:00')
-        ->appendOutputTo(storage_path('logs/backup.log'));
+        ->appendOutputTo(storage_path('logs/device-backup.log'))
+        ->runInBackground();
 
         // Backups per Mail versenden
-        $schedule->command('switch:backup:mail')
+        $schedule->command('backup:mail')
         ->weekly()
         ->sundays()
         ->at('22:00')
-        ->appendOutputTo(storage_path('logs/backup.log'));
+        ->appendOutputTo(storage_path('logs/backup-mail.log'));
     }
 
     /**

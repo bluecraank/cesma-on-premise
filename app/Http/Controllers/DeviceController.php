@@ -15,11 +15,7 @@ use App\Models\Client;
 use App\Models\MacAddress;
 use App\Models\Vlan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
-use function Termwind\render;
 
 class DeviceController extends Controller
 {
@@ -531,8 +527,7 @@ class DeviceController extends Controller
             $uplinks = explode(',', $uplinks);
             $device->uplinks = json_encode($uplinks);
             $device->save();
-            LogController::log('Uplinks aktualisiert', '{"switch": "' .  $device->name . '", "uplinks": "'.$request->input('uplinks').'"}');
-
+            LogController::log('Uplinks aktualisiert', '{"switch": "' .  $device->name . '", "uplinks": "' . $request->input('uplinks') . '"}');
         }
 
         return redirect()->back();
@@ -600,8 +595,8 @@ class DeviceController extends Controller
             $password_switch = $request->input('password-switch');
             $class = self::$models[$device->type];
             $restore = $class::restoreBackup($device, $backup, $password_switch);
-            
-            LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "'.$backup->created_at.'", "restored": "'.$restore['success'].'"}');
+
+            LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "' . $backup->created_at . '", "restored": "' . $restore['success'] . '"}');
 
             return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
         }

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreLogRequest;
-use App\Http\Requests\UpdateLogRequest;
 use App\Models\Log;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 
 class LogController extends Controller
@@ -18,11 +15,11 @@ class LogController extends Controller
 
     static function log($msg, $data = null)
     {
-        $user = Auth::user()->getName();
+        $user = Auth::user()->name;
         $log = new Log();
         $log->message = $msg;
         $log->data = $data;
-        $log->user = ''.$user.'';
+        $log->user = '' . $user . '';
         $log->save();
     }
 }

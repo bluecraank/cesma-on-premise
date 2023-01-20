@@ -10,8 +10,6 @@ use phpseclib3\Net\SSH2;
 use App\Http\Controllers\EncryptionController;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 
@@ -70,7 +68,6 @@ class SSHController extends Controller
                     return json_encode($return, true);
                 }
                 $key = PublicKeyLoader::load($decrypt);
-
             } else {
                 $key = $request->input('passphrase');
             }

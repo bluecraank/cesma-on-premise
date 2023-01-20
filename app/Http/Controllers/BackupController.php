@@ -33,7 +33,8 @@ class BackupController extends Controller
         return view('switch.view_backups', compact('backups', 'devices'));
     }
 
-    static function store($success, $data, $device) {
+    static function store($success, $data, $device)
+    {
 
         $dataEncrypted = EncryptionController::encrypt($data);
 

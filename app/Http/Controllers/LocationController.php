@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLocationRequest;
-use App\Http\Requests\UpdateLocationRequest;
 use App\Models\Location;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LocationController extends Controller
@@ -32,13 +30,13 @@ class LocationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:locations|max:100',
-         ])->validate();
+        ])->validate();
 
-         if($validator AND Location::create($request->all())) {
+        if ($validator and Location::create($request->all())) {
             LogController::log('Standort erstellt', '{"name": "' . $request->name . '"}');
 
             return redirect()->back()->with('success', 'Location created successfully');
-         } 
-            return redirect()->back()->withErrors(['error' => 'Location could not be created']);
+        }
+        return redirect()->back()->withErrors(['error' => 'Location could not be created']);
     }
 }

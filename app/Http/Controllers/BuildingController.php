@@ -21,14 +21,14 @@ class BuildingController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:buildings|max:100',
             'location_id' => 'required|integer',
-         ])->validate();
+        ])->validate();
 
-         if($validator AND Building::create($request->all())) {
+        if ($validator and Building::create($request->all())) {
             LogController::log('Gebäude erstellt', '{"name": "' . $request->name . '", "location_id": "' . $request->location_id . '"}');
 
             return redirect()->back()->with('success', 'Building created successfully');
-         } 
-            return redirect()->back()->withErrors(['error' => 'Building could not be created']);
+        }
+        return redirect()->back()->withErrors(['error' => 'Building could not be created']);
     }
 
     /**
@@ -42,14 +42,14 @@ class BuildingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:buildings|max:100',
-         ])->validate();
+        ])->validate();
 
-         if($validator AND $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
+        if ($validator and $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
             LogController::log('Gebäude aktualisiert', '{"name": "' . $request->name . '"}');
 
             return redirect()->back()->with('success', 'Building updated successfully');
-         } 
-            return redirect()->back()->withErrors(['error' => 'Building could not be updated']);
+        }
+        return redirect()->back()->withErrors(['error' => 'Building could not be updated']);
     }
 
     /**
@@ -61,7 +61,7 @@ class BuildingController extends Controller
     public function destroy(Request $building)
     {
         $find = Building::find($building->input('id'));
-        if($find->delete()) {
+        if ($find->delete()) {
             LogController::log('Gebäude gelöscht', '{"name": "' . $building->name . '"}');
 
             return redirect()->back()->with('success', 'Building deleted');
