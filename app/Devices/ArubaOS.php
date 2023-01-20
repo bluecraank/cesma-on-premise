@@ -444,7 +444,7 @@ class ArubaOS implements IDevice
                 BackupController::store(true, $data, $device);
                 return true;
             } else {
-                BackupController::store(false, "No data received", $device);
+                BackupController::store(false, false, $device);
                 return false;
             }
         } else {

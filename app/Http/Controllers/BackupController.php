@@ -36,7 +36,11 @@ class BackupController extends Controller
     static function store($success, $data, $device)
     {
 
-        $dataEncrypted = EncryptionController::encrypt($data);
+        if($success and $data and !is_array($data)) {
+            $dataEncrypted = EncryptionController::encrypt($data);
+        } else {
+            $dataEncrypted = "No data received";
+        }
 
         Backup::create([
             'device_id' => $device->id,
