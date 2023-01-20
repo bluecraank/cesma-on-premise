@@ -56,6 +56,7 @@ return [
 
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 
+    'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

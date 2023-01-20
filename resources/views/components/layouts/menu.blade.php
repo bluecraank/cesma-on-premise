@@ -5,6 +5,7 @@
             </h2>
 
             <div class="menu-items">
+                @if (Auth::user()->role == 'admin')
                 <p class="menu-label">{{ __('Menu.Label.Action') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -13,7 +14,7 @@
                         </a>
                     </li>
                 </ul>
-
+                @endif
                 <p class="menu-label">{{ __('Menu.Label.Management') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -90,7 +91,7 @@
                 </ul>
 
 
-                <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->getName() }}<br>CESMA {{ config('app.version') }}</p>
+                <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->name }}<br>CESMA {{ config('app.version') }}</p>
             </div>
 
         </div>

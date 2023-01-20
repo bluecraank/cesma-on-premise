@@ -2,13 +2,17 @@
     <h1 class="title is-pulled-left">{{ __('Header.Locations') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        <button onclick="$('.modal-add-site').show();return false;" class="is-small button is-success"><i class="fa-solid fa-plus"></i></button>
+        @if (Auth::user()->role == 'admin')
+            <button onclick="$('.modal-add-site').show();return false;" class="is-small button is-success"><i
+                    class="fa-solid fa-plus"></i></button>
+        @endif
     </div>
 
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm" placeholder="{{ __('Search.Placeh.Location') }}">
+                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm"
+                    placeholder="{{ __('Search.Placeh.Location') }}">
                 <span class="icon is-small is-right">
                     <i class="fas fa-search fa-xs"></i>
                 </span>
@@ -26,16 +30,20 @@
         </thead>
         <tbody>
             @foreach ($buildings as $building)
-            <tr>
-                <td>{{ $building->name }}</td>
-                <td>{{ $locations[$building->location_id]->name }}</td>
-                <td style="width:150px;">
-                    <div class="has-text-centered">
-                        <button onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}')" class="button is-info is-small"><i class="fa fa-gear"></i></button>
-                        <button onclick="deleteBuildingModal('{{ $building->id }}', '{{ $building->name }}')" class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
-                    </div>
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ $building->name }}</td>
+                    <td>{{ $locations[$building->location_id]->name }}</td>
+                    <td style="width:150px;">
+                        <div class="has-text-centered">
+                            @if (Auth::user()->role == 'admin')
+                                <button onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
+                                    class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                                <button onclick="deleteBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
+                                    class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
             @endforeach
     </table>
 </div>

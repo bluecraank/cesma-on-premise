@@ -81,24 +81,24 @@
 
     <div class="columns ml-1 mr-3">
         <div class="column is-4">
+            @if (Auth::user()->role == 'admin')
             <div class="box">
                 <h2 class="subtitle">{{ __('Actions') }}</h2>
+                    <div class="buttons are-small">
+                        <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
+                            <i class="mr-2 fa-solid fa-sync"></i> Refresh
+                        </a>
 
-                @csrf
-                <div class="buttons are-small">
-                    <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
-                        <i class="mr-2 fa-solid fa-sync"></i> Refresh
-                    </a>
+                        <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
+                            <i class="mr-2 fa-solid fa-hdd"></i> Backup
+                        </a>
 
-                    <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
-                        <i class="mr-2 fa-solid fa-hdd"></i> Backup
-                    </a>
-
-                    <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
-                        <i class="mr-2 fa-solid fa-key"></i> Sync Pubkeys
-                    </a>
-                </div>
+                        <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
+                            <i class="mr-2 fa-solid fa-key"></i> Sync Pubkeys
+                        </a>
+                    </div>
             </div>
+            @endif
 
             <div class="box">
                 <h2 class="subtitle">Trunks</h2>
@@ -170,6 +170,7 @@
 
 
         <div class="column is-8">
+            @if (Auth::user()->role == 'admin')
             <script>
                 function enableEditing() {
                     $('.port-vlan-select').each(function() {
@@ -189,15 +190,17 @@
                     $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true);
                 }
             </script>
-
+            @endif
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
+                    @if (Auth::user()->role == 'admin')
                     <span onclick="disableEditing();"
                         class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
                     <span onclick="updateUntaggedPorts('{{ $device->id }}')"
                         class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
                     <span onclick="enableEditing();"
                         class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
+                    @endif
                 </h2>
 
                 <div class="notification response-update-vlan is-hidden is-success">
@@ -295,4 +298,4 @@
 
     @include('modals.VlanTaggingModal')
 
-</x-layouts>
+    </x-layouts>

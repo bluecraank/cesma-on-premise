@@ -1,5 +1,6 @@
 <?php
 
+
 return [
 
     /*
@@ -71,7 +72,17 @@ return [
         'users' => [
             'driver' => 'ldap',
             'model' => LdapRecord\Models\ActiveDirectory\User::class,
-            'rules' => [],
+            'rules' => [
+                App\Ldap\Rules\Administrator::class,
+            ],
+            'database' => [
+                'model' => App\Models\User::class,
+                'sync_passwords' => false,
+                'sync_attributes' => [
+                    'name' => 'cn',
+                    'email' => 'mail',
+                ],
+            ],
         ],
         // 'users' => [
         //     'driver' => 'database',

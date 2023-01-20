@@ -2,8 +2,10 @@
     <h1 class="title is-pulled-left">{{ __('Header.Switches') }}</h1>
 
     <div class="is-pulled-right ml-4">
+        @if (Auth::user()->role == 'admin')
         <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
                 class="fa-solid fa-plus"></i></button>
+        @endif
     </div>
 
     <div class="is-pulled-right">
@@ -22,7 +24,6 @@
         <thead>
             <tr>
                 <th>Name</th>
-                {{-- <th>Hostname</th> --}}
                 <th>Modell</th>
                 <th>Firmware</th>
                 <th>Standort</th>
@@ -50,17 +51,17 @@
                             <a class="button is-success is-small" href="/switch/{{ $device->id }}">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
-
                             <a class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
                                 target="_blank">
                                 <i class="fa fa-arrow-up-right-from-square"></i>
                             </a>
-
+                        @if (Auth::user()->role == 'admin')
                             <button
                                 onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}', '{{ $uplinks_string }}')"
                                 class="button is-info is-small"><i class="fa fa-gear"></i></button>
                             <button onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
                                 class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                        @endif
                         </div>
                     </td>
                 </tr>

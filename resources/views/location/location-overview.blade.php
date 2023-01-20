@@ -1,9 +1,11 @@
 <x-layouts.main>
     @livewire('search-locations')
 
-    @include('modals.LocationAddModal')
+    @if (Auth::user()->role == 'admin')
+        @include('modals.LocationAddModal')
 
-    @include('modals.LocationEditModal')
+        @include('modals.LocationEditModal')
 
-    @include('modals.LocationDeleteModal')
-    </x-layouts>
+        @include('modals.LocationDeleteModal')
+    @endif
+</x-layouts>
