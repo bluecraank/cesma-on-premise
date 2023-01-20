@@ -2,6 +2,7 @@
 
 namespace App\Devices;
 
+use App\Http\Controllers\BackupController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
@@ -425,18 +426,10 @@ class ArubaCX implements IDevice
         if($data['success']) {
             $encoded = json_encode($data['data'], true);
             if(strlen($encoded) > 10) {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => $encoded,
-                    'status' => 1,
-                ]);
+                BackupController::store(true, $data, $device);
                 return true;
             } else {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => "No data",
-                    'status' => 0,
-                ]);
+                BackupController::store(false, "No data received", $device);
                 return false;
             }
         }

@@ -16,14 +16,16 @@
 
             <label class="label is-small">Verfügbare VLANs</label>
             @foreach ($vlans as $key => $vlan)
-                <span class="is-clickable tag" data-id="{{ $key }}">{{ $key }}</span>
+                <span title="{{ $vlan['name'] }}" class="is-clickable tag" data-id="{{ $key }}">{{ $key }}</span>
             @endforeach
         </section>
         <footer class="modal-card-foot">
+            @if (Auth::user()->role == 'admin')
             <button disabled onclick="updateTaggedVlans('{{ $device->id }}')"
                 class="button is-submit is-primary">{{ __('Button.Save') }}</button>
+            @endif
             <button onclick="$('.modal-vlan-tagging').hide();return false;" type="button"
-                class="is-cancel button">{{ __('Button.Cancel') }}</button>
+                class="is-cancel button">{{ __('Button.Close') }}</button>
             <span class="is-info is-hidden">Speichern...</span>
         </footer>
     </div>

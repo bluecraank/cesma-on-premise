@@ -17,6 +17,7 @@
     "Button.Edit": "Bearbeiten",
     "Button.Sync": "Synchronisieren",
     "Button.Start": "Ausführen",
+    "Button.Close" : "Schließen",
 
     "Modal.User.Add": "Benutzer erstellen",
     "Modal.User.Add.Name": "Benutzername",

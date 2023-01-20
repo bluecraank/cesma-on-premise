@@ -2,6 +2,7 @@
 
 namespace App\Devices;
 
+use App\Http\Controllers\BackupController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
@@ -439,18 +440,10 @@ class ArubaOS implements IDevice
             $data = str_replace("Running configuration:", "", $data);
             $data = strstr($data, ";") or $data;
             if($data !== NULL and strlen($data) > 10 and $data != false) {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => $data,
-                    'status' => 1,
-                ]);
+                BackupController::store(true, $data, $device);
                 return true;
             } else {
-                Backup::create([
-                    'device_id' => $device->id,
-                    'data' => "No data received",
-                    'status' => 0,
-                ]);
+                BackupController::store(false, "No data received", $device);
                 return false;
             }
         } else {

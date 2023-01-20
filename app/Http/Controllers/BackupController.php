@@ -33,6 +33,17 @@ class BackupController extends Controller
         return view('switch.view_backups', compact('backups', 'devices'));
     }
 
+    static function store($success, $data, $device) {
+
+        $dataEncrypted = EncryptionController::encrypt($data);
+
+        Backup::create([
+            'device_id' => $device->id,
+            'data' => $dataEncrypted,
+            'status' => ($success) ? 1 : 0,
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -50,7 +61,7 @@ class BackupController extends Controller
         return redirect()->back()->withErrors(['error' => 'Backup could not be deleted']);
     }
 
-    static function getSwitchBackups($id)
+    static function getBackupsBySwitchId($id)
     {
         $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
         $device = Device::find($id);
@@ -87,7 +98,8 @@ class BackupController extends Controller
         $backup = Backup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
-        return response($backup->data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $data = EncryptionController::decrypt($backup->data);
+        return response($data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     static function sendMail()

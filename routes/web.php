@@ -39,7 +39,7 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/trunks', [DeviceController::class, 'view_trunks'])->name('trunks');
     Route::get('/uplinks', [DeviceController::class, 'view_uplinks'])->name('uplinks');
-    Route::get('/{id}/backups', [BackupController::class, 'getSwitchBackups'])->name('backups-switch')->where('id', '[0-9]+');
+    Route::get('/{id}/backups', [BackupController::class, 'getBackupsBySwitchId'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/{id}', [DeviceController::class, 'view_details'])->name('details')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
 });
