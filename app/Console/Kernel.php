@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         ->runInBackground();
         
         // Backups erstellen
-        $schedule->command('device:backup')
+        $schedule->command('device:backup-all')
         ->dailyAt('08:00')
         ->appendOutputTo(storage_path('logs/device-backup.log'))
         ->runInBackground();
