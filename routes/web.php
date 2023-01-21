@@ -10,6 +10,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\PortstatsController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 /*
@@ -42,6 +43,8 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/{id}/backups', [BackupController::class, 'getBackupsBySwitchId'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/{id}', [DeviceController::class, 'view_details'])->name('details')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
+    Route::get('/{id}/portstats', [PortstatsController::class, 'index'])->name('details')->where('id', '[0-9]+');
+
 });
 
 

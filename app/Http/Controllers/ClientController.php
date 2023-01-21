@@ -124,6 +124,26 @@ class ClientController extends Controller
         return $type;
     }
 
+    static function getClientIcon($type) {
+        switch ($type) {
+            case 'client':
+                return 'fa-solid fa-desktop';
+                break;
+            case 'phone':
+                return 'fa-solid fa-phone';
+                break;
+            case 'printer':
+                return 'fa-solid fa-print';
+                break;
+            case 'wifi':
+                return 'fa-solid fa-wifi';
+                break;
+            default:
+                return 'fa-solid fa-desktop';
+                break;
+        }
+    }
+
     static function checkOnlineStatus()
     {
         $clients = Client::all()->keyBy('id');

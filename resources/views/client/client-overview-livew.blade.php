@@ -1,3 +1,5 @@
+@inject('cc', 'App\Http\Controllers\ClientController')
+
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Header.Clients') }}</h1>
 
@@ -124,16 +126,11 @@
                     $vendor = 'Unknown';
                 }
 
-                if($client->type == "client") $type = 'computer';
-                if($client->type == "printer") $type = 'print';
-                if($client->type == "phone") $type = 'phone';
-                if($client->type == "wifi") $type = 'wifi';
-
                 $chunks = str_split(strtoupper($client->mac_address), 2);
                 $end = implode(':', $chunks);
             @endphp
                 <tr>   
-                    <td><i style="" class="mr-2 fa fa-{{ $type }} {{ $online }}"></i> {{ substr(strtoupper($client->hostname),0,20) }}</td>
+                    <td><i style="" class="mr-2 {{ $cc::getClientIcon($client->type) }} {{ $online }}"></i> {{ substr(strtoupper($client->hostname),0,20) }}</td>
                     <td>{{ $client->ip_address }}</td>
                     <td title="{{ $vendor }}">{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>

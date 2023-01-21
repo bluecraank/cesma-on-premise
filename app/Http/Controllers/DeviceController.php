@@ -62,87 +62,82 @@ class DeviceController extends Controller
         return view('switch.view_uplinks', compact('devices'));
     }
 
-    function view_details($id)
-    {
+    static function view_details($id) {
         $device = Device::find($id);
 
-        if ($device) {
-            $trunks = [];
-            $tagged = [];
-            $untagged = [];
-            $ports_online = 0;
-            $count_ports = 0;
-            $device->count_trunks = 0;
+        if (! $device) {
+            return redirect()->back()->withErrors(['error' => 'Could not find device']);
+        }
+    
+        $device->count_vlans = count(json_decode($device->vlan_data, true));
+        $device->format_time = $device->updated_at->diffForHumans();
+        $device->ports = json_decode($device->port_data, true);
+        $device->count_trunks = count(array_filter($device->ports, function ($port) {
+            return str_contains($port['id'], 'Trk');
+        }));
 
-            $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
-            $device->count_vlans = count(json_decode($device->vlan_data, true));
-            $device->format_time = $device->updated_at->diffForHumans();
-            $device->ports = json_decode($device->port_data, true);
-            $vlan_ports = json_decode($device->vlan_port_data);
-            $port_statistic_raw = json_decode($device->port_statistic_data, true);
-            $system = json_decode($device->system_data);
-            $vlans = json_decode($device->vlan_data, true);
-
-            $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
-
-            // Correct port_statistic array
-            $port_statistic = [];
-            foreach ($port_statistic_raw as $key => $value) {
-                $port_statistic[$value['id']] = $value;
-                unset($port_statistic_raw[$key]);
-            }
-
-            // Sort and count ports
-            foreach ($device->ports as $port) {
+        $device->ports_online = count(array_filter($device->ports, function ($port) {
+            return $port['is_port_up'] === 'true' && !str_contains($port['id'], 'Trk');
+        }));
+        
+        $device->count_ports = count($device->ports) - $device->count_trunks;
+        $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
+        $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
+        $vlan_ports = json_decode($device->vlan_port_data);
+        $port_statistic = json_decode($device->port_statistic_data, true);
+        $system = json_decode($device->system_data);
+        $vlans = json_decode($device->vlan_data, true);
+        $clients = Client::where('switch_id', $id)->get()->groupBy('port_id');
+    
+        $trunks = $tagged = $untagged = [];
+        foreach ($device->ports as $port) {
+            if (str_contains($port['trunk_group'], 'Trk')) {
+                $trunks[$port['trunk_group']][] = $port['id'];
+                $untagged[$port['id']] = "Member of " . $port['trunk_group'];
+            } else {
                 $untagged[$port['id']] = "";
                 $tagged[$port['id']] = [];
-
-                if (str_contains($port['id'], 'Trk')) {
-                    $device->count_trunks++;
-                } else {
-                    $count_ports++;
-                }
-
-                if ($port['trunk_group'] != "") {
-                    $trunks[$port['trunk_group']][] = $port['id'];
-                    $untagged[$port['id']] = "Member of " . $port['trunk_group'];
-                }
-
-                if ($port['is_port_up'] == "true" and !str_contains($port['id'], 'Trk')) {
-                    $ports_online++;
-                }
             }
-
-            // Get tagged, untagged VLANs as list
-            foreach ($vlan_ports as $vlan_port) {
-                if (!$vlan_port->is_tagged and !str_contains($vlan_port->port_id, "Trk")) {
-                    $untagged[$vlan_port->port_id] = $vlan_port->vlan_id;
-                } elseif ($vlan_port->is_tagged and !str_contains($vlan_port->port_id, "Trk")) {
-                    $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
-                } elseif ($vlan_port->is_tagged and str_contains($vlan_port->port_id, "Trk")) {
-                    $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
-                }
-            }
-
-            // Onlinestatus
-            $status = $this->isOnline($device->hostname);
-
-            return view('switch.view_details', compact(
-                'device',
-                'tagged',
-                'untagged',
-                'trunks',
-                'port_statistic',
-                'status',
-                'system',
-                'ports_online',
-                'count_ports',
-                'backups',
-                'vlans'
-            ));
         }
 
-        return redirect()->back()->withErrors(['error' => 'Could not find device']);
+        // Count trunks and online ports
+        $device->count_trunks = count($trunks);
+        $ports_online = count(array_filter($device->ports, function($port) {
+            return $port['is_port_up'] == "true" && !str_contains($port['id'], 'Trk');
+        }));
+    
+        // Get tagged, untagged VLANs as list
+        foreach ($vlan_ports as $vlan_port) {
+            if (!$vlan_port->is_tagged) {
+                $untagged[$vlan_port->port_id] = $vlan_port->vlan_id;
+            } else {
+                $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
+            }
+        }
+
+        foreach($device->ports as $port) {
+            if(!str_contains($port['id'], 'Trk') && $port['trunk_group'] != null) {
+                $tagged[$port['id']] = $tagged[$port['trunk_group']];
+            }
+        }
+    
+        // Onlinestatus
+        $status = self::isOnline($device->hostname);
+    
+        return view('switch.view_details', compact(
+            'device',
+            'tagged',
+            'untagged',
+            'trunks',
+            'port_statistic',
+            'status',
+            'system',
+            'ports_online',
+            'clients',
+            'backups',
+            'vlans'
+        ));
+
     }
 
     /**
@@ -615,5 +610,10 @@ class DeviceController extends Controller
         } catch (\Exception $e) {
             return "has-text-danger";
         }
+    }
+
+    static function storeStats($data, $device)
+    {
+
     }
 }

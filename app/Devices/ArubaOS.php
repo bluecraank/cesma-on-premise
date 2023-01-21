@@ -3,6 +3,7 @@
 namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\DeviceController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
@@ -233,7 +234,8 @@ class ArubaOS implements IDevice
             }
         }
 
-        // self::ApiLogout($device->hostname, $cookie, $api_version);
+        // Update Portstats
+        DeviceController::storeStats($data['portstats']['port_statistics_element'], $device);
 
         $system_data = self::getSystemInformations($data['status']);
         $vlan_data = self::getVlanData($data['vlans']['vlan_element']);
@@ -375,6 +377,14 @@ class ArubaOS implements IDevice
                 "id" => $port['id'],
                 "name" => $port['name'],
                 "port_speed_mbps" => $port['port_speed_mbps'],
+                "packets_tx" => $port['packets_tx'],
+                "packets_rx" => $port['packets_rx'],
+                "bytes_tx" => $port['bytes_tx'],
+                "bytes_rx" => $port['bytes_rx'],
+                "error_tx" => $port['error_tx'],
+                "error_rx" => $port['error_rx'],
+                "throughput_tx_bps" => $port['throughput_tx_bps'],
+                "throughput_rx_bps" => $port['throughput_rx_bps'],
             ];
         }
 

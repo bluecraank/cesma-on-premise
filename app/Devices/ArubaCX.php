@@ -3,6 +3,7 @@
 namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\DeviceController;
 use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
@@ -218,8 +219,11 @@ class ArubaCX implements IDevice
             }
         }
 
-        // self::ApiLogout($device->hostname, $cookie, $api_version);
 
+        // Update Portstats
+        DeviceController::storeStats($data['portstats'], $device);
+
+        
         $system_data = self::getSystemInformations($data['status']);
         $vlan_data = self::getVlanData($data['vlans']);
         $port_data = self::getPortData($data['ports']);

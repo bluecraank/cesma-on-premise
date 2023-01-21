@@ -1,4 +1,5 @@
 <x-layouts.main>
+    @inject('cc', 'App\Http\Controllers\ClientController')
     <div style="display:none" class="notification status is-danger">
         <ul>
             <li></li>
@@ -45,7 +46,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ $ports_online }}/{{ $count_ports }}</p>
+                <p class="subtitle">{{ $ports_online }}/{{ $device->count_ports }}</p>
             </div>
         </div>
     </div>
@@ -217,22 +218,14 @@
                             <th>{{ __('Switch.Live.Portname') }}</th>
                             <th>Untagged</th>
                             <th>Tagged</th>
+                            <th>Endgeräte</th>
                             <th class="has-text-centered">Speed Mbit/s</th>
                         </tr>
                     </thead>
 
                     <tbody class="live-body">
-                        @php
-                            $portlist = $device->ports;
-                            sort($portlist);
-                        @endphp
-                        @foreach ($portlist as $port)
+                        @foreach ($device->ports as $port)
                             @if (!str_contains($port['id'], 'Trk'))
-                                @php
-                                    if ($port['trunk_group'] != null) {
-                                        $tagged[$port['id']] = $tagged[$port['trunk_group']];
-                                    }
-                                @endphp
 
                                 <tr style="line-height: 37px;">
                                     <td class="has-text-centered">
@@ -269,6 +262,31 @@
                                             onclick="updateTaggedModal('{{ implode(',', $tagged[$port['id']]) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count($tagged[$port['id']]) }}
                                             VLANs</a>
                                     </td>
+                                    <td>
+                                        @if (isset($clients[$port['id']]))
+                                        <div class="dropdown is-hoverable">
+                                            <div class="dropdown-trigger">
+                                              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                                                <span>{{ count($clients[$port['id']]) }} Endgeräte</span>
+                                                <span class="icon is-small">
+                                                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                </span>
+                                              </button>
+                                            </div>
+                                            <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                                              <div class="dropdown-content">
+                                                <div class="dropdown-item">
+                                                  @foreach ($clients[$port['id']] as $client)
+                                                        <div><i class="{{ $cc::getClientIcon($client->type) }}"></i> {{ $client->hostname }}</div>
+                                                  @endforeach
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        @else
+                                        
+                                        @endif
+                                    </td>
                                     <td class="has-text-centered">
                                         @if ($port_statistic[$port['id']]['port_speed_mbps'] == 0)
                                             <span
@@ -284,7 +302,7 @@
                                                 class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
                                         @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10000)
                                             <span
-                                                class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                                class="tag is-success">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
                                         @endif
                                     </td>
                                 </tr>
