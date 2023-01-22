@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user');
+        Schema::table('port_stats', function(Blueprint $table) {
+            $table->string('port_id')->change();
         });
     }
 

@@ -180,7 +180,7 @@ class DeviceController extends Controller
         $device->type = $request->input('type');
 
         $class = self::$models[$request->input('type')];
-        $device_data = $class::getApiData($device);
+        $device_data = $class::API_REQUEST_ALL_DATA($device);
 
         $noData = false;
         if (isset($device_data['success']) and $device_data['success'] == false) {
@@ -204,7 +204,7 @@ class DeviceController extends Controller
         // Get trunks only once
         // Assume that trunks are uplinks (most of the time)
         $device->port_data = json_encode($device_data['ports_data'], true);
-        $trunks = $class::getTrunks($device);
+        $trunks = $class::getDeviceTrunks($device);
         $uplinks = json_encode($trunks);
 
         // Get input uplinks
@@ -321,7 +321,7 @@ class DeviceController extends Controller
 
         $device = Device::find($request->input('device_id'));
 
-        $device_data = self::$models[$device->type]::getApiData($device);
+        $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
 
         if (isset($device_data['success']) and $device_data['success'] == false) {
             return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
@@ -349,7 +349,7 @@ class DeviceController extends Controller
 
         foreach ($devices as $device) {
             $start = microtime(true);
-            $device_data = self::$models[$device->type]::getApiData($device);
+            $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
 
             if (isset($device_data['success']) and $device_data['success'] == false) {
                 echo "Error getting switch data: " . $device->name . "\n";
@@ -428,7 +428,7 @@ class DeviceController extends Controller
             $class = self::$models[$device->type];
             $data[$device->id] = array(
                 'name' => $device->name,
-                'trunks' => $class::getTrunks($device),
+                'trunks' => $class::getDeviceTrunks($device),
             );
         }
 
@@ -492,7 +492,7 @@ class DeviceController extends Controller
             $results[$device->id] = [];
 
             $class = self::$models[$device->type];
-            $results[$device->id] = $class::updateVlans($vlans, $vlans_switch, $device, $create_vlan, $overwrite_name, $test);
+            $results[$device->id] = $class::syncVlans($vlans, $vlans_switch, $device, $create_vlan, $overwrite_name, $test);
         }
 
         $elapsed = microtime(true) - $start;
@@ -540,7 +540,7 @@ class DeviceController extends Controller
             if (is_array($vlans) and is_array($ports) and count($vlans) != 0 and count($vlans) == count($ports)) {
                 $class = self::$models[$device->type];
 
-                return $class::updatePortVlanUntagged($vlans, $ports, $device);
+                return $class::setUntaggedVlanToPort($vlans, $ports, $device);
             } else {
                 return json_encode(['success' => 'false', 'error' => 'No changes found']);
             }
@@ -565,7 +565,7 @@ class DeviceController extends Controller
 
             $class = self::$models[$device->type];
             $return = ['error' => ''];
-            $result = $class::updatePortVlanTagged($vlans, $port, $device);
+            $result = $class::setTaggedVlanToPort($vlans, $port, $device);
             foreach ($result as $success) {
                 $return['error'] .= "<br>" . $success['error'];
                 if ($success['success'] == false) {

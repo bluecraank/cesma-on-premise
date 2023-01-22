@@ -16,18 +16,19 @@ return new class extends Migration
         Schema::create('port_stats', function(Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('device_id');
-            $table->unsignedBigInteger('port_id');
-            $table->unsignedBigInteger('port_speed');
-            $table->unsignedDouble('port_rx_bps');
-            $table->unsignedDouble('port_tx_bps');
-            $table->unsignedDouble('port_rx_pps');
-            $table->unsignedDouble('port_tx_pps');
-            $table->unsignedBigInteger('port_rx_bytes');
-            $table->unsignedBigInteger('port_tx_bytes');
-            $table->unsignedBigInteger('port_rx_packets');
-            $table->unsignedBigInteger('port_tx_packets');
-            $table->unsignedBigInteger('port_rx_errors');
-            $table->unsignedBigInteger('port_tx_errors');
+            $table->string('port_id');
+            $table->string('port_name')->nullable();
+            $table->unsignedBigInteger('port_speed')->nullable();
+            $table->unsignedDouble('port_rx_bps')->nullable();
+            $table->unsignedDouble('port_tx_bps')->nullable();
+            $table->unsignedDouble('port_rx_pps')->nullable();
+            $table->unsignedDouble('port_tx_pps')->nullable();
+            $table->unsignedBigInteger('port_rx_bytes')->nullable();
+            $table->unsignedBigInteger('port_tx_bytes')->nullable();
+            $table->unsignedBigInteger('port_rx_packets')->nullable();
+            $table->unsignedBigInteger('port_tx_packets')->nullable();
+            $table->unsignedBigInteger('port_rx_errors')->nullable();
+            $table->unsignedBigInteger('port_tx_errors')->nullable();
             $table->timestamps();
         });
     }

@@ -233,7 +233,7 @@
                                             class="fa fa-circle {{ $port['is_port_up'] ? 'has-text-success' : 'has-text-danger' }}"></i>
                                     </td>
                                     <td class="has-text-centered">
-                                        {{ $port['id'] }}
+                                        <a href="/switch/{{ $device->id }}/ports/{{ $port['id'] }}">{{ $port['id'] }}</a>
                                     </td>
                                     <td>
                                         {{ $port['name'] }}

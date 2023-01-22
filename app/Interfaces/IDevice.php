@@ -16,51 +16,49 @@ use Illuminate\Http\Client\Request;
          * 
          */
 
-        static function GetApiVersions(Device $device): string;
+        static function GET_API_VERSIONS(Device $device): string;
 
-        static function ApiLogin(Device $device): string;
+        static function API_LOGIN(Device $device): string;
 
-        static function ApiLogout(String $hostname, String $cookie, String $api_version): bool;
+        static function API_LOGOUT(String $hostname, String $cookie, String $api_version): bool;
 
-        static function ApiPut(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+        static function API_PUT_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function ApiGet(String $hostname, String $cookie, String $api, String $api_version): Array;
+        static function API_GET_DATA(String $hostname, String $cookie, String $api, String $api_version): Array;
 
-        static function ApiPost(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+        static function API_POST_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function ApiDelete(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+        static function API_DELETE_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
         
-        static function ApiPatch(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
+        static function API_PATCH_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function ApiGetAcceptPlain(String $hostname, String $cookie, String $api, String $api_version): Array;
-
-        static function getApiData(Device $device): Array;
+        static function API_REQUEST_ALL_DATA(Device $device): Array;
 
         static function createBackup(Device $device): bool;
 
         static function restoreBackup(Device $device, Backup $backup, String $password): Array;
 
-        static function getPortData(Array $ports): Array;
+        static function formatPortData(Array $ports): Array;
     
-        static function getPortStatisticData(Array $portstats): Array;
+        static function formatPortSimpleStatisticData(Array $portstats): Array;
 
-        static function getVlanPortData(Array $vlanports): Array;
+        static function formatPortVlanData(Array $vlanports): Array;
     
-        static function getVlanData(Array $vlans): Array; 
+        static function formatVlanData(Array $vlans): Array; 
 
-        static function getMacTableData(Array $macs, Device $device, $cookie, $api_version): Array;
+        static function formatMacTableData(Array $macs, Device $device, $cookie, $api_version): Array;
         
-        static function getSystemInformations(Array $system): Array;
+        static function formatSystemData(Array $system): Array;
 
-        static function getTrunks(Device $device): Array;
+        static function getDeviceTrunks(Device $device): Array;
 
         static function uploadPubkeys($device, $pubkeys): String;
 
-        static function updatePortVlanUntagged($vlans, $ports, $device): String;
+        static function setUntaggedVlanToPort($vlans, $ports, $device): String;
 
-        static function updatePortVlanTagged($vlans, $ports, $device): Array;
+        static function setTaggedVlanToPort($vlans, $ports, $device): Array;
 
-        static function updateVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name,  Bool $test_mode): Array;
+        static function syncVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name,  Bool $test_mode): Array;
 
         static function refresh(Device $device): Bool;
     }
