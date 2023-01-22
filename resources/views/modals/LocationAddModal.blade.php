@@ -44,7 +44,7 @@
             </form>
         </section>
         <footer class="modal-card-foot">
-            <button onclick="$('.modal-add-site').hide();return false;" type="button" class="button">Abbrechen</button>
+            <button onclick="$('.modal-add-site').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
         </footer>
     </div>
 </div>

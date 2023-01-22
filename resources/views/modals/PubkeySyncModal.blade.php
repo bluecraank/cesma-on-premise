@@ -12,7 +12,7 @@
                     <label class="label">{{ __('Switch.Pubkey.FollowingKeys') }}</label>
                     <div class="control">
                         <ul class="ml-5" style="list-style-type:circle">
-                            @foreach ($keys as $key)
+                            @foreach ($keys_list as $key)
                                 <li>{{ $key }}</li>
                             @endforeach
                         </ul>

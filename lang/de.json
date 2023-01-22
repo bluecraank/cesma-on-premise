@@ -19,14 +19,6 @@
     "Button.Start": "Ausführen",
     "Button.Close" : "Schließen",
 
-    "Modal.User.Add": "Benutzer erstellen",
-    "Modal.User.Add.Name": "Benutzername",
-    "Modal.User.Add.Mail": "E-Mail",
-    "Modal.User.Add.Password": "Passwort",
-    "Modal.User.Add.PasswordRepeat": "Passwort wiederholen",
-    "Modal.User.Add.CurrentPassword": "Aktuelles Passwort",
-    "Modal.User.Delete": "Benutzer löschen",
-    "Modal.User.Delete.Desc": "Möchtest du den Benutzer wirklich löschen?",
     "Modal.Key.Add": "Schlüssel hinzufügen",
     "Modal.Key.Add.Name": "Schlüsselname",
     "Modal.Key.Add.Pubkey": "Öffentlicher Schlüssel",
@@ -84,25 +76,17 @@
     "Mail.Last successful backup": "Letztes erfolgreiches Backup",
 
     "System.Addititional Pubkeys": "Öffentliche Schlüssel",
+    "System.User": "Rollenverwaltung",
     "System.Desc": "Beschreibung",
     "System.Key": "Schlüssel",
-    "System.Username": "Benutzername",
-    "System.Mail": "E-Mail",
 
     "User.ChangeTheme": "Theme wechseln",
-    "User.Pubkey.Title": "Dein Öffentlicher Schlüssel",
-    "User.Pubkey.Delete": "Schlüssel löschen",
-    "User.Pubkey.Content": "Dein Öffentlicher Schlüssel",
-    "User.Pubkey.Secure": "Dein öffentlicher Schlüssel wird verschlüsselt gespeichert",
-    "User.Pubkey.Found": "Du hast bereits einen öffentlichen Schlüssel hinterlegt.",
-    "User.Pubkey.NotFound": "Kein Schlüssel hinterlegt.",
-    "User.Settings.Password.Change": "Passwort ändern",
 
     "Uplink.Edit": "Uplinks bearbeiten",
 
-    "Trunk.Info.ArubaCX": "ArubaCX: Ports mit allen VLANs tagged",
+    "Trunk.Info.ArubaCX": "*ArubaCX: Ports ohne getaggetes VLAN werden als Trunk angesehen",
 
-    "Vlan.Description": "Beschreibung",
+    "Description": "Beschreibung",
     "Vlan.Subnet": "IP-Bereich",
     "Vlan.Scan": "NMAP-Scan",
     "Vlan.Sync": "Synchronisieren",
@@ -116,7 +100,6 @@
     "Backup.Created": "Erstellt",
     "Backup.View": "Ansehen",
     "Backup.Last": "Letztes Backup",
-    "Backup.Restore.YourPassword": "Dein Passwort",
     "Backup.Restore.SwitchPassword": "Passwort vom Switch",
     "Backup.Restore.Title": "Backup wiederherstellen",
     "Backup.Delete.Title": "Backup löschen",
@@ -153,8 +136,16 @@
     "Switch.SSH.Command": "Kommando",
     "Switch.SSH.SelectSwitch": "Switch auswählen",
     "Switch.SSH.FastCmd": "Schnellkommando",
-    "Switch.SSH.YourPassword": "Dein Passwort",
     "Switch.SSH.Info": "Bitte beachte, dass eingegebene Befehle nicht überprüft werden.",
     "Switch.SSH.Execute.Title": "Befehl ausführen",
-    "Switch.SSH.Execute.Desc": "Soll der Befehl wirklich ausgeführt werden?"
+    "Switch.SSH.Execute.Desc": "Soll der Befehl wirklich ausgeführt werden?",
+
+    "Role": "Rolle",
+    "Role.Admin": "Administrator", 
+    "Role.User": "Benutzer",
+    "Modal.User.Role": "Rolle verwalten",
+
+    "MacFilter.Title": "MAC-Typenzuordnung erstellen",
+    "System.MacType": "MAC-Typenzuordnung",
+    "System.MacIcon": "MAC-Typen-Symbole"
 }

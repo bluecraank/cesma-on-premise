@@ -27,7 +27,7 @@
                     </p>
                 </div>
                 <div class="field">
-                    <label class="label">{{ __('Vlan.Description') }}</label>
+                    <label class="label">{{ __('Description') }}</label>
                     <p class="control has-icons-left">
                         <input class="input vlan-desc" name="description" placeholder="VLAN Beschreibung">
                         <span class="icon is-small is-left">
@@ -35,9 +35,10 @@
                         </span>
                     </p>
                 </div>
+
                 <div class="field">
                     <label class="label">{{ __('Location') }}</label>
-                    <div class="select">
+                    <div class="select is-fullwidth">
                         <select name="location">
                             @foreach($locations as $location)
                                 <option value="{{ $location->id }}">{{ $location->name }}</option>

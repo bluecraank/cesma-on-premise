@@ -97,10 +97,10 @@
                         <div class="select is-small is-radiusless is-fullwidth">
                             <select  wire:model.debounce.500ms="cTYPE" class="is-radiusless">
                                 <option value="all">ALL</option>
-                                <option value="client">CLIENT</option>
-                                <option value="printer">PRINTER</option>
-                                <option value="phone">PHONE</option>
-                                <option value="wifi">WIFI</option>
+                                <option value="client">client</option>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type }}">{{ $type }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

@@ -18,10 +18,10 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-danger">Gebäude
-                    löschen</button>
+                <button class="button is-danger">{{ __('Button.Delete') }}
+                </button>
                 <button onclick="$('.modal-delete-building').hide();return false;" type="button"
-                    class="button">Abbrechen</button>
+                    class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>

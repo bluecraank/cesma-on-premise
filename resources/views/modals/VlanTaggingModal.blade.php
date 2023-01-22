@@ -26,7 +26,7 @@
             @endif
             <button onclick="$('.modal-vlan-tagging').hide();return false;" type="button"
                 class="is-cancel button">{{ __('Button.Close') }}</button>
-            <span class="is-info is-hidden">Speichern...</span>
+            <span class="is-info is-hidden">{{ __('Button.Save') }}...</span>
         </footer>
     </div>
 </div>

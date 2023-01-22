@@ -9,6 +9,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
+use App\Http\Controllers\MacTypeFilterController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PortstatsController;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +65,9 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::put('/building/update', [BuildingController::class, 'update']);
     Route::put('/location/update', [LocationController::class, 'update']);
     Route::put('/vlan/update', [VlanController::class, 'update']);
+    Route::put('/user/role', [SystemController::class, 'updateUserRole']);
+    Route::post('/clients/typefilter/create', [MacTypeFilterController::class, 'store']);
+    Route::post('/clients/typefilter/update', [MacTypeFilterController::class, 'storeIcon']);
 });
 
 Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {

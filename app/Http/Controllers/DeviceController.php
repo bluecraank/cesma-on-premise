@@ -34,7 +34,7 @@ class DeviceController extends Controller
         $devices = Device::all()->sortBy('name');
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
-        $keys = KeyController::getPubkeysDesc();
+        $keys_list = KeyController::getPubkeysDesc();
         $https = config('app.https', 'http://');
 
         return view('switch.switch-overview', compact(
@@ -42,7 +42,7 @@ class DeviceController extends Controller
             'locations',
             'buildings',
             'https',
-            'keys'
+            'keys_list'
         ));
     }
 

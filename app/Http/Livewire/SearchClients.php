@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Device;
 use App\Models\Client;
+use App\Models\MacTypeFilter;
 use App\Models\MacVendors;
 use App\Models\Vlan;
 use App\Traits\WithLogin;
@@ -34,6 +35,7 @@ class SearchClients extends Component
         $count_clients = Client::count();
         $vlans = Vlan::all()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendors::all()->keyBy('mac_prefix');
+        $types = MacTypeFilter::all()->sortBy('mac_type')->pluck('mac_type')->unique();
         
         $hostname = $this->cHOSTNAME;
         $ip = $this->cIP;
@@ -84,6 +86,7 @@ class SearchClients extends Component
             'count_results' => $count_result,
             'clients' => $clients,
             'vendors' => $vendors,
+            'types' => $types,
         ]);
     }
 }

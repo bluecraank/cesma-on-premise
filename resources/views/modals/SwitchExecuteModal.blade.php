@@ -17,7 +17,7 @@
             <button onclick="$('.modal-confirmation-command').hide();return false;" type="button"
                 name="executeSwitchCommand" class="button is-danger">Ausführen</button>
             <button onclick="$('.modal-confirmation-command').hide();return false;" type="button"
-                class="button">Abbrechen</button>
+                class="button">{{ __('Button.Cancel') }}</button>
         </footer>
     </div>
 </div>

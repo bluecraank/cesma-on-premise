@@ -26,7 +26,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>{{ __('Vlan.Description') }}</th>
+                <th>{{ __('Description') }}</th>
                 <th>{{ __('Vlan.Subnet') }}</th>
                 <th class="has-text-centered">Scan</th>
                 <th class="has-text-centered">Sync</th>

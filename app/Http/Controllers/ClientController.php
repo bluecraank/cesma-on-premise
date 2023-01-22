@@ -7,6 +7,8 @@ use App\ClientProviders\SNMP_Routers;
 use App\Models\Device;
 use App\Models\Client;
 use App\Models\MacAddress;
+use App\Models\MacTypeFilter;
+use App\Models\MacTypeIcon;
 use Carbon\Carbon;
 
 class ClientController extends Controller
@@ -105,43 +107,23 @@ class ClientController extends Controller
 
     static function getClientType($mac)
     {
-        $type = "client";
+        $types = MacTypeFilter::all()->keyBy('mac_prefix')->toArray();
 
-        $phone_macs = explode(",", config('app.phone_macs'));
-        $printer_macs = explode(",", config('app.printer_macs'));
-        $wifi_macs = explode(",", config('app.wifi_macs'));
-
-        $result = mb_substr($mac, 0, 6);
-
-        if (in_array($result, $printer_macs)) {
-            $type = "printer";
-        } elseif (in_array($result, $phone_macs)) {
-            $type = "phone";
-        } elseif (in_array($result, $wifi_macs)) {
-            $type = "wifi";
+        if(array_key_exists($mac, $types)) {
+            return $types[$mac]['mac_type'];
         }
-
-        return $type;
+        
+        return 'client';
     }
 
     static function getClientIcon($type) {
-        switch ($type) {
-            case 'client':
-                return 'fa-solid fa-desktop';
-                break;
-            case 'phone':
-                return 'fa-solid fa-phone';
-                break;
-            case 'printer':
-                return 'fa-solid fa-print';
-                break;
-            case 'wifi':
-                return 'fa-solid fa-wifi';
-                break;
-            default:
-                return 'fa-solid fa-desktop';
-                break;
+        $icons = MacTypeIcon::all()->keyBy('mac_type')->toArray();
+
+        if(array_key_exists($type, $icons)) {
+            return "fas ". $icons[$type]['mac_icon'];
         }
+        
+        return 'fas fa-computer';
     }
 
     static function checkOnlineStatus()

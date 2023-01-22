@@ -196,9 +196,9 @@
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role == 'admin')
                     <span onclick="disableEditing();"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Abbrechen</span>
+                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
                     <span onclick="updateUntaggedPorts('{{ $device->id }}')"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">Speichern</span>
+                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
                     <span onclick="enableEditing();"
                         class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
                     @endif

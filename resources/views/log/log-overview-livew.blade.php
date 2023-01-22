@@ -19,6 +19,7 @@
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
+                <th>Timestamp</th>
                 <th>{{ __('Log.User') }}</th>
                 <th style="width:150px;text-align:center">{{ __('Log.Action') }}</th>
                 <th>{{ __('Log.Data') }}</th>
@@ -27,6 +28,7 @@
         <tbody>
             @foreach ($logs as $log)
             <tr>
+                <td>{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
                 <td>{{ $log->user }}</td>
                 <td style="width:150px;">{{ $log->message }}</td>
                 <td>

@@ -3,28 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Key;
+use App\Models\MacTypeFilter;
+use App\Models\MacTypeIcon;
+use App\Models\MacVendors;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SystemController extends Controller
 {
     public function index_system()
     {
-        $keys = Key::all();
-        $keys2 = [];
-
+        $keys_db = Key::all();
+        $keys = [];
+        $users = User::all();
         $keys_list = KeyController::getPubkeysDesc();
+        $macs = MacTypeFilter::all()->sortBy('mac_type');
+        $types = MacTypeFilter::all()->sortBy('mac_type')->pluck('mac_type')->unique();
+        $vendors = MacVendors::all()->keyBy('mac_prefix');
+        $icons = MacTypeIcon::all()->keyBy('mac_type');
 
-
-        foreach ($keys as $k => $key) {
-            $keys2[$k] = new \stdClass();
-            $keys2[$k]->desc = $key->description;
-            $keys2[$k]->key = EncryptionController::decrypt($key->key);
-            $keys2[$k]->id = $key->id;
+        foreach ($keys_db as $k => $key) {
+            $keys[$k] = new \stdClass();
+            $keys[$k]->desc = $key->description;
+            $keys[$k]->key = EncryptionController::decrypt($key->key);
+            $keys[$k]->id = $key->id;
         }
 
-        $keys = $keys_list;
-
-        return view('system.index', compact('keys2', 'keys'));
+        return view('system.index', compact('keys', 'keys_list', 'users', 'macs', 'types', 'vendors', 'icons'));
     }
 
     public function index_usersettings()
@@ -39,5 +44,21 @@ class SystemController extends Controller
         }
 
         return redirect()->back()->with('success', 'Theme updated!');
+    }
+
+    public function updateUserRole(Request $request)
+    {
+        $guid = $request->input('guid');
+        $user = User::where('guid', $guid)->firstOrFail();
+        if(!$user) {
+            return redirect()->back()->withErrors(['error' => 'User not found']);
+        }
+
+        $user->role = ($request['role'] == 0) ? 'user' : 'admin';
+        if(!$user->save()) {
+            return redirect()->back()->withErrors(['error' => 'User could not be updated']);;
+        }
+        
+        return redirect()->back()->with('success', 'User role updated!');
     }
 }
