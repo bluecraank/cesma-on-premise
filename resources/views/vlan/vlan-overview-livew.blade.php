@@ -30,6 +30,8 @@
                 <th>{{ __('Vlan.Subnet') }}</th>
                 <th class="has-text-centered">Scan</th>
                 <th class="has-text-centered">Sync</th>
+                <th class="has-text-centered">Endgeräte-VLAN</th>
+
                 <th style="width:150px;text-align:center">{{ __('Actions') }}</th>
             </tr>
         </thead>
@@ -38,11 +40,15 @@
                 @php
                     $scan = "<i class='fa-solid fa-times'></i>";
                     $sync = "<i class='fa-solid fa-times'></i>";
+                    $clients = "<i class='fa-solid fa-check'></i>";
                     if ($vlan->scan == 1) {
                         $scan = "<i class='fa-solid fa-check'></i>";
                     }
                     if ($vlan->sync == 1) {
                         $sync = "<i class='fa-solid fa-check'></i>";
+                    }
+                    if ($vlan->is_client_vlan == 0) {
+                        $clients = "<i class='fa-solid fa-times'></i>";
                     }
                 @endphp
                 <tr>
@@ -65,6 +71,7 @@
                     <td class="has-text-centered">
                         {!! $sync !!}
                     </td>
+                    <td class="has-text-centered">{!! $clients !!}</td>
                     <td style="width:150px;">
                         <div class="has-text-centered">
                             <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
@@ -72,7 +79,7 @@
                             </a>
                             @if (Auth::user()->role == 'admin')
                                 <button
-                                    onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}')"
+                                    onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
                                     class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')"
                                     class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>

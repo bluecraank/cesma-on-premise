@@ -113,7 +113,7 @@ function deleteBuildingModal(id, name) {
     modal.show()
 }
 
-function editVlanModal(id, name, description, ip, scan, sync) {
+function editVlanModal(id, name, description, ip, scan, sync, is_client_vlan) {
     let modal = $('.modal-edit-vlan');
     modal.find('.vlan-id').val(id);
     modal.find('.vlan-name').val(name);
@@ -128,6 +128,11 @@ function editVlanModal(id, name, description, ip, scan, sync) {
         modal.find('.vlan-sync').prop('checked', true);
     } else {
         modal.find('.vlan-sync').prop('checked', false);
+    }
+    if(is_client_vlan == 1) {
+        modal.find('.vlan-is_client_vlan').prop('checked', false);
+    } else {
+        modal.find('.vlan-is_client_vlan').prop('checked', true);
     }
     modal.show()
 }

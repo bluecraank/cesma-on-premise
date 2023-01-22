@@ -160,12 +160,19 @@ class VlanController extends Controller
             $sync = false;
         }
 
+        if ($request->input('is_client_vlan') == "on") {
+            $is_client_vlan = false;
+        } else {
+            $is_client_vlan = true;
+        }
+
         if (Vlan::whereId($request['id'])->update([
             'name' => $request['name'],
             'description' => $request['description'],
             'ip_range' => $request['ip_range'] ?? null,
             'scan' => $scan,
-            'sync' => $sync
+            'sync' => $sync,
+            'is_client_vlan' => $is_client_vlan,
         ])) {
             $vlanD = Vlan::whereId($request['id'])->first();
             LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');

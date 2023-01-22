@@ -89,6 +89,7 @@
     "Description": "Beschreibung",
     "Vlan.Subnet": "IP-Bereich",
     "Vlan.Scan": "NMAP-Scan",
+    "Vlan.IsClientVlan": "Dieses VLAN im Endgerätescan nicht berücksichtigen",
     "Vlan.Sync": "Synchronisieren",
     "Vlan.Edit": "VLAN bearbeiten",
 
@@ -147,5 +148,6 @@
 
     "MacFilter.Title": "MAC-Typenzuordnung erstellen",
     "System.MacType": "MAC-Typenzuordnung",
-    "System.MacIcon": "MAC-Typen-Symbole"
+    "System.MacIcon": "MAC-Typen-Symbole",
+    "System.IgnoreVlans": "VLANs ignorieren in der Endgeräteübersicht"
 }

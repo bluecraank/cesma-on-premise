@@ -169,7 +169,6 @@
         </table>
     </div>
 
-
     @if (Auth::user()->role == 'admin')
         @include('modals.PubkeySyncModal')
         @include('modals.PubkeyDeleteModal')

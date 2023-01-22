@@ -49,6 +49,12 @@
                         {{ __('Vlan.Sync') }}
                     </label>
                 </div>
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox" name="is_client_vlan" class="vlan-is_client_vlan">
+                        {{ __('Vlan.IsClientVlan') }}
+                    </label>
+                </div>
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Save') }}</button>

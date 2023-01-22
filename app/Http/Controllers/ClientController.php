@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\MacAddress;
 use App\Models\MacTypeFilter;
 use App\Models\MacTypeIcon;
+use App\Models\Vlan;
 use Carbon\Carbon;
 
 class ClientController extends Controller
@@ -54,6 +55,8 @@ class ClientController extends Controller
         $created = 0;
         $updated = 0;
 
+        $vlans = Vlan::where('is_client_vlan', true)->get()->keyBy('vid');
+
         // Get all clients from providers
         $endpoints = ClientController::getClientDataFromProviders() ?? dd("Keine Endpoints der Provider erhalten");
 
@@ -66,7 +69,7 @@ class ClientController extends Controller
         // Get unique endpoints based on mac address
         foreach ($endpoints as $client) {
             foreach ($client['mac_addresses'] as $mac) {
-                if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !in_array($mactable[$mac]['vlan_id'], explode(",", config('app.ignore_vlans')))) {
+                if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !in_array($mactable[$mac]['vlan_id'], $vlans)) {
                     $unique_endpoints[$mac] = true;
 
                     $insert_data = [

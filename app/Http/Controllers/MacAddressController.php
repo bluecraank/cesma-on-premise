@@ -9,18 +9,6 @@ use Illuminate\Support\Facades\Http;
 
 class MacAddressController extends Controller
 {
-    public function index()
-    {
-        $macs = MacAddress::all();
-        $wifi_macs = explode(",", config('app.wifi_macs'));
-        foreach ($macs as $mac) {
-            if (in_array(substr($mac->mac_address, 0, 6), $wifi_macs)) {
-                echo $mac->mac_address . " is a wifi mac<br>";
-            }
-        }
-        return count($macs);
-    }
-
     static function store($mac, $port, $vlan, $device_id)
     {
 
