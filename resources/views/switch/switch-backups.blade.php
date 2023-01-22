@@ -38,7 +38,7 @@
                                             onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
                                             @php if($backup->status != 1) { echo 'disabled'; } @endphp
                                             class="button is-warning is-small"><i
-                                                class="fa-solid fa-upload"></i></button>
+                                                class="fas fa-upload"></i></button>
                                     </div>
                                 @endif
                                 <div class="control">

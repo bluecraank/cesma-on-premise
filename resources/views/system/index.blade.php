@@ -5,7 +5,7 @@
         <div class="is-pulled-right ml-4">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
-                        class="fa-solid fa-plus"></i></button>
+                        class="fas fa-plus"></i></button>
             @endif
         </div>
 
@@ -33,7 +33,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <button
                                     onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
-                                    class="is-small button is-danger"><i class="fa-solid fa-trash"></i></button>
+                                    class="is-small button is-danger"><i class="fas fa-trash"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -78,7 +78,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <button
                                     onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
-                                    class="is-small button is-info"><i class="fa-solid fa-cog"></i></button>
+                                    class="is-small button is-info"><i class="fas fa-cog"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -97,7 +97,7 @@
         <div class="is-pulled-right">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
-                        class="fa-solid fa-plus"></i></button>
+                        class="fas fa-plus"></i></button>
             @endif
         </div>
 
@@ -120,7 +120,7 @@
                         <td>{{ $mac->mac_type }}</td>
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
-                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->mac_type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fa-solid fa-trash"></i></button>
+                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->mac_type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fas fa-trash"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -139,7 +139,7 @@
         <div class="is-pulled-right">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
-                        class="fa-solid fa-plus"></i></button>
+                        class="fas fa-plus"></i></button>
             @endif
         </div>
 
@@ -158,12 +158,12 @@
                         <td>{{ $mac }}</td>
                         <td>{{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}</td>
                         <td class="has-text-centered"><i
-                                class="fa-solid {{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}"></i></td>
+                                class="fas {{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}"></i></td>
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
                                 <button class="button is-info is-small"
                                     onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac }}');$('.modal-edit-icon').find('.mac_icon').val('{{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : 'fa-' }}')"><i
-                                        class="fa-solid fa-cog"></i></button>
+                                        class="fas fa-cog"></i></button>
                             @endif
                         </td>
                     </tr>

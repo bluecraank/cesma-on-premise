@@ -4,7 +4,7 @@
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role == 'admin')
             <button onclick="$('.modal-add-vlan').show();" class="button is-success is-small"><i
-                    class="fa-solid fa-plus"></i></button>
+                    class="fas fa-plus"></i></button>
         @endif
     </div>
 
@@ -38,17 +38,17 @@
         <tbody>
             @foreach ($vlans as $vlan)
                 @php
-                    $scan = "<i class='fa-solid fa-times'></i>";
-                    $sync = "<i class='fa-solid fa-times'></i>";
-                    $clients = "<i class='fa-solid fa-check'></i>";
+                    $scan = "<i class='fas fa-times'></i>";
+                    $sync = "<i class='fas fa-times'></i>";
+                    $clients = "<i class='fas fa-check'></i>";
                     if ($vlan->scan == 1) {
-                        $scan = "<i class='fa-solid fa-check'></i>";
+                        $scan = "<i class='fas fa-check'></i>";
                     }
                     if ($vlan->sync == 1) {
-                        $sync = "<i class='fa-solid fa-check'></i>";
+                        $sync = "<i class='fas fa-check'></i>";
                     }
                     if ($vlan->is_client_vlan == 0) {
-                        $clients = "<i class='fa-solid fa-times'></i>";
+                        $clients = "<i class='fas fa-times'></i>";
                     }
                 @endphp
                 <tr>
@@ -76,7 +76,7 @@
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
                                 <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
-                                    <i class="fa-solid fa-eye"></i>
+                                    <i class="fas fa-eye"></i>
                                 </a>
                             </div>
                             @if (Auth::user()->role == 'admin')

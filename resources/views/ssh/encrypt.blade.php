@@ -24,7 +24,7 @@
     -----END RSA PRIVATE KEY-----
     "></textarea>
             </div>
-            <p class="has-text-success"><i class="fa-solid fa-lock"></i> Der Privatekey wird sicher verschlüsselt gespeichert</p>
+            <p class="has-text-success"><i class="fas fa-lock"></i> Der Privatekey wird sicher verschlüsselt gespeichert</p>
 
         </div>
 

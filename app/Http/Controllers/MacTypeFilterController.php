@@ -59,10 +59,15 @@ class MacTypeFilterController extends Controller
             'mac_icon' => 'required|string|starts_with:fa-'
         ])->validate();
 
-        $macTypeIcon = new MacTypeIcon();
-        $macTypeIcon->mac_type = $request->mac_type;
-        $macTypeIcon->mac_icon = $request->mac_icon;
-        $macTypeIcon->save();
+        if($update = MacTypeIcon::where('mac_type', $request->mac_type)->first()) {
+            $update->mac_icon = $request->mac_icon;
+            $update->save();
+        } else {
+            $macTypeIcon = new MacTypeIcon();
+            $macTypeIcon->mac_type = $request->mac_type;
+            $macTypeIcon->mac_icon = $request->mac_icon;
+            $macTypeIcon->save();
+        }
 
         return redirect()->back()->with('success', 'Mac Type Icon added');
 

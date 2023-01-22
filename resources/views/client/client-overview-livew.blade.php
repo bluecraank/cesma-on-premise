@@ -17,7 +17,7 @@
         <thead>
             <tr>
                 <th>        <div class="field ">
-                    <label data-row="0" class="label is-small">NAME <i class="fa-angle-up ml-1 fa-solid"></i></label>
+                    <label data-row="0" class="label is-small">NAME <i class="fa-angle-up ml-1 fas"></i></label>
                     <div class="control is-small">
                         <input wire:model.debounce.500ms="cHOSTNAME" class="input is-small is-radiusless" type="text">
                     </div>
@@ -25,7 +25,7 @@
                </th>
                <th>
                 <div class="field ">
-                    <label data-row="1" class="label is-small">IP <i class="is-hidden ml-1 fa-solid fa-angle-up"></i></label>
+                    <label data-row="1" class="label is-small">IP <i class="is-hidden ml-1 fas fa-angle-up"></i></label>
                     <div class="control is-small">
                         <input wire:model.debounce.500ms="cIP" class="input is-small is-radiusless" type="text">
                     </div>
@@ -33,7 +33,7 @@
                </th>
                <th>
                 <div class="field ">
-                    <label data-row="2" class="label is-small">MAC <i class="is-hidden ml-1 fa-solid fa-angle-up"></i> <i title="Hover mac address to see vendor" class="ml-2 fa-solid fa-circle-info"></i></label>
+                    <label data-row="2" class="label is-small">MAC <i class="is-hidden ml-1 fas fa-angle-up"></i> <i title="Hover mac address to see vendor" class="ml-2 fas fa-circle-info"></i></label>
                     <div class="control is-small">
                         <input wire:model.debounce.500ms="cMAC" class="input is-small is-radiusless" type="text">
                     </div>
@@ -41,7 +41,7 @@
                </th>
                <th>
                 <div class="field ">
-                    <label data-row="3" class="label is-small">VLAN <i class="is-hidden ml-1 fa-solid fa-angle-up"></i></label>
+                    <label data-row="3" class="label is-small">VLAN <i class="is-hidden ml-1 fas fa-angle-up"></i></label>
                     <div class="control is-small">
                         <div class="select is-small is-fullwidth">
                         <select  wire:model.debounce.500ms="cVLAN" class="is-radiusless">
@@ -56,7 +56,7 @@
                </th>
                <th>
                 <div class="field ">
-                    <label data-row="4" class="label is-small">SWITCH <i class="is-hidden ml-1 fa-solid fa-angle-up"></i></label>
+                    <label data-row="4" class="label is-small">SWITCH <i class="is-hidden ml-1 fas fa-angle-up"></i></label>
                     <div class="control is-small">
                         <div class="select is-small is-radiusless is-fullwidth">
                             <select  wire:model.debounce.500ms="cSWITCH" class="is-radiusless">
@@ -70,14 +70,14 @@
                 </div>
                </th>
                <th>
-                <div class="field ">
-                    <label data-row="5" class="label is-small">PORT <i class="is-hidden ml-1 fa-solid fa-angle-up"></i></label>
+                <div class="field">
+                    <label data-row="5" class="label is-small">PORT <i class="is-hidden ml-1 fas fa-angle-up"></i></label>
                     <div class="control is-small">
                         <input  wire:model.debounce.500ms="cPORT" class="input is-small is-radiusless" type="text">
                     </div>
                 </div>
                </th>
-               <th style="width:190px;">
+               <th style="width:220px;">
                 <div class="field is-inline-block-desktop">
                     <label data-row="0" class="label is-small">STATUS</label>
                     <div class="control is-small">
@@ -91,13 +91,13 @@
                     </div>
                 </div>
         
-                <div class="field is-inline-block-desktop is-halfwidth">
+                <div class="field is-inline-block-desktop">
                     <label data-row="0" class="label is-small">TYPE</label>
                     <div class="control is-small">
                         <div class="select is-small is-radiusless is-fullwidth">
                             <select  wire:model.debounce.500ms="cTYPE" class="is-radiusless">
                                 <option value="all">ALL</option>
-                                <option value="client">client</option>
+                                <option value="client">Client</option>
                                 @foreach ($types as $type)
                                     <option value="{{ $type }}">{{ $type }}</option>
                                 @endforeach

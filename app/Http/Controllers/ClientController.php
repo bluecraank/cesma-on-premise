@@ -55,7 +55,8 @@ class ClientController extends Controller
         $created = 0;
         $updated = 0;
 
-        $vlans = Vlan::where('is_client_vlan', true)->get()->keyBy('vid')->toArray();
+        // Get vlans that are not client vlans
+        $vlans = Vlan::where('is_client_vlan', false)->get()->keyBy('vid')->toArray();
 
         // Get all clients from providers
         $endpoints = ClientController::getClientDataFromProviders() ?? dd("Keine Endpoints der Provider erhalten");
@@ -69,6 +70,7 @@ class ClientController extends Controller
         // Get unique endpoints based on mac address
         foreach ($endpoints as $client) {
             foreach ($client['mac_addresses'] as $mac) {
+                // Check if mac address is in mactable and not in ignored vlans
                 if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !array_key_exists($mactable[$mac]['vlan_id'], $vlans)) {
                     $unique_endpoints[$mac] = true;
 
@@ -80,18 +82,6 @@ class ClientController extends Controller
                         'vlan_id' => $mactable[$mac]['vlan_id'],
                         'type' => self::getClientType($mac),
                     ];
-
-
-                    // Not sure if this is still needed
-                    // Remove in future
-
-                    // // Check for predefined ip subnet types
-                    // $ip_subnets_types = config('app.ip_subnet_to_type');
-                    // foreach ($ip_subnets_types as $key => $ip_subnet_type) {
-                    //     if (str_contains($client['ip_address'], $key)) {
-                    //         $insert_data['type'] = $ip_subnet_type;
-                    //     }
-                    // }
 
                     // Check if client already exists in database
                     $client_in_db = Client::find($mac);

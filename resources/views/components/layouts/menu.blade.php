@@ -22,7 +22,7 @@
                     </li>
                     <li>
                         <a href="{{ route('backups') }}" class="{{ (request()->is('switch/backups')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa-solid fa-hard-drive"></i></span> {{ __('Menu.Backups') }}
+                            <span class="icon"><i class="fas fa-hard-drive"></i></span> {{ __('Menu.Backups') }}
                         </a>
                     </li>
                     <li>
@@ -37,7 +37,7 @@
                     </li>
                     <li>
                         <a href="{{ route('clients') }}" class="{{ (request()->is('clients')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa-solid fa-computer"></i></span> {{ __('Menu.Clients') }}
+                            <span class="icon"><i class="fas fa-computer"></i></span> {{ __('Menu.Clients') }}
                         </a>
                     </li>
                 </ul>
@@ -74,13 +74,13 @@
                     </li>
                     <li>
                         <a href="{{ route('logs') }}" class="{{ (request()->is('logs')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> {{ __('Menu.Log') }}
+                            <span class="icon"><i class="fas fa-clock-rotate-left"></i></span> {{ __('Menu.Log') }}
                         </a>
                     </li>
                     <li>
                         <a class="" href="{{ route('logout') }}" onclick="event.preventDefault();
                         document.getElementById('logout-form').submit();">
-                            <span class="icon"><i class="fa-solid fa-power-off"></i></span> {{ __('Menu.Logout') }}
+                            <span class="icon"><i class="fas fa-power-off"></i></span> {{ __('Menu.Logout') }}
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf

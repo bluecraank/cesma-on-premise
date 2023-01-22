@@ -34,7 +34,7 @@
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
                                 <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $uplinks }}')"
-                                    class="button is-small is-info"><i class="fa-solid fa-gear"></i>
+                                    class="button is-small is-info"><i class="fas fa-gear"></i>
                                 </a>
                             @endif
                         </td>

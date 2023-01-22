@@ -4,7 +4,7 @@
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role == 'admin')
             <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
-                    class="fa-solid fa-plus"></i></button>
+                    class="fas fa-plus"></i></button>
         @endif
     </div>
 
@@ -50,7 +50,7 @@
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
                                 <a class="button is-success is-small" href="/switch/{{ $device->id }}">
-                                    <i class="fa-solid fa-eye"></i>
+                                    <i class="fas fa-eye"></i>
                                 </a>
                             </div>
                             <div class="control">

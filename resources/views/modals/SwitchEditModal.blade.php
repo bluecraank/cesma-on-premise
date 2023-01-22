@@ -48,10 +48,10 @@
                                 @endforeach
                             </select>
                         </div>
-                        <input class="input switch-details" name="details" style="display: inline-block;width:200px"
+                        <input class="input switch-details" name="details" style="display: inline-block;width:160px"
                             type="text" placeholder="Department, Floor">
-                        <input class="input switch-numbering" name="number" style="display: inline-block;width:40px"
-                            type="text" placeholder="Number 1">
+                        <input class="input switch-numbering" name="number" style="display: inline-block;width:80px"
+                            type="number" placeholder="1">
                     </div>
                 </div>
             </section>

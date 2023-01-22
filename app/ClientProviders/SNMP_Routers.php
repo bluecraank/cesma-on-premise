@@ -27,7 +27,7 @@ class SNMP_Routers implements IClientProvider
                         $hostname = str_replace(["POINTER", " "], "", $found);
                         
                         if(config('app.DNS_CUT_DOMAIN') == "true") {
-                            strstr($hostname, ".") ? $hostname = strstr($hostname, ".", true) : $hostname = $hostname;
+                            strstr($hostname, ".", true) ? $hostname = strstr($hostname, ".", true) : $hostname = $hostname;
                         }
 
                         if($hostname == "" or $hostname == " " or $hostname == null) {

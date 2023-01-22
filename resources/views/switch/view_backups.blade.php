@@ -40,7 +40,7 @@
                                 <div class="control">
                                     <a title="{{ __('Backup.View') }}" class="button is-success is-small"
                                         href="/switch/{{ $device['id'] }}/backups">
-                                        <i class="fa-solid fa-eye"></i>
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
                                 <div class="control">
@@ -55,6 +55,13 @@
                     </tr>
                 @endforeach
         </table>
+    </div>
+
+    <div class="box">
+        <div class="label is-small">Alle Switche</div>
+        <div class="buttons are-small">
+            @include('buttons.ButtonCreateBackup')
+        </div>
     </div>
 
 

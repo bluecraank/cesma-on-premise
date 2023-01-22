@@ -87,15 +87,15 @@
                 <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="buttons are-small">
                         <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
-                            <i class="mr-2 fa-solid fa-sync"></i> Refresh
+                            <i class="mr-2 fas fa-sync"></i> Refresh
                         </a>
 
                         <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fa-solid fa-hdd"></i> Backup
+                            <i class="mr-2 fas fa-hdd"></i> Backup
                         </a>
 
                         <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fa-solid fa-key"></i> Sync Pubkeys
+                            <i class="mr-2 fas fa-key"></i> Sync Pubkeys
                         </a>
                     </div>
             </div>
