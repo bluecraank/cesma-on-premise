@@ -18,7 +18,7 @@
                     @enderror
 
                     <div class="field">
-                        <label class="label">Email address</label>
+                        <label class="label">Username</label>
                         <p class="control has-icons-left">
                             <input required id="username" class="input form-control @error('username') is-invalid @enderror" type="text" value="{{ old('username') }}" name="username">
                             <span class="icon is-small is-left">

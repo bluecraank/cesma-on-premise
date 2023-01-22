@@ -55,7 +55,7 @@ class ClientController extends Controller
         $created = 0;
         $updated = 0;
 
-        $vlans = Vlan::where('is_client_vlan', true)->get()->keyBy('vid');
+        $vlans = Vlan::where('is_client_vlan', true)->get()->keyBy('vid')->toArray();
 
         // Get all clients from providers
         $endpoints = ClientController::getClientDataFromProviders() ?? dd("Keine Endpoints der Provider erhalten");
@@ -81,13 +81,17 @@ class ClientController extends Controller
                         'type' => self::getClientType($mac),
                     ];
 
-                    // Check for predefined ip subnet types
-                    $ip_subnets_types = config('app.ip_subnet_to_type');
-                    foreach ($ip_subnets_types as $key => $ip_subnet_type) {
-                        if (str_contains($client['ip_address'], $key)) {
-                            $insert_data['type'] = $ip_subnet_type;
-                        }
-                    }
+
+                    // Not sure if this is still needed
+                    // Remove in future
+
+                    // // Check for predefined ip subnet types
+                    // $ip_subnets_types = config('app.ip_subnet_to_type');
+                    // foreach ($ip_subnets_types as $key => $ip_subnet_type) {
+                    //     if (str_contains($client['ip_address'], $key)) {
+                    //         $insert_data['type'] = $ip_subnet_type;
+                    //     }
+                    // }
 
                     // Check if client already exists in database
                     $client_in_db = Client::find($mac);
@@ -126,7 +130,7 @@ class ClientController extends Controller
             return "fas ". $icons[$type]['mac_icon'];
         }
         
-        return 'fas fa-computer';
+        return 'fas fa-desktop';
     }
 
     static function checkOnlineStatus()

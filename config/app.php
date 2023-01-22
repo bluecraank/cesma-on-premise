@@ -40,19 +40,11 @@ return [
         '10.50.15' => 'printer'
     ],
 
-    // Ignore these vlans because they are not needed (e.g private clients in wifi)
-    'ignore_vlans' => env('IGNORE_VLANS', ''),
-
     // Get snmp data from these routers
     'snmp_routers' => env('SNMP_ROUTERS', ''),
 
     // Replace the domain name in the hostname lookup
     'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
-
-    // Specify which mac vendors are which device type
-    'printer_macs' => env('PRINTER_MACS', ''),
-    'phone_macs' => env('PHONE_MACS', ''),
-    'wifi_macs' => env('WIFI_MACS', ''),
 
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 

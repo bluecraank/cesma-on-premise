@@ -22,7 +22,10 @@ class SearchVlans extends Component
     {
         $searchTerm = '%' . $this->searchTerm . '%';
         return view('vlan.vlan-overview-livew', [
-            'vlans' => Vlan::where('name', 'like', $searchTerm)->get()->sortBy('vid'),
+            'vlans' => Vlan::where('name', 'like', $searchTerm)
+            ->orWhere('vid', 'like', $searchTerm)
+            ->orWhere('description', 'like', $searchTerm)
+            ->get()->sortBy('vid'),
         ]);
     }
 }
