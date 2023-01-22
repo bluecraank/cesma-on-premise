@@ -37,15 +37,6 @@ class SystemController extends Controller
         return view('system.view_usersettings');
     }
 
-    public function updateTheme(Request $request)
-    {
-        if ($request->input('theme')) {
-            setcookie('theme', $request->input('theme'), time() + (86400 * 30), "/"); // 86400 = 1 day
-        }
-
-        return redirect()->back()->with('success', __('Msg.ThemeUpdated'));
-    }
-
     public function updateUserRole(Request $request)
     {
         $guid = $request->input('guid');

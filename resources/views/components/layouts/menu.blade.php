@@ -8,7 +8,7 @@
                 <p class="menu-label">{{ __('Menu.Label.Action') }}</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('perform-ssh') }}" class="execute {{ (request()->is('perform-ssh')) ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('perform-ssh') }}" class="execute {{ (request()->is('execute')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-terminal"></i></span> <span>{{ __('Menu.Execute') }}</span>
                         </a>
                     </li>

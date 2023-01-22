@@ -35,7 +35,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');
     Route::get('/logs', [LogController::class, 'index'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
-    Route::put('/user-settings/update', [SystemController::class, 'updateTheme']);
 });
 Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');

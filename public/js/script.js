@@ -1,4 +1,3 @@
-// Essentials
 $(document).on('keydown', function (e) {
     if (e.keyCode === 27) {
         $('.modal').hide();
@@ -12,26 +11,18 @@ $(document).mouseup(function (e) {
     }
 });
 
-$(document).ready(function() {
-
-    // localStorage.setItem('menuIsCollapsed', true);
-
-    // if(localStorage.getItem('menuIsCollapsed') == 'true') {
-    //     collapseMenu('hide');
-    // }
-
-
-    $(window).keydown(function(event){
-      if(event.keyCode == 13) {
-        event.preventDefault();
-        return false;
-      }
+$(document).ready(function () {
+    $(window).keydown(function (event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            return false;
+        }
     });
 });
 
 // Table Sorting
 $('th').click(function (e) {
-    if(e.target !== e.currentTarget) return;
+    if (e.target !== e.currentTarget) return;
     var table = $(this).parents('table').eq(0)
     var rows = table.find('tr:gt(1)').toArray().sort(comparer($(this).index()))
     this.asc = !this.asc
@@ -40,7 +31,6 @@ $('th').click(function (e) {
 })
 
 $('th label').click(function (e) {
-    // if(e.target !== e.currentTarget) return;
     var table = $(this).parents('table').eq(0)
     var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).attr('data-row')))
 
@@ -64,8 +54,8 @@ function comparer(index) {
     }
 }
 
-function getCellValue(row, index) { 
-    return $(row).find('td').eq(index).text() 
+function getCellValue(row, index) {
+    return $(row).find('td').eq(index).text()
 }
 
 // MultiSelect
@@ -80,7 +70,7 @@ $('#switch-select-ms-2').multiSelect({
 })
 
 function collapseMenu(action, ele) {
-    if(localStorage.getItem('menuIsCollapsed') != 'true' || action == 'hide') {
+    if (localStorage.getItem('menuIsCollapsed') != 'true' || action == 'hide') {
         $('.is-menu').css('min-width', '54px');
         $('.menu').css('width', '54px');
         $('.menu-label').hide();
