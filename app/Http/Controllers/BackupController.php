@@ -11,6 +11,7 @@ use App\Models\Backup;
 use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class BackupController extends Controller
@@ -136,6 +137,6 @@ class BackupController extends Controller
 
         Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($backups, $modDevices, $totalError));
 
-        dd('Success! Email has been sent successfully.');
+        Log::info('Success! Email has been sent successfully.');
     }
 }

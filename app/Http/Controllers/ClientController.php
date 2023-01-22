@@ -60,10 +60,13 @@ class ClientController extends Controller
         $vlans = Vlan::where('is_client_vlan', false)->get()->keyBy('vid')->toArray();
 
         // Get all clients from providers
-        $endpoints = ClientController::getClientDataFromProviders() ?? dd("Keine Endpoints der Provider erhalten");
+        $endpoints = ClientController::getClientDataFromProviders();
+        if(!$endpoints) {
+            Log::error("No clients received from providers");
+            return false;
+        }
 
         // Get all mac addresses from database
-        // lower vlans are more likely to be correct
         // descending sort by device_id because newer devices are more likely at the end of star topology
         $mactable = MacAddress::all()->sortBy('vlan_id')->keyBy('mac_address');
         $unique_endpoints = [];
@@ -100,7 +103,7 @@ class ClientController extends Controller
             }
         }
 
-        return Log::info('Clients successfully updated (New:' . $created . ' Updated:' . $updated . ') (' . number_format(microtime(true) - $start, 2) . 's)');
+        Log::info('Clients successfully updated (New:' . $created . ' Updated:' . $updated . ') (' . number_format(microtime(true) - $start, 2) . 's)');
     }
 
     static function getClientType($mac)
@@ -159,6 +162,6 @@ class ClientController extends Controller
         }
 
         $elapsed = microtime(true) - $start;
-        dd('Clients pinged in ' . $elapsed . " seconds");
+        Log::info('Clients pinged in ' . $elapsed . " seconds");
     }
 }

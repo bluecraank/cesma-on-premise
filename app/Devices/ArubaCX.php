@@ -142,7 +142,7 @@ class ArubaCX implements IDevice
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -429,7 +429,6 @@ class ArubaCX implements IDevice
     static function createBackup($device): bool
     {
         if (!$login_info = self::API_LOGIN($device)) {
-            ddd($login_info);
             return false;
         }
 
