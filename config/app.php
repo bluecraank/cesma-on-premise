@@ -19,13 +19,12 @@ return [
     'company' => env('APP_COMPANY', 'Default Company'),
     'version' => env('APP_VERSION', '1.0.0'),
 
-    'api_username' => env('APP_API_USERNAME', 'admin'),
-    'ssh_private_key' => env('APP_SSH_PRIVATE_KEY', 'false'),
-    'ssh_username' => env('APP_SSH_USERNAME', 'false'),
+    'api_username' => env('API_USERNAME', 'admin'),
+    'ssh_private_key' => env('SSH_PRIVATEKEY', 'false'),
+    'ssh_username' => env('SSH_USERNAME', 'false'),
 
-    'https' => (env('APP_HTTPS') == "true") ? "https://" : "http://",
+    'https' => (env('API_HTTPS') == "true") ? "https://" : "http://",
 
-    'ssh_private_key_data' => env('APP_SSH_PRIVATE_KEY_DATA', 'false'),
     'encryption' => env('APP_ENCRYPTION', 'false'),
 
     'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
