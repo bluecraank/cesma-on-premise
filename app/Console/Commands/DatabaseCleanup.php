@@ -37,6 +37,7 @@ class DatabaseCleanup extends Command
         Backup::whereDate('created_at', '<=', now()->subYear(2))->delete();
         PortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
-        $this->info('Database cleanup done');
+        
+        \Illuminate\Support\Facades\Log::info('Database cleaned up');
     }
 }

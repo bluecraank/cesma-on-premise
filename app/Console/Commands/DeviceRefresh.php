@@ -6,6 +6,7 @@ use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Devices\ArubaOS;
 use App\Devices\ArubaCX;
+use Illuminate\Support\Facades\Log;
 
 class DeviceRefresh extends Command
 {
@@ -30,6 +31,8 @@ class DeviceRefresh extends Command
      */
     public function handle()
     {
+        $start = microtime(true);
+
         static $models = [
             'aruba-os' => ArubaOS::class,
             'aruba-cx' => ArubaCX::class,
@@ -38,13 +41,13 @@ class DeviceRefresh extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            $this->comment('Device not found');
+            Log::error('Device not found');
             return;
         }
 
         $class = $models[$device->type];
         $class::refresh($device);
 
-        $this->info('Device ' . $device->id . ' refreshed');
+        Log::info('Device ' . $device->id . ' refreshed'. ' (' . (microtime(true) - $start) . 's)');
     }
 }

@@ -45,8 +45,8 @@ class PortstatsController extends Controller
                 'port_tx_bytes' => $port['port_tx_bytes'],
                 'port_rx_packets' => $port['port_rx_packets'],
                 'port_tx_packets' => $port['port_tx_packets'],
-                'port_rx_errors' => $port['port_rx_errors'],
-                'port_tx_errors' => $port['port_tx_errors'],
+                'port_rx_errors' => abs($port['port_rx_errors']),
+                'port_tx_errors' => abs($port['port_tx_errors']),
             ]);
         }
     }

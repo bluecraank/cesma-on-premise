@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\ClientController;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class PingClients extends Command
 {
@@ -28,6 +29,7 @@ class PingClients extends Command
      */
     public function handle()
     {
-        return $this->comment(ClientController::checkOnlineStatus());
+        ClientController::checkOnlineStatus();
+        Log::info('Clients pinged');
     }
 }

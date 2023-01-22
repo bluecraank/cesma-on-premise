@@ -11,6 +11,7 @@ use App\Models\MacTypeFilter;
 use App\Models\MacTypeIcon;
 use App\Models\Vlan;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ClientController extends Controller
 {
@@ -99,7 +100,7 @@ class ClientController extends Controller
             }
         }
 
-        return dd('Clients successfully updated (New:' . $created . ' Updated:' . $updated . ') (' . number_format(microtime(true) - $start, 2) . 's)');
+        return Log::info('Clients successfully updated (New:' . $created . ' Updated:' . $updated . ') (' . number_format(microtime(true) - $start, 2) . 's)');
     }
 
     static function getClientType($mac)

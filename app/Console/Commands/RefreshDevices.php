@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Device;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class RefreshDevices extends Command
 {
@@ -32,8 +33,8 @@ class RefreshDevices extends Command
 
         foreach($devices as $device) {
             proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
-            // $this->info('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &');
-            $this->info('Start refreshing device ' . $device->id . '...');
         }
+
+        Log::info('Refreshing '.count($devices).' devices...');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\MacAddressController;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ResolveMacVendors extends Command
 {
@@ -28,6 +29,7 @@ class ResolveMacVendors extends Command
      */
     public function handle()
     {
-        return $this->comment(MacAddressController::getMacVendor());
+        MacAddressController::getMacVendor();
+        Log::info('Mac vendors resolved');
     }
 }

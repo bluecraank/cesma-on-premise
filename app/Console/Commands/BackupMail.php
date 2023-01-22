@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\BackupController;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class BackupMail extends Command
 {
@@ -28,6 +29,8 @@ class BackupMail extends Command
      */
     public function handle()
     {
-        return $this->comment(BackupController::sendMail());
+        BackupController::sendMail();
+
+        Log::info('Backup mail sent');
     }
 }

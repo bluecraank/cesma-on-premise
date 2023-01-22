@@ -6,6 +6,7 @@ use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
+use Illuminate\Support\Facades\Log;
 
 class DeviceBackup extends Command
 {
@@ -38,13 +39,13 @@ class DeviceBackup extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            $this->comment('Device not found');
+            Log::error('Device not found');
             return;
         }
 
         $class = $models[$device->type];
         $class::createBackup($device);
 
-        $this->info('Device ' . $device->id . ' backup created');
+        Log::info('Backup for device ' . $device->id . ' created');
     }
 }

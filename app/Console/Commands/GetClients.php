@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\ClientController;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class GetClients extends Command
 {
@@ -28,6 +29,6 @@ class GetClients extends Command
      */
     public function handle()
     {
-        return $this->comment(ClientController::getClientsAllDevices());
+        ClientController::getClientsAllDevices();
     }
 }

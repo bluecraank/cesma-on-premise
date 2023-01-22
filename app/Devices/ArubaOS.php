@@ -27,6 +27,7 @@ class ArubaOS implements IDevice
         "ports" => 'ports',
         "portstats" => 'port-statistics',
         "vlanport" => 'vlans-ports',
+        "mac-table" => 'mac-table',
     ];
 
     static function GET_API_VERSIONS($hostname): string
@@ -219,7 +220,7 @@ class ArubaOS implements IDevice
         $port_data = self::formatPortData($data['ports']['port_element']);
         $portstat_data = self::formatPortSimpleStatisticData($data['portstats']['port_statistics_element']);
         $vlanport_data = self::formatPortVlanData($data['vlanport']['vlan_port_element']);
-        $mac_data = self::formatMacTableData($data['vlans']['vlan_element'], $device, $cookie, $api_version);
+        $mac_data = self::formatMacTableData($data['mac-table']['mac_table_entry_element'], $device, $cookie, $api_version);
         PortstatsController::store(self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element']), $device->id);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
@@ -252,47 +253,19 @@ class ArubaOS implements IDevice
         return $return;
     }
 
-    static function formatMacTableData($vlans, $device, $cookie, $api_version): array
+    static function formatMacTableData($data, $device, $cookie, $api_version): array
     {
-        $core_switches = [
-            1 => 'CORE1',
-            2 => 'CORE2'
-        ];
-
         $return = [];
-        if (in_array($device->name, $core_switches)) {
-            $vlan_macs = [];
-            foreach ($vlans as $vlan) {
-                $url = "vlans/" . $vlan['vlan_id'] . "/mac-table";
-                $api_data = self::API_GET_DATA($device->hostname, $cookie, $url, $api_version);
-                if ($api_data['success']) {
-                    $vlan_macs[$vlan['vlan_id']] = $api_data['data']['mac_table_entry_element'];
-                }
-            }
 
-            foreach ($vlan_macs as $key => $macs) {
-                foreach ($macs as $mac) {
-                    $mac_filtered = str_replace([":", "-"], "", strtolower($mac['mac_address']));
-                    $return[$mac_filtered] = [
-                        'port' => $mac['port_id'],
-                        'mac' => $mac_filtered,
-                        'vlan' => $key,
-                    ];
-                }
-            }
-        } else {
-            $uri = "mac-table";
-            $api_data = self::API_GET_DATA($device->hostname, $cookie, $uri, $api_version);
-
-            foreach ($api_data['data']['mac_table_entry_element'] as $mac) {
-                $mac_filtered = str_replace([":", "-"], "", strtolower($mac['mac_address']));
-                $return[$mac_filtered] = [
-                    'port' => $mac['port_id'],
-                    'mac' => $mac_filtered,
-                    'vlan' => $mac['vlan_id'],
-                ];
-            }
+        foreach ($data as $mac) {
+            $mac_filtered = str_replace([":", "-"], "", strtolower($mac['mac_address']));
+            $return[$mac_filtered] = [
+                'port' => $mac['port_id'],
+                'mac' => $mac_filtered,
+                'vlan' => $mac['vlan_id'],
+            ];
         }
+
 
         return $return;
     }

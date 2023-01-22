@@ -18,12 +18,10 @@ class Kernel extends ConsoleKernel
         // API abfragen
         $schedule->command('device:refresh-all')
         ->everyFiveMinutes()
-        ->appendOutputTo(storage_path('logs/device-refresh-all.log'))
         ->runInBackground();
 
         $schedule->command('clients:update')
-        ->everyFifteenMinutes()
-        ->appendOutputTo(storage_path('logs/clients-update.log'))
+        ->everyTenMinutes()
         ->runInBackground();
 
         $schedule->command('clients:ping')
@@ -33,8 +31,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('clients:resolve-mac-vendors')
         ->daily()
-        ->at('04:00')
-        ->appendOutputTo(storage_path('logs/clients-resolve-mac-vendors.log'))
+        ->at('05:00')
         ->runInBackground();
         
         // Backups erstellen
@@ -50,9 +47,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:mail')
         ->weekly()
         ->sundays()
-        ->at('22:00')
-        ->appendOutputTo(storage_path('logs/backup-mail.log'));
-    }
+        ->at('22:00');
+     }
 
     /**
      * Register the commands for the application.
