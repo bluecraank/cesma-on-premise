@@ -73,17 +73,23 @@
                     </td>
                     <td class="has-text-centered">{!! $clients !!}</td>
                     <td style="width:150px;">
-                        <div class="has-text-centered">
-                            <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
+                        <div class="field has-addons is-justify-content-center">
+                            <div class="control">
+                                <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </div>
                             @if (Auth::user()->role == 'admin')
-                                <button
-                                    onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
-                                    class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                                <div class="control">
+                                    <button
+                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
+                                        class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                                </div>
+                            @endif
+                            <div class="control">
                                 <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')"
                                     class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
-                            @endif
+                            </div>
                         </div>
                     </td>
                 </tr>

@@ -34,12 +34,18 @@
                     <td>{{ $building->name }}</td>
                     <td>{{ $locations[$building->location_id]->name }}</td>
                     <td style="width:150px;">
-                        <div class="has-text-centered">
+                        <div class="field has-addons is-justify-content-center">
+
                             @if (Auth::user()->role == 'admin')
-                                <button onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
-                                    class="button is-info is-small"><i class="fa fa-gear"></i></button>
-                                <button onclick="deleteBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
-                                    class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                                <div class="control">
+                                    <button onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
+                                        class="button is-info is-small"><i class="fa fa-gear"></i></button>
+                                </div>
+                                <div class="control">
+                                    <button
+                                        onclick="deleteBuildingModal('{{ $building->id }}', '{{ $building->name }}')"
+                                        class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                                </div>
                             @endif
                         </div>
                     </td>

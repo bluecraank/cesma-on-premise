@@ -77,7 +77,7 @@
                     </div>
                 </div>
                </th>
-               <th>
+               <th style="width:190px;">
                 <div class="field is-inline-block-desktop">
                     <label data-row="0" class="label is-small">STATUS</label>
                     <div class="control is-small">
@@ -136,7 +136,7 @@
                     <td>{{ $client->vlan_id }}</td>
                     <td>{{ $devices[$client->switch_id]->name }}</td>
                     <td style="width:100px">{{ $client->port_id }}</td>
-                    <td>{{ $client->updated_at->format('d.m.Y H:i:s') }}</td>
+                    <td class="has-text-centered">{{ $client->updated_at->format('d.m.Y H:i:s') }}</td>
                 </tr>
             @endforeach
         </tbody>

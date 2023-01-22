@@ -72,9 +72,16 @@ class SSHController extends Controller
                 $key = $request->input('passphrase');
             }
 
-            if (!$ssh->login(config('app.ssh_username'), $key)) {
+
+            try {
+                if (!$ssh->login(config('app.ssh_username'), $key)) {
+                    $return->status = 'xmark';
+                    $return->output = 'SSH Login Failed';
+                    return json_encode($return, true);
+                }
+            } catch (\Exception $e) {
                 $return->status = 'xmark';
-                $return->output = 'Login Failed';
+                $return->output = 'Connection Failed';
                 return json_encode($return, true);
             }
 
@@ -145,7 +152,7 @@ class SSHController extends Controller
             }
 
             $return->status = 'xmark';
-            $return->output = 'Not connected';
+            $return->output = 'Connection Failed';
             return json_encode($return, true);
         }
 

@@ -29,7 +29,7 @@
                     <tr>
                         <td>{{ $key->desc }}</td>
                         <td>{{ $out }}</td>
-                        <td class="has-text-centered">
+                        <td style="width:150px;" class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
                                 <button
                                     onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
@@ -74,7 +74,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ substr($user->guid, 0, 20) }}...</td>
                         <td>{{ $user->role }}</td>
-                        <td class="has-text-centered">
+                        <td style="width:150px;" class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
                                 <button
                                     onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
@@ -108,7 +108,7 @@
                     <th>MAC Vendor</th>
                     <th>Beschreibung</th>
                     <th>Typ</th>
-                    <th class="has-text-centered">{{ __('Actions') }}</th>
+                    <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -149,7 +149,7 @@
                     <th>MAC Typ</th>
                     <th>Font Awesome Icon</th>
                     <th class="has-text-centered">Vorschau</th>
-                    <th class="has-text-centered">{{ __('Actions') }}</th>
+                    <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>

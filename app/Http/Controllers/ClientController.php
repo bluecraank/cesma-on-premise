@@ -116,7 +116,8 @@ class ClientController extends Controller
     {
         $types = MacTypeFilter::all()->keyBy('mac_prefix')->toArray();
 
-        if(array_key_exists($mac, $types)) {
+        $mac_prefix = substr($mac, 0, 6);
+        if(array_key_exists($mac_prefix, $types)) {
             return $types[$mac]['mac_type'];
         }
         

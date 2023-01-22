@@ -29,22 +29,31 @@
                         <td>{{ $backup->created_at }}</td>
                         <td>{{ $status }}</td>
                         <td style="width:250px;">
-                            <div class="has-text-centered">
+                            <div class="field has-addons is-justify-content-center">
+
+
                                 @if (Auth::user()->role == 'admin')
-                                    <button title="{{ __('Backup.Restore') }}"
-                                        onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
-                                        @php if($backup->status != 1) { echo 'disabled'; } @endphp
-                                        class="button is-warning is-small"><i class="fa-solid fa-upload"></i></button>
+                                    <div class="control">
+                                        <button title="{{ __('Backup.Restore') }}"
+                                            onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
+                                            @php if($backup->status != 1) { echo 'disabled'; } @endphp
+                                            class="button is-warning is-small"><i
+                                                class="fa-solid fa-upload"></i></button>
+                                    </div>
                                 @endif
-                                <a title="{{ __('Backup.Download') }}" class="button is-small is-success"
-                                    @php if($backup->status == 1) { echo 'href="/switch/backup/'.$backup->id.'/download"'; } else { echo 'disabled'; } @endphp
-                                    download="backup.txt">
-                                    <i class="fa fa-download"></i>
-                                </a>
+                                <div class="control">
+                                    <a title="{{ __('Backup.Download') }}" class="button is-small is-success"
+                                        @php if($backup->status == 1) { echo 'href="/switch/backup/'.$backup->id.'/download"'; } else { echo 'disabled'; } @endphp
+                                        download="backup.txt">
+                                        <i class="fa fa-download"></i>
+                                    </a>
+                                </div>
                                 @if (Auth::user()->role == 'admin')
-                                    <button title="{{ __('Backup.Delete') }}"
-                                        onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
-                                        class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                                    <div class="control">
+                                        <button title="{{ __('Backup.Delete') }}"
+                                            onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
+                                            class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
+                                    </div>
                                 @endif
                             </div>
                         </td>

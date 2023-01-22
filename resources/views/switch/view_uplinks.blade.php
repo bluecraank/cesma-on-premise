@@ -15,7 +15,7 @@
                 <tr>
                     <th>Switch</th>
                     <th>Uplinks</th>
-                    <th class="has-text-centered">{{ __('Actions') }}</th>
+                    <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
