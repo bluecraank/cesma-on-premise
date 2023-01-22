@@ -51,12 +51,12 @@ class SystemController extends Controller
         $guid = $request->input('guid');
         $user = User::where('guid', $guid)->firstOrFail();
         if(!$user) {
-            return redirect()->back()->withErrors(['error' => 'User not found']);
+            return redirect()->back()->withErrors(['message' => 'User not found']);
         }
 
         $user->role = ($request['role'] == 0) ? 'user' : 'admin';
         if(!$user->save()) {
-            return redirect()->back()->withErrors(['error' => 'User could not be updated']);;
+            return redirect()->back()->withErrors(['message' => 'User could not be updated']);;
         }
         
         return redirect()->back()->with('success', 'User role updated!');

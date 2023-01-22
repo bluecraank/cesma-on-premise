@@ -28,7 +28,7 @@ class BuildingController extends Controller
 
             return redirect()->back()->with('success', 'Building created successfully');
         }
-        return redirect()->back()->withErrors(['error' => 'Building could not be created']);
+        return redirect()->back()->withErrors(['message' => 'Building could not be created']);
     }
 
     /**
@@ -49,7 +49,7 @@ class BuildingController extends Controller
 
             return redirect()->back()->with('success', 'Building updated successfully');
         }
-        return redirect()->back()->withErrors(['error' => 'Building could not be updated']);
+        return redirect()->back()->withErrors(['message' => 'Building could not be updated']);
     }
 
     /**
@@ -66,6 +66,6 @@ class BuildingController extends Controller
 
             return redirect()->back()->with('success', 'Building deleted');
         }
-        return redirect()->back()->with('error', 'Could not delete building');
+        return redirect()->back()->with('message', 'Could not delete building');
     }
 }

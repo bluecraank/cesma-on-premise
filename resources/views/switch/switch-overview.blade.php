@@ -6,13 +6,12 @@
         <div class="label is-small">Alle Switche</div>
         <div class="buttons are-small">
             <form action="post" id="form-all-devices">
-                @csrf
                 <a onclick="device_overview_actions('backups', this)" class="button is-info"><i
-                        class="fa-solid fa-hdd mr-2"></i> Create Backup</a>
+                        class="fa-solid fa-hdd mr-2"></i> {{ __('Button.CreateBackup') }}</a>
                 <a onclick="$('.modal-sync-vlans').show();return false;" class="button is-info"><i
-                        class="fa-solid fa-ethernet mr-2"></i> Sync VLANs</a>
+                        class="fa-solid fa-ethernet mr-2"></i> {{ __('Button.SyncVlans') }}</a>
                 <a onclick="device_overview_actions('pubkeys', this)" class="sync-pubkeys-button button is-info"><i
-                        class="fa-solid fa-sync mr-2"></i> Sync Pubkeys</a>
+                        class="fa-solid fa-sync mr-2"></i> {{ __('Button.SyncPubkeys') }}</a>
             </form>
         </div>
     </div>

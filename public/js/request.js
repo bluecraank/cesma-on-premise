@@ -78,7 +78,7 @@ $('.output-buttons').on("click", "button", function () {
 })
 
 // Functions
-function editSwitchModal(id, name, hostname, location, building, details, number, uplinks) {
+function editSwitchModal(id, name, hostname, location, building, details, number) {
 
     let modal = $('.modal-edit-switch');
     modal.find('.switch-id').val(id);
@@ -88,7 +88,6 @@ function editSwitchModal(id, name, hostname, location, building, details, number
     modal.find('.switch-location').val(location);
     modal.find('.switch-building').val(building);
     modal.find('.switch-details').val(details);
-    modal.find('.switch-uplinks').val(uplinks);
     modal.show()
 }
 
@@ -208,7 +207,7 @@ function updateUntaggedPorts(id) {
             $(".response-update-vlan").removeClass('is-hidden');
             $(".response-update-vlan").addClass('is-success');
             $(".response-update-vlan").removeClass('is-danger');
-            $(".response-update-vlan-text").html("<b>Success:</b> " + data.error);
+            $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
         } else {
             $(".live-body").css('opacity', '1');
             $(".save-vlans").addClass('is-hidden');
@@ -216,7 +215,7 @@ function updateUntaggedPorts(id) {
             $(".response-update-vlan").removeClass('is-hidden');
             $(".response-update-vlan").addClass('is-danger');
             $(".response-update-vlan").removeClass('is-success');
-            $(".response-update-vlan-text").html("<b>Error:</b> " + data.error);
+            $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
         }
     });
 
@@ -281,10 +280,10 @@ function updateTaggedVlans() {
         $(".response-update-vlan").removeClass('is-danger');
         if(data.success == "true") {
             $(".response-update-vlan").addClass('is-success');
-            $(".response-update-vlan-text").html("<b>Success:</b> " + data.error);
+            $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
         } else {
             $(".response-update-vlan").addClass('is-danger');
-            $(".response-update-vlan-text").html("<b>Error:</b> " + data.error);
+            $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
         }
         modal.hide();
         modal.find('.is-cancel').removeClass('is-hidden');
@@ -327,9 +326,10 @@ function sw_actions(ele, type, id) {
 }
 
 function device_overview_actions(type, ele) {
-    let form = $("#form-all-devices").serialize();
+
     let uri = '/switch/every/backup/create';
     let cssclass = 'fa-hdd';
+
     if (type == "clients") {
         uri = '/switch/every/clients';
         cssclass = 'fa-computer';
@@ -337,8 +337,12 @@ function device_overview_actions(type, ele) {
         $(".modal-sync-pubkeys").show();
         return false;
     }
+
+    let form = new FormData();
+
     fetcher(uri, form, ele, cssclass);
 }
+
 
 function syncPubkeys() {
     let form = $("#form-sync-pubkeys").serialize();
@@ -380,7 +384,7 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 $(ele).children().removeClass(cssclass);
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');  
-                // $(".notification.status ul li").text(data.error);
+                // $(".notification.status ul li").text(data.message);
                 // $(".notification.status").slideDown(500);
             }
         }

@@ -48,7 +48,7 @@ class MacTypeFilterController extends Controller
             return redirect()->back()->with(['success' => 'Succesfully deleted MAC Type']);
         }
 
-        return redirect()->back()->with(['error' => 'Coult not delete MAC Type']);
+        return redirect()->back()->with(['message' => 'Coult not delete MAC Type']);
 
     }
 

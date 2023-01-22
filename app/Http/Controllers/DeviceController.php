@@ -66,7 +66,7 @@ class DeviceController extends Controller
         $device = Device::find($id);
 
         if (! $device) {
-            return redirect()->back()->withErrors(['error' => 'Could not find device']);
+            return redirect()->back()->withErrors(['message' => 'Could not find device']);
         }
     
         $device->count_vlans = count(json_decode($device->vlan_data, true));
@@ -186,7 +186,7 @@ class DeviceController extends Controller
         if (isset($device_data['success']) and $device_data['success'] == false) {
             $noData = true;
             $sys = [
-                'name' => "AOS-UNKNOWN",
+                'name' => "Unknown",
                 'model' => "Unknown",
                 'serial' => "Unknown",
                 'firmware' => "Unknown",
@@ -199,31 +199,20 @@ class DeviceController extends Controller
             $device_data['portstats_data'] = [];
             $device_data['vlanport_data'] = [];
             $device_data['mac_table_data'] = [];
+            $uplinks = json_encode([]);
+        } else {
+            // Get trunks only once
+            // Assume that trunks are uplinks (most of the time)
+            $device->port_data = json_encode($device_data['ports_data'], true);
+            $trunks = $class::getDeviceTrunks($device);
+            $uplinks = json_encode($trunks);
         }
-
-        // Get trunks only once
-        // Assume that trunks are uplinks (most of the time)
-        $device->port_data = json_encode($device_data['ports_data'], true);
-        $trunks = $class::getDeviceTrunks($device);
-        $uplinks = json_encode($trunks);
-
-        // Get input uplinks
-        if ($request->input('uplinks_ports') and !empty($request->input('uplinks_ports'))) {
-            $uplinks = explode(",", $request->input('uplinks_ports'));
-            foreach ($uplinks as $uplink) {
-                if (!in_array($uplink, $trunks)) {
-                    $trunks[] = $uplink;
-                }
-            }
-        }
-        $device->uplinks = json_encode($trunks);
-
 
         // Merge device data to request
         $request->merge([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true),
             'vlan_data' => json_encode($device_data['vlan_data'], true),
-            'port_data' => $device_data['ports_data'],
+            'port_data' => json_encode($device_data['ports_data']),
             'port_statistic_data' => json_encode($device_data['portstats_data'], true),
             'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
             'system_data' => json_encode($device_data['sysstatus_data'], true),
@@ -282,17 +271,13 @@ class DeviceController extends Controller
             $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);
         }
 
-        if ($request->input('uplinks') and !empty($request->input('uplinks'))) {
-            $request->merge(['uplinks' => json_encode(explode(",", $request->input('uplinks')))]);
-        }
-
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
             LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
 
             return redirect()->back()->with('success', 'Device updated');
         }
 
-        return redirect()->back()->withErrors(['error' => 'Could not update device']);
+        return redirect()->back()->withErrors(['message' => 'Could not update device']);
     }
 
     /**
@@ -306,13 +291,13 @@ class DeviceController extends Controller
         $find = Device::find($device->input('id'));
         Backup::where('device_id', $find->id)->delete();
         Client::where('switch_id', $find->id)->delete();
-        MacAddress::where('switch_id', $find->id)->delete();
+        MacAddress::where('device_id', $find->id)->delete();
         if ($find->delete()) {
             LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
 
             return redirect()->back()->with('success', 'Device deleted');
         }
-        return redirect()->back()->with('error', 'Could not delete device');
+        return redirect()->back()->with('message', 'Could not delete device');
     }
 
     static function refresh(Request $request)
@@ -324,7 +309,7 @@ class DeviceController extends Controller
         $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
 
         if (isset($device_data['success']) and $device_data['success'] == false) {
-            return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
+            return json_encode(['success' => 'false', 'message' => 'Could not get data from device']);
         }
 
         MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
@@ -339,7 +324,7 @@ class DeviceController extends Controller
         ]);
 
         $elapsed = microtime(true) - $start;
-        return json_encode(['success' => 'true', 'error' => 'Refreshed device (' . number_format($elapsed, 2) . 's)']);
+        return json_encode(['success' => 'true', 'message' => 'Refreshed device (' . number_format($elapsed, 2) . 's)']);
     }
 
     static function refreshAll()
@@ -381,7 +366,7 @@ class DeviceController extends Controller
         $device = Device::find($id);
         if ($device) {
             if (!in_array($device->type, array_keys(self::$models))) {
-                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+                return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
             }
 
             $class = self::$models[$device->type];
@@ -390,13 +375,13 @@ class DeviceController extends Controller
             if ($backup) {
                 LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
 
-                return json_encode(['success' => 'true', 'error' => 'Backup created']);
+                return json_encode(['success' => 'true', 'message' => 'Backup created']);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'Error creating backup']);
+                return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
             }
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Device not found' . $id]);
+        return json_encode(['success' => 'false', 'message' => 'Device not found' . $id]);
     }
 
     static function createBackupAllDevices()
@@ -412,7 +397,7 @@ class DeviceController extends Controller
             $class::createBackup($switch);
         }
 
-        return json_encode(['success' => 'true', 'error' => 'Backups created']);
+        return json_encode(['success' => 'true', 'message' => 'Backups created']);
     }
 
     static function getTrunksAllDevices()
@@ -445,10 +430,10 @@ class DeviceController extends Controller
             $class = self::$models[$device->type];
             $class::uploadPubkeys($device, $pubkeys);
 
-            return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded']);
+            return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded']);
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Error finding device or less than 2 pubkeys']);
+        return json_encode(['success' => 'false', 'message' => 'Error finding device or less than 2 pubkeys']);
     }
 
     static function uploadPubkeysAllDevices()
@@ -463,10 +448,10 @@ class DeviceController extends Controller
                 $class::uploadPubkeys($device, $pubkeys);
             }
 
-            return json_encode(['success' => 'true', 'error' => 'Pubkeys uploaded to all devices']);
+            return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded to all devices']);
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Not enough pubkeys']);
+        return json_encode(['success' => 'false', 'message' => 'Not enough pubkeys']);
     }
 
     static function updateVlansAllDevices(Request $request)
@@ -542,12 +527,12 @@ class DeviceController extends Controller
 
                 return $class::setUntaggedVlanToPort($vlans, $ports, $device);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'No changes found']);
+                return json_encode(['success' => 'false', 'message' => 'No changes found']);
             }
 
-            return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);
+            return json_encode(['success' => 'false', 'message' => 'Invalid data retrieved']);
         }
-        return json_encode(['success' => 'false', 'error' => 'Device not found']);
+        return json_encode(['success' => 'false', 'message' => 'Device not found']);
     }
 
     static function setTaggedVlanToPort(Request $request)
@@ -564,10 +549,10 @@ class DeviceController extends Controller
             $ins = 0;
 
             $class = self::$models[$device->type];
-            $return = ['error' => ''];
+            $return = ['message' => ''];
             $result = $class::setTaggedVlanToPort($vlans, $port, $device);
             foreach ($result as $success) {
-                $return['error'] .= "<br>" . $success['error'];
+                $return['message'] .= "<br>" . $success['message'];
                 if ($success['success'] == false) {
                     $failed_c++;
                 } else {
@@ -576,9 +561,9 @@ class DeviceController extends Controller
                 $ins++;
             }
 
-            return json_encode(['success' => 'true', 'error' => "Updated " . $success_c . " of " . $ins . " vlans on port " . $port . $return['error']]);
+            return json_encode(['success' => 'true', 'message' => "Updated " . $success_c . " of " . $ins . " vlans on port " . $port . $return['message']]);
         }
-        return json_encode(['success' => 'false', 'error' => 'Invalid data retrieved']);
+        return json_encode(['success' => 'false', 'message' => 'Invalid data retrieved']);
     }
 
     static function restoreBackup(Request $request)
@@ -593,7 +578,7 @@ class DeviceController extends Controller
 
             LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "' . $backup->created_at . '", "restored": "' . $restore['success'] . '"}');
 
-            return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['error' => $restore['data']]);
+            return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
     }
 

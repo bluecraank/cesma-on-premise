@@ -115,7 +115,7 @@ class VlanController extends Controller
         }
 
         if (!empty($request->input('ip_range')) and (!str_contains($request->input('ip_range'), '/') or substr_count($request->input('ip_range'), '.') != 3)) {
-            return redirect()->back()->withErrors(['error' => 'IP range is not valid']);
+            return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
         if ($vlan = Vlan::create([
@@ -131,7 +131,7 @@ class VlanController extends Controller
             return redirect()->route('vlan.index')->with('success', 'VLAN ' . $vlan->name . ' created');
         }
 
-        return redirect()->back()->withErrors(['error' => 'VLAN could not be created']);
+        return redirect()->back()->withErrors(['message' => 'VLAN could not be created']);
     }
 
     /**
@@ -145,7 +145,7 @@ class VlanController extends Controller
     {
 
         if (!empty($request->input('ip_range')) and (!str_contains($request->input('ip_range'), '/') or substr_count($request->input('ip_range'), '.') != 3)) {
-            return redirect()->back()->withErrors(['error' => 'IP range is not valid']);
+            return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
         if ($request->input('scan') == "on") {
@@ -179,7 +179,7 @@ class VlanController extends Controller
 
             return redirect()->back()->with('success', 'VLAN updated successfully');
         }
-        return redirect()->back()->withErrors(['error' => 'VLAN could not be updated']);
+        return redirect()->back()->withErrors(['message' => 'VLAN could not be updated']);
     }
 
     /**
@@ -196,6 +196,6 @@ class VlanController extends Controller
 
             return redirect()->back()->with('success', 'VLAN deleted');
         }
-        return redirect()->back()->withErrors(['error' => 'Could not delete VLAN']);
+        return redirect()->back()->withErrors(['message' => 'Could not delete VLAN']);
     }
 }

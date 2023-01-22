@@ -37,6 +37,6 @@ class LocationController extends Controller
 
             return redirect()->back()->with('success', 'Location created successfully');
         }
-        return redirect()->back()->withErrors(['error' => 'Location could not be created']);
+        return redirect()->back()->withErrors(['message' => 'Location could not be created']);
     }
 }

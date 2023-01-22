@@ -520,7 +520,7 @@ class ArubaOS implements IDevice
             if ($decrypt !== NULL) {
                 $key = PublicKeyLoader::load($decrypt);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'Error private key']);
+                return json_encode(['success' => 'false', 'message' => 'Error private key']);
             }
         } else {
             $key = EncryptionController::decrypt($device->password);
@@ -553,18 +553,18 @@ class ArubaOS implements IDevice
 
                         self::API_LOGOUT($device->hostname, $cookie, $api_version);
                         if ($response['success']) {
-                            return json_encode(['success' => 'true', 'error' => "Uploaded and aaa configured"]);
+                            return json_encode(['success' => 'true', 'message' => "Uploaded and aaa configured"]);
                         }
                     }
                 }
 
-                return json_encode(['success' => 'true', 'error' => $upload]);
+                return json_encode(['success' => 'true', 'message' => $upload]);
             } catch (\Exception $e) {
-                return json_encode(['success' => 'false', 'error' => 'Error sftp connection ' . $e->getMessage()]);
+                return json_encode(['success' => 'false', 'message' => 'Error sftp connection ' . $e->getMessage()]);
             }
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Error sftp connection']);
+        return json_encode(['success' => 'false', 'message' => 'Error sftp connection']);
     }
 
     static function setUntaggedVlanToPort($vlans, $ports, $device): String
@@ -607,13 +607,13 @@ class ArubaOS implements IDevice
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
             if ($success == $portcount) {
-                return json_encode(['success' => 'true', 'error' => 'Updated ' . $success . ' of ' . $portcount . ' ports']);
+                return json_encode(['success' => 'true', 'message' => 'Updated ' . $success . ' of ' . $portcount . ' ports']);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'Failed to update ' . $failed . ' of ' . count($ports) . ' ports<br> ' . implode("<br>", $failed_ports)]);
+                return json_encode(['success' => 'false', 'message' => 'Failed to update ' . $failed . ' of ' . count($ports) . ' ports<br> ' . implode("<br>", $failed_ports)]);
             }
         }
 
-        return json_encode(['success' => 'false', 'error' => 'API Login failed']);
+        return json_encode(['success' => 'false', 'message' => 'API Login failed']);
     }
 
     static function setTaggedVlanToPort($vlans, $port, $device): array
@@ -647,12 +647,12 @@ class ArubaOS implements IDevice
 
                         $return[] = [
                             'success' => true,
-                            'error' => '[' . $port . '] Tagged VLAN ' . $vlan,
+                            'message' => '[' . $port . '] Tagged VLAN ' . $vlan,
                         ];
                     } else {
                         $return[] = [
                             'success' => false,
-                            'error' => '[' . $port . '] Not Tagged VLAN ' . $vlan,
+                            'message' => '[' . $port . '] Not Tagged VLAN ' . $vlan,
                         ];
                     }
                 }
@@ -675,12 +675,12 @@ class ArubaOS implements IDevice
 
                             $return[] = [
                                 'success' => true,
-                                'error' => '[' . $port . '] Tagged VLAN ' . $vlan . ' removed',
+                                'message' => '[' . $port . '] Tagged VLAN ' . $vlan . ' removed',
                             ];
                         } else {
                             $return[] = [
                                 'success' => false,
-                                'error' => '[' . $port . '] Tagged VLAN ' . $vlan . ' not removed',
+                                'message' => '[' . $port . '] Tagged VLAN ' . $vlan . ' not removed',
                             ];
                         }
                     }
@@ -697,7 +697,7 @@ class ArubaOS implements IDevice
 
         $return[] = [
             'success' => false,
-            'error' => 'API Login failed',
+            'message' => 'API Login failed',
         ];
 
         return $return;
@@ -806,7 +806,7 @@ class ArubaOS implements IDevice
         $device_data = self::API_REQUEST_ALL_DATA($device);
 
         if (isset($device_data['success']) and $device_data['success'] == false) {
-            // return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
+            // return json_encode(['success' => 'false', 'message' => 'Could not get data from device']);
             return false;
         }
 

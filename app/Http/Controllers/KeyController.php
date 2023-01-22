@@ -104,7 +104,7 @@ class KeyController extends Controller
             LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
             return redirect()->back()->with('success', 'Key deleted successfully!');
         } else {
-            return redirect()->back()->with('error', 'Key not found!');
+            return redirect()->back()->with('message', 'Key not found!');
         }
     }
 }

@@ -48,37 +48,10 @@
                                 @endforeach
                             </select>
                         </div>
-                        <input class="input switch-details" name="details"
-                            style="display: inline-block;width:200px" type="text"
-                            placeholder="Department, Floor">
-                        <input class="input switch-numbering" name="number"
-                            style="display: inline-block;width:40px" type="text" placeholder="Number 1">
-                    </div>
-                </div>
-
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title">
-                            {{ __('Options') }}
-                        </p>
-                        <a class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down"
-                                    onclick="$('.msgoptionalopen').toggleClass('is-hidden')"
-                                    aria-hidden="true"></i>
-                            </span>
-                        </a>
-                    </header>
-                    <div class="card-content msgoptionalopen is-hidden">
-                        <div class="content">
-                            <div class="field">
-                                <label class="label">{{ __('Switch.Uplink.Title') }}</label>
-                                <div class="control">
-                                    <input class="input switch-uplinks" name="uplinks" type="text"
-                                        placeholder="1,2,3,4">
-                                </div>
-                            </div>
-                        </div>
+                        <input class="input switch-details" name="details" style="display: inline-block;width:200px"
+                            type="text" placeholder="Department, Floor">
+                        <input class="input switch-numbering" name="number" style="display: inline-block;width:40px"
+                            type="text" placeholder="Number 1">
                     </div>
                 </div>
             </section>

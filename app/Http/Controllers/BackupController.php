@@ -63,7 +63,7 @@ class BackupController extends Controller
             return redirect()->back()->with('success', 'Backup deleted successfully');
         }
 
-        return redirect()->back()->withErrors(['error' => 'Backup could not be deleted']);
+        return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
     }
 
     static function getBackupsBySwitchId($id)

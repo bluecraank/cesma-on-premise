@@ -503,7 +503,7 @@ class ArubaCX implements IDevice
     static function uploadPubkeys($device, $pubkeys): String
     {
         if (!$login_info = self::API_LOGIN($device)) {
-            return json_encode(['success' => 'false', 'error' => 'Login failed']);
+            return json_encode(['success' => 'false', 'message' => 'Login failed']);
         }
 
         list($cookie, $api_version) = explode(";", $login_info);
@@ -525,9 +525,9 @@ class ArubaCX implements IDevice
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
         if ($upload->successful()) {
-            return json_encode(['success' => 'true', 'error' => 'Pubkeys synced']);
+            return json_encode(['success' => 'true', 'message' => 'Pubkeys synced']);
         } else {
-            return json_encode(['success' => 'false', 'error' => 'Pubkeys not synced']);
+            return json_encode(['success' => 'false', 'message' => 'Pubkeys not synced']);
         }
     }
 
@@ -573,13 +573,13 @@ class ArubaCX implements IDevice
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
             if ($success == $portcount) {
-                return json_encode(['success' => 'true', 'error' => 'Updated ' . $success . ' of ' . $portcount . ' ports']);
+                return json_encode(['success' => 'true', 'message' => 'Updated ' . $success . ' of ' . $portcount . ' ports']);
             } else {
-                return json_encode(['success' => 'false', 'error' => 'Failed to update ' . $failed . ' of ' . count($ports) . ' ports']);
+                return json_encode(['success' => 'false', 'message' => 'Failed to update ' . $failed . ' of ' . count($ports) . ' ports']);
             }
         }
 
-        return json_encode(['success' => 'false', 'error' => 'Login failed']);
+        return json_encode(['success' => 'false', 'message' => 'Login failed']);
     }
 
     static function setTaggedVlanToPort($vlans, $port, $device): array
@@ -627,13 +627,13 @@ class ArubaCX implements IDevice
                     $vlan = end($vlan);
                     $return[] = [
                         'success' => true,
-                        'error' => '[' . $port . '] Tagged VLAN ' . $vlan,
+                        'message' => '[' . $port . '] Tagged VLAN ' . $vlan,
                     ];
                 }
             } else {
                 $return[] = [
                     'success' => false,
-                    'error' => '[' . $port . '] Not Tagged VLAN ' . $vlan,
+                    'message' => '[' . $port . '] Not Tagged VLAN ' . $vlan,
                 ];
             }
 
@@ -643,7 +643,7 @@ class ArubaCX implements IDevice
 
         $return[] = [
             'success' => false,
-            'error' => 'API Login failed',
+            'message' => 'API Login failed',
         ];
 
         return $return;
@@ -755,7 +755,7 @@ class ArubaCX implements IDevice
         $device_data = self::API_REQUEST_ALL_DATA($device);
 
         if (isset($device_data['success']) and $device_data['success'] == false) {
-            // return json_encode(['success' => 'false', 'error' => 'Could not get data from device']);
+            // return json_encode(['success' => 'false', 'message' => 'Could not get data from device']);
             return false;
         }
 

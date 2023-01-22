@@ -18,6 +18,9 @@
     "Button.Sync": "Synchronisieren",
     "Button.Start": "Ausführen",
     "Button.Close" : "Schließen",
+    "Button.CreateBackup": "Backup erstellen",
+    "Button.SyncVlans": "VLANs synchronisieren",
+    "Button.SyncPubkeys": "Öffentliche Schlüssel synchronisieren",
 
     "Modal.Key.Add": "Schlüssel hinzufügen",
     "Modal.Key.Add.Name": "Schlüsselname",

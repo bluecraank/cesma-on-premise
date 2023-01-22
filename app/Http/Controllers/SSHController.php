@@ -40,7 +40,7 @@ class SSHController extends Controller
             Storage::disk('local')->put('ssh.key', $key);
             return "Importiert";
         } else {
-            return "{'error': 'Kein gültiger Schlüssel'}";
+            return "{'message': 'Kein gültiger Schlüssel'}";
         }
     }
 
