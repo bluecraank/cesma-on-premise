@@ -11,8 +11,6 @@
 
     <div class="is-clearfix"></div>
 
-    <span class="ml-1 is-text-bold  is-pulled-right has-text-centered has-text-weight-bold">Results: {{ $count_results }} of {{ $count_clients }}</span>
-
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>

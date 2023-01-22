@@ -5,11 +5,11 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Gebäude löschen</p>
+                <p class="modal-card-title">{{ __('DeleteBuilding') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <label class="label">Möchtest du wirklich dieses Gebäude löschen?</label>
+                    <label class="label">{{ __('Building.DeleteText') }}</label>
                     <div class="control">
                         <input class="building-id" name="id" type="hidden" value="">
                         <input class="building-name" name="name" type="hidden" value="">

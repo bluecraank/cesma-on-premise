@@ -87,7 +87,7 @@ class KeyController extends Controller
         $key->save();
         LogController::log('Pubkey erstellt', '{"description": "' . $key->description . '"}');
 
-        return redirect()->back()->with('success', 'Key created successfully!');
+        return redirect()->back()->with('success', __('Msg.PubkeyCreated'));
     }
 
     /**
@@ -102,7 +102,7 @@ class KeyController extends Controller
         if ($key) {
             $key->delete();
             LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
-            return redirect()->back()->with('success', 'Key deleted successfully!');
+            return redirect()->back()->with('success', __('Msg.PubkeyDeleted'));
         } else {
             return redirect()->back()->with('message', 'Key not found!');
         }

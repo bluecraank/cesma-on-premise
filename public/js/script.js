@@ -13,6 +13,14 @@ $(document).mouseup(function (e) {
 });
 
 $(document).ready(function() {
+
+    // localStorage.setItem('menuIsCollapsed', true);
+
+    // if(localStorage.getItem('menuIsCollapsed') == 'true') {
+    //     collapseMenu('hide');
+    // }
+
+
     $(window).keydown(function(event){
       if(event.keyCode == 13) {
         event.preventDefault();
@@ -70,6 +78,32 @@ $('#switch-select-ms-2').multiSelect({
     selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
     selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
 })
+
+function collapseMenu(action, ele) {
+    if(localStorage.getItem('menuIsCollapsed') != 'true' || action == 'hide') {
+        $('.is-menu').css('min-width', '54px');
+        $('.menu').css('width', '54px');
+        $('.menu-label').hide();
+        $('.menu-list .icon').siblings('span').hide();
+        $('.logo-text').hide();
+        $('.menu-list .icon').addClass('is-size-5 mt-3 ml-1');
+        $('.is-username-info').hide();
+        $(ele).children('i').removeClass('fa-angle-left');
+        $(ele).children('i').addClass('fa-angle-right');
+        localStorage.setItem('menuIsCollapsed', true);
+    } else {
+        $('.is-menu').css('min-width', '180px');
+        $('.menu').css('width', '180px');
+        $('.menu-label').show();
+        $('.menu-list .icon').siblings('span').show();
+        $('.logo-text').show();
+        $('.menu-list .icon').removeClass('is-size-5 mt-3 ml-1');
+        $(ele).children('i').addClass('fa-angle-left');
+        $(ele).children('i').removeClass('fa-angle-right');
+        $('.is-username-info').show();
+        localStorage.setItem('menuIsCollapsed', false);
+    }
+}
 
 // Custom notification banner timeout
 setTimeout(function () {

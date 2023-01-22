@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
-use App\Http\Requests\StoreBackupRequest;
-use App\Http\Requests\UpdateBackupRequest;
 use App\Mail\SendBackupStatus;
 use App\Models\Backup;
 use App\Models\Device;
@@ -61,7 +59,7 @@ class BackupController extends Controller
         $find = Backup::find($request->input('id'));
         if ($find->delete()) {
             LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
-            return redirect()->back()->with('success', 'Backup deleted successfully');
+            return redirect()->back()->with('success', __('Msg.BackupCreated'));
         }
 
         return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);

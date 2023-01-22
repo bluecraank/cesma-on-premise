@@ -35,7 +35,7 @@ class MacTypeFilterController extends Controller
         $macTypeFilter->mac_desc = $request->mac_desc;
         $macTypeFilter->save();
 
-        return redirect()->back()->with('success', 'Mac Type Filter added');
+        return redirect()->back()->with('success', __('Msg.MacTypeFilterCreated'));
 
     }
 
@@ -45,7 +45,7 @@ class MacTypeFilterController extends Controller
         ])->validate();
 
         if(MacTypeFilter::find($request->input('id'))->delete()) {
-            return redirect()->back()->with(['success' => 'Succesfully deleted MAC Type']);
+            return redirect()->back()->with(['success' => __('Msg.MacTypeFilterDeleted')]);
         }
 
         return redirect()->back()->with(['message' => 'Coult not delete MAC Type']);
@@ -69,7 +69,7 @@ class MacTypeFilterController extends Controller
             $macTypeIcon->save();
         }
 
-        return redirect()->back()->with('success', 'Mac Type Icon added');
+        return redirect()->back()->with('success', __('Msg.MacTypeIconCreated'));
 
     }
 }

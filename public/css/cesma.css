@@ -10,14 +10,14 @@
 }
 
 .is-menu {
-    min-width: 210px;
+    min-width: 180px;
     min-height: 100vh;
     max-height: 100vh;
 }
 
 .menu {
     border-right: 1px solid #4e5d6c;
-    width: 210px;
+    width: 180px;
     position: fixed;
     min-height: 100vh;
 }
@@ -105,8 +105,9 @@ thead th:hover {
 }
 
 .is-username-info {
-    position: absolute;
-    bottom: 0px;
-    left: 50%;
-    transform: translate(-50%, -19%);
+    /* position: absolute; */
+    /* bottom: 0px; */
+    /* left: 50%; */
+    /* transform: translate(-50%, -19%); */
+    margin-top:25px;
 }

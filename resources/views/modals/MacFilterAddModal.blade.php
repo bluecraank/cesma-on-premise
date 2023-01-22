@@ -41,7 +41,7 @@
                 <div class="field">
                     <div class="select is-fullwidth">
                         <select name="mac_type">
-                            <option value="">Auswählen...</option>
+                            <option value="">{{ __('Select.SelectText') }}</option>
                             @foreach($types as $type)
                                 <option value="{{ $type }}">{{ $type }}</option>
                             @endforeach

@@ -128,7 +128,7 @@ class VlanController extends Controller
             'location_id' => $request['location']
         ])) {
             LogController::log('VLAN erstellt', '{"name": "' .  $request['name'] . '", "vid": "' . $request['vid'] . '", "description": "' . $request['description'] . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
-            return redirect()->route('vlan.index')->with('success', 'VLAN ' . $vlan->name . ' created');
+            return redirect()->route('vlan.index')->with('success', __('Msg.VlanCreated'));
         }
 
         return redirect()->back()->withErrors(['message' => 'VLAN could not be created']);
@@ -177,7 +177,7 @@ class VlanController extends Controller
             $vlanD = Vlan::whereId($request['id'])->first();
             LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
 
-            return redirect()->back()->with('success', 'VLAN updated successfully');
+            return redirect()->back()->with('success', __('Msg.VlanUpdated'));
         }
         return redirect()->back()->withErrors(['message' => 'VLAN could not be updated']);
     }
@@ -194,7 +194,7 @@ class VlanController extends Controller
         if ($find->delete()) {
             LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '"}');
 
-            return redirect()->back()->with('success', 'VLAN deleted');
+            return redirect()->back()->with('success', __('Msg.VlanDeleted'));
         }
         return redirect()->back()->withErrors(['message' => 'Could not delete VLAN']);
     }

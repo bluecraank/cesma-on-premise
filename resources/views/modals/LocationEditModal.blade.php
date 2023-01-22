@@ -5,7 +5,7 @@
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Gebäude bearbeiten</p>
+                <p class="modal-card-title">{{ __('EditBuilding') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">

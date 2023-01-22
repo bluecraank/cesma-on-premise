@@ -35,7 +35,7 @@ class LocationController extends Controller
         if ($validator and Location::create($request->all())) {
             LogController::log('Standort erstellt', '{"name": "' . $request->name . '"}');
 
-            return redirect()->back()->with('success', 'Location created successfully');
+            return redirect()->back()->with('success', __('Msg.LocationCreated'));
         }
         return redirect()->back()->withErrors(['message' => 'Location could not be created']);
     }

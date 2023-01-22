@@ -11,10 +11,10 @@
                             <label class="label">{{ __('Switch.SSH.SelectSwitch') }}</label>
                             <div class="select is-fullwidth is-small">
                                 <select name="execute-specify-switch" id="">
-                                    <option value="every-switch">Alle Switches</option>
+                                    <option value="every-switch">{{ __('Switch.SSH.AllSwitches') }}</option>
                                     <option selected value="specific-switch">{{ __('Switch.SSH.SelectSwitch') }}
                                     </option>
-                                    <option value="specific-location">Nach Standort</option>
+                                    <option value="specific-location">{{ __('Switch.SSH.ByLocation') }}</option>
                                 </select>
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                                     <i class="fas fa-repeat"></i>
                                 </div>
                             </div>
-                            <textarea required="true" spellcheck="false" required name="execute-command" class="textarea" placeholder="Kommando..."></textarea>
+                            <textarea required="true" spellcheck="false" required name="execute-command" class="textarea" placeholder="show vlan 1"></textarea>
                             <p class="help is-danger">{{ __('Switch.SSH.Info') }}</p>
                         </div>
 

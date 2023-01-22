@@ -18,7 +18,7 @@
                     </p>
                 </div>
                 <div class="field">
-                    <label class="label">{{ __('Vlan.ID') }}</label>
+                    <label class="label">ID</label>
                     <p class="control has-icons-left">
                         <input class="input vlan-vid" name="vid" placeholder="VLAN Beschreibung">
                         <span class="icon is-small is-left">

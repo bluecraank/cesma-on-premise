@@ -62,9 +62,9 @@
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">
             <thead>
                 <tr>
-                    <th>User</th>
+                    <th>{{ __('Role.User') }}</th>
                     <th>GUID</th>
-                    <th>Role</th>
+                    <th>{{ __('Role') }}</th>
                     <th class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -105,9 +105,9 @@
             <thead>
                 <tr>
                     <th>MAC Prefix</th>
-                    <th>MAC Vendor</th>
-                    <th>Beschreibung</th>
-                    <th>Typ</th>
+                    <th>Vendor</th>
+                    <th>{{ __('System.Desc') }}</th>
+                    <th>{{ __('Type') }}</th>
                     <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -146,9 +146,9 @@
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">
             <thead>
                 <tr>
-                    <th>MAC Typ</th>
+                    <th>MAC {{ __('Type') }}</th>
                     <th>Font Awesome Icon</th>
-                    <th class="has-text-centered">Vorschau</th>
+                    <th class="has-text-centered">{{ __('Preview') }}</th>
                     <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>

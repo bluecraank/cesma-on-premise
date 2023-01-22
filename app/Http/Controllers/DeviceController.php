@@ -227,7 +227,7 @@ class DeviceController extends Controller
                 $class::createBackup($device);
             }
 
-            return redirect()->back()->with('success', 'Device successfully created');
+            return redirect()->back()->with('success', __('Msg.SwitchCreated'));
         }
 
         return redirect('/')->withErrors($validator);
@@ -274,7 +274,7 @@ class DeviceController extends Controller
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
             LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
 
-            return redirect()->back()->with('success', 'Device updated');
+            return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
         }
 
         return redirect()->back()->withErrors(['message' => 'Could not update device']);
@@ -295,7 +295,7 @@ class DeviceController extends Controller
         if ($find->delete()) {
             LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
 
-            return redirect()->back()->with('success', 'Device deleted');
+            return redirect()->back()->with('success', __('Msg.SwitchDeleted'));
         }
         return redirect()->back()->with('message', 'Could not delete device');
     }
@@ -485,7 +485,7 @@ class DeviceController extends Controller
         if ($request->input('show-results') == "on") {
             return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed'));
         } else {
-            return redirect()->back()->with('success', 'Vlans synced');
+            return redirect()->back()->with('success', __('Msg.VlansSynced'));
         }
     }
 
@@ -578,7 +578,7 @@ class DeviceController extends Controller
 
             LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "' . $backup->created_at . '", "restored": "' . $restore['success'] . '"}');
 
-            return ($restore['success']) ? redirect()->back()->with('success', 'Backup restored') : redirect()->back()->withErrors(['message' => $restore['data']]);
+            return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
     }
 

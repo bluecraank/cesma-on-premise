@@ -6,7 +6,7 @@
         <x-layouts.menu />
         @endif
         <div class="column">
-            <div class="container is-fluid mt-6">
+            <div class="container is-fluid mt-3">
                 @if ($errors->any())
                 <div class="notification status is-danger">
                     <ul>

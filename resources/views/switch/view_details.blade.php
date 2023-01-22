@@ -200,7 +200,7 @@
                     <span onclick="updateUntaggedPorts('{{ $device->id }}')"
                         class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
                     <span onclick="enableEditing();"
-                        class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">Bearbeiten</span>
+                        class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
                 </h2>
 
@@ -218,7 +218,7 @@
                             <th>{{ __('Switch.Live.Portname') }}</th>
                             <th>Untagged</th>
                             <th>Tagged</th>
-                            <th>Endgeräte</th>
+                            <th class="has-text-centered">{{ __('Clients') }}</th>
                             <th class="has-text-centered">Speed Mbit/s</th>
                         </tr>
                     </thead>
@@ -267,7 +267,7 @@
                                         <div class="dropdown is-hoverable">
                                             <div class="dropdown-trigger">
                                               <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                                                <span>{{ count($clients[$port['id']]) }} Endgeräte</span>
+                                                <span>{{ count($clients[$port['id']]) }} {{ __('Clients') }}</span>
                                                 <span class="icon is-small">
                                                   <i class="fas fa-angle-down" aria-hidden="true"></i>
                                                 </span>

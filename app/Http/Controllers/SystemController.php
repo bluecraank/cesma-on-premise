@@ -43,7 +43,7 @@ class SystemController extends Controller
             setcookie('theme', $request->input('theme'), time() + (86400 * 30), "/"); // 86400 = 1 day
         }
 
-        return redirect()->back()->with('success', 'Theme updated!');
+        return redirect()->back()->with('success', __('Msg.ThemeUpdated'));
     }
 
     public function updateUserRole(Request $request)
@@ -59,6 +59,6 @@ class SystemController extends Controller
             return redirect()->back()->withErrors(['message' => 'User could not be updated']);;
         }
         
-        return redirect()->back()->with('success', 'User role updated!');
+        return redirect()->back()->with('success', __('Msg.UserRoleUpdated'));
     }
 }

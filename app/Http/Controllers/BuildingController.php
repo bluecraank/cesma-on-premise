@@ -26,7 +26,7 @@ class BuildingController extends Controller
         if ($validator and Building::create($request->all())) {
             LogController::log('Gebäude erstellt', '{"name": "' . $request->name . '", "location_id": "' . $request->location_id . '"}');
 
-            return redirect()->back()->with('success', 'Building created successfully');
+            return redirect()->back()->with('success', __('Msg.LocationCreated'));
         }
         return redirect()->back()->withErrors(['message' => 'Building could not be created']);
     }
@@ -47,7 +47,7 @@ class BuildingController extends Controller
         if ($validator and $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
             LogController::log('Gebäude aktualisiert', '{"name": "' . $request->name . '"}');
 
-            return redirect()->back()->with('success', 'Building updated successfully');
+            return redirect()->back()->with('success', __('Msg.LocationUpdated'));
         }
         return redirect()->back()->withErrors(['message' => 'Building could not be updated']);
     }
@@ -64,7 +64,7 @@ class BuildingController extends Controller
         if ($find->delete()) {
             LogController::log('Gebäude gelöscht', '{"name": "' . $building->name . '"}');
 
-            return redirect()->back()->with('success', 'Building deleted');
+            return redirect()->back()->with('success', __('Msg.LocationDeleted'));
         }
         return redirect()->back()->with('message', 'Could not delete building');
     }
