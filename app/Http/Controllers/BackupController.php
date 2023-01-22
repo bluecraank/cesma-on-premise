@@ -104,6 +104,10 @@ class BackupController extends Controller
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
         $data = EncryptionController::decrypt($backup->data);
+        if($data == NULL) {
+            $data = "Decrypting error (Wrong encryption key?)";
+        }
+        
         return response($data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 

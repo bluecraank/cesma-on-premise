@@ -27,6 +27,7 @@
                 <th>Modell</th>
                 <th>Firmware</th>
                 <th>Standort</th>
+                <th>Last update</th>
                 <th style="width:150px;text-align:center">Aktionen</th>
             </tr>
         </thead>
@@ -46,6 +47,7 @@
                     <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
                     <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }},
                         {{ $device->details }} #{{ $device->number }}</td>
+                    <td>{{ $device->updated_at->diffForHumans() }}</td>
                     <td style="width:250px;">
                         <div class="has-text-centered">
                             <a class="button is-success is-small" href="/switch/{{ $device->id }}">

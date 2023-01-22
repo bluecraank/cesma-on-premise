@@ -68,6 +68,8 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::put('/user/role', [SystemController::class, 'updateUserRole']);
     Route::post('/clients/typefilter/create', [MacTypeFilterController::class, 'store']);
     Route::post('/clients/typefilter/update', [MacTypeFilterController::class, 'storeIcon']);
+    Route::delete('/clients/typefilter/delete', [MacTypeFilterController::class, 'destroy']);   
+    // Route::post('/privatekey/upload', )
 });
 
 Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {

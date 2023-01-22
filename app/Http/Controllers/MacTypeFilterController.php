@@ -39,6 +39,19 @@ class MacTypeFilterController extends Controller
 
     }
 
+    public function destroy(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer'
+        ])->validate();
+
+        if(MacTypeFilter::find($request->input('id'))->delete()) {
+            return redirect()->back()->with(['success' => 'Succesfully deleted MAC Type']);
+        }
+
+        return redirect()->back()->with(['error' => 'Coult not delete MAC Type']);
+
+    }
+
     public function storeIcon(Request $request) {
 
         $validator = Validator::make($request->all(), [

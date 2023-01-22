@@ -107,6 +107,7 @@
                     <th>MAC Prefix</th>
                     <th>MAC Vendor</th>
                     <th>Beschreibung</th>
+                    <th>Typ</th>
                     <th class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -115,9 +116,11 @@
                     <tr>
                         <td>{{ $mac->mac_prefix }}</td>
                         <td>{{ $vendors[$mac->mac_prefix]->vendor_name }}</td>
-                        <td>{{ $mac->mac_desc }} ({{ $mac->mac_type }})</td>
+                        <td>{{ $mac->mac_desc }}</td>
+                        <td>{{ $mac->mac_type }}</td>
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
+                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->mac_type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fa-solid fa-trash"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -176,6 +179,7 @@
         @include('modals.UserEditModal')
         @include('modals.MacFilterAddModal')
         @include('modals.MacFilterIconAddModal')
+        @include('modals.MacFilterDeleteModal')
     @endif
 
     </x-layouts>
