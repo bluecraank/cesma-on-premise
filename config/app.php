@@ -43,7 +43,7 @@ return [
     'snmp_routers' => env('SNMP_ROUTERS', ''),
 
     // Replace the domain name in the hostname lookup
-    'snmp_replace_domain' => env('SNMP_REPLACE_DOMAIN', 'false'),
+    'DNS_CUT_DOMAIN' => env('DNS_CUT_DOMAIN', 'false'),
 
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 

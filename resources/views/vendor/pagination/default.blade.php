@@ -24,4 +24,6 @@
             @endforeach
         </ul>
     </nav>
+    <span>Ergebnisse {{ $paginator->firstItem() }} bis {{ $paginator->lastItem() }} von {{ $paginator->total() }} Einträgen</span>
+
 @endif

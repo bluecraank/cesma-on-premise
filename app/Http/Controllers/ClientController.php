@@ -69,7 +69,7 @@ class ClientController extends Controller
         // Get unique endpoints based on mac address
         foreach ($endpoints as $client) {
             foreach ($client['mac_addresses'] as $mac) {
-                if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !in_array($mactable[$mac]['vlan_id'], $vlans)) {
+                if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !array_key_exists($mactable[$mac]['vlan_id'], $vlans)) {
                     $unique_endpoints[$mac] = true;
 
                     $insert_data = [
@@ -118,7 +118,7 @@ class ClientController extends Controller
 
         $mac_prefix = substr($mac, 0, 6);
         if(array_key_exists($mac_prefix, $types)) {
-            return $types[$mac]['mac_type'];
+            return $types[$mac_prefix]['mac_type'];
         }
         
         return 'client';

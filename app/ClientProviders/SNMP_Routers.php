@@ -24,7 +24,11 @@ class SNMP_Routers implements IClientProvider
 
                         $hostname = $output[0] ?? "";
                         $found = strtoupper(strstr($hostname, "pointer"));
-                        $hostname = str_replace(["POINTER", " ", config('app.snmp_replace_domain')], "", $found);
+                        $hostname = str_replace(["POINTER", " "], "", $found);
+                        
+                        if(config('app.DNS_CUT_DOMAIN') == "true") {
+                            strstr($hostname, ".") ? $hostname = strstr($hostname, ".", true) : $hostname = $hostname;
+                        }
 
                         if($hostname == "" or $hostname == " " or $hostname == null) {
                             $hostname = strtoupper("DEV-".$filtered_mac);
