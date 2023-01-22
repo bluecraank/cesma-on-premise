@@ -2,7 +2,7 @@
    <img height="210" src="https://github.com/bluecraank/cesma/blob/5d5aacbf36bd874a29d4ed4c0c93fa6308c93fd4/public/img/logo.png">
 </p>
 
-# Central Switch Management [cesma]
+# Central Switch Management [cesma] powered by Laravel
 
 ## Working with
 - HP / ArubaOS like Aruba 2930F
@@ -16,15 +16,16 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 
 ## Requirements
 - Enabled API on Aruba Switch with Password authentication
-- At least Firmwareversion 16.10 for ArubaOS, 10.11 for ArubaCX
+- At least Firmware 16.10 for ArubaOS, 10.11 for ArubaCX
 ```php8.1 php8.1-gmp php8.1-yaml php8.1-curl php8.1-mysqli php8.1-ldap php8.1-bcmath php8.1-mbstring php8.1-dom```
 
 ```MariaDB / MySQL Server```
 
 ## Credentials
-- Initial Admin
-   - User: admin@admin.com
-   - Password: password
+- You need to setup ldap authentication in order to log in.
+- Enable LDAP_LOGGING in your .env too debug your ldap connection
+- After login, set your self with Artisan command "php artisan user:role <guid> <role>" to admin
+- You see youre <guid> with "php artisan user:show"
 
 ## Features
 - Execute Commands on selected switches, locations or every switch 
@@ -32,19 +33,18 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 - Manage Uplinks
 - Backup running-config
 - Restore Backup (ArubaOS tested)
-- See MAC to Port data (with baramundi full support which device is on which port)
-- See Client status (pinging)
+- See Device location (Which device is on which port etc.)
+- See Client online / offline status
 - See Trunks
+- See Port statistics
 - Manage Locations and buildings
 - Get VLANs from switch
 - Get Trunks from switch
 - Upload Pubkeys for SSH
-- Show Live Data from 
-- Update untagged VLANs
+- Set Untagged VLAN on Port
+- Set Tagged VLAN on Port
 - Sync VLANs (Create and Sync Name)
-- Wildcards in execution commands
-- Execute commands
-- Logging changes, executions and more
-- Set connection settings for API and SSH
-- Build on PHP Version 8.1
+- Logging
+- API / SSH Connection settings
+- Build on PHP Version 8.1 with Laravel
 - High Performance
