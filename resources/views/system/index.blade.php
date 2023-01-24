@@ -42,7 +42,7 @@
         </table>
 
         @if (Auth::user()->role == 'admin')
-            <a href="/upload/key"
+            <a href="/privatekey"
                 class="is-pulled-right is-small mb-5 button is-warning">{{ __('Setup.Privatekey.SSH') }}</a>
             <div class="is-clearfix"></div>
         @endif
@@ -115,7 +115,7 @@
                 @foreach ($macs as $mac)
                     <tr>
                         <td>{{ $mac->mac_prefix }}</td>
-                        <td>{{ $vendors[$mac->mac_prefix]->vendor_name }}</td>
+                        <td>{{ $vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
                         <td>{{ $mac->mac_desc }}</td>
                         <td>{{ $mac->mac_type }}</td>
                         <td class="has-text-centered">
@@ -137,10 +137,6 @@
         </div>
 
         <div class="is-pulled-right">
-            @if (Auth::user()->role == 'admin')
-                <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
-            @endif
         </div>
 
         <table class="table is-narrow is-hoverable is-striped is-fullwidth">

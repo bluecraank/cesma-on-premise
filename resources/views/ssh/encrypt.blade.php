@@ -14,7 +14,7 @@
 
 <body>
     <div style="width:90%;margin: 0 auto;">
-    <form method="POST" action="/upload/key/store">
+    <form method="POST" action="/privatekey/upload">
         @csrf
         <div class="field">
             <label class="label">Privatekey</label>

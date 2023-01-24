@@ -85,11 +85,11 @@
                                         onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
-                            @endif
                             <div class="control">
                                 <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')"
                                     class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                             </div>
+                            @endif
                         </div>
                     </td>
                 </tr>

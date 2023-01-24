@@ -24,6 +24,7 @@ return new class extends Migration
             $table->json('vlan_port_data');
             $table->json('mac_table_data');
             $table->json('system_data');
+            $table->json('uplinks')->nullable()->default("[]");
             $table->integer('building');
             $table->integer('location');
             $table->string('details');

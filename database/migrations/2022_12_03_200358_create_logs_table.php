@@ -19,7 +19,7 @@ return new class extends Migration
                 ->nullable();
             $table->string('data')
                 ->nullable();   
-            $table->foreignId('user');
+            $table->string('user')->nullable();
             $table->timestamps();
         });
     }

@@ -13,14 +13,32 @@ return new class extends Migration
      */
     public function up()
     {
+        $driver = Schema::getConnection()->getDriverName();
+        
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('role')->default('user');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });
+
+        Schema::table('users', function (Blueprint $table) use ($driver) {
+            $table->string('guid')->nullable();
+            $table->string('domain')->nullable();
+
+            if ($driver !== 'sqlsrv') {
+                $table->unique('guid');
+            }
+        });
+
+        if ($driver === 'sqlsrv') {
+            DB::statement(
+                $this->compileUniqueSqlServerIndexStatement('users', 'guid')
+            );
+        }
     }
 
     /**

@@ -19,8 +19,7 @@ class BackupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         $backups = Backup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
@@ -32,10 +31,9 @@ class BackupController extends Controller
         return view('switch.view_backups', compact('backups', 'devices'));
     }
 
-    static function store($success, $data, $device)
-    {
+    static function store($success, $data, $device) {
 
-        if($success and $data and !is_array($data)) {
+        if ($success and $data and !is_array($data)) {
             $dataEncrypted = EncryptionController::encrypt($data);
         } else {
             $dataEncrypted = "No data received";
@@ -54,8 +52,7 @@ class BackupController extends Controller
      * @param  \App\Models\Backup  $backup
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
-    {
+    public function destroy(Request $request) {
         $find = Backup::find($request->input('id'));
         if ($find->delete()) {
             LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
@@ -65,15 +62,13 @@ class BackupController extends Controller
         return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
     }
 
-    static function getBackupsBySwitchId($id)
-    {
+    static function getBackupsBySwitchId($id) {
         $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
         $device = Device::find($id);
         return view('switch.switch-backups', compact('backups', 'device'));
     }
 
-    static function backupAll()
-    {
+    static function backupAll() {
         $time = microtime(true);
         Device::all()->each(function ($device) {
             switch ($device->type) {
@@ -97,21 +92,19 @@ class BackupController extends Controller
         echo "Backups finished in " . number_format(microtime(true) - $time, 2) . " seconds\n";
     }
 
-    static function downloadBackup($id)
-    {
+    static function downloadBackup($id) {
         $backup = Backup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
         $data = EncryptionController::decrypt($backup->data);
-        if($data == NULL) {
+        if ($data == NULL) {
             $data = "Decrypting error (Wrong encryption key?)";
         }
-        
+
         return response($data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    static function sendMail()
-    {
+    static function sendMail() {
 
         $backups = Backup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');

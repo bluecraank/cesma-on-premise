@@ -3,6 +3,7 @@
 namespace App\ClientProviders;
 
 use App\Interfaces\IClientProvider;
+use Illuminate\Support\Facades\Log;
 
 class SNMP_Routers implements IClientProvider
 {
@@ -43,62 +44,9 @@ class SNMP_Routers implements IClientProvider
                         ];
                     }
                 } catch(\Exception $e) {
-                    echo "Could not fetch snmp from $router (". $e->getMessage() ."))";
+                    Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?)");
                 }
         }
-
-        return $macs;
-    }
-
-    static function debugQuery(): Array {
-        $macs = [];
-        
-        $routers = explode(",", config('app.snmp_routers'));
-
-        $i = 0;
-
-        foreach($routers as $router) {
-                    $snmp_ifdesc = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.2.2.1.2', 1000000, 1);
-                    $snmp_ifindex = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.1', 1000000, 1);
-                    $snmp_ip_ip = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.3', 1000000, 1);
-                    $snmp_ip_to_mac = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 1000000, 1);
-
-                    foreach($snmp_ip_ip as $key => $ip) {
-                        $ip_f = str_replace("IpAddress: ", "", $ip);
-                        $new_key = str_replace("iso.3.6.1.2.1.4.22.1.3", "iso.3.6.1.2.1.4.22.1.2", $key); 
-
-                        if(isset($snmp_ip_to_mac[$new_key])) {
-                            $mac_f = str_replace("Hex-STRING: ", "", $snmp_ip_to_mac[$new_key]);
-                            $mac_f = str_replace(" ", "", $mac_f);
-                            $mac_f = strtolower($mac_f);
-                            $if_key = str_replace("iso.3.6.1.2.1.4.22.1.3", "iso.3.6.1.2.1.4.22.1.1", $key);
-                            $if_index = str_replace("INTEGER: ", "", $snmp_ifindex[$if_key]);
-                            $thr_key = "iso.3.6.1.2.1.2.2.1.2.".$if_index;
-                            if(isset($snmp_ifdesc[$thr_key])) {
-                                $thr = str_replace(["\"","STRING: ", "VLAN"], "", $snmp_ifdesc[$thr_key]);
-
-                                $thr = str_replace("DEFAULT_", 1, $thr);
-
-                                if(str_contains($thr, ".")) {
-                                    $thr = explode(".", $thr)[1];
-                                }
-
-                                if($thr) {
-                                    echo $ip_f . " | " . $mac_f . " | " . $thr . " | ". $if_index.  "<br>";
-                                }
-                            }
-                            $i++;
-                        }
-                    }
-            }
-                    echo $i;
-
-                    // foreach($snmp_ip_to_mac as $key => $mac) {
-                    //     $ip = str_replace("IpAddress: ", "", $snmp_ip_ip[$key]);
-                    //     $if_index = str_replace("INTEGER: ", "", $snmp_ifindex[$key]);
-
-                    //     echo $ip . " | " . $mac . " | " . $if_index . ";";
-                    // }
 
         return $macs;
     }

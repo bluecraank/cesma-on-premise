@@ -41,7 +41,7 @@
                     $uplinks_string = implode(',', $uplinks);
                 @endphp
                 <tr>
-                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ $device->online }}"></i> {{ $device->name }}</td>
+                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ $device->online }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
                     <td>{{ json_decode($device->system_data, true)['model'] }}</td>
                     <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
                     <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }},
@@ -49,24 +49,24 @@
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
-                                <a class="button is-success is-small" href="/switch/{{ $device->id }}">
+                                <a title="{{ __('Show') }}" class="button is-success is-small" href="/switch/{{ $device->id }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
                             <div class="control">
-                                <a class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
+                                <a title="{{ __('GUI_External') }}" class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
                                     target="_blank">
                                     <i class="fa fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
                             @if (Auth::user()->role == 'admin')
                                 <div class="control">
-                                    <button
+                                    <button title="{{ __('Switch.Edit.Hint') }}"
                                         onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}', '{{ $uplinks_string }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">
-                                    <button onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
+                                    <button title="{{ __('Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
                                         class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                 </div>
                             @endif

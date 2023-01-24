@@ -34,7 +34,7 @@
 
                                 @if (Auth::user()->role == 'admin')
                                     <div class="control">
-                                        <button title="{{ __('Backup.Restore') }}"
+                                        <button disabled title="{{ __('Backup.Restore') }}"
                                             onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
                                             @php if($backup->status != 1) { echo 'disabled'; } @endphp
                                             class="button is-warning is-small"><i
@@ -50,7 +50,7 @@
                                 </div>
                                 @if (Auth::user()->role == 'admin')
                                     <div class="control">
-                                        <button title="{{ __('Backup.Delete') }}"
+                                        <button title="{{ __('Delete') }}"
                                             onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>

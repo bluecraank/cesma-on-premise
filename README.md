@@ -18,7 +18,7 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 - Enabled API on Aruba Switch with Password authentication
 - At least Firmware 16.10 for ArubaOS, 10.11 for ArubaCX
 ```php8.1 php8.1-gmp php8.1-yaml php8.1-curl php8.1-mysqli php8.1-ldap php8.1-bcmath php8.1-mbstring php8.1-dom```
-
+```sudo apt install fping```
 ```MariaDB / MySQL Server```
 
 ## Credentials

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('port_id');
             $table->macAddress('mac_address');
             $table->ipAddress('ip_address')->nullable();
+            $table->integer('online')->default(0);
+            $table->string('type')->default('client');
             $table->timestamps();
         });
     }

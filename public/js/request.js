@@ -345,10 +345,10 @@ function device_overview_actions(type, ele) {
 
 
 function syncPubkeys() {
-    let form = $("#form-sync-pubkeys").serialize();
+    let form = new FormData();
     let uri = '/switch/every/pubkeys';
-    let cssclass = 'fa-sync';
-    let ele = $(".sync-pubkeys-button");
+    let cssclass = 'fa-key';
+    let ele = $(".syncPubButton");
     fetcher(uri, form, ele, cssclass);
     $(".modal-sync-pubkeys").hide();
 }
@@ -367,10 +367,10 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
         .then(data => {
             if(data.success == "true") {
                 $(ele).addClass('is-success');
-                $(ele).children().addClass('fa-check'); 
+                $(ele).children('i').addClass('fa-check'); 
                 $(ele).removeClass('is-loading');
-                $(ele).children().removeClass(cssclass);
-                $(ele).children().removeClass('fa-exclamation-triangle');
+                $(ele).children('i').removeClass(cssclass);
+                $(ele).children('i').removeClass('fa-exclamation-triangle');
                 $(ele).removeClass('is-danger');
 
                 if(timeout) {
@@ -380,8 +380,8 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 }
             } else {
                 $(ele).addClass('is-danger');
-                $(ele).children().addClass('fa-exclamation-triangle');
-                $(ele).children().removeClass(cssclass);
+                $(ele).children('i').addClass('fa-exclamation-triangle');
+                $(ele).children('i').removeClass(cssclass);
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');  
                 // $(".notification.status ul li").text(data.message);

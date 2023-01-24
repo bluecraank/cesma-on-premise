@@ -9,11 +9,15 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KeyController;
+use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\MacTypeFilterController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PortstatsController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,8 +47,8 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/{id}/backups', [BackupController::class, 'getBackupsBySwitchId'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/{id}', [DeviceController::class, 'view_details'])->name('details')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
-    Route::get('/{id}/ports', [PortstatsController::class, 'index'])->name('details')->where('id', '[0-9]+');
-    Route::get('/{id}/ports/{port}', [PortstatsController::class, 'index'])->name('details')->where('id', '[0-9]+');
+    Route::get('/{id}/ports', [PortstatsController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
+    Route::get('/{id}/ports/{port}', [PortstatsController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
 
 
 });
@@ -68,7 +72,17 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/clients/typefilter/create', [MacTypeFilterController::class, 'store']);
     Route::post('/clients/typefilter/update', [MacTypeFilterController::class, 'storeIcon']);
     Route::delete('/clients/typefilter/delete', [MacTypeFilterController::class, 'destroy']);   
-    // Route::post('/privatekey/upload', )
+    Route::post('/privatekey/upload', function(Request $request) {
+        $key = $request->input('key');
+        return "<pre>".EncryptionController::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
+    });
+    Route::get('/privatekey', function() {
+        if(!Storage::disk('local')->get('ssh.key')) {
+            return view('ssh.encrypt');
+        } else {
+            return response('SSH Key already exists', 400);
+        }
+    });
 });
 
 Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {

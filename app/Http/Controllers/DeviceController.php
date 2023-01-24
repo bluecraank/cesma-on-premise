@@ -55,8 +55,7 @@ class DeviceController extends Controller
         ));
     }
 
-    static function view_uplinks()
-    {
+    static function view_uplinks() {
         $devices = Device::all()->keyBy('id');
 
         return view('switch.view_uplinks', compact('devices'));
@@ -300,11 +299,9 @@ class DeviceController extends Controller
         return redirect()->back()->with('message', 'Could not delete device');
     }
 
-    static function refresh(Request $request)
+    static function refresh(Device $device)
     {
         $start = microtime(true);
-
-        $device = Device::find($request->input('device_id'));
 
         $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
 
@@ -313,6 +310,7 @@ class DeviceController extends Controller
         }
 
         MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
+        ClientController::deleteClientsOnUplinks($device);
 
         $device->update([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true),
@@ -324,6 +322,7 @@ class DeviceController extends Controller
         ]);
 
         $elapsed = microtime(true) - $start;
+        
         return json_encode(['success' => 'true', 'message' => 'Refreshed device (' . number_format($elapsed, 2) . 's)']);
     }
 

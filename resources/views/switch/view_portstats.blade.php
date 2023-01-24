@@ -8,7 +8,7 @@
                     </h1>
 
                     <h1 class="subtitle">
-                        Statistiken für Port {{ $port_id }}
+                        {{ __('Portstats.for') }} {{ $port_id }}
 
                     </h1>
                 </div>
@@ -52,7 +52,7 @@
         <div class="columns is-multiline ml-1 mr-3">
             <div class="column is-4">
                 <div class="box">
-                    <h2 class="subtitle">Bytes pro Sekunde (RX/TX)</h2>
+                    <h2 class="subtitle">Mbit/s (RX/TX)</h2>
                     <canvas id="port_rx_tx_bps"></canvas>
                 </div>
             </div>
@@ -66,7 +66,7 @@
 
             <div class="column is-4">
                 <div class="box">
-                    <h2 class="subtitle">Bytes (RX/TX)</h2>
+                    <h2 class="subtitle">Mbit (RX/TX)</h2>
                     <canvas id="port_rx_tx_bytes"></canvas>
                 </div>
             </div>
@@ -87,7 +87,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        Chart.defaults.color = '#fff';
+        localStorage.getItem('theme') == 'dark' ? Chart.defaults.color = '#fff' : Chart.defaults.color = '#000';
 
         const data = {!! $dataset !!}
 

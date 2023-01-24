@@ -3,7 +3,9 @@
 namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\DeviceController;
 use App\Interfaces\IDevice;
+use App\Models\Client;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\KeyController;
@@ -30,7 +32,7 @@ class ArubaOS implements IDevice
         "mac-table" => 'mac-table',
     ];
 
-    static function GET_API_VERSIONS($hostname): string
+    static function API_GET_VERSIONS($hostname): string
     {
         $https = config('app.https');
         $url = $https . $hostname . '/rest/version';
@@ -48,15 +50,13 @@ class ArubaOS implements IDevice
         return "v7";
     }
 
-    static function API_LOGIN($device): string
-    {
-        $api_version = self::GET_API_VERSIONS($device->hostname);
+    static function API_LOGIN($device): string {
+        $api_version = self::API_GET_VERSIONS($device->hostname);
 
         $api_url = config('app.https') . $device->hostname . '/rest/' . $api_version . '/' . self::$api_auth['login'];
 
         $api_username = config('app.api_username');
         $api_password = EncryptionController::decrypt($device->password);
-
         try {
             $response = Http::connectTimeout(3)->withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json'
@@ -387,6 +387,11 @@ class ArubaOS implements IDevice
     {
         $trunks = [];
         $ports = json_decode($device->port_data, true);
+
+        if (!$ports || $ports == "" || $ports == []) {
+            return [];
+        }
+
         foreach ($ports as $port) {
             if (str_contains($port['id'], "Trk")) {
                 $trunks[] = $port['id'];
@@ -759,11 +764,8 @@ class ArubaOS implements IDevice
                 }
             }
 
-            $vlan_data = self::API_GET_DATA($device->hostname, $cookie, self::$available_apis['vlans'], $api_version)['data'];
-            $device->vlan_data = self::formatVlanData($vlan_data['vlan_element']);
-            $device->save();
-
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            DeviceController::refresh($device);
         }
 
         $return['log'][] = "</br><b>[Ergebnisse]</b></br>";
@@ -772,27 +774,5 @@ class ArubaOS implements IDevice
 
         $return['time'] = number_format(microtime(true) - $start, 2);
         return $return;
-    }
-
-    static function refresh($device): Bool
-    {
-        $device_data = self::API_REQUEST_ALL_DATA($device);
-
-        if (isset($device_data['success']) and $device_data['success'] == false) {
-            // return json_encode(['success' => 'false', 'message' => 'Could not get data from device']);
-            return false;
-        }
-
-        MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
-
-        $device->update([
-            'mac_table_data' => json_encode($device_data['mac_table_data'], true),
-            'vlan_data' => json_encode($device_data['vlan_data'], true),
-            'port_data' => json_encode($device_data['ports_data'], true),
-            'port_statistic_data' => json_encode($device_data['portstats_data'], true),
-            'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
-            'system_data' => json_encode($device_data['sysstatus_data'], true)
-        ]);
-        return true;
     }
 }

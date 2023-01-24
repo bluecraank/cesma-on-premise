@@ -92,8 +92,8 @@
                 <div class="field is-inline-block-desktop">
                     <label data-row="0" class="label is-small">TYPE</label>
                     <div class="control is-small">
-                        <div class="select is-small is-radiusless is-fullwidth">
-                            <select  wire:model.debounce.500ms="cTYPE" class="is-radiusless">
+                        <div class="select is-small is-radiusless">
+                            <select style="width:100px;" wire:model.debounce.500ms="cTYPE" class="is-radiusless">
                                 <option value="all">ALL</option>
                                 <option value="client">Client</option>
                                 @foreach ($types as $type)

@@ -57,3 +57,17 @@ textarea::placeholder, input::placeholder {
 aside.menu{
     background: #2b3e50 !important;
 }
+
+
+progress {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: white !important;
+}
+progress::-webkit-progress-bar {
+    background: #dbdbdb !important;
+}
+progress::-moz-progress-bar {
+    background: white !important;
+}

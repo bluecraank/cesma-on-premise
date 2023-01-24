@@ -1,6 +1,4 @@
-<button class="button is-info" onclick="device_overview_actions('pubkeys', this)">
-    <span class="icon is-small">
-        <i class="fas fa-key"></i>
-      </span>
+<button class="button is-info syncPubButton" onclick="device_overview_actions('pubkeys', this)">
+      <i class="fas fa-key mr-2"></i>
       <span>{{ __('Button.SyncPubkeys') }}</span>
 </button>

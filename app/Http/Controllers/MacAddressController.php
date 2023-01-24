@@ -6,12 +6,11 @@ use App\Models\Client;
 use App\Models\MacAddress;
 use App\Models\MacVendors;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class MacAddressController extends Controller
 {
-    static function store($mac, $port, $vlan, $device_id)
-    {
-
+    static function store($mac, $port, $vlan, $device_id) {
         $newMacAddress = MacAddress::create([
             'mac_address' => $mac,
             'device_id' => $device_id,
@@ -26,22 +25,22 @@ class MacAddressController extends Controller
         return false;
     }
 
-    static function refreshMacDataFromSwitch($id, $data, $json_uplinks)
-    {
-        // MacAddress::where("device_id", $id)->delete();
-
+    static function refreshMacDataFromSwitch($id, $data, $json_uplinks) {
         $uplinks = json_decode($json_uplinks, true);
         foreach ($data as $mac) {
-            $delete = MacAddress::where('mac_address', $mac['mac'])->where('device_id', $id)->delete();
-            if (!in_array($mac['port'], $uplinks)) {
+            try {
+                $delete = MacAddress::where('mac_address', $mac['mac'])->where('device_id', $id)->delete();
 
-                MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);
+                if (!in_array($mac['port'], $uplinks)) {
+                    MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);
+                }
+            } catch (\Exception $e) {
+                Log::error('Database error, trying next time');
             }
         }
     }
 
-    static function getMacVendor()
-    {
+    static function getMacVendor() {
         $macs = Client::all();
         $vendors = MacVendors::all()->keyBy('mac_prefix');
 
@@ -78,14 +77,5 @@ class MacAddressController extends Controller
 
             usleep(600000);
         }
-    }
-
-    static function debugQuery()
-    {
-        $mactable = MacAddress::all()->sortBy('vlan_id');
-        foreach ($mactable as $cl) {
-            echo $cl->vlan_id . "\n";
-        }
-        echo count($mactable);
     }
 }

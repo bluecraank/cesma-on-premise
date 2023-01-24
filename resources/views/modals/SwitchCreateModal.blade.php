@@ -56,9 +56,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <input class="input" name="details" style="display: inline-block;width:160px" type="text"
+                        <input class="input" required name="details" style="display: inline-block;width:160px" type="text"
                             placeholder="Department / Floor">
-                        <input class="input" name="number" style="display: inline-block;width:80px" type="number"
+                        <input class="input" required name="number" style="display: inline-block;width:80px" type="number"
                             placeholder="1">
                     </div>
                 </div>

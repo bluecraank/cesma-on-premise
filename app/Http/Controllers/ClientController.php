@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\Log;
 class ClientController extends Controller
 {
 
-    public function index()
-    {
+    public function index() {
 
         $clients = Client::where('vlan_id', '!=', 3056)->get();
         $devices = Device::all()->keyBy('id');
@@ -25,8 +24,7 @@ class ClientController extends Controller
         return view('client.client-overview', compact('clients', 'devices'));
     }
 
-    static function getClientDataFromProviders()
-    {
+    static function getClientDataFromProviders() {
         // Baramundi
         if (!empty(config('app.baramundi_api_url'))) {
             $provider = new Baramundi;
@@ -50,8 +48,7 @@ class ClientController extends Controller
         return $merged;
     }
 
-    static function getClientsAllDevices()
-    {
+    static function getClientsAllDevices() {
         $start = microtime(true);
         $created = 0;
         $updated = 0;
@@ -96,7 +93,7 @@ class ClientController extends Controller
                         $insert_data['id'] = $mac;
                         $insert_data['mac_address'] = $mac;
                         Client::create($insert_data);
-                        echo "New client created: " . $mac . " " . $client['hostname'] . " " . $client['ip_address'];
+                        Log::info('New client: ' . $mac . ' (' . $client['hostname'] . ')');
                         $created++;
                     }
                 }
@@ -106,8 +103,7 @@ class ClientController extends Controller
         Log::info('Clients successfully updated (New:' . $created . ' Updated:' . $updated . ') (' . number_format(microtime(true) - $start, 2) . 's)');
     }
 
-    static function getClientType($mac)
-    {
+    static function getClientType($mac) {
         $types = MacTypeFilter::all()->keyBy('mac_prefix')->toArray();
 
         $mac_prefix = substr($mac, 0, 6);
@@ -128,8 +124,7 @@ class ClientController extends Controller
         return 'fas fa-desktop';
     }
 
-    static function checkOnlineStatus()
-    {
+    static function checkOnlineStatus() {
         $clients = Client::all()->keyBy('id');
 
         $start = microtime(true);
@@ -142,7 +137,7 @@ class ClientController extends Controller
         $client_ip_addresses = implode(" ", $clients_ips);
 
         $result = exec("fping -i 50 " . $client_ip_addresses . " 2> /dev/null", $output, $return);
-
+        
         foreach ($output as $client) {
             $data = explode(" ", $client);
             $key = array_search($data[0], $clients_ips);
@@ -162,6 +157,16 @@ class ClientController extends Controller
         }
 
         $elapsed = microtime(true) - $start;
+        
         Log::info('Clients pinged in ' . $elapsed . " seconds");
+    }
+
+    static function deleteClientsOnUplinks($device) {
+        Client::where('switch_id', $device->id)->where(function ($query) use ($device) {
+            $uplinks = json_decode($device->uplinks, true) ?? [];
+            foreach($uplinks as $uplink) {
+                $query->orWhere('port_id', $uplink);
+            }
+        })->delete();
     }
 }

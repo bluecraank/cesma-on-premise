@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
         ->runInBackground();
 
         $schedule->command('clients:update')
-        ->everyTenMinutes()
+        ->everyFiveMinutes()
         ->runInBackground();
 
         $schedule->command('clients:ping')

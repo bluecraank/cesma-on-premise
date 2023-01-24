@@ -16,7 +16,7 @@ use Illuminate\Http\Client\Request;
          * 
          */
 
-        static function GET_API_VERSIONS(Device $device): string;
+        static function API_GET_VERSIONS(Device $device): string;
 
         static function API_LOGIN(Device $device): string;
 
@@ -59,7 +59,5 @@ use Illuminate\Http\Client\Request;
         static function setTaggedVlanToPort($vlans, $ports, $device): Array;
 
         static function syncVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name,  Bool $test_mode): Array;
-
-        static function refresh(Device $device): Bool;
     }
 ?>

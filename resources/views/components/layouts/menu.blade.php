@@ -91,7 +91,7 @@
                 <p class="has-text-centered is-username-info" style="color:lightgrey;font-size:9pt;text-transform:uppercase">{{ Auth::user()->name }}<br>CESMA {{ config('app.version') }}</p>
 
 
-                <button class="button is-fullwidth" style="position:absolute;bottom:0;" onclick="collapseMenu(false, this)"><i class="fas fa-angle-left"></i></button>
+                <button class="is-radiusless button is-fullwidth" style="position:absolute;bottom:0;" onclick="collapseMenu(false, this)"><i class="fas fa-angle-left"></i></button>
             </div>
 
         </div>
