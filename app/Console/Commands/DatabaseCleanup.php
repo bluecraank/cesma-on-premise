@@ -8,6 +8,7 @@ use App\Models\Log;
 use App\Models\MacAddress;
 use App\Models\PortStat;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class DatabaseCleanup extends Command
 {
@@ -38,6 +39,16 @@ class DatabaseCleanup extends Command
         PortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         
+        $devices = \App\Models\Device::all();
+        foreach($devices as $device) {
+            $uplinks = json_decode($device->uplinks, true) ?? [];
+            Client::where('switch_id', $device->id)->where(function ($query) use ($uplinks) {
+                foreach($uplinks as $uplink) {
+                    $query->orWhere('port_id', $uplink);
+                }
+            })->delete();
+        }
+
         \Illuminate\Support\Facades\Log::info('Database cleaned up');
     }
 }

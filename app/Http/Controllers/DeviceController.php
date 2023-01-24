@@ -310,7 +310,6 @@ class DeviceController extends Controller
         }
 
         MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
-        ClientController::deleteClientsOnUplinks($device);
 
         $device->update([
             'mac_table_data' => json_encode($device_data['mac_table_data'], true),

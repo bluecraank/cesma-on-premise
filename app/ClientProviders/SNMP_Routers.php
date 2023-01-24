@@ -44,7 +44,7 @@ class SNMP_Routers implements IClientProvider
                         ];
                     }
                 } catch(\Exception $e) {
-                    Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?)");
+                    Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
                 }
         }
 

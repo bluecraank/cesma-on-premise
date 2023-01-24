@@ -40,8 +40,7 @@ class Kernel extends ConsoleKernel
         ->runInBackground();
 
         $schedule->command('database:cleanup')
-        ->dailyAt('04:00')
-        ->runInBackground();
+        ->dailyAt('04:00');
 
         // Backups per Mail versenden
         $schedule->command('backup:mail')
