@@ -1,5 +1,5 @@
 <div class="modal modal-new-switch">
-    <form action="/switch/create" method="post">
+    <form onsubmit="$(this).find('.button.is-success').addClass('is-loading');" action="/switch/create" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">

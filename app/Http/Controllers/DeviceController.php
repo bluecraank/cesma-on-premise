@@ -13,8 +13,10 @@ use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
 use App\Models\MacAddress;
+use App\Models\UplinkClient;
 use App\Models\Vlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
@@ -139,6 +141,77 @@ class DeviceController extends Controller
 
     }
 
+    static function view_topology() {
+        $devices = Device::all()->keyBy('id');
+        $discovered_switches = UplinkClient::all()->keyBy('id');
+
+        $grouped = $discovered_switches->groupBy('switch_id');
+
+        $nodes = [];
+        $unique_uplinks = [];   
+        $snmp = [];
+        foreach($devices as $device) {
+            $nodes[] = [
+                'id' => $device->id,
+                'label' => $device->name,            
+            ];
+
+            try {
+            $snmp[$device->id] = snmp2_real_walk($device->hostname, "public", ".1.3.6.1.4.1.9.9.23.1.2.1.1.6");
+            } catch (\Exception $e) {
+                Log::error('Could not connect to ' . $device->hostname . ' with SNMP. Error: ' . $e->getMessage());
+            }
+        }
+
+
+        // Get switches
+        $switches =
+
+        $mac_data = [];
+        foreach($snmp as $id => $data) {
+            foreach($data as $key => $value) {
+                if (str_contains($value, "Hex-STRING:")) {
+                    $value = str_replace("Hex-STRING: ", "", $value);
+                    $value = str_replace(" ", "", $value);
+                    $mac_data[$id][$key] = strtolower($value);
+                    $client = UplinkClient::where('mac_address', $value)->get()->keyBy('mac_address')->toArray();
+                    if(array_key_exists(strtolower($value), $client)) {
+                        //$mac_data[$id][$key] = $client[$value];
+                        echo $client[strtolower($value)]['hostname']."<br>";
+                    }
+                }
+            }
+        }
+
+
+        // foreach($grouped as $key => $device) {
+        //     $unique_uplinks[$key] = [];
+        //     foreach($device as $uplink) {
+        //         $unique_uplinks[$key][$uplink->port_id] = $uplink->port_id;
+        //     }
+        // }
+
+        // dd($unique_uplinks);
+
+
+        // $device_on_port = [];
+        // foreach($discovered_switches as $switch) {
+        //     $found_on = strtoupper(str_replace(".doepke.local","", $devices[$switch->switch_id]->hostname));
+        //     $device_on_port[$found_on][$switch->port_id][] = $switch->hostname;
+        // }
+
+        // dd($device_on_port);
+
+        $nodes = json_encode($nodes);
+
+        return view('switch.view_topology', compact(
+            'devices',
+            'discovered_switches',
+            'grouped',
+            'nodes'
+        ));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -154,7 +227,10 @@ class DeviceController extends Controller
             'location' => 'required|integer',
             'details' => 'required',
             'number' => 'required|integer',
+            'type' => 'required|string'
         ])->validate();
+
+            // dd($request->all());
 
         if (!in_array($request->input('type'), array_keys(self::$models))) {
             return redirect()->back()->withErrors('Device type not found');
@@ -455,7 +531,7 @@ class DeviceController extends Controller
     static function updateVlansAllDevices(Request $request)
     {
         $locid = $request->input('location_id');
-        $devices = Device::where('location', $locid)->get()->keyBy('id');
+        $devices = Device::where('location', $locid)->where('id', 25)->get()->keyBy('id');
         $vlans = Vlan::where('sync', '!=', '0')->where('location_id', $locid)->get()->keyBy('vid');
         $results = [];
 

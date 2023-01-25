@@ -111,7 +111,7 @@
     "Switch.Sync.OverwriteName": "VLAN Namen überschreiben",
     "Switch.Sync.TestMode": "Testmodus",
     "Switch.Sync.Text": "Hiermit werden die in der Datenbank hinterlegten VLANs auf die Switche übertragen. Bitte wähle die gewünschten Optionen aus.",
-    "Switch.Sync.Wait": "Dies dauert einige Minuten - bitte warten...",
+    "Switch.Sync.Wait": "Aktion wird ausgeführt. Bitte warten...",
     "Switch.Pubkey.Title": "Öffentliche Schlüssel abgleichen",
     "Switch.Pubkey.FollowingKeys": "Folgende Schlüssel werden abgeglichen",
     "Switch.Uplink.Title": "Uplink-Ports",

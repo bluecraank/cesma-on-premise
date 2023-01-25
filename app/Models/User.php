@@ -12,5 +12,4 @@ class User extends Authenticatable implements LdapAuthenticatable
 {
     use Notifiable, AuthenticatesWithLdap;
 
-
 }

@@ -97,6 +97,10 @@
                         <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
                             <i class="mr-2 fas fa-key"></i> Sync Pubkeys
                         </a>
+
+                        <a onclick="$('.modal-sync-vlans-specific').show();" class="button is-success">
+                            <i class="mr-2 fas fa-ethernet"></i> Sync Vlans
+                        </a>
                     </div>
             </div>
             @endif
@@ -315,5 +319,6 @@
     </div>
 
     @include('modals.VlanTaggingModal')
+    @include('modals.SwitchSyncVlansModal')
 
     </x-layouts>

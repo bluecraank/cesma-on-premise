@@ -1,5 +1,5 @@
-<div class="modal modal-sync-vlans">
-    <form action="/switch/every/vlans" id="form-sync-vlans" method="post">
+<div class="modal modal-sync-vlans-specific">
+    <form action="/switch/{{ $device->id }}/vlans/sync" id="form-sync-vlans" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
@@ -8,23 +8,11 @@
             </header>
             <section class="modal-card-body">
                 <div class="content">
+                    <label class="label">{{ __('Description') }}</label>
                     <p>
-                        {!! __('Switch.Sync.Text') !!}
+                        Hierüber können die bekannten und zur synchronisation erlaubten VLANs auf diesen Switch synchronisiert werden.
                         <br>
                     </p>
-
-                    <div class="field">
-                        <label class="label">Standort</label>
-                        <div class="control">
-                            <div class="select">
-                                <select name="location_id">
-                                    @foreach ($locations as $location)
-                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                    </div>
-
                     <br>
 
                     <label class="label">{{ __('Options') }}</label>

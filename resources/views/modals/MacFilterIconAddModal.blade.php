@@ -27,6 +27,7 @@
                         </span>
                     </p>
                 </div>
+                <a href="https://fontawesome.com/icons?d=gallery" target="_blank">Zu den Font Awesome Icons</a>
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Save') }}</button>

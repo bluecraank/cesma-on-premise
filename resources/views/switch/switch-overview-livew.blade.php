@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+    <table class="table is-narrow is-hoverable is-bordered is-fullwidth">
         <thead>
             <tr>
                 <th>Name</th>

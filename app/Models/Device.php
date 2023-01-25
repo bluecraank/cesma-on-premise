@@ -35,4 +35,29 @@ class Device extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function getBuilding()
+    {
+        return $this->belongsTo(Building::class, 'building');
+    }
+
+    public function getLocation()
+    {
+        return $this->belongsTo(Location::class, 'location');
+    }
+
+    public function getVlans()
+    {
+        return $this->hasMany(Vlan::class, 'device_id');
+    }
+
+    public function getPortStatistics()
+    {
+        return $this->hasMany(PortStatistic::class, 'device_id');
+    }
+
+    public function getVlanPorts()
+    {
+        return $this->hasMany(VlanPort::class, 'device_id');
+    }
 }

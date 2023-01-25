@@ -41,21 +41,7 @@
                         </a>
                     </li>
                 </ul>
-
-                <p class="menu-label">{{ __('Menu.Label.Data') }}</p>
-                <ul class="menu-list">
-                    <li>
-                        <a href="{{ route('trunks') }}" class="{{ (request()->is('switch/trunks')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-circle-nodes"></i></span> <span>{{ __('Menu.Trunks') }}</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-location-dot"></i></span> <span>{{ __('Menu.Locations') }}</span>
-                        </a>
-                    </li>
-                </ul>
-
+                
                 <p class="menu-label">{{ __('Menu.Label.User') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -67,6 +53,11 @@
 
                 <p class="menu-label">{{ __('Menu.Label.System') }}</p>
                 <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('locations') }}" class="{{ (request()->is('locations')) ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-location-dot"></i></span> <span>{{ __('Menu.Locations') }}</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="{{ route('system') }}" class="{{ (request()->is('system')) ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('Menu.System') }}</span>

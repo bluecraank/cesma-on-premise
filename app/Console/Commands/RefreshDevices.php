@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Device;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class RefreshDevices extends Command

@@ -23,8 +23,8 @@ class PortstatsController extends Controller
             abort(404, "No data for port $port_id found.");
         }
 
-        $utilization_rx = $port_stats_details[0] ? number_format(($port_stats_details[0]->port_rx_bps*8/1024/1024) / $port_stats_details[0]->port_speed * 100, 2) : 0;
-        $utilization_tx = $port_stats_details[0] ? number_format(($port_stats_details[0]->port_tx_bps*8/1024/1024) / $port_stats_details[0]->port_speed * 100, 2) : 0;
+        $utilization_rx = $port_stats_details[0] && $port_stats_details[0]->port_rx_bps != 0 ? number_format(($port_stats_details[0]->port_rx_bps*8/1024/1024) / $port_stats_details[0]->port_speed * 100, 2) : 0;
+        $utilization_tx = $port_stats_details[0] && $port_stats_details[0]->port_tx_bps != 0 ? number_format(($port_stats_details[0]->port_tx_bps*8/1024/1024) / $port_stats_details[0]->port_speed * 100, 2) : 0;
         $speed = $port_stats_details[0] ? $port_stats_details[0]->port_speed / 10 : 0;
 
         return view('switch.view_portstats', compact('device', 'dataset', 'ports', 'port_stats', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3'));

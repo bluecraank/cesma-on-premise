@@ -317,6 +317,9 @@ function sw_actions(ele, type, id) {
     } else if(type == "pubkeys") {
         uri = '/switch/'+id+'/ssh/pubkeys';
         cssclass = "fa-key";
+    } else if(type == "vlans") {
+        uri = '/switch/'+id+'/vlans/sync';
+        cssclass = "fa-ethernet";
     }
 
     let formData = new FormData();
@@ -352,6 +355,14 @@ function syncPubkeys() {
     fetcher(uri, form, ele, cssclass);
     $(".modal-sync-pubkeys").hide();
 }
+
+// function syncVlanSwitch() {
+//     let form = new FormData();
+//     let uri = '/switch/'+$(".syncVlanSwitch").val()+'/vlans/sync';
+//     let cssclass = 'fa-ethernet';
+//     let ele = $(".syncVlanButton");
+//     fetcher(uri, form, ele, cssclass);
+// }
 
 // Fetcher function
 function fetcher(uri, form, ele, cssclass, timeout = false) {

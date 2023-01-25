@@ -74,6 +74,7 @@ class VlanController extends Controller
                             $count_online++;
                         }
                     } else {
+                        $ports[$device->name]['tagged'][] = $port_vlan['port_id'];
                         $count_tagged++;
                     }
                 }

@@ -18,7 +18,7 @@ class ArubaCX implements IDevice
     ];
 
     static $available_apis = [
-        "status" => '/system?attributes=software_version,subsystems,hostname&depth=3',
+        "status" => 'system?attributes=software_version,subsystems,hostname&depth=3',
         "subsystem" => 'system/subsystems/chassis,1?attributes=product_info',
         "vlans" => 'system/vlans?attributes=name,id&depth=2',
         "ports" => 'system/interfaces?attributes=ifindex,link_state,description&depth=2',
@@ -35,7 +35,6 @@ class ArubaCX implements IDevice
 
         try {
             $versions = Http::withoutVerifying()->get($url);
-
             if ($versions->successful()) {
                 $versionsFound = $versions->json()['latest'];
                 return $versionsFound['version'];
@@ -43,7 +42,7 @@ class ArubaCX implements IDevice
         } catch (\Exception $e) {
         }
 
-        return "v10.04";
+        return "v10.11";
     }
 
     static function API_LOGIN($device): string
@@ -93,6 +92,7 @@ class ArubaCX implements IDevice
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
         try {
+
             $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                 'Cookie' => "$cookie",
             ])->put($api_url);
@@ -105,6 +105,9 @@ class ArubaCX implements IDevice
         } catch (\Exception $e) {
             return ['success' => false, 'data' => $e->getMessage()];
         }
+
+        return ['success' => false, 'data' => 'Something went wrong'];
+
     }
 
     static function API_GET_DATA($hostname, $cookie, $api, $version): array
@@ -120,7 +123,7 @@ class ArubaCX implements IDevice
             if ($response->successful()) {
                 return ['success' => true, 'data' => $response->json()];
             } else {
-                return ['success' => false, 'data' => "Error while fetching $api"];
+                return ['success' => false, 'data' => "Error while fetching $api ($api_url) | (".$response->status().")"];
             }
         } catch (\Exception $e) {
             return ['success' => false, 'data' => []];
@@ -195,6 +198,8 @@ class ArubaCX implements IDevice
             $data[$key] = "[]";
             if ($api_data['success']) {
                 $data[$key] = $api_data['data'];
+            } else {
+                dd($api_data['data']);
             }
         }
 
@@ -265,7 +270,7 @@ class ArubaCX implements IDevice
 
     static function formatSystemData($system): array
     {
-        if (isset($system['hostname']) and $system['hostname'] != "") {
+        if (!isset($system['hostname']) or $system['hostname'] == "") {
             $return = [
                 'name' => "AOS-UNKNOWN",
                 'model' => "Unknown",
@@ -274,17 +279,16 @@ class ArubaCX implements IDevice
                 'hardware' => "Unknown",
                 'mac' => "000000000000",
             ];
+        } else {
+            $return = [
+                'name' => $system['hostname'],
+                'model' => $system['subsystems']['chassis,1']['product_info']['product_name'],
+                'serial' => $system['subsystems']['chassis,1']['product_info']['serial_number'],
+                'firmware' => $system['software_version'],
+                'hardware' => $system['subsystems']['chassis,1']['product_info']['part_number'],
+                'mac' => strtolower(str_replace(":", "", $system['subsystems']['chassis,1']['product_info']['base_mac_address'])),
+            ];
         }
-
-        $return = [
-            'name' => $system['hostname'],
-            'model' => $system['subsystems']['chassis,1']['product_info']['product_name'],
-            'serial' => $system['subsystems']['chassis,1']['product_info']['serial_number'],
-            'firmware' => $system['software_version'],
-            'hardware' => $system['subsystems']['chassis,1']['product_info']['part_number'],
-            'mac' => strtolower(str_replace(":", "", $system['subsystems']['chassis,1']['product_info']['base_mac_address'])),
-        ];
-
         return $return;
     }
 
@@ -372,13 +376,17 @@ class ArubaCX implements IDevice
         if (empty($vlanports) or !is_array($vlanports) or !isset($vlanports)) {
             return $return;
         }
-
+        // dd($vlanports);#
         $i = 0;
         foreach ($vlanports as $vlanport) {
             if ($vlanport['ifindex'] < 1000) {
                 if ($vlanport['vlan_mode'] == "native-untagged") { // Untagged und erlaubte als trunks
                     $untagged_vlan = $vlanport['vlan_tag'];
                     $tagged_vlans = $vlanport['vlan_trunks'];
+                    
+                    if(!is_array($tagged_vlans) or !is_array($untagged_vlan)){
+                        continue;
+                    }
 
                     if (is_array($tagged_vlans) and count($tagged_vlans) == 0) {
                         // Man kann davon ausgehen, dass es ein Trunk ist
@@ -596,6 +604,9 @@ class ArubaCX implements IDevice
             list($cookie, $api_version) = explode(";", $login_info);
 
             $data_builder = [];
+            $data_builder['vlan_trunks'] = [];
+            $data_builder['vlan_tag'] = "";
+
             $data_builder['vlan_mode'] = "native-untagged";
 
             $rest_vlans_uri = "/rest/" . $api_version . "/system/vlans/";
@@ -612,6 +623,10 @@ class ArubaCX implements IDevice
                 if (!in_array($rest_vlans_uri . $vlan, $data_builder['vlan_trunks'])) {
                     $data_builder['vlan_trunks'][] = $rest_vlans_uri . $vlan;
                 }
+            }
+
+            if(empty($data_builder['vlan_tag'])) { 
+                $data_builder['vlan_tag'] = $rest_vlans_uri."1";
             }
 
             $data = json_encode($data_builder);
@@ -653,7 +668,8 @@ class ArubaCX implements IDevice
         return $return;
     }
 
-    static function syncVlans($vlans, $vlans_switch, $device, $create_vlans, $overwrite, $test): array {
+    static function syncVlans($vlans, $vlans_switch, $device, $create_vlans, $overwrite, $test): array
+    {
 
         $start = microtime(true);
         $i_not_found = $i_chg_name = $i_vlan_chg_name = $i_vlan_created = 0;
@@ -696,7 +712,7 @@ class ArubaCX implements IDevice
             if ($create_vlans) {
                 foreach ($not_found as $key => $vlan) {
                     $data = '{
-                        "name": ' . $vlan->name . ',
+                        "name": "' . $vlan->name . '",
                         "id": ' . $vlan->vid . '
                     }';
 

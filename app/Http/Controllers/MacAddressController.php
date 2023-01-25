@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class MacAddressController extends Controller
 {
-    static function store($mac, $port, $vlan, $device_id) {
+    static function store($mac, $port, $vlan, $device_id)
+    {
         $newMacAddress = MacAddress::create([
             'mac_address' => $mac,
             'device_id' => $device_id,
@@ -25,22 +26,36 @@ class MacAddressController extends Controller
         return false;
     }
 
-    static function refreshMacDataFromSwitch($id, $data, $json_uplinks) {
+    static function refreshMacDataFromSwitch($id, $data, $json_uplinks)
+    {
         $uplinks = json_decode($json_uplinks, true);
+
         foreach ($data as $mac) {
             try {
-                $delete = MacAddress::where('mac_address', $mac['mac'])->where('device_id', $id)->delete();
+                $port = $mac['port'];
 
-                if (!in_array($mac['port'], $uplinks)) {
-                    MacAddressController::store($mac['mac'], $mac['port'], $mac['vlan'], $id);
+                if (in_array($mac['port'], $uplinks)) {
+                    $port = "UPLINK-".$mac['port'];
                 }
+
+                MacAddress::updateOrCreate(
+                    [
+                        'mac_address' => $mac['mac'],
+                    ],
+                    [
+                        'port_id' => $port,
+                        'vlan_id' => $mac['vlan'],
+                        'device_id' => $id,
+                    ]
+                );
             } catch (\Exception $e) {
-                Log::error('Database error, trying next time');
+                Log::error('[MAC_Resolve] Database error, trying next time');
             }
         }
     }
 
-    static function getMacVendor() {
+    static function getMacVendor()
+    {
         $macs = Client::all();
         $vendors = MacVendors::all()->keyBy('mac_prefix');
 

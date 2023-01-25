@@ -33,8 +33,8 @@ class DatabaseCleanup extends Command
      */
     public function handle()
     {
-        MacAddress::whereDate('created_at', '<=', now()->subWeek(4))->delete();
-        Client::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
+        MacAddress::whereDate('created_at', '<=', now()->subWeek(1))->delete();
+        Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
         Backup::whereDate('created_at', '<=', now()->subYear(2))->delete();
         PortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
@@ -45,6 +45,12 @@ class DatabaseCleanup extends Command
             Client::where('switch_id', $device->id)->where(function ($query) use ($uplinks) {
                 foreach($uplinks as $uplink) {
                     $query->orWhere('port_id', $uplink);
+                }
+            })->delete();
+
+            MacAddress::where('device_id', $device->id)->where(function ($query) use ($uplinks) {
+                foreach ($uplinks as $uplink) {
+                    $query->orWhere('port_id', '=', $uplink);
                 }
             })->delete();
         }

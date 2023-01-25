@@ -35,9 +35,15 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 Make sure, your cesma server can reach your routers with snmp / ping in order to get full client data
 Set your routers in file .env
 
+## Add device into cesma
+Make sure to set session timeout to one minute
+Make sure to enable rest-interface on switch
+newest firmware is required
+
 ## Info about uplinks
 - You should set your uplinks to get high accurancy of client discovery
 - Else you see clients on trunks or uplinks port, which is not correct!
+- Nightly database clean up will delete wrong mac addresses and clients which were discovered on uplink ports
 
 ## Credentials
 - You need to setup ldap authentication in order to log in.
