@@ -38,7 +38,7 @@ use Illuminate\Http\Client\Request;
 
         static function restoreBackup(Device $device, Backup $backup, String $password): Array;
 
-        static function formatPortData(Array $ports): Array;
+        static function formatPortData(Array $ports, Array $stats): Array;
     
         static function formatPortSimpleStatisticData(Array $portstats): Array;
 
@@ -46,7 +46,7 @@ use Illuminate\Http\Client\Request;
     
         static function formatVlanData(Array $vlans): Array; 
 
-        static function formatMacTableData(Array $macs, Device $device, $cookie, $api_version): Array;
+        static function formatMacTableData(Array $macs): Array;
         
         static function formatSystemData(Array $system): Array;
 

@@ -15,7 +15,18 @@ class Vlan extends Model
         'description',
         'location_id',
         'ip_range',
-        'scan',
-        'sync',
+        'is_client',
+        'is_synced',
+        'is_scanned'
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function deviceVlans()
+    {
+        return $this->hasMany(DeviceVlan::class);
+    }
 }

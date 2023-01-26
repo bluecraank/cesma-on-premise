@@ -12,19 +12,17 @@ class Device extends Model
     protected $fillable = [
         'name',
         'hostname',
-        'building',
-        'location',
-        'number',
-        'details',
+        'building_id',
+        'location_id',
+        'location_number',
+        'location_desc',
         'password',
-        'vlan_data',
-        'port_statistic_data',
-        'vlan_port_data',
-        'system_data',
-        'port_data',
-        'mac_table_data',
+        'serialnumber',
+        'firmware',
+        'hardware',
+        'named',
+        'model',
         'type',
-        'uplinks'
     ];
 
     /**
@@ -36,28 +34,43 @@ class Device extends Model
         'password',
     ];
 
-    public function getBuilding()
-    {
-        return $this->belongsTo(Building::class, 'building');
+    public function uplinks() {
+        return $this->hasMany(DeviceUplink::class);
     }
 
-    public function getLocation()
-    {
-        return $this->belongsTo(Location::class, 'location');
+    public function ports() {
+        return $this->hasMany(DevicePort::class);
     }
 
-    public function getVlans()
-    {
-        return $this->hasMany(Vlan::class, 'device_id');
+    public function vlans() {
+        return $this->hasMany(DeviceVlan::class);
     }
 
-    public function getPortStatistics()
-    {
-        return $this->hasMany(PortStatistic::class, 'device_id');
+    public function location() {
+        return $this->belongsTo(Location::class);
     }
 
-    public function getVlanPorts()
-    {
-        return $this->hasMany(VlanPort::class, 'device_id');
+    public function building() {
+        return $this->belongsTo(Building::class);
+    } 
+
+    public function firmwareOrUnknown() {
+        return $this->firmware ?? 'Unknown';
+    }
+
+    public function hardwareOrUnknown() {
+        return $this->hardware ?? 'Unknown';
+    }
+
+    public function serialOrUnknown() {
+        return $this->serial ?? 'Unknown';
+    }
+
+    public function modelOrUnknown() {
+        return $this->model ?? 'Unknown';
+    }
+
+    public function vlanports() {
+        return $this->hasMany(DeviceVlanPort::class);
     }
 }

@@ -43,22 +43,22 @@
                     <label class="label">{{ __('Location') }}</label>
                     <div class="control">
                         <div class="select">
-                            <select required name="location">
+                            <select required name="location_id">
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="select">
-                            <select required name="building">
+                            <select required name="building_id">
                                 @foreach ($buildings as $building)
                                     <option value="{{ $building->id }}">{{ $building->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <input class="input" required name="details" style="display: inline-block;width:160px" type="text"
+                        <input class="input" required name="location_desc" style="display: inline-block;width:160px" type="text"
                             placeholder="Department / Floor">
-                        <input class="input" required name="number" style="display: inline-block;width:80px" type="number"
+                        <input class="input" required name="location_number" style="display: inline-block;width:80px" type="number"
                             placeholder="1">
                     </div>
                 </div>

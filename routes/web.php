@@ -13,6 +13,7 @@ use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\MacTypeFilterController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PortstatsController;
+use App\Services\DeviceService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -48,6 +49,12 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
     Route::get('/{id}/ports', [PortstatsController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
     Route::get('/{id}/ports/{port}', [PortstatsController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
+
+
+});
+Route::prefix('debug')->middleware('auth:sanctum')->group(function () {
+    Route::get('/switch/{device:id}', [DeviceController::class, 'getApiData'])->name('details')->where('id', '[0-9]+');
+    Route::get('/switch/{device:id}/dashboard', [DeviceService::class, 'getApiData'])->name('details')->where('id', '[0-9]+');
 
 
 });

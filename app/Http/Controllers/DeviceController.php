@@ -15,6 +15,7 @@ use App\Models\Client;
 use App\Models\MacAddress;
 use App\Models\UplinkClient;
 use App\Models\Vlan;
+use App\Services\DeviceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -223,89 +224,22 @@ class DeviceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:devices|max:100',
             'hostname' => 'required|unique:devices|max:100',
-            'building' => 'required|integer',
-            'location' => 'required|integer',
-            'details' => 'required',
-            'number' => 'required|integer',
+            'building_id' => 'required|integer',
+            'location_id' => 'required|integer',
+            'location_desc' => 'required',
+            'location_number' => 'required|integer',
             'type' => 'required|string'
         ])->validate();
-
-            // dd($request->all());
 
         if (!in_array($request->input('type'), array_keys(self::$models))) {
             return redirect()->back()->withErrors('Device type not found');
         }
 
-        // Get hostname from device else use ip
-        $hostname = $request->input('hostname');
-        if (filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
-        }
-        $request->merge(['hostname' => $hostname]);
-
-
-        // Encrypt password before store
-        $encrypted_pw = EncryptionController::encrypt($request->all()['password']);
-        $request->merge(['password' => $encrypted_pw]);
-
-        // Create device
-        $device = new Device();
-        $device->hostname = $hostname;
-        $device->password = $encrypted_pw;
-        $device->type = $request->input('type');
-
-        $class = self::$models[$request->input('type')];
-        $device_data = $class::API_REQUEST_ALL_DATA($device);
-
-        $noData = false;
-        if (isset($device_data['success']) and $device_data['success'] == false) {
-            $noData = true;
-            $sys = [
-                'name' => "Unknown",
-                'model' => "Unknown",
-                'serial' => "Unknown",
-                'firmware' => "Unknown",
-                'hardware' => "Unknown",
-                'mac' => "000000000000",
-            ];
-            $device_data['sysstatus_data'] = $sys;
-            $device_data['vlan_data'] = [];
-            $device_data['ports_data'] = [];
-            $device_data['portstats_data'] = [];
-            $device_data['vlanport_data'] = [];
-            $device_data['mac_table_data'] = [];
-            $uplinks = json_encode([]);
-        } else {
-            // Get trunks only once
-            // Assume that trunks are uplinks (most of the time)
-            $device->port_data = json_encode($device_data['ports_data'], true);
-            $trunks = $class::getDeviceTrunks($device);
-            $uplinks = json_encode($trunks);
+        if(DeviceService::storeDevice($request)) {
+            return redirect()->back()->with('success', 'Device created');
         }
 
-        // Merge device data to request
-        $request->merge([
-            'mac_table_data' => json_encode($device_data['mac_table_data'], true),
-            'vlan_data' => json_encode($device_data['vlan_data'], true),
-            'port_data' => json_encode($device_data['ports_data']),
-            'port_statistic_data' => json_encode($device_data['portstats_data'], true),
-            'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
-            'system_data' => json_encode($device_data['sysstatus_data'], true),
-            'uplinks' => $uplinks
-        ]);
-
-        if ($device = Device::create($request->all())) {
-            LogController::log('Switch erstellt', '{"name": "' . $request->input('name') . '", "hostname": "' . $request->input('hostname') . '"}');
-
-            if (!$noData) {
-                VlanController::AddVlansFromDevice($device_data['vlan_data'], $request->input('name'), $request->input('location'));
-                $class::createBackup($device);
-            }
-
-            return redirect()->back()->with('success', __('Msg.SwitchCreated'));
-        }
-
-        return redirect('/')->withErrors($validator);
+        return redirect()->back()->withErrors('Could not create device');
     }
 
     /**

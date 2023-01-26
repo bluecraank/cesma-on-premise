@@ -13,6 +13,8 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\MacAddressController;
 use App\Http\Controllers\PortstatsController;
 use App\Models\Backup;
+use App\Services\DeviceService;
+use Illuminate\Support\Facades\Crypt;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 
@@ -56,7 +58,8 @@ class ArubaOS implements IDevice
         $api_url = config('app.https') . $device->hostname . '/rest/' . $api_version . '/' . self::$api_auth['login'];
 
         $api_username = config('app.api_username');
-        $api_password = EncryptionController::decrypt($device->password);
+
+        $api_password =  Crypt::decrypt($device->password);
         try {
             $response = Http::connectTimeout(3)->withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json'
@@ -198,11 +201,11 @@ class ArubaOS implements IDevice
             return ['success' => false, 'data' => 'Device not found'];
         }
 
-        $data = [];
-
         if (!$login_info = self::API_LOGIN($device)) {
             return ['success' => false, 'data' => 'Login failed'];
         }
+
+        $data = [];
 
         list($cookie, $api_version) = explode(";", $login_info);
 
@@ -215,24 +218,30 @@ class ArubaOS implements IDevice
             }
         }
 
-        $system_data = self::formatSystemData($data['status']);
-        $vlan_data = self::formatVlanData($data['vlans']['vlan_element']);
-        $port_data = self::formatPortData($data['ports']['port_element']);
-        $portstat_data = self::formatPortSimpleStatisticData($data['portstats']['port_statistics_element']);
-        $vlanport_data = self::formatPortVlanData($data['vlanport']['vlan_port_element']);
-        $mac_data = self::formatMacTableData($data['mac-table']['mac_table_entry_element'], $device, $cookie, $api_version);
-        PortstatsController::store(self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element']), $device->id);
+        $data = [
+            'informations' => self::formatSystemData($data['status']),
+            'vlans' => self::formatVlanData($data['vlans']['vlan_element']),
+            'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
+            'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
+            'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element']),
+            'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element'], $device, $cookie, $api_version),
+            'uplinks' => self::formatUplinkData($data['ports']['port_element']),
+        ];
+
+        DeviceService::storeApiData($data, $device);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
+    }
+    
+    static function formatUplinkData($ports) {
+        $uplinks = [];
+        foreach($ports as $port) {
+            if(str_contains($port['trunk_group'], "Trk")) {
+                $uplinks[$port['id']] = $port['trunk_group'];
+            }
+        }
 
-        return [
-            'sysstatus_data' => $system_data,
-            'vlan_data' => $vlan_data,
-            'ports_data' => $port_data,
-            'portstats_data' => $portstat_data,
-            'vlanport_data' => $vlanport_data,
-            'mac_table_data' => $mac_data,
-        ];
+        return $uplinks;
     }
 
     static function formatVlanData($vlans): array
@@ -244,16 +253,13 @@ class ArubaOS implements IDevice
         }
 
         foreach ($vlans as $vlan) {
-            $return[$vlan['vlan_id']] = [
-                'name' => $vlan['name'],
-                'vlan_id' => $vlan['vlan_id'],
-            ];
+            $return[$vlan['vlan_id']] = $vlan['name'];
         }
 
         return $return;
     }
 
-    static function formatMacTableData($data, $device, $cookie, $api_version): array
+    static function formatMacTableData($data): array
     {
         $return = [];
 
@@ -272,17 +278,6 @@ class ArubaOS implements IDevice
 
     static function formatSystemData($system): array
     {
-        if (isset($system['name']) and $system['name'] != "") {
-            $return = [
-                'name' => "AOS-UNKNOWN",
-                'model' => "Unknown",
-                'serial' => "Unknown",
-                'firmware' => "Unknown",
-                'hardware' => "Unknown",
-                'mac' => "000000000000",
-            ];
-        }
-
         $return = [
             'name' => $system['name'],
             'model' => $system['product_model'],
@@ -295,7 +290,7 @@ class ArubaOS implements IDevice
         return $return;
     }
 
-    static function formatPortData(array $ports): array
+    static function formatPortData(array $ports, array $stats): array
     {
         $return = [];
 
@@ -307,9 +302,13 @@ class ArubaOS implements IDevice
             $return[$port['id']] = [
                 'name' => $port['name'],
                 'id' => $port['id'],
-                'is_port_up' => $port['is_port_up'],
+                'link' => $port['is_port_up'],
                 'trunk_group' => $port['trunk_group'],
             ];
+        }
+
+        foreach($stats as $stat) {
+            $return[$stat['id']]['speed'] = $stat['port_speed_mbps'];
         }
 
         return $return;

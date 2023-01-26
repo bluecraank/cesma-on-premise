@@ -42,10 +42,10 @@
                 @endphp
                 <tr>
                     <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ $device->online }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
-                    <td>{{ json_decode($device->system_data, true)['model'] }}</td>
-                    <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
-                    <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }},
-                        {{ $device->details }} #{{ $device->number }}</td>
+                    <td>{{ $device->modelOrUnknown() }}</td>
+                    <td>{{ $device->firmwareOrUnknown() }}</td>
+                    <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
+                        - {{ $device->location_desc }} #{{ $device->location_number }}</td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
