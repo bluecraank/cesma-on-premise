@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MacTypeFilter extends Model
+class MacType extends Model
 {
     protected $fillable = [
         'mac_prefix',
-        'mac_type',
-        'mac_desc'
+        'type',
+        'description'
     ];
 }

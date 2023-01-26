@@ -12,12 +12,12 @@ use App\Models\Building;
 use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
 use App\Models\Client;
+use App\Models\DeviceBackup;
 use App\Models\MacAddress;
-use App\Models\UplinkClient;
 use App\Models\Vlan;
 use App\Services\DeviceService;
+use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
@@ -37,7 +37,7 @@ class DeviceController extends Controller
         $devices = Device::all()->sortBy('name');
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
-        $keys_list = KeyController::getPubkeysDesc();
+        $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
         $https = config('app.https');
 
         return view('switch.switch-overview', compact(
@@ -167,9 +167,13 @@ class DeviceController extends Controller
     public function destroy(Request $device)
     {
         $find = Device::find($device->input('id'));
-        Backup::where('device_id', $find->id)->delete();
-        Client::where('switch_id', $find->id)->delete();
-        MacAddress::where('device_id', $find->id)->delete();
+
+        if (!$find) {
+            return redirect()->back()->with('message', 'Device not found');
+        }
+
+        DeviceService::deleteDeviceData($find);
+
         if ($find->delete()) {
             LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
 
@@ -300,7 +304,7 @@ class DeviceController extends Controller
     public function uploadPubkeysToSwitch($id, Request $request)
     {
         $device = Device::find($id);
-        $pubkeys = KeyController::getPubkeysAsArray();
+        $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
 
         if ($device and count($pubkeys) >= 2 and !empty($pubkeys)) {
@@ -315,7 +319,7 @@ class DeviceController extends Controller
 
     static function uploadPubkeysAllDevices()
     {
-        $pubkeys = KeyController::getPubkeysAsArray();
+        $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
         $devices = Device::all()->keyBy('id');
 
@@ -446,7 +450,7 @@ class DeviceController extends Controller
     static function restoreBackup(Request $request)
     {
         $device = Device::find($request->input('device-id'));
-        $backup = Backup::find($request->input('id'));
+        $backup = DeviceBackup::find($request->input('id'));
 
         if ($device and $backup) {
             $password_switch = $request->input('password-switch');

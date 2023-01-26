@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_type', function (Blueprint $table) {
+        Schema::create('mac_types', function (Blueprint $table) {
             $table->id();
             $table->string('mac_prefix');
-            $table->string('mac_type');
+            $table->string('type');
+            $table->string('description');
             $table->timestamps();
         });
     }

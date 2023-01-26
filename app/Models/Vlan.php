@@ -13,7 +13,7 @@ class Vlan extends Model
         'description',
         'location_id',
         'ip_range',
-        'is_client',
+        'is_client_vlan',
         'is_synced',
         'is_scanned'
     ];

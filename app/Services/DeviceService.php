@@ -5,8 +5,16 @@ namespace App\Services;
 use App\Models\Device;
 use App\Devices\ArubaOS;
 use App\Devices\ArubaCX;
+use App\Models\Client;
+use App\Models\DeviceBackup;
+use App\Models\DevicePort;
 use App\Models\DevicePortStats;
+use App\Models\DeviceUplink;
+use App\Models\DeviceVlan;
+use App\Models\DeviceVlanPort;
+use App\Models\Mac;
 use Illuminate\Support\Facades\Crypt;
+use App\Services\VlanService;
 
 class DeviceService
 {
@@ -32,6 +40,9 @@ class DeviceService
             [
                 'name' => $vname, 
             ]);
+
+            // Store vlan in global vlans table
+            VlanService::createIfNotExists($device, $vid, $vname);
         }
 
         foreach ($data['ports'] as $port) {
@@ -118,5 +129,16 @@ class DeviceService
     static function newDataView(Device $device) {
         
         dd($device->uplinks, $device->ports, $device->vlans);
+    }
+
+    static function deleteDeviceData(Device $device) {
+        DeviceBackup::where('device_id', $device->id)->delete();
+        DevicePortStats::where('device_id', $device->id)->delete();
+        DevicePort::where('device_id', $device->id)->delete();
+        DeviceVlan::where('device_id', $device->id)->delete();
+        DeviceUplink::where('device_id', $device->id)->delete();
+        DeviceVlanPort::where('device_id', $device->id)->delete();
+        Client::where('device_id', $device->id)->delete();
+        Mac::where('device_id', $device->id)->delete();
     }
 }

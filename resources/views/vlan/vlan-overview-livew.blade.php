@@ -41,10 +41,10 @@
                     $scan = "<i class='fas fa-times'></i>";
                     $sync = "<i class='fas fa-times'></i>";
                     $clients = "<i class='fas fa-check'></i>";
-                    if ($vlan->scan == 1) {
+                    if ($vlan->is_scanned == 1) {
                         $scan = "<i class='fas fa-check'></i>";
                     }
-                    if ($vlan->sync == 1) {
+                    if ($vlan->is_synced == 1) {
                         $sync = "<i class='fas fa-check'></i>";
                     }
                     if ($vlan->is_client_vlan == 0) {
@@ -82,7 +82,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <div class="control">
                                     <button
-                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
+                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                             <div class="control">

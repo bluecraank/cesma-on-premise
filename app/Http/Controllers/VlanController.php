@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateVlanRequest;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Vlan;
+use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,20 +27,6 @@ class VlanController extends Controller
             'locations'
         ));
     }
-
-    static function AddVlansFromDevice($vlans, $device, $location)
-    {
-        foreach ($vlans as $vlan) {
-            $vlan = Vlan::firstOrCreate([
-                'vid' => $vlan['vlan_id'],
-            ], [
-                'name' => $vlan['name'],
-                'description' => "VLAN " . $vlan['vlan_id'] . " found on " . $device,
-                'location_id' => $location,
-            ]);
-        }
-    }
-
 
     public function getPortsByVlan($vlan)
     {
@@ -119,20 +106,10 @@ class VlanController extends Controller
             return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
-        if ($vlan = Vlan::create([
-            'vid' => $request['vid'],
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'ip_range' => $request['ip_range'] ?? null,
-            'scan' => $scan,
-            'sync' => $sync,
-            'location_id' => $request['location']
-        ])) {
-            LogController::log('VLAN erstellt', '{"name": "' .  $request['name'] . '", "vid": "' . $request['vid'] . '", "description": "' . $request['description'] . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
-            return redirect()->route('vlan.index')->with('success', __('Msg.VlanCreated'));
-        }
 
-        return redirect()->back()->withErrors(['message' => 'VLAN could not be created']);
+        VlanService::createVlan($request, $scan, $sync);
+
+        return redirect()->back()->with('success', 'VLAN created');
     }
 
     /**
@@ -167,20 +144,9 @@ class VlanController extends Controller
             $is_client_vlan = true;
         }
 
-        if (Vlan::whereId($request['id'])->update([
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'ip_range' => $request['ip_range'] ?? null,
-            'scan' => $scan,
-            'sync' => $sync,
-            'is_client_vlan' => $is_client_vlan,
-        ])) {
-            $vlanD = Vlan::whereId($request['id'])->first();
-            LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
+        VlanService::updateVlan($request, $scan, $sync, $is_client_vlan);
 
-            return redirect()->back()->with('success', __('Msg.VlanUpdated'));
-        }
-        return redirect()->back()->withErrors(['message' => 'VLAN could not be updated']);
+        return redirect()->back()->with('success', __('Msg.VlanUpdated'));
     }
 
     /**

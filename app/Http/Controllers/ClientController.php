@@ -6,10 +6,10 @@ use App\ClientProviders\Baramundi;
 use App\ClientProviders\SNMP_Routers;
 use App\Models\Device;
 use App\Models\Client;
+use App\Models\Mac;
 use App\Models\MacAddress;
-use App\Models\MacTypeFilter;
+use App\Models\MacType;
 use App\Models\MacTypeIcon;
-use App\Models\UplinkClient;
 use App\Models\Vlan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +20,7 @@ class ClientController extends Controller
     public function index()
     {
 
-        $clients = Client::where('vlan_id', '!=', 3056)->get();
+        $clients = Client::all()->keyBy('mac_address');
         $devices = Device::all()->keyBy('id');
 
         return view('client.client-overview', compact('clients', 'devices'));
@@ -76,7 +76,7 @@ class ClientController extends Controller
 
         // Get all mac addresses from database
         // descending sort by device_id because newer devices are more likely at the end of star topology
-        $mactable = MacAddress::all()->sortBy('vlan_id')->keyBy('mac_address');
+        $mactable = Mac::all()->sortBy('vlan_id')->keyBy('mac_address');
         $unique_endpoints = [];
 
         // Get unique endpoints based on mac address
@@ -113,26 +113,6 @@ class ClientController extends Controller
                         }
                     }
                 }
-
-                // // Uplink Clients
-                // if (!isset($unique_endpoints[$mac]) && isset($mactable[$mac]) and !array_key_exists($mactable[$mac]['vlan_id'], $vlans) and str_contains($mactable[$mac]['port_id'], "UPLINK-")) {
-                //     if (in_array($client['ip_address'], $ip_of_devices)) {
-                //         UplinkClient::updateOrCreate(
-                //             [
-                //                 'mac_address' => $mac,
-                //                 'switch_id' => $mactable[$mac]['device_id'],
-
-                //             ],
-                //             [
-                //                 'hostname' => $client['hostname'],
-                //                 'ip_address' => $client['ip_address'],
-                //                 'port_id' => str_replace("UPLINK-","", $mactable[$mac]['port_id']),
-                //                 'vlan_id' => $mactable[$mac]['vlan_id'],
-                //             ]
-                //         );
-                //         Log::info('Delete' . $client['hostname'] . ' (' . $client['ip_address'] . ')');
-                //     }
-                // }
             }
         }
 
@@ -141,7 +121,7 @@ class ClientController extends Controller
 
     static function getClientType($mac)
     {
-        $types = MacTypeFilter::all()->keyBy('mac_prefix')->toArray();
+        $types = MacType::all()->keyBy('mac_prefix')->toArray();
 
         $mac_prefix = substr($mac, 0, 6);
         if (array_key_exists($mac_prefix, $types)) {

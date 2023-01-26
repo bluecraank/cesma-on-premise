@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('vid')->unique();
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->string('location_id')->references('id')->on('locations');
+            $table->foreignId('location_id')->constrained();
             $table->string('ip_range')->nullable();
             $table->boolean('is_client_vlan')->default(true);
             $table->boolean('is_scanned')->default(false);
