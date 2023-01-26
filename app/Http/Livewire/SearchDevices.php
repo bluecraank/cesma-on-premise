@@ -34,8 +34,6 @@ class SearchDevices extends Component
 
         return view('switch.switch-overview-livew', [
             'devices' => $devices,
-            'locations' => Location::all()->keyBy('id'),
-            'buildings' => Building::all()->keyBy('id'),
             'https' => $https
         ]);
     }

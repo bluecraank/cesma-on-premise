@@ -32,16 +32,8 @@
         </thead>
         <tbody>
             @foreach ($devices as $device)
-                @php
-                    $uplinks = json_decode($device->uplinks, true);
-                    if ($uplinks == null) {
-                        $uplinks = [];
-                    }
-                    
-                    $uplinks_string = implode(',', $uplinks);
-                @endphp
                 <tr>
-                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ $device->online }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
                     <td>{{ $device->modelOrUnknown() }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
                     <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
@@ -62,7 +54,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}', '{{ $uplinks_string }}')"
+                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->details }}', '{{ $device->number }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">

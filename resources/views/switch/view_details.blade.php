@@ -10,12 +10,14 @@
         <div class="column">
             <div class="columns">
                 <div class="column is-6">
-                    <h1 class="title"><i class="fa fa-circle {{ $status }} online_status"></i> {{ $device->name }}
+                    <h1 class="title"><i
+                            class="fa fa-circle {{ $is_online ? 'has-text-success' : 'has-text-danger' }} online_status"></i>
+                        {{ $device->name }}
                     </h1>
 
                     <h1 class="subtitle">
                         <i class="location_dot fa fa-location-dot"></i>
-                        {{ $device->full_location }}
+                        {{ $device->location()->first()->name }}
                     </h1>
                 </div>
                 <div class="column is-6">
@@ -28,25 +30,25 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.LastUpdate') }}</strong></p>
-                <p class="subtitle">{{ $device->format_time }}</p>
+                <p class="subtitle">{{ $device->updated_at->diffForHumans() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.VlanSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->count_vlans }}</p>
+                <p class="subtitle">{{ count($device->vlans()->get()) }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.TrunkSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->count_trunks }}</p>
+                <p class="subtitle">{{ count($uplinks) }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ $ports_online }}/{{ $device->count_ports }}</p>
+                <p class="subtitle">{{ count($device->portsOnline()) }}/{{ count($ports)-count($uplinks) }}</p>
             </div>
         </div>
     </div>
@@ -56,26 +58,26 @@
         <div class="column">
             <div class="box">
                 <label class="label">Hostname</label>
-                {{ $system->name }}
+                {{ $device->named }}
             </div>
         </div>
 
         <div class="column">
             <div class="box">
                 <label class="label">{{ __('Switch.Live.Serialnumber') }}</label>
-                {{ $system->serial }}
+                {{ $device->serial }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Firmware</label>
-                {{ $system->firmware }}
+                {{ $device->firmware }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Hardware</label>
-                {{ $system->hardware }}
+                {{ $device->hardware }}
             </div>
         </div>
     </div>
@@ -83,8 +85,8 @@
     <div class="columns ml-1 mr-3">
         <div class="column is-4">
             @if (Auth::user()->role == 'admin')
-            <div class="box">
-                <h2 class="subtitle">{{ __('Actions') }}</h2>
+                <div class="box">
+                    <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="buttons are-small">
                         <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
                             <i class="mr-2 fas fa-sync"></i> Refresh
@@ -102,11 +104,11 @@
                             <i class="mr-2 fas fa-ethernet"></i> Sync Vlans
                         </a>
                     </div>
-            </div>
+                </div>
             @endif
 
             <div class="box">
-                <h2 class="subtitle">Trunks</h2>
+                <h2 class="subtitle">Uplinks</h2>
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -115,14 +117,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($trunks as $key => $trunk)
+                        @foreach ($uplinks as $key => $trunk)
+                            @php 
+                                $portsById = $device->ports()->get()->keyBy('id');
+                                $trunks = [];
+                                foreach($trunk as $port) {
+                                    $trunks[$port['device_port_id']] = $portsById[$port['device_port_id']]->name ?? 'Unknown';
+                                }
+                            @endphp
                             <tr>
                                 <td>{{ $key }}</td>
-                                <td>{{ implode(', ', $trunk) }}</td>
+                                <td>{{ implode(', ', $trunks) }}</td>
                             </tr>
                         @endforeach
 
-                        @if (empty($trunks))
+                        @if (empty($uplinks))
                             <tr>
                                 <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                             </tr>
@@ -141,7 +150,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (json_decode($device->vlan_data) as $vlan)
+                        @foreach ($vlans as $vlan)
                             <tr>
                                 <td>{{ $vlan->name }}</td>
                                 <td>{{ $vlan->vlan_id }}</td>
@@ -167,6 +176,12 @@
                                 <td>{{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
                             </tr>
                         @endforeach
+
+                        @if (count($backups) == 0)
+                            <tr>
+                                <td colspan="2">Kein Backup bisher durchgeführt</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
 
@@ -176,35 +191,35 @@
 
         <div class="column is-8">
             @if (Auth::user()->role == 'admin')
-            <script>
-                function enableEditing() {
-                    $('.port-vlan-select').each(function() {
-                        $(this).prop('disabled', false);
-                    });
-                    $('.save-vlans').removeClass('is-hidden');
-                    $('.edit-vlans').addClass('is-hidden');
-                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', false);
-                }
+                <script>
+                    function enableEditing() {
+                        $('.port-vlan-select').each(function() {
+                            $(this).prop('disabled', false);
+                        });
+                        $('.save-vlans').removeClass('is-hidden');
+                        $('.edit-vlans').addClass('is-hidden');
+                        $('.modal-vlan-tagging').find('.is-submit').prop('disabled', false);
+                    }
 
-                function disableEditing() {
-                    $('.port-vlan-select').each(function() {
-                        $(this).prop('disabled', true);
-                    });
-                    $('.save-vlans').addClass('is-hidden');
-                    $('.edit-vlans').removeClass('is-hidden');
-                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true);
-                }
-            </script>
+                    function disableEditing() {
+                        $('.port-vlan-select').each(function() {
+                            $(this).prop('disabled', true);
+                        });
+                        $('.save-vlans').addClass('is-hidden');
+                        $('.edit-vlans').removeClass('is-hidden');
+                        $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true);
+                    }
+                </script>
             @endif
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role == 'admin')
-                    <span onclick="disableEditing();"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
-                    <span onclick="updateUntaggedPorts('{{ $device->id }}')"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
-                    <span onclick="enableEditing();"
-                        class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
+                        <span onclick="disableEditing();"
+                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
+                        <span onclick="updateUntaggedPorts('{{ $device->id }}')"
+                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
+                        <span onclick="enableEditing();"
+                            class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
                 </h2>
 
@@ -228,85 +243,53 @@
                     </thead>
 
                     <tbody class="live-body">
-                        @foreach ($device->ports as $port)
-                            @if (!str_contains($port['id'], 'Trk'))
-
+                        @foreach ($portsByName as $id => $port)
+                            @if (!str_contains($port['name'], 'Trk'))
                                 <tr style="line-height: 37px;">
                                     <td class="has-text-centered">
                                         <i
-                                            class="fa fa-circle {{ $port['is_port_up'] ? 'has-text-success' : 'has-text-danger' }}"></i>
+                                            class="fa fa-circle {{ $port['link'] ? 'has-text-success' : 'has-text-danger' }}"></i>
                                     </td>
                                     <td class="has-text-centered">
-                                        <a href="/switch/{{ $device->id }}/ports/{{ $port['id'] }}">{{ $port['id'] }}</a>
+                                        <a
+                                            href="/switch/{{ $device->id }}/ports/{{ $port['id'] }}">{{ $port['name'] }}</a>
+
                                     </td>
                                     <td>
-                                        {{ $port['name'] }}
+                                        {{ $port['description'] }}
                                     </td>
-                                    <td style="width:80px   ">
-                                        @if (str_contains($untagged[$port['id']], 'Trk'))
-                                            {{ $untagged[$port['id']] }}
+                                    <td style="width:80px">
+                                        @if ($port->isMemberOfTrunk())
+                                            {{-- Member of --}}
+                                            <span class="tag is-info">{{ $port->trunkName() }}</span>
                                         @else
-                                            <div class="select">
-                                                <select data-id="{{ $device->id }}" data-port="{{ $port['id'] }}"
-                                                    data-current-vlan="{{ $untagged[$port['id']] ? $untagged[$port['id']] : 0 }}"
-                                                    class="port-vlan-select" disabled>
-                                                    <option value="0">Kein VLAN</option>
-                                                    @foreach (json_decode($device->vlan_data) as $vlan)
-                                                        {{ $untagged[$port['id']] }}
-                                                        <option value="{{ $vlan->vlan_id }}"
-                                                            {{ $untagged[$port['id']] == $vlan->vlan_id ? 'selected' : '' }}>
-                                                            {{ $vlan->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                            {{ $vlans[$port->untaggedVlan()]->name ?? 'No VLAN' }}
                                         @endif
                                     </td>
                                     <td style="width:100px" class="is-clickable">
-                                        <a
+                                        {{-- <a
                                             onclick="updateTaggedModal('{{ implode(',', $tagged[$port['id']]) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count($tagged[$port['id']]) }}
-                                            VLANs</a>
-                                    </td>
-                                    <td>
-                                        @if (isset($clients[$port['id']]))
-                                        <div class="dropdown is-hoverable">
-                                            <div class="dropdown-trigger">
-                                              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                                                <span>{{ count($clients[$port['id']]) }} {{ __('Clients') }}</span>
-                                                <span class="icon is-small">
-                                                  <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                </span>
-                                              </button>
-                                            </div>
-                                            <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-                                              <div class="dropdown-content">
-                                                <div class="dropdown-item">
-                                                  @foreach ($clients[$port['id']] as $client)
-                                                        <div><i class="{{ $cc::getClientIcon($client->type) }}"></i> {{ $client->hostname }}</div>
-                                                  @endforeach
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
+                                            VLANs</a> --}}
+                                        @if ($port->isMemberOfTrunk())
+                                            {{ count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) }} VLANs
                                         @else
-                                        
+                                            {{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }} VLANs
                                         @endif
                                     </td>
+                                    <td>
+                                        <b>TODO</b>
+                                    </td>
                                     <td class="has-text-centered">
-                                        @if ($port_statistic[$port['id']]['port_speed_mbps'] == 0)
-                                            <span
-                                                class="tag is-link ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10)
-                                            <span
-                                                class="tag is-danger ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 100)
-                                            <span
-                                                class="tag is-warning">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 1000)
-                                            <span
-                                                class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10000)
-                                            <span
-                                                class="tag is-success">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
+                                        @if ($port->speed == 0)
+                                            <span class="tag is-link ">{{ $port->speed }}</span>
+                                        @elseif ($port->speed == 10)
+                                            <span class="tag is-danger ">{{ $port->speed }}</span>
+                                        @elseif ($port->speed == 100)
+                                            <span class="tag is-warning">{{ $port->speed }}</span>
+                                        @elseif ($port->speed == 1000)
+                                            <span class="tag is-primary">{{ $port->speed }}</span>
+                                        @elseif ($port->speed == 10000)
+                                            <span class="tag is-success">{{ $port->speed }}</span>
                                         @endif
                                     </td>
                                 </tr>

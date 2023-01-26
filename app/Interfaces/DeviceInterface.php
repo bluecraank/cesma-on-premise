@@ -2,19 +2,12 @@
 
     namespace App\Interfaces;
 
-use App\Models\Backup;
-use App\Models\Device;
-use App\Models\Vlan;
-use Illuminate\Http\Client\Request;
+    use App\Models\Device;
+    use App\Models\DeviceBackup;
+    use App\Models\Vlan;
 
-    interface IDevice
+    interface DeviceInterface
     {
-        /* 
-         * Get all available API versions
-         * 
-         * @property Array $available_apis
-         * 
-         */
 
         static function API_GET_VERSIONS(Device $device): string;
 
@@ -36,7 +29,7 @@ use Illuminate\Http\Client\Request;
 
         static function createBackup(Device $device): bool;
 
-        static function restoreBackup(Device $device, Backup $backup, String $password): Array;
+        static function restoreBackup(Device $device, DeviceBackup $backup, String $password): Array;
 
         static function formatPortData(Array $ports, Array $stats): Array;
     
@@ -60,4 +53,3 @@ use Illuminate\Http\Client\Request;
 
         static function syncVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name,  Bool $test_mode): Array;
     }
-?>

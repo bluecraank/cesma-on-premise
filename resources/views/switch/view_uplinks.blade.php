@@ -23,20 +23,19 @@
                     <tr>
                         <td>{{ $device['name'] }}</td>
                         @php
-                            $uplinks = json_decode($device['uplinks'], true);
-                            if ($uplinks == null or empty($uplinks) or !$uplinks) {
-                                $uplinks = [];
-                            }
-                            $uplinks = implode(',', $uplinks);
+                            $uplinks = $device->uplinks()->groupBy('name')->get()->pluck('name')->toArray();
+                            sort($uplinks);
+                            $uplinks = implode(', ', $uplinks);
                         @endphp
                         <td>{{ $uplinks }}</td>
 
                         <td class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
+                            <b>TODO</b>
+                            {{-- @if (Auth::user()->role == 'admin')
                                 <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $uplinks }}')"
                                     class="button is-small is-info"><i class="fas fa-gear"></i>
                                 </a>
-                            @endif
+                            @endif --}}
                         </td>
                     </tr>
                 @endforeach

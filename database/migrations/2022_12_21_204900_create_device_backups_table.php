@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('backups', function (Blueprint $table) {
+        Schema::create('device_backups', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->longText('data');
             $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
+            $table->longText('data');
+            $table->longText('restore_data');
             $table->integer('status')->default(0);
+            $table->timestamps();
         });
     }
 
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('backups');
+        Schema::dropIfExists('device_backups');
     }
 };

@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Backup extends Model
+class DeviceBackup extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'device_id',
         'data',
+        'restore_data',
         'status'
     ];
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
+    }
 }

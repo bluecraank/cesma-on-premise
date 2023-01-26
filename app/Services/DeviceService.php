@@ -15,7 +15,7 @@ class DeviceService
         'aruba-cx' => ArubaCX::class,
     ];
 
-    static function getApiData(Device $device) {
+    static function refreshDevice(Device $device) {
         $api_data = self::$types[$device->type]::API_REQUEST_ALL_DATA($device);
         if($api_data['success']) {
             self::storeApiData($api_data, $device);
@@ -25,50 +25,45 @@ class DeviceService
     static function storeApiData($data, $device)
     {
         foreach ($data['vlans'] as $vid => $vname) {
-            $device->vlans()->where('vlan_id', $vid)->updateOrCreate([
+            $device->vlans()->updateOrCreate([
                 'vlan_id' => $vid, 
-                'name' => $vname, 
                 'device_id' => $device->id
+            ],
+            [
+                'name' => $vname, 
             ]);
         }
 
         foreach ($data['ports'] as $port) {
-            $device->ports()->where('name', $port['id'])->updateOrCreate([
+            $device->ports()->updateOrCreate([
                 'name' => $port['id'], 
+                'device_id' => $device->id
+            ],
+            [
+                'description' => $port['name'],
                 'link' => $port['link'], 
                 'speed' => $port['speed'] ?? 0, 
-                'device_id' => $device->id
             ]);
         }
 
         foreach ($data['uplinks'] as $port => $uplink) {
-            $device->uplinks()->where('name', $uplink)->updateOrCreate([
+            $device->uplinks()->updateOrCreate([
                 'name' => $uplink, 
+                'device_id' => $device->id,
                 'device_port_id' => $device->ports()->where('name', $port)->first()->id, 
-                'device_id' => $device->id
             ]);
         }
 
         foreach($data['vlanports'] as $vlanport) {
-            $device->vlanports()->where('device_port_id', $device->ports()->where('name', $vlanport['port_id'])->first()->id)->updateOrCreate([
+            $device->vlanports()->updateOrCreate([
                 'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id, 
                 'device_vlan_id' => $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first()->id, 
                 'device_id' => $device->id,
+            ],
+            [
                 'is_tagged' => $vlanport['is_tagged']
             ]);
         }
-
-        // $table->unsignedBigInteger('port_speed')->nullable();
-        // $table->unsignedDouble('port_rx_bps')->nullable();
-        // $table->unsignedDouble('port_tx_bps')->nullable();
-        // $table->unsignedDouble('port_rx_pps')->nullable();
-        // $table->unsignedDouble('port_tx_pps')->nullable();
-        // $table->unsignedBigInteger('port_rx_bytes')->nullable();
-        // $table->unsignedBigInteger('port_tx_bytes')->nullable();
-        // $table->unsignedBigInteger('port_rx_packets')->nullable();
-        // $table->unsignedBigInteger('port_tx_packets')->nullable();
-        // $table->unsignedBigInteger('port_rx_errors')->nullable();
-        // $table->unsignedBigInteger('port_tx_errors')->nullable();
 
         foreach($data['statistics'] as $statistic) {
             DevicePortStats::create([
@@ -87,7 +82,15 @@ class DeviceService
             ]);
         }
 
-        dd($data['vlans'], $data['ports'], $data['uplinks'], $data['vlanports']);
+        $device->named = $data['informations']['name'] ?? NULL;
+        $device->model = $data['informations']['model'] ?? NULL;
+        $device->serial = $data['informations']['serial'] ?? NULL;
+        $device->hardware = $data['informations']['hardware'] ?? NULL;
+        $device->mac_address = $data['informations']['mac'] ?? NULL;
+        $device->firmware = $data['informations']['firmware'] ?? NULL;
+        $device->update();
+
+        // dd($data['informations'], $data['macs']);
     }
 
     static function storeDevice($request) {
@@ -103,7 +106,6 @@ class DeviceService
         $request->merge(['password' => Crypt::encrypt($request->password)]);
             
         // Create device
-        // dd($request->all());
         $device = Device::create($request->except('_token'));
 
         if ($device) {

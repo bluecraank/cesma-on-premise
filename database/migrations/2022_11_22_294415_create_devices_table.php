@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('hostname')->unique();
-            $table->string('api_username')->default('admin');
+            $table->string('mac_address')->unique()->nullable();
+            $table->string('username')->default('admin');
             $table->string('password');
             $table->string('model')->nullable();
             $table->string('serial')->nullable();

@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_type_filters', function (Blueprint $table) {
-            $table->id();
-            $table->string('mac_prefix', 6);
-            $table->string('mac_type', 20);
-            $table->string('mac_desc', 255)->nullable();
-            $table->timestamps();
+        Schema::table('device_ports', function (Blueprint $table) {
+            $table->string('description')->nullable();
         });
     }
 

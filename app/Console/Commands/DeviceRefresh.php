@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Http\Controllers\DeviceController;
+use App\Services\DeviceService;
 use Illuminate\Support\Facades\Log;
 
 class DeviceRefresh extends Command
@@ -39,7 +40,7 @@ class DeviceRefresh extends Command
             return;
         }
 
-        DeviceController::refresh($device);
+        DeviceService::refreshDevice($device);
 
         Log::info('Device ' . $device->id . ' refreshed'. ' (' . (microtime(true) - $start) . 's)');
     }

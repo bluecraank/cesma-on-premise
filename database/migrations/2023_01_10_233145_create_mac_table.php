@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('logs', function (Blueprint $table) {
+        Schema::create('macs', function (Blueprint $table) {
             $table->id();
-            $table->string('message')
-                ->nullable();
-            $table->string('data')
-                ->nullable();   
-            $table->string('user')->nullable();
+            $table->string('mac_address');
+            $table->foreignId('device_id')->constrained('devices');
+            $table->string('port_id');
+            $table->string('vlan_id');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('logs');
+        Schema::dropIfExists('macs');
     }
 };

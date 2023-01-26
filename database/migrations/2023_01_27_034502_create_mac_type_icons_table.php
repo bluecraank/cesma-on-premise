@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_addresses', function (Blueprint $table) {
+        Schema::create('mac_type_icons', function (Blueprint $table) {
             $table->id();
-            $table->string('mac_address');
-            $table->foreignId('device_id')->constrained('devices');
-            $table->string('port_id');
-            $table->string('vlan_id');
+            $table->foreignId('mac_type_id')->constrained();
+            $table->string('mac_icon', 255);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mac_addresses');
+        Schema::dropIfExists('mac_type_icons');
     }
 };

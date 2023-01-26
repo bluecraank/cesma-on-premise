@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
 use App\Mail\SendBackupStatus;
-use App\Models\Backup;
 use App\Models\Device;
+use App\Models\DeviceBackup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -20,7 +21,7 @@ class BackupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $backups = Backup::all()->keyBy('id');
+        $backups = DeviceBackup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
 
@@ -34,14 +35,15 @@ class BackupController extends Controller
     static function store($success, $data, $device) {
 
         if ($success and $data and !is_array($data)) {
-            $dataEncrypted = EncryptionController::encrypt($data);
+            $dataEncrypted = Crypt::encrypt($data);
         } else {
             $dataEncrypted = "No data received";
         }
 
-        Backup::create([
+        DeviceBackup::create([
             'device_id' => $device->id,
             'data' => $dataEncrypted,
+            'restore_data' => $dataEncrypted,
             'status' => ($success) ? 1 : 0,
         ]);
     }

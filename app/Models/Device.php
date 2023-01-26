@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'name',
         'hostname',
+        'mac_address',
         'building_id',
         'location_id',
         'location_number',
@@ -53,6 +52,10 @@ class Device extends Model
     public function building() {
         return $this->belongsTo(Building::class);
     } 
+    
+    public function backups() {
+        return $this->hasMany(DeviceBackup::class);
+    }
 
     public function firmwareOrUnknown() {
         return $this->firmware ?? 'Unknown';
@@ -72,5 +75,26 @@ class Device extends Model
 
     public function vlanports() {
         return $this->hasMany(DeviceVlanPort::class);
+    }
+
+    public function portsOnline() {
+        return $this->ports()->where('link', true)->get();
+    }
+
+    public function vlanPortsUntagged() {
+        return $this->vlanports()->where('is_tagged', '0')->get()->keyBy('device_port_id');
+    }
+
+    public function vlanPortsTagged() {
+
+        return $this->vlanports()->where('is_tagged', '1')->get()->groupBy('device_port_id');
+    }
+
+    public function uplinksGroupedKeyByNameArray() {
+        return $this->uplinks()->get()->groupBy('name')->toArray();
+    }
+
+    public function getPortById($id) {
+        return $this->ports()->where('id', $id)->first()->name;
     }
 }

@@ -4,21 +4,18 @@ namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DeviceController;
-use App\Interfaces\IDevice;
-use App\Models\Client;
+use App\Interfaces\DeviceInterface;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\KeyController;
 use App\Http\Controllers\LogController;
-use App\Http\Controllers\MacAddressController;
-use App\Http\Controllers\PortstatsController;
 use App\Models\Backup;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Crypt;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 
-class ArubaOS implements IDevice
+class ArubaOS implements DeviceInterface
 {
     static $api_auth = [
         "login" => "login-sessions",
@@ -231,6 +228,8 @@ class ArubaOS implements IDevice
         DeviceService::storeApiData($data, $device);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
+        
+        return [];
     }
     
     static function formatUplinkData($ports) {

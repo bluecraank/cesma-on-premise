@@ -38,7 +38,7 @@ class DeviceController extends Controller
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
         $keys_list = KeyController::getPubkeysDesc();
-        $https = config('app.https', 'http://');
+        $https = config('app.https');
 
         return view('switch.switch-overview', compact(
             'devices',
@@ -49,168 +49,11 @@ class DeviceController extends Controller
         ));
     }
 
-    static function view_trunks()
+    static function view_uplinks()
     {
-        $data = self::getTrunksAllDevices();
-
-        return view('switch.view_trunks', compact(
-            'data'
-        ));
-    }
-
-    static function view_uplinks() {
         $devices = Device::all()->keyBy('id');
 
         return view('switch.view_uplinks', compact('devices'));
-    }
-
-    static function view_details($id) {
-        $device = Device::find($id);
-
-        if (! $device) {
-            return redirect()->back()->withErrors(['message' => 'Could not find device']);
-        }
-    
-        $device->count_vlans = count(json_decode($device->vlan_data, true));
-        $device->format_time = $device->updated_at->diffForHumans();
-        $device->ports = json_decode($device->port_data, true);
-        $device->count_trunks = count(array_filter($device->ports, function ($port) {
-            return str_contains($port['id'], 'Trk');
-        }));
-
-        $device->ports_online = count(array_filter($device->ports, function ($port) {
-            return $port['is_port_up'] === 'true' && !str_contains($port['id'], 'Trk');
-        }));
-        
-        $device->count_ports = count($device->ports) - $device->count_trunks;
-        $device->full_location = Location::find($device->location)->name . " - " . Building::find($device->building)->name . ", " . $device->details . " #" . $device->number;
-        $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->take(15);
-        $vlan_ports = json_decode($device->vlan_port_data);
-        $port_statistic = json_decode($device->port_statistic_data, true);
-        $system = json_decode($device->system_data);
-        $vlans = json_decode($device->vlan_data, true);
-        $clients = Client::where('switch_id', $id)->get()->groupBy('port_id');
-    
-        $trunks = $tagged = $untagged = [];
-        foreach ($device->ports as $port) {
-            if (str_contains($port['trunk_group'], 'Trk')) {
-                $trunks[$port['trunk_group']][] = $port['id'];
-                $untagged[$port['id']] = "Member of " . $port['trunk_group'];
-            } else {
-                $untagged[$port['id']] = "";
-                $tagged[$port['id']] = [];
-            }
-        }
-
-        // Count trunks and online ports
-        $device->count_trunks = count($trunks);
-        $ports_online = count(array_filter($device->ports, function($port) {
-            return $port['is_port_up'] == "true" && !str_contains($port['id'], 'Trk');
-        }));
-    
-        // Get tagged, untagged VLANs as list
-        foreach ($vlan_ports as $vlan_port) {
-            if (!$vlan_port->is_tagged) {
-                $untagged[$vlan_port->port_id] = $vlan_port->vlan_id;
-            } else {
-                $tagged[$vlan_port->port_id][] = $vlan_port->vlan_id;
-            }
-        }
-
-        foreach($device->ports as $port) {
-            if(!str_contains($port['id'], 'Trk') && $port['trunk_group'] != null) {
-                $tagged[$port['id']] = $tagged[$port['trunk_group']];
-            }
-        }
-    
-        // Onlinestatus
-        $status = self::isOnline($device->hostname);
-    
-        return view('switch.view_details', compact(
-            'device',
-            'tagged',
-            'untagged',
-            'trunks',
-            'port_statistic',
-            'status',
-            'system',
-            'ports_online',
-            'clients',
-            'backups',
-            'vlans'
-        ));
-
-    }
-
-    static function view_topology() {
-        $devices = Device::all()->keyBy('id');
-        $discovered_switches = UplinkClient::all()->keyBy('id');
-
-        $grouped = $discovered_switches->groupBy('switch_id');
-
-        $nodes = [];
-        $unique_uplinks = [];   
-        $snmp = [];
-        foreach($devices as $device) {
-            $nodes[] = [
-                'id' => $device->id,
-                'label' => $device->name,            
-            ];
-
-            try {
-            $snmp[$device->id] = snmp2_real_walk($device->hostname, "public", ".1.3.6.1.4.1.9.9.23.1.2.1.1.6");
-            } catch (\Exception $e) {
-                Log::error('Could not connect to ' . $device->hostname . ' with SNMP. Error: ' . $e->getMessage());
-            }
-        }
-
-
-        // Get switches
-        $switches =
-
-        $mac_data = [];
-        foreach($snmp as $id => $data) {
-            foreach($data as $key => $value) {
-                if (str_contains($value, "Hex-STRING:")) {
-                    $value = str_replace("Hex-STRING: ", "", $value);
-                    $value = str_replace(" ", "", $value);
-                    $mac_data[$id][$key] = strtolower($value);
-                    $client = UplinkClient::where('mac_address', $value)->get()->keyBy('mac_address')->toArray();
-                    if(array_key_exists(strtolower($value), $client)) {
-                        //$mac_data[$id][$key] = $client[$value];
-                        echo $client[strtolower($value)]['hostname']."<br>";
-                    }
-                }
-            }
-        }
-
-
-        // foreach($grouped as $key => $device) {
-        //     $unique_uplinks[$key] = [];
-        //     foreach($device as $uplink) {
-        //         $unique_uplinks[$key][$uplink->port_id] = $uplink->port_id;
-        //     }
-        // }
-
-        // dd($unique_uplinks);
-
-
-        // $device_on_port = [];
-        // foreach($discovered_switches as $switch) {
-        //     $found_on = strtoupper(str_replace(".doepke.local","", $devices[$switch->switch_id]->hostname));
-        //     $device_on_port[$found_on][$switch->port_id][] = $switch->hostname;
-        // }
-
-        // dd($device_on_port);
-
-        $nodes = json_encode($nodes);
-
-        return view('switch.view_topology', compact(
-            'devices',
-            'discovered_switches',
-            'grouped',
-            'nodes'
-        ));
     }
 
     /**
@@ -235,7 +78,7 @@ class DeviceController extends Controller
             return redirect()->back()->withErrors('Device type not found');
         }
 
-        if(DeviceService::storeDevice($request)) {
+        if (DeviceService::storeDevice($request)) {
             return redirect()->back()->with('success', 'Device created');
         }
 
@@ -250,7 +93,33 @@ class DeviceController extends Controller
      */
     public function show(Device $device)
     {
-        //
+        if(!$device) {
+            return abort(404, 'Device not found');
+        }
+
+        $ports = $device->ports()->get();
+        $portsById = $ports->keyBy('id');
+        $portsByName = $ports->keyBy('name');
+        $uplinks = $device->uplinks()->get()->keyBy('port_id');
+        $is_online = self::isOnline($device->hostname);
+        $uplinks = $device->uplinksGroupedKeyByNameArray();
+        $vlans = $device->vlans()->get()->keyBy('id') ?? [];
+        $backups = $device->backups()->latest()->take(15)->get() ?? [];
+        $vlanPortsUntagged = $device->vlanPortsUntagged();
+        $vlanPortsTagged = $device->vlanPortsTagged();
+
+        return view('switch.view_details', compact('device', 'ports', 'uplinks', 'is_online', 'uplinks', 'vlans', 'backups', 'vlanPortsUntagged', 'vlanPortsTagged', 'portsById', 'portsByName'));
+    }
+
+    public function showBackups(Device $device) {
+
+        if(!$device) {
+            return abort(404, 'Device not found');
+        }
+
+        $backups = $device->backups()->latest()->take(150)->get();
+
+        return view('switch.switch-backups', compact('device', 'backups'));
     }
 
     /**
@@ -331,7 +200,7 @@ class DeviceController extends Controller
         ]);
 
         $elapsed = microtime(true) - $start;
-        
+
         return json_encode(['success' => 'true', 'message' => 'Refreshed device (' . number_format($elapsed, 2) . 's)']);
     }
 
@@ -595,18 +464,17 @@ class DeviceController extends Controller
         try {
             if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 0.2)) {
                 fclose($fp);
-                return "has-text-success";
+                return true;
             }
             fclose($fp);
 
-            return "has-text-danger";
+            return false;
         } catch (\Exception $e) {
-            return "has-text-danger";
+            return false;
         }
     }
 
     static function storeStats($data, $device)
     {
-
     }
 }

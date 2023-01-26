@@ -8,6 +8,7 @@ use App\Http\Controllers\SSHController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\KeyController;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\MacTypeFilterController;
@@ -43,18 +44,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
-    Route::get('/uplinks', [DeviceController::class, 'view_uplinks'])->name('uplinks');
-    Route::get('/{id}/backups', [BackupController::class, 'getBackupsBySwitchId'])->name('backups-switch')->where('id', '[0-9]+');
-    Route::get('/{id}', [DeviceController::class, 'view_details'])->name('details')->where('id', '[0-9]+');
+    Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
+
+    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('details')->where('id', '[0-9]+');
+    Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
+
     Route::get('/{id}/ports', [PortstatsController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
     Route::get('/{id}/ports/{port}', [PortstatsController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
 
 
 });
 Route::prefix('debug')->middleware('auth:sanctum')->group(function () {
-    Route::get('/switch/{device:id}', [DeviceController::class, 'getApiData'])->name('details')->where('id', '[0-9]+');
-    Route::get('/switch/{device:id}/dashboard', [DeviceService::class, 'getApiData'])->name('details')->where('id', '[0-9]+');
+    Route::get('/switch/{device:id}/dashboard', [DeviceService::class, 'refreshDevice'])->name('details')->where('id', '[0-9]+');
 
 
 });
