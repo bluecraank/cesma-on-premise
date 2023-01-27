@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <table class="table is-narrow is-hoverable is-bordered is-fullwidth">
+    <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
                 <th>Name</th>
@@ -54,7 +54,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->details }}', '{{ $device->number }}')"
+                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->location_desc }}', '{{ $device->location_number }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">

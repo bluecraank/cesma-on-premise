@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_type_icons', function (Blueprint $table) {
+        Schema::create('device_custom_uplinks', function (Blueprint $table) {
             $table->id();
-            $table->string('mac_type_id');
-            $table->string('mac_icon', 255);
+            $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
+            $table->json('uplinks');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mac_type_icons');
+        Schema::dropIfExists('device_custom_uplinks');
     }
 };

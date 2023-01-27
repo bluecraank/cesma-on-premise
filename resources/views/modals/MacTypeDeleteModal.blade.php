@@ -1,6 +1,8 @@
-<div class="modal modal-edit-icon">
-    <form action="/clients/typefilter/update" method="post">
+<div class="modal modal-delete-mac">
+    <form action="/clients/type" method="post">
+        <input type="hidden" value="" name="id" class="id">
         @csrf
+        @method('DELETE')
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">
@@ -8,30 +10,28 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <input type="hidden" class="type" name="mac_type">
-                    <label class="label">MAC Typ</label>
+                    <label class="label">MAC Prefix*</label>
                     <p class="control has-icons-left">
-                        <input class="input type" required readonly="true">
+                        <input class="input prefix" name="mac_prefix" readonly="true" required placeholder="MAC Address oder Prefix">
                         <span class="icon is-small is-left">
                             <i class="fa fa-a"></i>
                         </span>
                     </p>
                 </div>
+
                 <div class="field">
-                    <input type="hidden" class="type" name="id">
-                    <label class="label">Icon (Font Awesome)</label>
+                    <label class="label">{{ __('Typ') }}</label>
                     <p class="control has-icons-left">
-                        <input class="input mac_icon" name="mac_icon" required placeholder="fa-" value="fa-">
+                        <input class="input type" name="mac_type" readonly="true" placeholder="MAC Typ (neu)">
                         <span class="icon is-small is-left">
-                            <i class="fa fa-a"></i>
+                            <i class="fa fa-info"></i>
                         </span>
                     </p>
                 </div>
-                <a href="https://fontawesome.com/icons?d=gallery" target="_blank">Zu den Font Awesome Icons</a>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-edit-icon').hide();return false;" type="button"
+                <button class="button is-danger">{{ __('Button.Delete') }}</button>
+                <button onclick="$('.modal-delete-mac').hide();return false;" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

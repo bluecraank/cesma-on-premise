@@ -1,5 +1,5 @@
 <div class="modal modal-add-mac">
-    <form action="/clients/typefilter/create" method="post">
+    <form action="/clients/type" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
@@ -42,7 +42,7 @@
                     <div class="select is-fullwidth">
                         <select name="mac_type">
                             <option value="">{{ __('Select.SelectText') }}</option>
-                            @foreach($types as $type)
+                            @foreach($mac_types as $type)
                                 <option value="{{ $type }}">{{ $type }}</option>
                             @endforeach
                         </select>

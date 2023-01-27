@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_type_icons', function (Blueprint $table) {
-            $table->id();
-            $table->string('mac_type_id');
-            $table->string('mac_icon', 255);
-            $table->timestamps();
+        Schema::table('devices', function (Blueprint $table) {
+            $table->dropColumn('location_desc');
+            // $table->foreignId('room_id')->constrained();
         });
     }
 
@@ -28,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mac_type_icons');
+        Schema::table('room_id', function (Blueprint $table) {
+            //
+        });
     }
 };

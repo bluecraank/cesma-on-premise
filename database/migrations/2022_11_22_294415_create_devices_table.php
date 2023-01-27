@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('named')->nullable();
             $table->foreignId('location_id')->constrained();
             $table->foreignId('building_id')->constrained();
-            $table->string('location_desc')->nullable();
+            $table->foreignId('room_id')->constrained();
             $table->integer('location_number')->nullable();
             $table->string('type');
             $table->timestamps();

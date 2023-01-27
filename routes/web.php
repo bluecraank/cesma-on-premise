@@ -10,12 +10,11 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DevicePortStatController;
 use App\Http\Controllers\DeviceUplinkController;
-use App\Http\Controllers\KeyController;
 use App\Http\Controllers\EncryptionController;
-use App\Http\Controllers\MacTypeFilterController;
 use App\Http\Controllers\SystemController;
-use App\Http\Controllers\PortstatsController;
+use App\Http\Controllers\RoomController;
 use App\Services\DeviceService;
+use App\Services\MacTypeService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -46,16 +45,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
-
     Route::get('/{device:id}', [DeviceController::class, 'show'])->name('details')->where('id', '[0-9]+');
     Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
-
-    // Route::get('/{id}/ports', [DevicePortStatController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
-
-
 });
+
 Route::prefix('debug')->middleware('auth:sanctum')->group(function () {
     Route::get('/switch/{device:id}/dashboard', [DeviceService::class, 'refreshDevice'])->name('details')->where('id', '[0-9]+');
 
@@ -66,21 +61,31 @@ Route::prefix('debug')->middleware('auth:sanctum')->group(function () {
 // Admin only routes
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::get('/execute', [SSHController::class, 'index'])->name('perform-ssh');
-    Route::post('/location/create', [LocationController::class, 'store']);
-    Route::post('/building/create', [BuildingController::class, 'store']);
-    Route::post('/vlan/create', [VlanController::class, 'store']);
-    Route::post('/pubkey/add', [KeyController::class, 'store']);
-    Route::delete('/building/delete', [BuildingController::class, 'destroy']);
-    Route::delete('/location/delete', [LocationController::class, 'destroy']);
-    Route::delete('/vlan/delete', [VlanController::class, 'destroy']);
-    Route::delete('/pubkey/delete', [KeyController::class, 'destroy']);
-    Route::put('/building/update', [BuildingController::class, 'update']);
-    Route::put('/location/update', [LocationController::class, 'update']);
-    Route::put('/vlan/update', [VlanController::class, 'update']);
+
+    Route::post('/location', [LocationController::class, 'store']);
+    Route::post('/building', [BuildingController::class, 'store']);
+    Route::post('/room', [RoomController::class, 'store']);
+    Route::put('/building', [BuildingController::class, 'update']);
+    Route::put('/location', [LocationController::class, 'update']);
+    Route::put('/room', [RoomController::class, 'update']);
+    Route::delete('/building', [BuildingController::class, 'destroy']);
+    Route::delete('/location', [LocationController::class, 'destroy']);
+    Route::delete('/room', [RoomController::class, 'destroy']);
+
+    Route::post('/vlan', [VlanController::class, 'store']);
+    Route::delete('/vlan', [VlanController::class, 'destroy']);    
+    Route::put('/vlan', [VlanController::class, 'update']);
+
+    
+    Route::post('/pubkey/add', [PublicKeyController::class, 'store']);
+    Route::delete('/pubkey/delete', [PublicKeyController::class, 'destroy']);
+
     Route::put('/user/role', [SystemController::class, 'updateUserRole']);
-    Route::post('/clients/typefilter/create', [MacTypeFilterController::class, 'store']);
-    Route::post('/clients/typefilter/update', [MacTypeFilterController::class, 'storeIcon']);
-    Route::delete('/clients/typefilter/delete', [MacTypeFilterController::class, 'destroy']);   
+
+    Route::post('/clients/type', [MacTypeService::class, 'store']);
+    Route::post('/clients/type/icon', [MacTypeService::class, 'storeIcon']);
+    Route::delete('/clients/type', [MacTypeService::class, 'delete']);   
+
     Route::post('/privatekey/upload', function(Request $request) {
         $key = $request->input('key');
         return "<pre>".EncryptionController::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
@@ -97,6 +102,7 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
 Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
     Route::post('/{device:id}/vlans/sync', [DeviceController::class, 'syncVlans'])->where('id', '[0-9]+');
+    Route::put('/uplinks', [DeviceService::class, 'storeCustomUplinks']);
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH'])->where('id', '[0-9]+');
     Route::post('/{device:id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
     Route::post('/{device:id}/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
@@ -107,7 +113,6 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/create', [DeviceController::class, 'store']);
     Route::put('/update', [DeviceController::class, 'update']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
-    Route::put('/uplinks/update', [DeviceController::class, 'updateUplinks']);
     Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
     Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);

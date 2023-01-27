@@ -47,7 +47,8 @@ class ArubaOS implements DeviceInterface
         return "v7";
     }
 
-    static function API_LOGIN($device): string {
+    static function API_LOGIN($device): string
+    {
         $api_version = self::API_GET_VERSIONS($device->hostname);
 
         $api_url = config('app.https') . $device->hostname . '/rest/' . $api_version . '/' . self::$api_auth['login'];
@@ -226,14 +227,15 @@ class ArubaOS implements DeviceInterface
         DeviceService::storeApiData($data, $device);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
-        
+
         return [];
     }
-    
-    static function formatUplinkData($ports) {
+
+    static function formatUplinkData($ports)
+    {
         $uplinks = [];
-        foreach($ports as $port) {
-            if(str_contains($port['trunk_group'], "Trk")) {
+        foreach ($ports as $port) {
+            if (str_contains($port['trunk_group'], "Trk")) {
                 $uplinks[$port['id']] = $port['trunk_group'];
             }
         }
@@ -304,7 +306,7 @@ class ArubaOS implements DeviceInterface
             ];
         }
 
-        foreach($stats as $stat) {
+        foreach ($stats as $stat) {
             $return[$stat['id']]['speed'] = $stat['port_speed_mbps'];
         }
 
@@ -403,8 +405,9 @@ class ArubaOS implements DeviceInterface
             $data = $backup->json()["result_base64_encoded"];
             $restore = $backup->json()["result_base64_encoded"];
             $data = base64_decode($data);
-            $data = str_replace("Running configuration:", "", $data);
-            $data = strstr($data, ";") or $data;
+
+            $restore = strstr(";", $data);
+
             if ($data !== NULL and strlen($data) > 10 and $data != false) {
                 BackupController::store(true, $data, $restore, $device);
                 return true;

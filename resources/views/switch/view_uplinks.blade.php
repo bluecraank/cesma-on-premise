@@ -14,7 +14,8 @@
             <thead>
                 <tr>
                     <th>Switch</th>
-                    <th>Uplinks</th>
+                    <th>Uplinks found</th>
+                    <th>Custom uplinks</th>
                     <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -28,14 +29,13 @@
                             $uplinks = implode(', ', $uplinks);
                         @endphp
                         <td>{{ $uplinks }}</td>
-
+                        <td>{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}</td>
                         <td class="has-text-centered">
-                            <b>TODO</b>
-                            {{-- @if (Auth::user()->role == 'admin')
-                                <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $uplinks }}')"
+                            @if (Auth::user()->role == 'admin')
+                                <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
                                     class="button is-small is-info"><i class="fas fa-gear"></i>
                                 </a>
-                            @endif --}}
+                            @endif
                         </td>
                     </tr>
                 @endforeach

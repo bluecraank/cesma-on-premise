@@ -56,7 +56,7 @@ async function execute(switches, command, type, api_token) {
         formData.append("id", value.id);
 
         fetch(
-            '/switch/'+value.id+'/ssh/execute',
+            '/switch/' + value.id + '/ssh/execute',
             {
                 method: 'POST',
                 body: formData
@@ -98,10 +98,26 @@ function deleteSwitchModal(id, name) {
     modal.show()
 }
 
-function editBuildingModal(id, name) {
+function editLocationModal(id, name) {
+    let modal = $('.modal-edit-location');
+    modal.find('.location-id').val(id);
+    modal.find('.location-name').val(name);
+    modal.show()
+}
+
+function deleteLocationModal(id, name) {
+    let modal = $('.modal-delete-location');
+    modal.find('.location-id').val(id);
+    modal.find('.location-name').val(name);
+    modal.show()
+}
+
+function editBuildingModal(id, name, location_id) {
     let modal = $('.modal-edit-building');
     modal.find('.building-id').val(id);
     modal.find('.building-name').val(name);
+    // Select option if building id matches
+    modal.find('.locations').val(location_id);
     modal.show()
 }
 
@@ -112,23 +128,40 @@ function deleteBuildingModal(id, name) {
     modal.show()
 }
 
+function editRoomModal(id, name, building_id) {
+    let modal = $('.modal-edit-room');
+    modal.find('.room-id').val(id);
+    modal.find('.room-name').val(name);
+
+    // Select option if building id matches
+    modal.find('.buildings').val(building_id);
+    modal.show()
+}
+
+function deleteRoomModal(id, name) {
+    let modal = $('.modal-delete-room');
+    modal.find('.room-id').val(id);
+    modal.find('.room-name').val(name);
+    modal.show()
+}
+
 function editVlanModal(id, name, description, ip, scan, sync, is_client_vlan) {
     let modal = $('.modal-edit-vlan');
     modal.find('.vlan-id').val(id);
     modal.find('.vlan-name').val(name);
     modal.find('.vlan-desc').val(description);
     modal.find('.vlan-ip_range').val(ip);
-    if(scan == 1) {
+    if (scan == 1) {
         modal.find('.vlan-scan').prop('checked', true);
     } else {
         modal.find('.vlan-scan').prop('checked', false);
     }
-    if(sync == 1) {
+    if (sync == 1) {
         modal.find('.vlan-sync').prop('checked', true);
     } else {
         modal.find('.vlan-sync').prop('checked', false);
     }
-    if(is_client_vlan == 1) {
+    if (is_client_vlan == 1) {
         modal.find('.vlan-is_client_vlan').prop('checked', false);
     } else {
         modal.find('.vlan-is_client_vlan').prop('checked', true);
@@ -171,8 +204,8 @@ function updateUntaggedPorts(id) {
     let device = id;
 
     let i = 0;
-    $(".port-vlan-select").each(function() {
-        if($(this).attr('data-current-vlan') != $(this).val()) {
+    $(".port-vlan-select").each(function () {
+        if ($(this).attr('data-current-vlan') != $(this).val()) {
             device = $(this).attr('data-id');
 
             let port = $(this).attr('data-port');
@@ -191,35 +224,35 @@ function updateUntaggedPorts(id) {
     formData.append('device', device);
     formData.append('_token', token);
 
-    let uri = '/switch/'+device+'/port-vlans/untagged';
+    let uri = '/switch/' + device + '/port-vlans/untagged';
 
     $(".live-body").css('opacity', '0.5');
     fetch(uri, {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success == "true") {
-            $(".live-body").css('opacity', '1');
-            $(".save-vlans").addClass('is-hidden');
-            $(".edit-vlans").removeClass('is-hidden');
-            $(".response-update-vlan").removeClass('is-hidden');
-            $(".response-update-vlan").addClass('is-success');
-            $(".response-update-vlan").removeClass('is-danger');
-            $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
-        } else {
-            $(".live-body").css('opacity', '1');
-            $(".save-vlans").addClass('is-hidden');
-            $(".edit-vlans").removeClass('is-hidden');
-            $(".response-update-vlan").removeClass('is-hidden');
-            $(".response-update-vlan").addClass('is-danger');
-            $(".response-update-vlan").removeClass('is-success');
-            $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
-        }
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success == "true") {
+                $(".live-body").css('opacity', '1');
+                $(".save-vlans").addClass('is-hidden');
+                $(".edit-vlans").removeClass('is-hidden');
+                $(".response-update-vlan").removeClass('is-hidden');
+                $(".response-update-vlan").addClass('is-success');
+                $(".response-update-vlan").removeClass('is-danger');
+                $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
+            } else {
+                $(".live-body").css('opacity', '1');
+                $(".save-vlans").addClass('is-hidden');
+                $(".edit-vlans").removeClass('is-hidden');
+                $(".response-update-vlan").removeClass('is-hidden');
+                $(".response-update-vlan").addClass('is-danger');
+                $(".response-update-vlan").removeClass('is-success');
+                $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
+            }
+        });
 
-    $(".port-vlan-select").each(function() {
+    $(".port-vlan-select").each(function () {
         $(this).prop('disabled', true);
     });
 }
@@ -233,8 +266,8 @@ function updateTaggedModal(vlans, port, id) {
 
     modal.find('.modal-card-body span.tag').removeClass('is-primary');
 
-    vlansSplitted.forEach(function(vlan) {
-        modal.find('.modal-card-body span.tag[data-id="'+vlan+'"]').addClass('is-primary');
+    vlansSplitted.forEach(function (vlan) {
+        modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
     });
 
     modal.show();
@@ -253,7 +286,7 @@ function updateTaggedVlans() {
     let vlans = [];
 
     let i = 0;
-    modal.find('.modal-card-body span.tag.is-primary').each(function() {
+    modal.find('.modal-card-body span.tag.is-primary').each(function () {
         let vid = $(this).attr('data-id');
         vlans[i] = vid;
         i++;
@@ -265,7 +298,7 @@ function updateTaggedVlans() {
     formData.append('device', device);
     formData.append('_token', token);
 
-    let uri = '/switch/'+device+'/port-vlans/tagged';
+    let uri = '/switch/' + device + '/port-vlans/tagged';
 
     $(".modal-vlan-tagging .is-cancel").addClass('is-hidden');
     $(".modal-vlan-tagging .is-info").removeClass('is-hidden');
@@ -274,29 +307,29 @@ function updateTaggedVlans() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        $(".response-update-vlan").removeClass('is-success');
-        $(".response-update-vlan").removeClass('is-danger');
-        if(data.success == "true") {
-            $(".response-update-vlan").addClass('is-success');
-            $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
-        } else {
-            $(".response-update-vlan").addClass('is-danger');
-            $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
-        }
-        modal.hide();
-        modal.find('.is-cancel').removeClass('is-hidden');
-        modal.find('.is-info').addClass('is-hidden');
-        modal.find('.is-submit').removeClass('is-loading');
-        $(".save-vlans").addClass('is-hidden');
-        $(".edit-vlans").removeClass('is-hidden');
-        $(".response-update-vlan").removeClass('is-hidden');
-    });
+        .then(response => response.json())
+        .then(data => {
+            $(".response-update-vlan").removeClass('is-success');
+            $(".response-update-vlan").removeClass('is-danger');
+            if (data.success == "true") {
+                $(".response-update-vlan").addClass('is-success');
+                $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
+            } else {
+                $(".response-update-vlan").addClass('is-danger');
+                $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
+            }
+            modal.hide();
+            modal.find('.is-cancel').removeClass('is-hidden');
+            modal.find('.is-info').addClass('is-hidden');
+            modal.find('.is-submit').removeClass('is-loading');
+            $(".save-vlans").addClass('is-hidden');
+            $(".edit-vlans").removeClass('is-hidden');
+            $(".response-update-vlan").removeClass('is-hidden');
+        });
 
 }
 
-function restoreBackup(id, created_at, device,  name) {
+function restoreBackup(id, created_at, device, name) {
     let modal = $('.modal-upload-backup');
     modal.find('.id').val(id);
     modal.find('.name').val(name);
@@ -306,26 +339,26 @@ function restoreBackup(id, created_at, device,  name) {
 }
 
 function sw_actions(ele, type, id) {
-    let uri = '/switch/'+id+'/backup/create';
+    let uri = '/switch/' + id + '/backup/create';
     let cssclass = "fa-hdd";
     let reload = false;
 
-    if(type == "refresh") {
-        uri = '/switch/'+id+'/refresh';
+    if (type == "refresh") {
+        uri = '/switch/' + id + '/refresh';
         cssclass = "fa-sync";
         reload = true
-    } else if(type == "pubkeys") {
-        uri = '/switch/'+id+'/ssh/pubkeys';
+    } else if (type == "pubkeys") {
+        uri = '/switch/' + id + '/ssh/pubkeys';
         cssclass = "fa-key";
-    } else if(type == "vlans") {
-        uri = '/switch/'+id+'/vlans/sync';
+    } else if (type == "vlans") {
+        uri = '/switch/' + id + '/vlans/sync';
         cssclass = "fa-ethernet";
     }
 
     let formData = new FormData();
     formData.append('device_id', id);
 
-    fetcher(uri, formData, ele, cssclass, reload);    
+    fetcher(uri, formData, ele, cssclass, reload);
 }
 
 function device_overview_actions(type, ele) {
@@ -376,15 +409,15 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
         body: form
     }).then(response => response.json())
         .then(data => {
-            if(data.success == "true") {
+            if (data.success == "true") {
                 $(ele).addClass('is-success');
-                $(ele).children('i').addClass('fa-check'); 
+                $(ele).children('i').addClass('fa-check');
                 $(ele).removeClass('is-loading');
                 $(ele).children('i').removeClass(cssclass);
                 $(ele).children('i').removeClass('fa-exclamation-triangle');
                 $(ele).removeClass('is-danger');
 
-                if(timeout) {
+                if (timeout) {
                     setTimeout(function () {
                         window.location.reload();
                     }, 1100)
@@ -394,10 +427,10 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 $(ele).children('i').addClass('fa-exclamation-triangle');
                 $(ele).children('i').removeClass(cssclass);
                 $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');  
+                $(ele).removeClass('is-primary');
                 // $(".notification.status ul li").text(data.message);
                 // $(".notification.status").slideDown(500);
             }
         }
-    );
+        );
 }

@@ -112,15 +112,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($macs as $mac)
+                @foreach ($mac_prefixes as $mac)
                     <tr>
                         <td>{{ $mac->mac_prefix }}</td>
                         <td>{{ $vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
-                        <td>{{ $mac->mac_desc }}</td>
-                        <td>{{ $mac->mac_type }}</td>
+                        <td>{{ $mac->description }}</td>
+                        <td>{{ $mac->type }}</td>
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
-                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->mac_type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fas fa-trash"></i></button>
+                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fas fa-trash"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -149,7 +149,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($types as $mac)
+                @foreach ($mac_types as $mac)
                     <tr>
                         <td>{{ $mac }}</td>
                         <td>{{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}</td>
@@ -173,9 +173,9 @@
         @include('modals.PubkeyDeleteModal')
         @include('modals.PubkeyAddModal')
         @include('modals.UserEditModal')
-        @include('modals.MacFilterAddModal')
-        @include('modals.MacFilterIconAddModal')
-        @include('modals.MacFilterDeleteModal')
+        @include('modals.MacTypeAddModal')
+        @include('modals.MacTypeIconAddModal')
+        @include('modals.MacTypeDeleteModal')
     @endif
 
     </x-layouts>

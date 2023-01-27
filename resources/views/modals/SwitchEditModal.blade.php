@@ -31,27 +31,53 @@
                             placeholder="WebGUI Password">
                     </div>
                 </div>
-                <div class="field">
-                    <label class="label">{{ __('Location') }}</label>
-                    <div class="control">
-                        <div class="select">
-                            <select class="switch-location" name="location">
-                                @foreach ($locations as $location)
-                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
-                                @endforeach
-                            </select>
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label is-small">{{ __('Location') }}</label>
+                            <div class="select is-fullwidth is-small">
+                                <select class="switch-location" name="location_id">
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                        <div class="select">
-                            <select class="switch-building" name="building">
-                                @foreach ($buildings as $building)
-                                    <option value="{{ $building->id }}">{{ $building->name }}</option>
-                                @endforeach
-                            </select>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label is-small">Gebäude</label>
+                            <div class="select is-fullwidth is-small">
+                                <select class="switch-building" name="building_id">
+                                    @foreach ($buildings as $building)
+                                        <option value="{{ $building->id }}">{{ $building->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                        <input class="input switch-details" name="details" style="display: inline-block;width:160px"
-                            type="text" placeholder="Department, Floor">
-                        <input class="input switch-numbering" name="number" style="display: inline-block;width:80px"
-                            type="number" placeholder="1">
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label is-small">Raum</label>
+                            <div class="select is-fullwidth is-small">
+                                <select class="switch-location" name="room_id">
+                                    @foreach ($rooms as $room)
+                                        <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="field is-fullwidth">
+                            <label class="label is-small">Reihenfolge</label>
+                            <input class="input is-small is-fullwidth switch-numbering" name="location_number" type="number"
+                                placeholder="1">
+                        </div>
                     </div>
                 </div>
             </section>

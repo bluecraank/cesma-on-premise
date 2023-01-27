@@ -7,15 +7,16 @@ use App\Devices\ArubaOS;
 use App\Devices\ArubaCX;
 use App\Models\Client;
 use App\Models\DeviceBackup;
+use App\Models\DeviceCustomUplink;
 use App\Models\DevicePort;
 use App\Models\DevicePortStat;
-use App\Models\DevicePortStats;
 use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\VlanService;
+use Illuminate\Http\Request;
 
 class DeviceService
 {
@@ -166,5 +167,41 @@ class DeviceService
         }
 
         return false;
+    }
+
+    static function storeCustomUplinks(Request $request) {
+        if($request->has('uplinks') and $request->uplinks != NULL and $request->device_id != '') {
+
+            if (preg_match("/[^A-Za-z0-9\,\-]/", $request->uplinks))
+            {
+                return back()->withErrors(['error' => 'Format error (allowed: 1-10 or 1,2,3,4,5)']);
+            }
+
+            // Wenn eine Range angegeben wurde (z.B 49-52)
+            if(str_contains($request->uplinks, "-")) {
+                $explode_range = preg_split('@-@', $request->uplinks, -1, PREG_SPLIT_NO_EMPTY);
+                $uplinks = range($explode_range[0], $explode_range[1]);
+
+            // Sonst einfach kommasepariert (z.B 49,50,51,52)
+            } else {
+                $explode_range = preg_split('@,@', $request->uplinks, -1, PREG_SPLIT_NO_EMPTY);
+                $uplinks = $explode_range;
+            }
+
+            $uplinks = str_replace(' ', '', $uplinks);
+
+            $uplinks = json_encode($uplinks);
+
+            DeviceCustomUplink::updateOrCreate([
+                'device_id' => $request->device_id
+            ],
+            [
+                'uplinks' => $uplinks
+            ]);
+
+            return back()->with('success', 'Uplinks wurden gespeichert');
+        }
+
+        return back()->with('error', 'Uplinks konnten nicht gespeichert werden');
     }
 }

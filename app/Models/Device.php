@@ -97,4 +97,8 @@ class Device extends Model
     public function getPortById($id) {
         return $this->ports()->where('id', $id)->first()->name;
     }
+
+    public function deviceCustomUplinks() {
+        return $this->hasOne(DeviceCustomUplink::class);
+    }
 }

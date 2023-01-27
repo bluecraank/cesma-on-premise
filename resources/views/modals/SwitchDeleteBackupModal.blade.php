@@ -11,7 +11,7 @@
                 <div class="field">
                     <label class="label">Backup-ID</label>
                     <div class="control">
-                        <input class="backup-id input" type="text" disabled value="">
+                        <input class="backup-id input" name="id" type="text" readonly="true" value="">
                     </div>
                 </div>
                 <div class="field">

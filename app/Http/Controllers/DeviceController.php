@@ -9,12 +9,13 @@ use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
-use App\Http\Controllers\EncryptionController;
 use App\Models\DeviceBackup;
+use App\Models\Room;
 use App\Models\Vlan;
 use App\Services\DeviceService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
@@ -34,6 +35,8 @@ class DeviceController extends Controller
         $devices = Device::all()->sortBy('name');
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
+        $rooms = Room::all()->keyBy('id');
+        
         $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
         $https = config('app.https');
 
@@ -41,6 +44,7 @@ class DeviceController extends Controller
             'devices',
             'locations',
             'buildings',
+            'rooms',
             'https',
             'keys_list'
         ));
@@ -90,10 +94,6 @@ class DeviceController extends Controller
      */
     public function show(Device $device)
     {
-        if (!$device) {
-            return abort(404, 'Device not found');
-        }
-
         $ports = $device->ports()->get();
         $portsById = $ports->keyBy('id');
         $portsByName = $ports->keyBy('name');
@@ -130,7 +130,7 @@ class DeviceController extends Controller
     public function update(UpdateDeviceRequest $request, Device $device)
     {
         if ($request->input('password') != "__hidden__" and $request->input('password') != "") {
-            $encrypted_pw = EncryptionController::encrypt($request->input('password'));
+            $encrypted_pw = Crypt::encrypt($request->input('password'));
             $request->merge(['password' => $encrypted_pw]);
         } else {
             $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);

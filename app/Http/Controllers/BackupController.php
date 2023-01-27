@@ -57,18 +57,13 @@ class BackupController extends Controller
      */
     public function destroy(Request $request) {
         $find = DeviceBackup::find($request->input('id'));
+
         if ($find->delete()) {
-            LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
+            // LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
             return redirect()->back()->with('success', __('Msg.BackupCreated'));
         }
 
         return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
-    }
-
-    static function getBackupsBySwitchId($id) {
-        $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
-        $device = Device::find($id);
-        return view('switch.switch-backups', compact('backups', 'device'));
     }
 
     static function backupAll() {
@@ -96,10 +91,10 @@ class BackupController extends Controller
     }
 
     static function downloadBackup($id) {
-        $backup = Backup::find($id);
+        $backup = DeviceBackup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
-        $data = EncryptionController::decrypt($backup->data);
+        $data = Crypt::decrypt($backup->data);
         if ($data == NULL) {
             $data = "Decrypting error (Wrong encryption key?)";
         }
@@ -109,7 +104,7 @@ class BackupController extends Controller
 
     static function sendMail() {
 
-        $backups = Backup::all()->keyBy('id');
+        $backups = DeviceBackup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
         $modDevices = [];

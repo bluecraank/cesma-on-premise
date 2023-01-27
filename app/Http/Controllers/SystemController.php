@@ -2,34 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Key;
-use App\Models\MacTypeFilter;
-use App\Models\MacTypeIcon;
-use App\Models\MacVendors;
+use App\Models\PublicKey;
 use App\Models\User;
+use App\Services\MacTypeService;
+use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 
 class SystemController extends Controller
 {
     public function index_system()
     {
-        $keys_db = Key::all();
-        $keys = [];
         $users = User::all();
-        $keys_list = KeyController::getPubkeysDesc();
-        $macs = MacTypeFilter::all()->sortBy('mac_type');
-        $types = MacTypeFilter::all()->sortBy('mac_type')->pluck('mac_type')->unique();
-        $vendors = MacVendors::all()->keyBy('mac_prefix');
-        $icons = MacTypeIcon::all()->keyBy('mac_type');
+        $keys = PublicKey::all();
+        $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
+        $mac_prefixes = MacTypeService::getMacTypes();
+        $mac_types = MacTypeService::getMacTypesList(); 
+        $mac_vendors = MacTypeService::getMacVendors();
+        $mac_icons = MacTypeService::getMacIcons();
 
-        foreach ($keys_db as $k => $key) {
-            $keys[$k] = new \stdClass();
-            $keys[$k]->desc = $key->description;
-            $keys[$k]->key = EncryptionController::decrypt($key->key);
-            $keys[$k]->id = $key->id;
-        }
-
-        return view('system.index', compact('keys', 'keys_list', 'users', 'macs', 'types', 'vendors', 'icons'));
+        return view('system.index', compact('users', 'keys', 'keys_list', 'mac_prefixes', 'mac_types', 'mac_vendors', 'mac_icons'));
     }
 
     public function index_usersettings()
