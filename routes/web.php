@@ -8,6 +8,7 @@ use App\Http\Controllers\SSHController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DevicePortStatController;
 use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\KeyController;
 use App\Http\Controllers\EncryptionController;
@@ -50,8 +51,8 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
 
-    Route::get('/{id}/ports', [PortstatsController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
-    Route::get('/{id}/ports/{port}', [PortstatsController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
+    // Route::get('/{id}/ports', [DevicePortStatController::class, 'index'])->name('port-details')->where('id', '[0-9]+');
+    Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
 
 
 });
@@ -97,8 +98,8 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
     Route::post('/{device:id}/vlans/sync', [DeviceController::class, 'syncVlans'])->where('id', '[0-9]+');
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH'])->where('id', '[0-9]+');
-    Route::post('/{id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/refresh', [DeviceController::class, 'refresh'])->where('id', '[0-9]+');
+    Route::post('/{device:id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
+    Route::post('/{device:id}/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
     Route::post('/{id}/port-vlans/untagged', [DeviceController::class, 'setUntaggedVlanToPort'])->where('id', '[0-9]+');
     Route::post('/{id}/port-vlans/tagged', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
     Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);

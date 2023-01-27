@@ -6,6 +6,7 @@ use App\Http\Controllers\DeviceController;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
+use App\Services\DeviceService;
 use App\Traits\WithLogin;
 
 
@@ -29,7 +30,7 @@ class SearchDevices extends Component
 
         $devices = Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id');
         foreach ($devices as $device) {
-            $device->online = DeviceController::isOnline($device->hostname);
+            $device->online = DeviceService::isOnline($device->hostname);
         }
 
         return view('switch.switch-overview-livew', [

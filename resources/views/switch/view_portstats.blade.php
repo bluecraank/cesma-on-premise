@@ -20,8 +20,8 @@
                             @endif
 
                             @foreach ($ports as $port)
-                                <option {{ $port['id'] == $port_id ? 'selected' : '' }} value="{{ $port['id'] }}">
-                                    {{ $port['id'] }}</option>
+                                <option {{ $port['name'] == $port_id ? 'selected' : '' }} value="{{ $port['name'] }}">
+                                    {{ $port['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -35,14 +35,14 @@
         <div class="column">
             <div class="box has-text-centered">
                 <label class="label">Port status</label>
-                {!! $ports[$port_id]['is_port_up'] ? '<span class="is-size-2 has-text-success">UP</span>' : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
+                {!! $port->link ? '<span class="is-size-2 has-text-success">UP</span>' : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
             </div>
         </div>
 
         <div class="column">
             <div class="box has-text-centered">
                 <label class="label">Speed</label>
-                <span class="is-size-2 has-text-success">{{ $port_stats[$port_id]['port_speed_mbps'] }} Mbit/s</span>
+                <span class="is-size-2 has-text-success">{{ $port_stats->last()->port_speed }} Mbit/s</span>
 
             </div>
         </div> 

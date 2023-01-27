@@ -4,13 +4,13 @@ namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DeviceController;
-use App\Interfaces\IDevice;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\PortstatsController;
+use App\Interfaces\DeviceInterface;
 
-class ArubaCX implements IDevice
+class ArubaCX implements DeviceInterface
 {
     static $api_auth = [
         "login" => "login",
@@ -242,7 +242,7 @@ class ArubaCX implements IDevice
         return $return;
     }
 
-    static function formatMacTableData($vlans, $device, $cookie, $api_version): array
+    static function formatMacTableData(Array $macs): array
     {
         $vlan_macs = [];
         foreach ($vlans as $vlan) {
@@ -292,7 +292,7 @@ class ArubaCX implements IDevice
         return $return;
     }
 
-    static function formatPortData(array $ports): array
+    static function formatPortData(Array $ports, Array $stats): array
     {
         $return = [];
 
@@ -418,25 +418,6 @@ class ArubaCX implements IDevice
         }
 
         return $return;
-    }
-
-    static function getDeviceTrunks($device): array
-    {
-
-        $trunks = [];
-        $ports = json_decode($device->vlan_port_data, true);
-
-        if (!$ports || $ports == "" || $ports == []) {
-            return [];
-        }
-
-        foreach ($ports as $port) {
-            if (str_contains($port['vlan_id'], "Trunk")) {
-                $trunks[] = $port['port_id'];
-            }
-        }
-
-        return $trunks;
     }
 
     static function createBackup($device): bool

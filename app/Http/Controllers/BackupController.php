@@ -32,10 +32,11 @@ class BackupController extends Controller
         return view('switch.view_backups', compact('backups', 'devices'));
     }
 
-    static function store($success, $data, $device) {
+    static function store($success, $data, $restore, $device) {
 
         if ($success and $data and !is_array($data)) {
             $dataEncrypted = Crypt::encrypt($data);
+            $resDataEncrypted = Crypt::encrypt($restore);
         } else {
             $dataEncrypted = "No data received";
         }
@@ -43,7 +44,7 @@ class BackupController extends Controller
         DeviceBackup::create([
             'device_id' => $device->id,
             'data' => $dataEncrypted,
-            'restore_data' => $dataEncrypted,
+            'restore_data' => $resDataEncrypted,
             'status' => ($success) ? 1 : 0,
         ]);
     }
@@ -55,7 +56,7 @@ class BackupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request) {
-        $find = Backup::find($request->input('id'));
+        $find = DeviceBackup::find($request->input('id'));
         if ($find->delete()) {
             LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
             return redirect()->back()->with('success', __('Msg.BackupCreated'));

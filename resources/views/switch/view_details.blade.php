@@ -252,7 +252,7 @@
                                     </td>
                                     <td class="has-text-centered">
                                         <a
-                                            href="/switch/{{ $device->id }}/ports/{{ $port['id'] }}">{{ $port['name'] }}</a>
+                                            href="/switch/{{ $device->id }}/ports/{{ $port['name'] }}">{{ $port['name'] }}</a>
 
                                     </td>
                                     <td>

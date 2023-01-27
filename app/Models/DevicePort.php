@@ -31,7 +31,7 @@ class DevicePort extends Model
 
     public function devicePortStats()
     {
-        return $this->hasMany(DevicePortStats::class);
+        return $this->hasMany(DevicePortStat::class);
     }
 
     public function untaggedVlan() {
@@ -48,5 +48,9 @@ class DevicePort extends Model
 
     public function trunkId() {
         return $this->deviceUplink()->first()->id ?? null;
+    }
+
+    public function stats() {
+        return $this->devicePortStats()->orderBy('created_at', 'desc')->first();
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DevicePortStats extends Model
+class DevicePortStat extends Model
 {
     protected $fillable = [
         'device_port_id',

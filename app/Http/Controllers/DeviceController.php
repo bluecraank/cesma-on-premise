@@ -9,11 +9,8 @@ use App\Http\Requests\UpdateDeviceRequest;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
-use App\Models\Backup;
 use App\Http\Controllers\EncryptionController;
-use App\Models\Client;
 use App\Models\DeviceBackup;
-use App\Models\MacAddress;
 use App\Models\Vlan;
 use App\Services\DeviceService;
 use App\Services\PublicKeyService;
@@ -93,7 +90,7 @@ class DeviceController extends Controller
      */
     public function show(Device $device)
     {
-        if(!$device) {
+        if (!$device) {
             return abort(404, 'Device not found');
         }
 
@@ -101,7 +98,7 @@ class DeviceController extends Controller
         $portsById = $ports->keyBy('id');
         $portsByName = $ports->keyBy('name');
         $uplinks = $device->uplinks()->get()->keyBy('port_id');
-        $is_online = self::isOnline($device->hostname);
+        $is_online = DeviceService::isOnline($device->hostname);
         $uplinks = $device->uplinksGroupedKeyByNameArray();
         $vlans = $device->vlans()->get()->keyBy('id') ?? [];
         $backups = $device->backups()->latest()->take(15)->get() ?? [];
@@ -111,26 +108,16 @@ class DeviceController extends Controller
         return view('switch.view_details', compact('device', 'ports', 'uplinks', 'is_online', 'uplinks', 'vlans', 'backups', 'vlanPortsUntagged', 'vlanPortsTagged', 'portsById', 'portsByName'));
     }
 
-    public function showBackups(Device $device) {
+    public function showBackups(Device $device)
+    {
 
-        if(!$device) {
+        if (!$device) {
             return abort(404, 'Device not found');
         }
 
         $backups = $device->backups()->latest()->take(150)->get();
 
         return view('switch.switch-backups', compact('device', 'backups'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Device  $device
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Device $device)
-    {
-        //
     }
 
     /**
@@ -182,128 +169,54 @@ class DeviceController extends Controller
         return redirect()->back()->with('message', 'Could not delete device');
     }
 
-    static function refresh(Device $device)
-    {
-        $start = microtime(true);
-
-        $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
-
-        if (isset($device_data['success']) and $device_data['success'] == false) {
-            return json_encode(['success' => 'false', 'message' => 'Could not get data from device']);
-        }
-
-        MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
-
-        $device->update([
-            'mac_table_data' => json_encode($device_data['mac_table_data'], true),
-            'vlan_data' => json_encode($device_data['vlan_data'], true),
-            'port_data' => json_encode($device_data['ports_data'], true),
-            'port_statistic_data' => json_encode($device_data['portstats_data'], true),
-            'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
-            'system_data' => json_encode($device_data['sysstatus_data'], true)
-        ]);
-
-        $elapsed = microtime(true) - $start;
-
-        return json_encode(['success' => 'true', 'message' => 'Refreshed device (' . number_format($elapsed, 2) . 's)']);
-    }
-
-    static function refreshAll()
-    {
-        $devices = Device::all()->keyBy('id');
-        $time = microtime(true);
-
-        foreach ($devices as $device) {
-            $start = microtime(true);
-            $device_data = self::$models[$device->type]::API_REQUEST_ALL_DATA($device);
-
-            if (isset($device_data['success']) and $device_data['success'] == false) {
-                echo "Error getting switch data: " . $device->name . "\n";
-                continue;
-            }
-
-            MacAddressController::refreshMacDataFromSwitch($device->id, $device_data['mac_table_data'], $device->uplinks);
-
-
-            $device->update([
-                'mac_table_data' => json_encode($device_data['mac_table_data'], true),
-                'vlan_data' => json_encode($device_data['vlan_data'], true),
-                'port_data' => json_encode($device_data['ports_data'], true),
-                'port_statistic_data' => json_encode($device_data['portstats_data'], true),
-                'vlan_port_data' => json_encode($device_data['vlanport_data'], true),
-                'system_data' => json_encode($device_data['sysstatus_data'], true)
-            ]);
-
-            $elapsed = number_format(microtime(true) - $start, 2);
-            echo "Refreshed switch: " . $device->name . " (" . $elapsed . "sec)\n";
-        }
-
-        echo "Took " . number_format(microtime(true) - $time, 2) . " seconds\n";
-    }
-
     static function createBackup(Request $request)
     {
-        $id = $request->input('device_id');
-        $device = Device::find($id);
-        if ($device) {
-            if (!in_array($device->type, array_keys(self::$models))) {
-                return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
-            }
+        $device = Device::find($request->device_id);
 
-            $class = self::$models[$device->type];
-            $backup = $class::createBackup($device);
-
-            if ($backup) {
-                LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
-
-                return json_encode(['success' => 'true', 'message' => 'Backup created']);
-            } else {
-                return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
-            }
+        if (!$device) {
+            return json_encode(['success' => 'false', 'message' => 'Device not found']);
         }
 
-        return json_encode(['success' => 'false', 'message' => 'Device not found' . $id]);
+        if (!in_array($device->type, array_keys(self::$models))) {
+            return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
+        }
+
+        $class = self::$models[$device->type];
+        $backup = $class::createBackup($device);
+
+        if ($backup) {
+            // LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
+
+            return json_encode(['success' => 'true', 'message' => 'Backup created']);
+        } else {
+            return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
+        }
+
+        return json_encode(['success' => 'false', 'message' => 'Device not found' . $request->device_id]);
     }
 
     static function createBackupAllDevices()
     {
-        $device = Device::all()->keyBy('id');
+        $devices = Device::all()->keyBy('id');
 
-        foreach ($device as $switch) {
-            if (!in_array($switch->type, array_keys(self::$models))) {
+        foreach ($devices as $device) {
+            if (!in_array($device->type, array_keys(self::$models))) {
                 continue;
             }
 
-            $class = self::$models[$switch->type];
-            $class::createBackup($switch);
+            $class = self::$models[$device->type];
+            $class::createBackup($device);
         }
 
         return json_encode(['success' => 'true', 'message' => 'Backups created']);
     }
 
-    static function getTrunksAllDevices()
+    public function uploadPubkeysToSwitch(Device $device, Request $request)
     {
-        $devices = Device::all();
-
-        $data = [];
-        foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$models))) {
-                continue;
-            }
-
-            $class = self::$models[$device->type];
-            $data[$device->id] = array(
-                'name' => $device->name,
-                'trunks' => $class::getDeviceTrunks($device),
-            );
+        if (!$device) {
+            return json_encode(['success' => 'false', 'message' => 'Device not found']);
         }
 
-        return $data;
-    }
-
-    public function uploadPubkeysToSwitch($id, Request $request)
-    {
-        $device = Device::find($id);
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
 
@@ -368,30 +281,6 @@ class DeviceController extends Controller
         } else {
             return redirect()->back()->with('success', __('Msg.VlansSynced'));
         }
-    }
-
-    static function updateUplinks(Request $request)
-    {
-
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ])->validate();
-
-        $device = Device::find($request->input('id'));
-
-        if (str_contains($request->input('uplinks'), ":") or str_contains($request->input('uplinks'), " ") or str_contains($request->input('uplinks'), ";")) {
-            return redirect()->back()->withErrors(['uplinks' => 'Uplinks must be comma separated']);
-        }
-
-        if ($device) {
-            $uplinks = $request->input('uplinks');
-            $uplinks = explode(',', $uplinks);
-            $device->uplinks = json_encode($uplinks);
-            $device->save();
-            LogController::log('Uplinks aktualisiert', '{"switch": "' .  $device->name . '", "uplinks": "' . $request->input('uplinks') . '"}');
-        }
-
-        return redirect()->back();
     }
 
     static function setUntaggedVlanToPort(Request $request)
@@ -461,24 +350,5 @@ class DeviceController extends Controller
 
             return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
-    }
-
-    static function isOnline($hostname)
-    {
-        try {
-            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 0.2)) {
-                fclose($fp);
-                return true;
-            }
-            fclose($fp);
-
-            return false;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    static function storeStats($data, $device)
-    {
     }
 }

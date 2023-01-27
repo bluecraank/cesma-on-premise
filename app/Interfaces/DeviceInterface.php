@@ -43,8 +43,6 @@
         
         static function formatSystemData(Array $system): Array;
 
-        static function getDeviceTrunks(Device $device): Array;
-
         static function uploadPubkeys($device, $pubkeys): String;
 
         static function setUntaggedVlanToPort($vlans, $ports, $device): String;

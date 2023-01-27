@@ -8,6 +8,7 @@ use App\Devices\ArubaCX;
 use App\Models\Client;
 use App\Models\DeviceBackup;
 use App\Models\DevicePort;
+use App\Models\DevicePortStat;
 use App\Models\DevicePortStats;
 use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
@@ -77,7 +78,7 @@ class DeviceService
         }
 
         foreach($data['statistics'] as $statistic) {
-            DevicePortStats::create([
+            DevicePortStat::create([
                 'device_port_id' => $device->ports()->where('name', $statistic['id'])->first()->id, 
                 'port_speed' => $statistic['port_speed_mbps'] ?? 0,
                 'port_rx_bps' => $statistic['port_rx_bps'] ?? 0,
@@ -126,19 +127,44 @@ class DeviceService
         return false;
     }
 
-    static function newDataView(Device $device) {
-        
-        dd($device->uplinks, $device->ports, $device->vlans);
+    static function updateUplinks($device, $uplinks) {
+        $uplinks = explode(',', $uplinks);
+        $uplinks = str_replace(' ', '', $uplinks);
+
+        foreach ($uplinks as $uplink) {
+            // $device->uplinks()->updateOrCreate([
+            //     'name' => $uplink, 
+            //     'device_id' => $device->id
+            // ]);
+
+            // TODO: Update or create uplink
+            // Own table? DeviceUplinkCustom?
+        }
     }
 
     static function deleteDeviceData(Device $device) {
         DeviceBackup::where('device_id', $device->id)->delete();
-        DevicePortStats::where('device_id', $device->id)->delete();
+        DevicePortStat::where('device_id', $device->id)->delete();
         DevicePort::where('device_id', $device->id)->delete();
         DeviceVlan::where('device_id', $device->id)->delete();
         DeviceUplink::where('device_id', $device->id)->delete();
         DeviceVlanPort::where('device_id', $device->id)->delete();
         Client::where('device_id', $device->id)->delete();
         Mac::where('device_id', $device->id)->delete();
+    }
+
+    static function isOnline($hostname)
+    {
+        try {
+            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 0.2)) {
+                fclose($fp);
+                return true;
+            }
+            fclose($fp);
+
+        } catch (\Exception $e) {
+        }
+
+        return false;
     }
 }

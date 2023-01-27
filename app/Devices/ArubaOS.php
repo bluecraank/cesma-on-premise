@@ -3,14 +3,12 @@
 namespace App\Devices;
 
 use App\Http\Controllers\BackupController;
-use App\Http\Controllers\DeviceController;
 use App\Interfaces\DeviceInterface;
 use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\EncryptionController;
-use App\Http\Controllers\KeyController;
 use App\Http\Controllers\LogController;
-use App\Models\Backup;
+use App\Models\DeviceBackup;
 use App\Services\DeviceService;
+use App\Services\PublicKeyService;
 use Illuminate\Support\Facades\Crypt;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
@@ -381,24 +379,6 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function getDeviceTrunks($device): array
-    {
-        $trunks = [];
-        $ports = json_decode($device->port_data, true);
-
-        if (!$ports || $ports == "" || $ports == []) {
-            return [];
-        }
-
-        foreach ($ports as $port) {
-            if (str_contains($port['id'], "Trk")) {
-                $trunks[] = $port['id'];
-            }
-        }
-
-        return $trunks;
-    }
-
     static function createBackup($device): bool
     {
         if (!$login_info = self::API_LOGIN($device)) {
@@ -421,29 +401,26 @@ class ArubaOS implements DeviceInterface
 
         if ($backup->successful()) {
             $data = $backup->json()["result_base64_encoded"];
+            $restore = $backup->json()["result_base64_encoded"];
             $data = base64_decode($data);
             $data = str_replace("Running configuration:", "", $data);
             $data = strstr($data, ";") or $data;
             if ($data !== NULL and strlen($data) > 10 and $data != false) {
-                BackupController::store(true, $data, $device);
+                BackupController::store(true, $data, $restore, $device);
                 return true;
             } else {
-                BackupController::store(false, false, $device);
+                BackupController::store(false, false, false, $device);
                 return false;
             }
         } else {
-            Backup::create([
-                'device_id' => $device->id,
-                'data' => "No data received",
-                'status' => 0,
-            ]);
+            BackupController::store(false, false, false, $device);
             return false;
         }
     }
 
     static function restoreBackup($device, $backup, $password_switch): array
     {
-        if ($password_switch != EncryptionController::decrypt($device->password)) {
+        if ($password_switch != Crypt::decrypt($device->password)) {
             return ['success' => false, 'data' => 'Switch password incorrect'];
         }
 
@@ -492,17 +469,17 @@ class ArubaOS implements DeviceInterface
     {
 
         if (config('app.ssh_private_key')) {
-            $decrypt = EncryptionController::getPrivateKey();
+            $decrypt = Crypt::getPrivateKey();
             if ($decrypt !== NULL) {
                 $key = PublicKeyLoader::load($decrypt);
             } else {
                 return json_encode(['success' => 'false', 'message' => 'Error private key']);
             }
         } else {
-            $key = EncryptionController::decrypt($device->password);
+            $key = Crypt::decrypt($device->password);
         }
 
-        $keys = KeyController::getPubkeysAsText();
+        $keys = PublicKeyService::getPubkeysAsFile();
         if ($keys != "") {
             try {
                 $sftp = new SFTP($device->hostname);
@@ -763,7 +740,6 @@ class ArubaOS implements DeviceInterface
             }
 
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
-            DeviceController::refresh($device);
         }
 
         $return['log'][] = "</br><b>[Ergebnisse]</b></br>";
