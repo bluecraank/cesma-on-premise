@@ -60,23 +60,17 @@ class MacTypeService
     }
 
     static function storeIcon(Request $request) {
-        $id = $request->input('id');
-
-        // dd($request->all());
-        $mac_type = MacType::where('type', $id)->firstOrFail();
-
-        if(!$mac_type) {
-            return redirect()->back()->withErrors(['message' => 'MAC Type not found']);
-        }
 
         $validator = Validator::make($request->all(), [
             'mac_icon' => 'required|min:3|max:255|starts_with:fa-',
+            'mac_type' => 'required',
         ])->validate();
 
         $icon = $request->input('mac_icon');
+        $mac_type = MacType::where('type', $request->mac_type)->firstOrFail();
 
         MacTypeIcon::updateOrCreate(
-            ['mac_type_id' => $id],
+            ['mac_type_id' => $mac_type->id],
             ['mac_icon' => $icon]
         );
 
@@ -91,7 +85,7 @@ class MacTypeService
 
     public static function getMacTypesList()
     {
-        return MacType::all()->sortBy('type')->pluck('type')->unique();
+        return MacType::all()->sortBy('type')->unique();
     }
 
     public static function getMacVendors()
@@ -101,6 +95,6 @@ class MacTypeService
 
     public static function getMacIcons()
     {
-        return MacTypeIcon::all()->keyBy('mac_type');
+        return MacTypeIcon::all();
     }
 }

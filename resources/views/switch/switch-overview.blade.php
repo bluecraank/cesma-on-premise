@@ -11,11 +11,11 @@
             </div>
         </div>
 
-        @include('modals.SwitchCreateModal')
+        @include('modals.create.SwitchCreateModal')
 
-        @include('modals.SwitchEditModal')
+        @include('modals.edit.SwitchEditModal')
 
-        @include('modals.SwitchDeleteModal')
+        @include('modals.delete.SwitchDeleteModal')
 
         @include('modals.PubkeySyncModal')
 

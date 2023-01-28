@@ -63,7 +63,7 @@
                         <div class="field">
                             <label class="label is-small">Raum</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="room_id">
+                                <select class="switch-room" name="room_id">
                                     @foreach ($rooms as $room)
                                         <option value="{{ $room->id }}">{{ $room->name }}</option>
                                     @endforeach

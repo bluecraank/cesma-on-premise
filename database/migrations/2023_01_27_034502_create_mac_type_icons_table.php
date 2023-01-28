@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('mac_type_icons', function (Blueprint $table) {
             $table->id();
-            $table->string('mac_type_id');
+            $table->foreignId('mac_type_id')->constrained('mac_types');
             $table->string('mac_icon', 255);
             $table->timestamps();
         });

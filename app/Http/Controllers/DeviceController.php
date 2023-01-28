@@ -137,7 +137,7 @@ class DeviceController extends Controller
         }
 
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
-            LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
+            // LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
 
             return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
         }

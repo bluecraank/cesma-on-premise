@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Crypt;
 class PublicKeyService
 {
     static function storePublicKey(Request $request) {
-        
+    
         PublicKey::create([
             'description' => $request->description,
             'key' => Crypt::encrypt($request->input('key')),
         ]);
 
-        LogController::log('Pubkey erstellt', '{"description": "' . $request->description . '"}');
+        // LogController::log('Pubkey erstellt', '{"description": "' . $request->description . '"}');
     }
 
     static function getPublicKeysAsArray()

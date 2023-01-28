@@ -78,7 +78,7 @@ $('.output-buttons').on("click", "button", function () {
 })
 
 // Functions
-function editSwitchModal(id, name, hostname, location, building, details, number) {
+function editSwitchModal(id, name, hostname, location, building, room, number) {
 
     let modal = $('.modal-edit-switch');
     modal.find('.switch-id').val(id);
@@ -87,7 +87,7 @@ function editSwitchModal(id, name, hostname, location, building, details, number
     modal.find('.switch-fqdn').val(hostname);
     modal.find('.switch-location').val(location);
     modal.find('.switch-building').val(building);
-    modal.find('.switch-details').val(details);
+    modal.find('.switch-room').val(room);
     modal.show()
 }
 

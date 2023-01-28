@@ -5,10 +5,10 @@ namespace App\Devices;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DeviceController;
 use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\EncryptionController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\PortstatsController;
 use App\Interfaces\DeviceInterface;
+use Illuminate\Support\Facades\Crypt;
 
 class ArubaCX implements DeviceInterface
 {
@@ -51,7 +51,7 @@ class ArubaCX implements DeviceInterface
         $api_url = config('app.https') . $device->hostname . '/rest/' . $api_version . '/' . self::$api_auth['login'];
 
         $api_username = config('app.api_username');
-        $api_password = EncryptionController::decrypt($device->password);
+        $api_password = Crypt::decrypt($device->password);
 
         try {
             $response = Http::connectTimeout(3)->withoutVerifying()->asForm()->post($api_url, [
@@ -448,7 +448,7 @@ class ArubaCX implements DeviceInterface
 
     static function restoreBackup($device, $backup, $password_switch): array
     {
-        if ($password_switch != EncryptionController::decrypt($device->password)) {
+        if ($password_switch != Crypt::decrypt($device->password)) {
             return ['success' => false, 'data' => 'Wrong password for switch'];
         }
 

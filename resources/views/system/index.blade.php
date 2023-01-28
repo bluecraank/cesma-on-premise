@@ -27,7 +27,7 @@
                         $out = strlen($key->key) > 50 ? substr($key->key, 0, 50) . '...' : $key->key;
                     @endphp
                     <tr>
-                        <td>{{ $key->desc }}</td>
+                        <td>{{ $key->description }}</td>
                         <td>{{ $out }}</td>
                         <td style="width:150px;" class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
@@ -151,14 +151,14 @@
             <tbody>
                 @foreach ($mac_types as $mac)
                     <tr>
-                        <td>{{ $mac }}</td>
-                        <td>{{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}</td>
+                        <td>{{ $mac->type }}</td>
+                        <td>{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}</td>
                         <td class="has-text-centered"><i
-                                class="fas {{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : '' }}"></i></td>
+                                class="fas {{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}"></i></td>
                         <td class="has-text-centered">
                             @if (Auth::user()->role == 'admin')
                                 <button class="button is-info is-small"
-                                    onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac }}');$('.modal-edit-icon').find('.mac_icon').val('{{ isset($icons[$mac]) ? $icons[$mac]->mac_icon : 'fa-' }}')"><i
+                                    onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
                                         class="fas fa-cog"></i></button>
                             @endif
                         </td>

@@ -10,4 +10,9 @@ class MacTypeIcon extends Model
         'mac_type_id',
         'mac_icon',
     ];
+
+    public function mac_type()
+    {
+        return $this->belongsTo(MacType::class);
+    }
 }

@@ -37,7 +37,7 @@
                     <td>{{ $device->modelOrUnknown() }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
                     <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
-                        - {{ $device->location_desc }} #{{ $device->location_number }}</td>
+                        - {{ $device->room()->first()->name ?? 'Unknown' }} #{{ $device->location_number }}</td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
@@ -54,7 +54,7 @@
                             @if (Auth::user()->role == 'admin')
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->location_desc }}', '{{ $device->location_number }}')"
+                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_number }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">

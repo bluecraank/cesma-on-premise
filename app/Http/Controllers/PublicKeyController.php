@@ -6,9 +6,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\PublicKey;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 
-class KeyController extends Controller
+class PublicKeyController extends Controller
 {
     public function store(Request $request)
     {
@@ -28,7 +27,7 @@ class KeyController extends Controller
 
         if ($key) {
             $key->delete();
-            LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
+            // LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
             return redirect()->back()->with('success', __('Msg.PubkeyDeleted'));
         } else {
             return redirect()->back()->with('message', 'Key not found!');

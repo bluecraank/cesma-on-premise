@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MacTypeIcon;
 use App\Models\PublicKey;
 use App\Models\User;
 use App\Services\MacTypeService;

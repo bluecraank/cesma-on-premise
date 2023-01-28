@@ -10,7 +10,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DevicePortStatController;
 use App\Http\Controllers\DeviceUplinkController;
-use App\Http\Controllers\EncryptionController;
+use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
 use App\Services\DeviceService;
@@ -18,6 +18,7 @@ use App\Services\MacTypeService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 /*
@@ -88,7 +89,7 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
 
     Route::post('/privatekey/upload', function(Request $request) {
         $key = $request->input('key');
-        return "<pre>".EncryptionController::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
+        return "<pre>".Crypt::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
     });
     Route::get('/privatekey', function() {
         if(!Storage::disk('local')->get('ssh.key')) {

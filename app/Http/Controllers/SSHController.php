@@ -7,8 +7,8 @@ use App\Models\Device;
 use App\Models\Location;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
-use App\Http\Controllers\EncryptionController;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
@@ -36,7 +36,7 @@ class SSHController extends Controller
         ])->validate();
 
         if ($validator) {
-            $key = EncryptionController::encrypt(request()->input('key'));
+            $key = Crypt::encrypt(request()->input('key'));
             Storage::disk('local')->put('ssh.key', $key);
             return "Importiert";
         } else {
@@ -61,7 +61,7 @@ class SSHController extends Controller
         if (SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
+                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
                 if ($decrypt === NULL) {
                     $return->status = 'xmark';
                     $return->output = 'Kein Schlüssel vorhanden';

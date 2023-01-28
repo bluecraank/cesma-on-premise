@@ -11,4 +11,9 @@ class MacType extends Model
         'type',
         'description'
     ];
+
+    public function mac_type_icon()
+    {
+        return $this->hasOne(MacTypeIcon::class);
+    }
 }
