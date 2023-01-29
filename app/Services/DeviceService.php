@@ -116,6 +116,19 @@ class DeviceService
             ]);
         }
 
+        foreach ($data['macs'] as $mac) {
+            Mac::updateOrCreate(
+                [
+                    'mac_address' => $mac['mac'],
+                ],
+                [
+                    'device_id' => $device->id,
+                    'port_id' => $mac['port'],
+                    'vlan_id' => $mac['vlan'],
+                ]
+            );
+        }
+
         $device->named = $data['informations']['name'] ?? NULL;
         $device->model = $data['informations']['model'] ?? NULL;
         $device->serial = $data['informations']['serial'] ?? NULL;

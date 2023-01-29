@@ -11,7 +11,6 @@ use App\Models\Location;
 use App\Models\Building;
 use App\Models\DeviceBackup;
 use App\Models\Room;
-use App\Models\Vlan;
 use App\Services\DeviceService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
@@ -208,7 +207,7 @@ class DeviceController extends Controller
             $class::createBackup($device);
         }
 
-        return json_encode(['success' => 'true', 'message' => 'Backups created']);
+        return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
     }
 
     public function uploadPubkeysToSwitch(Device $device, Request $request)
@@ -245,11 +244,10 @@ class DeviceController extends Controller
                 $class::uploadPubkeys($device, $pubkeys);
             }
 
-            return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded to all devices']);
+            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
         }
 
-        // return json_encode(['success' => 'false', 'message' => 'Not enough pubkeys']);
-        return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded to all devices']);
+        return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
     }
 
     static function setUntaggedVlanToPort(Request $request)

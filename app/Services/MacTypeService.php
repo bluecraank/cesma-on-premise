@@ -28,11 +28,11 @@ class MacTypeService
         $result = implode(':', $chunks);
         
         if(!filter_var($result, FILTER_VALIDATE_MAC)) {
-            return redirect()->back()->withErrors(['message' => 'Invalid MAC Prefix: '.$mac_prefix]);
+            return redirect()->back()->withErrors(['message' => 'Invalid MAC Prefix: '.$mac_prefix])->withInput(['last_tab' => 'macs']);
         }
 
         if(MacType::where('mac_prefix', $mac_prefix)->first()) {
-            return redirect()->back()->withErrors(['message' => 'MAC Prefix already exists: '.$mac_prefix]);
+            return redirect()->back()->withErrors(['message' => 'MAC Prefix already exists: '.$mac_prefix])->withInput(['last_tab' => 'macs']);
         }
 
         MacType::create([
@@ -41,7 +41,7 @@ class MacTypeService
             'description' => $request->input('mac_desc'),
         ]);
 
-        return redirect()->back()->with('success', __('Msg.MacTypeAdded'));
+        return redirect()->back()->with('success', __('Msg.MacTypeAdded'))->withInput(['last_tab' => 'macs']);
     }
     
     static function delete(Request $request) {
@@ -49,14 +49,14 @@ class MacTypeService
         $mac_type = MacType::where('id', $id)->firstOrFail();
 
         if(!$mac_type) {
-            return redirect()->back()->withErrors(['message' => 'MAC Type not found']);
+            return redirect()->back()->withErrors(['message' => 'MAC Type not found'])->withInput(['last_tab' => 'macs']);
         }
 
         if(!$mac_type->delete()) {
-            return redirect()->back()->withErrors(['message' => 'MAC Type could not be deleted']);
+            return redirect()->back()->withErrors(['message' => 'MAC Type could not be deleted'])->withInput(['last_tab' => 'macs']);
         }
 
-        return redirect()->back()->with('success', __('Msg.MacTypeDeleted'));
+        return redirect()->back()->with('success', __('Msg.MacTypeDeleted'))->withInput(['last_tab' => 'macs']);
     }
 
     static function storeIcon(Request $request) {
@@ -74,7 +74,7 @@ class MacTypeService
             ['mac_icon' => $icon]
         );
 
-        return redirect()->back()->with('success', __('Msg.MacTypeIconAdded'));
+        return redirect()->back()->with('success', __('Msg.MacTypeIconAdded'))->withInput(['last_tab' => 'macs']);
 
     }
 

@@ -4,7 +4,7 @@
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role == 'admin')
             <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
-                    class="fas fa-plus"></i></button>
+                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
     </div>
 
@@ -58,7 +58,7 @@
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">
-                                    <button title="{{ __('Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
+                                    <button title="{{ __('Button.Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
                                         class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                 </div>
                             @endif

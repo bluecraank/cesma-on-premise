@@ -14,7 +14,7 @@ class SNMP_Routers implements IClientProvider
 
         foreach($routers as $router) {
                 try {
-                    $snmp_data = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 10000000, 1);
+                    $snmp_data = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 5000000, 1);
                     foreach($snmp_data as $ip => $mac) {
                         $filtered_ip = explode(".", $ip);
                         $filtered_ip = $filtered_ip[11] . "." . $filtered_ip[12] . "." . $filtered_ip[13] . "." . $filtered_ip[14];

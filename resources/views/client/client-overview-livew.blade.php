@@ -132,7 +132,7 @@
                     <td>{{ $client->ip_address }}</td>
                     <td title="{{ $vendor }}">{{ $end }}</td>
                     <td>{{ $client->vlan_id }}</td>
-                    <td>{{ $devices[$client->switch_id]->name }}</td>
+                    <td>{{ $devices[$client->device_id]->name }}</td>
                     <td style="width:100px">{{ $client->port_id }}</td>
                     <td class="has-text-centered">{{ $client->updated_at->format('d.m.Y H:i:s') }}</td>
                 </tr>

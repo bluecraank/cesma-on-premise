@@ -1,171 +1,228 @@
 <x-layouts.main>
-    <div class="box">
-        <h1 class="title is-pulled-left">{{ __('System.Addititional Pubkeys') }}</h1>
-
-        <div class="is-pulled-right ml-4">
-            @if (Auth::user()->role == 'admin')
-                <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
-            @endif
-        </div>
-
-        <div class="is-pulled-right">
+    <div class="box tab-parent">
+        <h1 class="title is-pulled-left">{{ __('Header.System') }}</h1>
+        <div class="is-clearfix">
 
         </div>
+        <div class="tabs is-fullwidth">
+            <ul>
+                <li data-tab="users" class="is-active"
+                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='users']`).removeClass('is-hidden');">
+                    <a>
+                        <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
+                        <span>Benutzer</span>
+                    </a>
+                </li>
+                <li data-tab="pubkeys"
+                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='pubkeys']`).removeClass('is-hidden');">
+                    <a>
+                        <span class="icon is-small"><i class="fa-solid fa-key"></i></span>
+                        <span>Öffentliche Schlüssel</span>
+                    </a>
+                </li>
+                <li data-tab="macs"
+                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='macs']`).removeClass('is-hidden');">
+                    <a>
+                        <span class="icon is-small"><i class="fa-solid fa-link"></i></span>
+                        <span>Maczuordnungen</span>
+                    </a>
+                </li>
+                <li data-tab="snmp"
+                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='snmp']`).removeClass('is-hidden');">
+                    <a>
+                        <span class="icon is-small"><i class="fa-solid fa-globe"></i></span>
+                        <span>SNMP</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-        <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-            <thead>
-                <tr>
-                    <th>{{ __('System.Desc') }}</th>
-                    <th>{{ __('System.Key') }}</th>
-                    <th class="has-text-centered">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($keys as $key)
-                    @php
-                        $out = strlen($key->key) > 50 ? substr($key->key, 0, 50) . '...' : $key->key;
-                    @endphp
-                    <tr>
-                        <td>{{ $key->description }}</td>
-                        <td>{{ $out }}</td>
-                        <td style="width:150px;" class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
-                                <button
-                                    onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
-                                    class="is-small button is-danger"><i class="fas fa-trash"></i></button>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="tabsbox is-hidden" data-id="pubkeys">
+            <h1 class="subtitle is-pulled-left">{{ __('System.Addititional Pubkeys') }}</h1>
 
-        @if (Auth::user()->role == 'admin')
-            <a href="/privatekey"
-                class="is-pulled-right is-small mb-5 button is-warning">{{ __('Setup.Privatekey.SSH') }}</a>
+            <div class="is-pulled-right">
+                @if (Auth::user()->role == 'admin')
+                    <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
+                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                @endif
+            </div>
+
             <div class="is-clearfix"></div>
-        @endif
-    </div>
 
-    <div class="box">
-        <h1 class="title is-pulled-left">{{ __('System.User') }}</h1>
-
-        <div class="is-pulled-right ml-4">
-
-        </div>
-
-        <div class="is-pulled-right">
-
-        </div>
-
-        <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-            <thead>
-                <tr>
-                    <th>{{ __('Role.User') }}</th>
-                    <th>GUID</th>
-                    <th>{{ __('Role') }}</th>
-                    <th class="has-text-centered">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($users as $user)
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
                     <tr>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ substr($user->guid, 0, 20) }}...</td>
-                        <td>{{ $user->role }}</td>
-                        <td style="width:150px;" class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
-                                <button
-                                    onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
-                                    class="is-small button is-info"><i class="fas fa-cog"></i></button>
-                            @endif
-                        </td>
+                        <th>{{ __('System.Desc') }}</th>
+                        <th>{{ __('System.Key') }}</th>
+                        <th class="has-text-centered">{{ __('Actions') }}</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach ($keys as $key)
+                        @php
+                            $out = strlen($key->key) > 50 ? substr($key->key, 0, 50) . '...' : $key->key;
+                        @endphp
+                        <tr>
+                            <td>{{ $key->description }}</td>
+                            <td>{{ $out }}</td>
+                            <td style="width:150px;" class="has-text-centered">
+                                @if (Auth::user()->role == 'admin')
+                                    <button
+                                        onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
+                                        class="is-small button is-danger"><i class="fas fa-trash"></i></button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-    <div class="box">
-        <h1 class="title is-pulled-left">{{ __('System.MacType') }}</h1>
-
-        <div class="is-pulled-right ml-4">
-
-        </div>
-
-        <div class="is-pulled-right">
             @if (Auth::user()->role == 'admin')
-                <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
+                <a href="/privatekey"
+                    class="is-pulled-right is-small mb-5 button is-warning">{{ __('Setup.Privatekey.SSH') }}</a>
+                <div class="is-clearfix"></div>
             @endif
         </div>
 
-        <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-            <thead>
-                <tr>
-                    <th>MAC Prefix</th>
-                    <th>Vendor</th>
-                    <th>{{ __('System.Desc') }}</th>
-                    <th>{{ __('Type') }}</th>
-                    <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($mac_prefixes as $mac)
+        <div class="tabsbox" data-id="users">
+            <h1 class="subtitle is-pulled-left">{{ __('System.User') }}</h1>
+
+            <div class="is-clearfix">
+
+            </div>
+
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
                     <tr>
-                        <td>{{ $mac->mac_prefix }}</td>
-                        <td>{{ $vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
-                        <td>{{ $mac->description }}</td>
-                        <td>{{ $mac->type }}</td>
-                        <td class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
-                                <button class="button is-small is-danger" onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i class="fas fa-trash"></i></button>
-                            @endif
-                        </td>
+                        <th>{{ __('Role.User') }}</th>
+                        <th>GUID</th>
+                        <th>{{ __('Role') }}</th>
+                        <th class="has-text-centered">{{ __('Actions') }}</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="box">
-        <h1 class="title is-pulled-left">{{ __('System.MacIcon') }}</h1>
-
-        <div class="is-pulled-right ml-4">
-
+                </thead>
+                <tbody>
+                    @foreach ($users as $user)
+                        <tr>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ substr($user->guid, 0, 20) }}...</td>
+                            <td>{{ $user->role }}</td>
+                            <td style="width:150px;" class="has-text-centered">
+                                @if (Auth::user()->role == 'admin')
+                                    <button
+                                        onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
+                                        class="is-small button is-info"><i class="fas fa-cog"></i></button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
-        <div class="is-pulled-right">
+        <div class="tabsbox is-hidden" data-id="macs">
+            <h1 class="subtitle is-pulled-left">{{ __('System.MacType') }}</h1>
+
+            <div class="is-pulled-right">
+                @if (Auth::user()->role == 'admin')
+                    <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
+                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                @endif
+            </div>
+
+            <div class="is-clearfix"></div>
+        
+
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>MAC Prefix</th>
+                        <th>Vendor</th>
+                        <th>{{ __('System.Desc') }}</th>
+                        <th>{{ __('Type') }}</th>
+                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($mac_prefixes as $mac)
+                        <tr>
+                            <td>{{ $mac->mac_prefix }}</td>
+                            <td>{{ $vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
+                            <td>{{ $mac->description }}</td>
+                            <td>{{ $mac->type }}</td>
+                            <td class="has-text-centered">
+                                @if (Auth::user()->role == 'admin')
+                                    <button class="button is-small is-danger"
+                                        onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i
+                                            class="fas fa-trash"></i></button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <h1 class="subtitle is-pulled-left">{{ __('System.MacIcon') }}</h1>
+
+            <div class="is-clearfix">
+
+            </div>
+
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>MAC {{ __('Type') }}</th>
+                        <th>Font Awesome Icon</th>
+                        <th class="has-text-centered">{{ __('Preview') }}</th>
+                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($mac_types as $mac)
+                        <tr>
+                            <td>{{ $mac->type }}</td>
+                            <td>{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}</td>
+                            <td class="has-text-centered"><i
+                                    class="fas {{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}"></i></td>
+                            <td class="has-text-centered">
+                                @if (Auth::user()->role == 'admin')
+                                    <button class="button is-info is-small"
+                                        onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
+                                            class="fas fa-cog"></i></button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
-        <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-            <thead>
-                <tr>
-                    <th>MAC {{ __('Type') }}</th>
-                    <th>Font Awesome Icon</th>
-                    <th class="has-text-centered">{{ __('Preview') }}</th>
-                    <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($mac_types as $mac)
-                    <tr>
-                        <td>{{ $mac->type }}</td>
-                        <td>{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}</td>
-                        <td class="has-text-centered"><i
-                                class="fas {{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}"></i></td>
-                        <td class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
-                                <button class="button is-info is-small"
-                                    onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
-                                        class="fas fa-cog"></i></button>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="tabsbox is-hidden" data-id="snmp">
+            <h1 class="subtitle is-pulled-left">SNMP</h1>
+            	
+            <div class="is-pulled-right">
+                @if (Auth::user()->role == 'admin')
+                    <button onclick="$('.modal-edit-snmp').show()" class="is-small button is-success"><i
+                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                @endif
+            </div>
+
+            <div class="is-clearfix">
+
+            </div>
+
+            <b>TODO</b> 
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                if("{{ old('last_tab') }}" != "") {
+                    $('.tabs li').removeClass('is-active');
+                    $('.tabsbox').addClass('is-hidden');   
+                    $('.tabs li[data-tab="{{ old('last_tab') }}"]').addClass('is-active');
+                    $('.tabsbox[data-id="{{ old('last_tab') }}"]').removeClass('is-hidden');            
+                }
+            });
+        </script>
     </div>
 
     @if (Auth::user()->role == 'admin')

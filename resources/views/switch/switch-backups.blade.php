@@ -50,7 +50,7 @@
                                 </div>
                                 @if (Auth::user()->role == 'admin')
                                     <div class="control">
-                                        <button title="{{ __('Delete') }}"
+                                        <button title="{{ __('Button.Delete') }}"
                                             onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>

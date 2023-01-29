@@ -4,7 +4,7 @@
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role == 'admin')
             <button onclick="$('.modal-add-vlan').show();" class="button is-success is-small"><i
-                    class="fas fa-plus"></i></button>
+                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
     </div>
 

@@ -38,6 +38,7 @@ $(document).mouseup(function (e) {
 });
 
 $(document).ready(function () {
+
     $(window).keydown(function (event) {
         if (event.keyCode == 13) {
             event.preventDefault();
@@ -123,5 +124,5 @@ function collapseMenu(action, ele) {
 
 // Custom notification banner timeout
 setTimeout(function () {
-    $(".notification.status").slideUp(500);
-}, 3000)
+    $(".notification.status").slideUp(250);
+}, 6000)

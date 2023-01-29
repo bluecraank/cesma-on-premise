@@ -18,7 +18,7 @@ class PublicKeyController extends Controller
 
         PublicKeyService::storePublicKey($request);
 
-        return redirect()->back()->with('success', __('Msg.PubkeyCreated'));
+        return redirect()->back()->with('success', __('Msg.PubkeyCreated'))->withInput(['last_tab' => 'pubkeys']);
     }
 
     public function destroy(Request $key)
@@ -28,9 +28,9 @@ class PublicKeyController extends Controller
         if ($key) {
             $key->delete();
             // LogController::log('Pubkey gelöscht', '{"description": "' . $key->description . '"}');
-            return redirect()->back()->with('success', __('Msg.PubkeyDeleted'));
+            return redirect()->back()->with('success', __('Msg.PubkeyDeleted'))->withInput(['last_tab' => 'pubkeys']);
         } else {
-            return redirect()->back()->with('message', 'Key not found!');
+            return redirect()->back()->with('message', 'Key not found!')->withInput(['last_tab' => 'pubkeys']);
         }
     }
 }

@@ -26,31 +26,6 @@ class ClientController extends Controller
         return view('client.client-overview', compact('clients', 'devices'));
     }
 
-    static function getClientDataFromProviders()
-    {
-        // Baramundi
-        if (!empty(config('app.baramundi_api_url'))) {
-            $provider = new Baramundi;
-            $endpoints = $provider->queryClientData();
-        }
-
-        // Routers
-        $data = SNMP_Routers::queryClientData();
-
-        $merged = array_merge($endpoints, $data);
-
-        if ($merged == null or empty($merged)) {
-            return false;
-        }
-
-        // Sort endpoints by ip address
-        usort($merged, function ($a, $b) {
-            return ip2long($b['ip_address']) <=> ip2long($a['ip_address']);
-        });
-
-        return $merged;
-    }
-
     static function getClientsAllDevices()
     {
         $start = microtime(true);

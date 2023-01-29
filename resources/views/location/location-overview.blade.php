@@ -5,7 +5,7 @@
         <div class="is-pulled-right ml-4">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-add-site').show();return false;" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
+                        class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
         </div>
 
@@ -52,7 +52,7 @@
         <div class="is-pulled-right ml-4">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-add-building').show();return false;" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
+                        class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
         </div>
 
@@ -102,7 +102,7 @@
         <div class="is-pulled-right ml-4">
             @if (Auth::user()->role == 'admin')
                 <button onclick="$('.modal-add-room').show();return false;" class="is-small button is-success"><i
-                        class="fas fa-plus"></i></button>
+                        class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
         </div>
 

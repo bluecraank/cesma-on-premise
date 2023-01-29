@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\MacTypeService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SystemController extends Controller
 {
@@ -32,16 +33,22 @@ class SystemController extends Controller
     public function updateUserRole(Request $request)
     {
         $guid = $request->input('guid');
+
+
+        if($guid == Auth::user()->guid) {
+            return redirect()->back()->withErrors(['message' => __('Msg.Error.UserRoleUpdate')])->withInput(['last_tab' => 'users']);
+        }
+
         $user = User::where('guid', $guid)->firstOrFail();
         if(!$user) {
-            return redirect()->back()->withErrors(['message' => 'User not found']);
+            return redirect()->back()->withErrors(['message' => __('User.NotFound')])->withInput(['last_tab' => 'users']);
         }
 
         $user->role = ($request['role'] == 0) ? 'user' : 'admin';
         if(!$user->save()) {
-            return redirect()->back()->withErrors(['message' => 'User could not be updated']);;
+            return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'users']);
         }
         
-        return redirect()->back()->with('success', __('Msg.UserRoleUpdated'));
+        return redirect()->back()->with('success', __('Msg.UserRoleUpdated'))->withInput(['last_tab' => 'users']);
     }
 }
