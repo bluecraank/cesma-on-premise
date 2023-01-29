@@ -47,12 +47,13 @@ class SSHController extends Controller
     static function performSSH(Request $request)
     {
         $device = Device::find($request->input('id'));
+
+        if(!$device) {
+            return json_encode(['status' => 'xmark', 'output' => 'Switch nicht gefunden'], true);
+        }	
+
         $command = $request->input('command');
 
-        $user = User::where("api_token", "=", $request->input('api_token'));
-        if (!$user) {
-            return "Error";
-        }
         $return = new \stdClass();
         $return->status = 'check';
         $return->output = '';
@@ -61,13 +62,24 @@ class SSHController extends Controller
         if (SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
-                if ($decrypt === NULL) {
+                $private_key = Storage::disk('local')->get('ssh.key');
+
+                if($private_key === NULL) {
                     $return->status = 'xmark';
-                    $return->output = 'Kein Schlüssel vorhanden';
+                    $return->output = 'Privatekey aktiviert, aber kein Schlüssel vorhanden';
                     return json_encode($return, true);
                 }
+
+                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
+
+                if ($decrypt === NULL) {
+                    $return->status = 'xmark';
+                    $return->output = 'Entschlüsselung des Schlüssels fehlgeschlagen';
+                    return json_encode($return, true);
+                }
+
                 $key = PublicKeyLoader::load($decrypt);
+
             } else {
                 $key = $request->input('passphrase');
             }
@@ -101,7 +113,7 @@ class SSHController extends Controller
                     $ssh->read("Press any key to continue");
                     $ssh->write("\n");
                 } else {
-                    $ssh->read(json_decode($device->system_data, true)['name'] . "#");
+                    $ssh->read($device->named . "#");
                 }
 
                 $ssh->write("conf\n");
@@ -145,7 +157,7 @@ class SSHController extends Controller
                     $return->output = $output;
                 }
 
-                LogController::log('SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
+                // LogController::log('SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
 
 
                 return json_encode($return, true);
@@ -156,7 +168,7 @@ class SSHController extends Controller
             return json_encode($return, true);
         }
 
-        LogController::log('Blocked SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
+        // LogController::log('Blocked SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
 
         $return->output = "Command not allowed";
         $return->status = 'xmark';
