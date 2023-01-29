@@ -72,6 +72,14 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::delete('/vlan', [VlanController::class, 'destroy']);    
     Route::put('/vlan', [VlanController::class, 'update']);
 
+    Route::post('/vlan-template', [SystemController::class, 'storeTemplate']);
+    Route::delete('/vlan-template', [SystemController::class, 'deleteTemplate']);
+    Route::put('/vlan-template', [SystemController::class, 'updateTemplate']);
+
+    Route::post('/router', [SystemController::class, 'storeRouter']);
+    Route::delete('/router', [SystemController::class, 'deleteRouter']);
+    Route::put('/router', [SystemController::class, 'updateRouter']);
+
     // Pubkey Aktionen
     Route::post('/pubkey/add', [PublicKeyController::class, 'store']);
     Route::delete('/pubkey/delete', [PublicKeyController::class, 'destroy']);

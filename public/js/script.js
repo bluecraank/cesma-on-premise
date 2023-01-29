@@ -96,6 +96,16 @@ $('#switch-select-ms-2').multiSelect({
     selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
 })
 
+$('#vlan-select-ms').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+})
+
+$('#vlan-select-ms-2').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+})
+
 function collapseMenu(action, ele) {
     if (localStorage.getItem('menuIsCollapsed') != 'true' || action == 'hide') {
         $('.is-menu').css('min-width', '54px');

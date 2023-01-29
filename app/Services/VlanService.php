@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Vlan;
+use App\Models\VlanTemplate;
 
 class VlanService
 {
@@ -39,6 +40,29 @@ class VlanService
             'is_synced' => $sync,
             'is_client_vlan' => $is_client_vlan,
         ]);
+    }
+
+    static function createVlanTaggingTemplate($request) {
+        $name = $request['name'];
+        $vlans = $request['vlans_selected'];
+        $vlan_ids = Vlan::all()->keyBy('id')->toArray();
+
+        $store_vlans = [];
+        foreach($vlans as $vlan) {
+            $store_vlans[] = $vlan_ids[$vlan]['vid'];
+        }
+
+        $vlanTemplate = VlanTemplate::create([
+            'name' => $name,
+            'vlans' => json_encode($store_vlans),
+            'type' => 'tagging',
+        ]);
+
+        if($vlanTemplate) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

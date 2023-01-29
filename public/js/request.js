@@ -239,14 +239,14 @@ function updateUntaggedPorts(id) {
                 $(".live-body").css('opacity', '1');
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-success'
                 });
             } else {
                 $(".live-body").css('opacity', '1');
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-error'
                 });
             }
@@ -312,11 +312,11 @@ function updateTaggedVlans() {
         .then(response => response.json())
         .then(data => {
             if (data.success == "true") {
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-success'
                 });
             } else {
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-error'
                 });
             }
@@ -407,7 +407,7 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 $(ele).find('i').removeClass(cssclass);
                 $(ele).find('i').removeClass('fa-exclamation-triangle');
                 $(ele).removeClass('is-danger');
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-success'
                 });
 
@@ -422,10 +422,31 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 $(ele).find('i').removeClass(cssclass);
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');
-                $.notify(data.message,  {
+                $.notify(data.message, {
                     style: 'bulma-error'
                 });
             }
         }
         );
+}
+
+function RouterModal(id, ip, desc, modal_id) {
+    let modal = $('.' + modal_id);
+    modal.find('.id').val(id);
+    modal.find('.ip').val(ip);
+    modal.find('.desc').val(desc);
+    modal.show();
+}
+
+function VlanTemplateModal(id, name, vlans, modal_id) {
+    let modal = $('.' + modal_id);
+    modal.find('.id').val(id);
+    modal.find('.name').val(name);
+    // modal.find('.type').val(type);
+    $.each(JSON.parse(vlans), function (key, value) {
+        $('#vlan-select-ms').multiSelect('select', ""+value+"");
+        $('#vlan-select-ms-2').multiSelect('select', ""+value+"");
+    });
+
+    modal.show();
 }

@@ -34,6 +34,13 @@
                         <span>SNMP</span>
                     </a>
                 </li>
+                <li data-tab="vorlagen"
+                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='vorlagen']`).removeClass('is-hidden');">
+                    <a>
+                        <span class="icon is-small"><i class="fa-solid fa-list-check"></i></span>
+                        <span>VLAN-Vorlagen</span>
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -130,7 +137,7 @@
             </div>
 
             <div class="is-clearfix"></div>
-        
+
 
             <table class="table is-narrow is-hoverable is-striped is-fullwidth">
                 <thead>
@@ -198,10 +205,10 @@
 
         <div class="tabsbox is-hidden" data-id="snmp">
             <h1 class="subtitle is-pulled-left">SNMP</h1>
-            	
+
             <div class="is-pulled-right">
                 @if (Auth::user()->role == 'admin')
-                    <button onclick="$('.modal-edit-snmp').show()" class="is-small button is-success"><i
+                    <button onclick="$('.modal-add-router').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
             </div>
@@ -210,16 +217,134 @@
 
             </div>
 
-            <b>TODO</b> 
+
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Hostname/IP</th>
+                        <th>Beschreibung</th>
+                        <th>Status</th>
+                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach ($routers as $router)
+                        <tr>
+                            <td>{{ $router->ip }}</td>
+                            <td>{{ $router->desc }}</td>
+                            <td>{!! $router->check
+                                ? '<span class="has-text-success">Connection successfully</span>'
+                                : '<span class="has-text-danger">No Connection</span>' !!}</td>
+                            <td>
+                                <div class="field has-addons is-justify-content-center">
+                                    @if (Auth::user()->role == 'admin')
+                                        <div class="control">
+                                            <button title="{{ __('Switch.Edit.Hint') }}"
+                                                class="button is-info is-small"
+                                                onclick='RouterModal("{{ $router->id }}", "{{ $router->ip }}", "{{ $router->desc }}", "modal-edit-router")'><i
+                                                    class="fa fa-gear"></i></button>
+                                        </div>
+                                        <div class="control">
+                                            <button title="{{ __('Button.Delete') }}"
+                                                class="button is-danger is-small"
+                                                onclick='RouterModal("{{ $router->id }}", "{{ $router->ip }}", "{{ $router->desc }}", "modal-delete-router")'>
+                                                <i class="fa fa-trash-can"></i></button>
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>Info</p>
+                    <button class="delete" aria-label="delete"></button>
+                </div>
+                <div class="message-body">
+                    Hier können Routing-Geräte definiert werden, die über SNMP abgefragt werden sollen. Die Abfrage
+                    erfolgt über
+                    die
+                    SNMP Community "public".<br>
+                    Durch die Angabe von Routing-Geräte können Endgeräte besser zugeordnet werden.
+                </div>
+            </article>
+        </div>
+
+        <div class="tabsbox is-hidden" data-id="vorlagen">
+            <h1 class="subtitle is-pulled-left">Vorlagen</h1>
+
+            <div class="is-pulled-right">
+                @if (Auth::user()->role == 'admin')
+                    <button onclick="$('.modal-add-template').show()" class="is-small button is-success"><i
+                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                @endif
+            </div>
+
+            <div class="is-clearfix">
+
+            </div>
+
+            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Tagged / Allowed</th>
+                        <th>Untagged / Native</th>
+                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach ($vlan_templates as $template)
+                        <tr>
+                            <td>{{ $template->name }}</td>
+                            <td>{{ implode(',', json_decode($template->vlans, true)) }}</td>
+                            <td>{{ $template->untagged }}</td>
+                            <td class="has-text-centered">
+                                <div class="field has-addons is-justify-content-center">
+                                    @if (Auth::user()->role == 'admin')
+                                        <div class="control">
+                                            <button title="{{ __('Switch.Edit.Hint') }}"
+                                                class="button is-info is-small"
+                                                onclick='VlanTemplateModal("{{ $template->id }}", "{{ $template->name }}", {!! json_encode($template->vlans) !!}, "modal-edit-template")'><i
+                                                    class="fa fa-gear"></i></button>
+                                        </div>
+                                        <div class="control">
+                                            <button title="{{ __('Button.Delete') }}"
+                                                class="button is-danger is-small"
+                                                onclick='VlanTemplateModal("{{ $template->id }}", "{{ $template->name }}", {!! json_encode($template->vlans) !!}, "modal-delete-template")'>
+                                                <i class="fa fa-trash-can"></i></button>
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>Info</p>
+                    <button class="delete" aria-label="delete"></button>
+                </div>
+                <div class="message-body">
+                    Erstelle Vorlagen um bei der VLAN-Zuordnung von Ports an einem Switch Zeit zu sparen.
+                </div>
+            </article>
         </div>
 
         <script>
             $(document).ready(function() {
-                if("{{ old('last_tab') }}" != "") {
+                if ("{{ old('last_tab') }}" != "") {
                     $('.tabs li').removeClass('is-active');
-                    $('.tabsbox').addClass('is-hidden');   
+                    $('.tabsbox').addClass('is-hidden');
                     $('.tabs li[data-tab="{{ old('last_tab') }}"]').addClass('is-active');
-                    $('.tabsbox[data-id="{{ old('last_tab') }}"]').removeClass('is-hidden');            
+                    $('.tabsbox[data-id="{{ old('last_tab') }}"]').removeClass('is-hidden');
                 }
             });
         </script>
@@ -233,6 +358,8 @@
         @include('modals.create.MacTypeAddModal')
         @include('modals.create.MacTypeIconAddModal')
         @include('modals.delete.MacTypeDeleteModal')
+        @include('modals.combined.VlanTemplateModal')
+        @include('modals.combined.SnmpRouterModal')
     @endif
 
     </x-layouts>
