@@ -3,6 +3,7 @@
 namespace App\ClientProviders;
 
 use App\Interfaces\IClientProvider;
+use App\Models\Router;
 use Illuminate\Support\Facades\Log;
 
 class SNMP_Routers implements IClientProvider
@@ -10,7 +11,7 @@ class SNMP_Routers implements IClientProvider
     static function queryClientData(): Array {
         $macs = [];
         
-        $routers = explode(",", config('app.snmp_routers'));
+        $routers = Router::all()->pluck('ip')->toArray();
 
         foreach($routers as $router) {
                 try {
