@@ -10,7 +10,7 @@
                 <div class="field">
                     <label for="" class="label">Standortname</label>
                     <div class="control is-expanded">
-                        <input class="input" name="name" type="text" placeholder="Stadt / Ort">
+                        <input required class="input" name="name" type="text" placeholder="Stadt / Ort">
                     </div>
                 </div>
             </section>

@@ -36,7 +36,7 @@ class DeviceController extends Controller
         $locations = Location::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
         $rooms = Room::all()->keyBy('id');
-        
+
         $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
         $https = config('app.https');
 
@@ -68,9 +68,9 @@ class DeviceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:devices|max:100',
             'hostname' => 'required|unique:devices|max:100',
-            'building_id' => 'required|integer',
-            'location_id' => 'required|integer',
-            'location_desc' => 'required',
+            'building_id' => 'required|integer|exists:buildings,id',
+            'location_id' => 'required|integer|exists:locations,id',
+            'room_id' => 'required|integer|exists:rooms,id',
             'location_number' => 'required|integer',
             'type' => 'required|string'
         ])->validate();
@@ -112,7 +112,7 @@ class DeviceController extends Controller
     {
 
         if (!$device) {
-            return abort(404, 'Device not found');
+            return abort(404, __('DeviceNotFound'));
         }
 
         $backups = $device->backups()->latest()->take(150)->get();
@@ -156,7 +156,7 @@ class DeviceController extends Controller
         $find = Device::find($device->input('id'));
 
         if (!$find) {
-            return redirect()->back()->with('message', 'Device not found');
+            return redirect()->back()->with('message', __('DeviceNotFound'));
         }
 
         DeviceService::deleteDeviceData($find);
@@ -174,7 +174,7 @@ class DeviceController extends Controller
         $device = Device::find($request->device_id);
 
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => 'Device not found']);
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
         if (!in_array($device->type, array_keys(self::$models))) {
@@ -187,12 +187,12 @@ class DeviceController extends Controller
         if ($backup) {
             // LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
 
-            return json_encode(['success' => 'true', 'message' => 'Backup created']);
+            return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
         } else {
             return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
         }
 
-        return json_encode(['success' => 'false', 'message' => 'Device not found' . $request->device_id]);
+        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound') . $request->device_id]);
     }
 
     static function createBackupAllDevices()
@@ -214,20 +214,23 @@ class DeviceController extends Controller
     public function uploadPubkeysToSwitch(Device $device, Request $request)
     {
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => 'Device not found']);
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
+        if(count($pubkeys) < 2) {
+            return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
+        }
 
-        if ($device and count($pubkeys) >= 2 and !empty($pubkeys)) {
+        if ($device) {
             $class = self::$models[$device->type];
             $class::uploadPubkeys($device, $pubkeys);
 
-            return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded']);
+            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
         }
 
-        return json_encode(['success' => 'false', 'message' => 'Error finding device or less than 2 pubkeys']);
+        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
     }
 
     static function uploadPubkeysAllDevices()
@@ -245,42 +248,8 @@ class DeviceController extends Controller
             return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded to all devices']);
         }
 
-        return json_encode(['success' => 'false', 'message' => 'Not enough pubkeys']);
-    }
-
-    static function updateVlansAllDevices(Request $request)
-    {
-        $locid = $request->input('location_id');
-        $devices = Device::where('location', $locid)->where('id', 25)->get()->keyBy('id');
-        $vlans = Vlan::where('sync', '!=', '0')->where('location_id', $locid)->get()->keyBy('vid');
-        $results = [];
-
-        $create_vlan = ($request->input('create-if-not-exists') == "on") ? true : false;
-        $overwrite_name = ($request->input('overwrite-vlan-name') == "on") ? true : false;
-
-        $test = ($request->input('test-mode') == "on") ? true : false;
-
-        $start = microtime(true);
-        foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$models))) {
-                continue;
-            }
-
-            $vlans_switch = json_decode($device->vlan_data, true);
-
-            $results[$device->id] = [];
-
-            $class = self::$models[$device->type];
-            $results[$device->id] = $class::syncVlans($vlans, $vlans_switch, $device, $create_vlan, $overwrite_name, $test);
-        }
-
-        $elapsed = microtime(true) - $start;
-
-        if ($request->input('show-results') == "on") {
-            return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed'));
-        } else {
-            return redirect()->back()->with('success', __('Msg.VlansSynced'));
-        }
+        // return json_encode(['success' => 'false', 'message' => 'Not enough pubkeys']);
+        return json_encode(['success' => 'true', 'message' => 'Pubkeys uploaded to all devices']);
     }
 
     static function setUntaggedVlanToPort(Request $request)
@@ -292,48 +261,65 @@ class DeviceController extends Controller
             $vlans = json_decode($request->input('vlans'), true);
             $ports = json_decode($request->input('ports'), true);
 
-            if (is_array($vlans) and is_array($ports) and count($vlans) != 0 and count($vlans) == count($ports)) {
+            if(count($vlans) == 0 or count($ports) == 0) {
+                return json_encode(['success' => 'false', 'message' => 'No changes made']);
+            }
+
+            if (is_array($vlans) and is_array($ports) and count($vlans) == count($ports)) {
                 $class = self::$models[$device->type];
 
                 return $class::setUntaggedVlanToPort($vlans, $ports, $device);
-            } else {
-                return json_encode(['success' => 'false', 'message' => 'No changes found']);
             }
-
-            return json_encode(['success' => 'false', 'message' => 'Invalid data retrieved']);
+            
+            return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
         }
-        return json_encode(['success' => 'false', 'message' => 'Device not found']);
+        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
     }
 
     static function setTaggedVlanToPort(Request $request)
     {
-        $device_id = $request->input('device');
+        $device_id = $request->device;
+        
+        if(!$device = Device::find($device_id)) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        }
 
-        if ($device = Device::find($device_id)) {
-            $vlans = json_decode($request->input('vlans'), true);
-            $port = $request->input('port');
+        $port = $request->port;
+        if(!$port) {
+            return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
+        }
 
+        $vlans = $request->vlans;
+        if(!$vlans) {
+            return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
+        }
 
-            $success_c = 0;
-            $failed_c = 0;
-            $ins = 0;
+        $vlans = json_decode($vlans, true);
 
-            $class = self::$models[$device->type];
-            $return = ['message' => ''];
-            $result = $class::setTaggedVlanToPort($vlans, $port, $device);
-            foreach ($result as $success) {
-                $return['message'] .= "<br>" . $success['message'];
-                if ($success['success'] == false) {
-                    $failed_c++;
-                } else {
-                    $success_c++;
-                }
-                $ins++;
+        $success_c = 0;
+        $failed_c = 0;
+        $ins = 0;
+        $return = ['message' => ''];
+
+        $class = self::$models[$device->type];
+
+        $result = $class::setTaggedVlanToPort($vlans, $port, $device);
+
+        foreach ($result as $success) {
+            $return['message'] .= "
+            " . $success['message'];
+
+            if ($success['success'] == false) {
+                $failed_c++;
+            } else {
+                $success_c++;
             }
 
-            return json_encode(['success' => 'true', 'message' => "Updated " . $success_c . " of " . $ins . " vlans on port " . $port . $return['message']]);
+            $ins++;
         }
-        return json_encode(['success' => 'false', 'message' => 'Invalid data retrieved']);
+
+        return json_encode(['success' => 'true', 'message' => __('Vlan.Update.Tagging.Success', ['success' => $success_c, 'total' => $ins, 'port' => $port]) ."
+        ". $return['message']]);
     }
 
     static function restoreBackup(Request $request)

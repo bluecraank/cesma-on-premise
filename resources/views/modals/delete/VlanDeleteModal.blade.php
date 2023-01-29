@@ -1,7 +1,8 @@
 <div class="modal modal-delete-vlan">
-    <form action="/vlan/delete" method="post">
+    <form action="/vlan" method="post">
         @csrf
-        <input type="hidden" value="DELETE" name="_method">
+        @method('DELETE')
+
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">

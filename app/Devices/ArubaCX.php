@@ -181,7 +181,7 @@ class ArubaCX implements DeviceInterface
     static function API_REQUEST_ALL_DATA($device): array
     {
         if (!$device) {
-            return ['success' => false, 'data' => 'Device not found'];
+            return ['success' => false, 'data' => __('DeviceNotFound')];
         }
 
         if (!$login_info = self::API_LOGIN($device)) {

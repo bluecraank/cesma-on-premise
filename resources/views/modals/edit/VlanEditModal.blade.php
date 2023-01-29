@@ -1,5 +1,5 @@
 <div class="modal modal-edit-vlan">
-    <form action="/vlan/update" method="post">
+    <form action="/vlan" method="post">
         @csrf
         @method('PUT')
 

@@ -9,6 +9,7 @@ class VlanService
     static function createIfNotExists($device, $vid, $vname) {
         Vlan::firstOrCreate([
             'vid' => $vid,
+            'location_id' => $device->location_id,
         ],
         [
             'name' => $vname,

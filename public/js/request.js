@@ -224,9 +224,11 @@ function updateUntaggedPorts(id) {
     formData.append('device', device);
     formData.append('_token', token);
 
-    let uri = '/switch/' + device + '/port-vlans/untagged';
+    let uri = '/switch/' + device + '/action/update-untagged-ports';
 
     $(".live-body").css('opacity', '0.5');
+
+    console.log(JSON.stringify(ports), JSON.stringify(vlans), device, token);
     fetch(uri, {
         method: 'POST',
         body: formData
@@ -237,18 +239,16 @@ function updateUntaggedPorts(id) {
                 $(".live-body").css('opacity', '1');
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
-                $(".response-update-vlan").removeClass('is-hidden');
-                $(".response-update-vlan").addClass('is-success');
-                $(".response-update-vlan").removeClass('is-danger');
-                $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
+                $.notify(data.message,  {
+                    style: 'bulma-success'
+                });
             } else {
                 $(".live-body").css('opacity', '1');
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
-                $(".response-update-vlan").removeClass('is-hidden');
-                $(".response-update-vlan").addClass('is-danger');
-                $(".response-update-vlan").removeClass('is-success');
-                $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
+                $.notify(data.message,  {
+                    style: 'bulma-error'
+                });
             }
         });
 
@@ -263,6 +263,7 @@ function updateTaggedModal(vlans, port, id) {
     let modal = $('.modal-vlan-tagging');
     modal.find('.port_id').val(port);
     modal.find('.device_id').val(id);
+    modal.find('.port_id_title').html(port);
 
     modal.find('.modal-card-body span.tag').removeClass('is-primary');
 
@@ -298,33 +299,33 @@ function updateTaggedVlans() {
     formData.append('device', device);
     formData.append('_token', token);
 
-    let uri = '/switch/' + device + '/port-vlans/tagged';
+    let uri = '/switch/' + device + '/action/update-tagged-ports';
 
     $(".modal-vlan-tagging .is-cancel").addClass('is-hidden');
     $(".modal-vlan-tagging .is-info").removeClass('is-hidden');
     $(".modal-vlan-tagging .is-submit").addClass('is-loading');
+
     fetch(uri, {
         method: 'POST',
         body: formData
     })
         .then(response => response.json())
         .then(data => {
-            $(".response-update-vlan").removeClass('is-success');
-            $(".response-update-vlan").removeClass('is-danger');
             if (data.success == "true") {
-                $(".response-update-vlan").addClass('is-success');
-                $(".response-update-vlan-text").html("<b>Success:</b> " + data.message);
+                $.notify(data.message,  {
+                    style: 'bulma-success'
+                });
             } else {
-                $(".response-update-vlan").addClass('is-danger');
-                $(".response-update-vlan-text").html("<b>Error:</b> " + data.message);
+                $.notify(data.message,  {
+                    style: 'bulma-error'
+                });
             }
             modal.hide();
             modal.find('.is-cancel').removeClass('is-hidden');
             modal.find('.is-info').addClass('is-hidden');
             modal.find('.is-submit').removeClass('is-loading');
-            $(".save-vlans").addClass('is-hidden');
-            $(".edit-vlans").removeClass('is-hidden');
-            $(".response-update-vlan").removeClass('is-hidden');
+            // $(".save-vlans").addClass('is-hidden');
+            // $(".edit-vlans").removeClass('is-hidden');
         });
 
 }
@@ -339,19 +340,19 @@ function restoreBackup(id, created_at, device, name) {
 }
 
 function sw_actions(ele, type, id) {
-    let uri = '/switch/' + id + '/backup/create';
+    let uri = '/switch/' + id + '/action/create-backup';
     let cssclass = "fa-hdd";
     let reload = false;
 
     if (type == "refresh") {
-        uri = '/switch/' + id + '/refresh';
+        uri = '/switch/' + id + '/action/refresh';
         cssclass = "fa-sync";
         reload = true
     } else if (type == "pubkeys") {
-        uri = '/switch/' + id + '/ssh/pubkeys';
+        uri = '/switch/' + id + '/action/sync-pubkeys';
         cssclass = "fa-key";
     } else if (type == "vlans") {
-        uri = '/switch/' + id + '/vlans/sync';
+        uri = '/switch/' + id + '/action/sync-vlans';
         cssclass = "fa-ethernet";
     }
 
@@ -361,28 +362,18 @@ function sw_actions(ele, type, id) {
     fetcher(uri, formData, ele, cssclass, reload);
 }
 
-function device_overview_actions(type, ele) {
-
-    let uri = '/switch/every/backup/create';
-    let cssclass = 'fa-hdd';
-
-    if (type == "clients") {
-        uri = '/switch/every/clients';
-        cssclass = 'fa-computer';
-    } else if (type == "pubkeys") {
-        $(".modal-sync-pubkeys").show();
-        return false;
-    }
-
+function switchCreateBackup(ele) {
+    uri = '/switch/action/create-backup';
+    cssclass = "fa-hdd";
     let form = new FormData();
 
     fetcher(uri, form, ele, cssclass);
 }
 
 
-function syncPubkeys() {
+function switchSyncPubkeys() {
     let form = new FormData();
-    let uri = '/switch/every/pubkeys';
+    let uri = '/switch/action/sync-pubkeys';
     let cssclass = 'fa-key';
     let ele = $(".syncPubButton");
     fetcher(uri, form, ele, cssclass);
@@ -411,11 +402,14 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
         .then(data => {
             if (data.success == "true") {
                 $(ele).addClass('is-success');
-                $(ele).children('i').addClass('fa-check');
+                $(ele).find('i').addClass('fa-check');
                 $(ele).removeClass('is-loading');
-                $(ele).children('i').removeClass(cssclass);
-                $(ele).children('i').removeClass('fa-exclamation-triangle');
+                $(ele).find('i').removeClass(cssclass);
+                $(ele).find('i').removeClass('fa-exclamation-triangle');
                 $(ele).removeClass('is-danger');
+                $.notify(data.message,  {
+                    style: 'bulma-success'
+                });
 
                 if (timeout) {
                     setTimeout(function () {
@@ -424,12 +418,13 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 }
             } else {
                 $(ele).addClass('is-danger');
-                $(ele).children('i').addClass('fa-exclamation-triangle');
-                $(ele).children('i').removeClass(cssclass);
+                $(ele).find('i').addClass('fa-exclamation-triangle');
+                $(ele).find('i').removeClass(cssclass);
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');
-                // $(".notification.status ul li").text(data.message);
-                // $(".notification.status").slideDown(500);
+                $.notify(data.message,  {
+                    style: 'bulma-error'
+                });
             }
         }
         );

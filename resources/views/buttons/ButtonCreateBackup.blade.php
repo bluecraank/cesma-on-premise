@@ -1,4 +1,4 @@
-<button class="button is-info" onclick="device_overview_actions('backups', this)">
+<button class="button is-info" onclick="switchCreateBackup(this)">
     <span class="icon is-small">
         <i class="fas fa-hdd"></i>
       </span>

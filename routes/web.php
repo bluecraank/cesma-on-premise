@@ -101,23 +101,29 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
 });
 
 Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
-    Route::post('/{id}/backup/create', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/vlans/sync', [DeviceController::class, 'syncVlans'])->where('id', '[0-9]+');
+    
     Route::put('/uplinks', [DeviceService::class, 'storeCustomUplinks']);
+
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/ssh/pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
-    Route::post('/{id}/port-vlans/untagged', [DeviceController::class, 'setUntaggedVlanToPort'])->where('id', '[0-9]+');
-    Route::post('/{id}/port-vlans/tagged', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
+
+    Route::post('/{device:id}/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
+    Route::post('/{device:id}/action/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
+    Route::post('/{device:id}/action/sync-vlans', [DeviceService::class, 'syncVlansToDevice'])->where('id', '[0-9]+');
+    Route::post('/{device:id}/action/create-backup', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
+
+    Route::post('/{id}/action/update-untagged-ports', [DeviceController::class, 'setUntaggedVlanToPort'])->where('id', '[0-9]+');
+    Route::post('/{id}/action/update-tagged-ports', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
+
     Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);
     Route::delete('/backup/delete', [BackupController::class, 'destroy']);
+
     Route::post('/create', [DeviceController::class, 'store']);
     Route::put('/update', [DeviceController::class, 'update']);
     Route::delete('/delete', [DeviceController::class, 'destroy']);
-    Route::post('/every/backup/create', [DeviceController::class, 'createBackupAllDevices']);
-    Route::post('/every/clients', [ClientController::class, 'getClientsAllDevices']);
-    Route::post('/every/pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
-    Route::post('/every/vlans', [DeviceController::class, 'updateVlansAllDevices'])->name('Sync VLAN Results');
+
+    Route::post('/action/create-backup', [DeviceController::class, 'createBackupAllDevices']);
+    Route::post('/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
+    Route::post('/action/sync-vlans', [DeviceService::class, 'syncVlansToAllDevices'])->name('VLAN Sync');
 
     Route::get('/topology', [DeviceController::class, 'view_topology'])->name('topology');
 });

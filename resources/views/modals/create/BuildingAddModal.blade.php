@@ -12,7 +12,7 @@
                     <label class="label">Standort wählen</label>
                     <p class="control">
                         <span class="select is-fullwidth">
-                            <select name="location_id">
+                            <select required name="location_id">
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -24,12 +24,12 @@
                 <label class="label">Gebäudename</label>
                 <div class="field">
                     <p class="control is-expanded">
-                        <input class="input" type="text" name="name" placeholder="Gebäudename / Straße">
+                        <input class="input" required type="text" name="name" placeholder="Gebäudename / Straße">
                     </p>
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button .submit is-success">{{ __('Button.Save') }}</button>
+                <button class="button submit is-success">{{ __('Button.Save') }}</button>
                 <button onclick="$('.modal-add-building').hide();return false;" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

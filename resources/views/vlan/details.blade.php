@@ -5,7 +5,7 @@
         </ul>
     </div>
     <div class="box">
-        <h1 class="title is-pulled-left">VLAN {{ $vlan_db['vid'] }} - {{ $vlan_db['name'] }}</span></h1>
+        <h1 class="title is-pulled-left">VLAN {{ $vlan['vid'] }} - {{ $vlan['name'] }}</span></h1>
         <br>
         <br>
         <br>
@@ -41,7 +41,6 @@
 
         <div class="columns ml-1 mr-1">
             <div class="column is-12">
-                {{-- <h2 class="subtitle">Switche</h2> --}}
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -52,19 +51,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($ports as $switch => $port)
+                        
+                        @foreach ($devices as $switch => $p)
                             <tr>
                                 <td>{{ $switch }}</td>
 
                                 <td>
-                                    @if (isset($port['untagged']))
-                                        {{ implode(', ', $port['untagged']) }}
+                                    @if (isset($untagged[$p->id]))
+                                        {{ implode(', ', $untagged[$p->id]) }}
                                     @endif
                                 </td>
                                 <td style="width:100px;"></td>
                                 <td>
-                                    @if (isset($port['tagged']))
-                                        {{ implode(', ', $port['tagged']) }}
+                                    @if (isset($untagged[$p->id]))
+                                        {{ implode(', ', $tagged[$p->id]) }}
                                     @endif
                                 </td>
                             </tr>

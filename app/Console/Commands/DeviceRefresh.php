@@ -36,7 +36,7 @@ class DeviceRefresh extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            Log::error('Device not found');
+            Log::error(__('DeviceNotFound'));
             return;
         }
 

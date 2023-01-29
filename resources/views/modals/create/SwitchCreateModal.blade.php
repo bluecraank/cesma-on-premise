@@ -16,13 +16,13 @@
                 <div class="field">
                     <label class="label">{{ __('Switch.IP') }}</label>
                     <div class="control">
-                        <input class="input" name="hostname" type="text" placeholder="Hostname / IP">
+                        <input class="input" name="hostname" required type="text" placeholder="Hostname / IP">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">{{ __('Switch.Password') }}</label>
                     <div class="control">
-                        <input required class="input" name="password" type="password"
+                        <input required class="input" required name="password" type="password"
                             placeholder="{{ __('Switch.Password') }}">
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         <div class="field">
                             <label class="label is-small">{{ __('Location') }}</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="location_id">
+                                <select class="switch-location" name="location_id" required>
                                     @foreach ($locations as $location)
                                         <option value="{{ $location->id }}">{{ $location->name }}</option>
                                     @endforeach
@@ -56,7 +56,7 @@
                         <div class="field">
                             <label class="label is-small">Gebäude</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-building" name="building_id">
+                                <select class="switch-building" name="building_id" required>
                                     @foreach ($buildings as $building)
                                         <option value="{{ $building->id }}">{{ $building->name }}</option>
                                     @endforeach
@@ -70,7 +70,7 @@
                         <div class="field">
                             <label class="label is-small">Raum</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="room_id">
+                                <select class="switch-location" name="room_id" required>
                                     @foreach ($rooms as $room)
                                         <option value="{{ $room->id }}">{{ $room->name }}</option>
                                     @endforeach
@@ -83,7 +83,7 @@
                         <div class="field is-fullwidth">
                             <label class="label is-small">Reihenfolge</label>
                             <input class="input is-small is-fullwidth switch-numbering" name="location_number" type="number"
-                                placeholder="1">
+                                placeholder="1" value="1" required>
                         </div>
                     </div>
                 </div>

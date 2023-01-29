@@ -12,7 +12,7 @@
                     <label class="label">Gebäude wählen</label>
                     <p class="control">
                         <span class="select is-fullwidth">
-                            <select name="building_id">
+                            <select required name="building_id">
                                 @foreach ($buildings as $building)
                                     <option value="{{ $building->id }}">{{ $building->name }}</option>
                                 @endforeach
@@ -24,7 +24,7 @@
                 <label class="label">Gebäudename</label>
                 <div class="field">
                     <p class="control is-expanded">
-                        <input class="input" type="text" name="name" placeholder="Gebäudename / Straße">
+                        <input required class="input" type="text" name="name" placeholder="Gebäudename / Straße">
                     </p>
                 </div>
             </section>

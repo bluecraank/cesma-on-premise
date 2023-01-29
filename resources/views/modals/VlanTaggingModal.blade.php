@@ -3,7 +3,7 @@
 
     <div style="margin-top: 40px" class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Port A4 - VLAN Tagging</p>
+            <p class="modal-card-title">Tag vlans to Port <span class="port_id_title">A4</span></p>
             <span class="tag">NOT TAGGED</span>
             <span class="tag is-primary">TAGGED</span>
         </header>
@@ -15,8 +15,11 @@
             <br><br>
 
             <label class="label is-small">Verfügbare VLANs</label>
+            @php
+                $vlans = $vlans->sortBy('vlan_id')->keyBy('id')->toArray();
+            @endphp
             @foreach ($vlans as $key => $vlan)
-                <span title="{{ $vlan['name'] }}" class="is-clickable tag" data-id="{{ $key }}">{{ $key }}</span>
+                <span title="{{ $vlan['name'] }}" class="is-clickable tag" data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
             @endforeach
         </section>
         <footer class="modal-card-foot">

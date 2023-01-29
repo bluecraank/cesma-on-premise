@@ -48,7 +48,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ count($device->portsOnline()) }}/{{ count($ports)-count($uplinks) }}</p>
+                <p class="subtitle">{{ count($device->portsOnline()) }}/{{ count($ports) - count($uplinks) }}</p>
             </div>
         </div>
     </div>
@@ -118,10 +118,13 @@
                     </thead>
                     <tbody>
                         @foreach ($uplinks as $key => $trunk)
-                            @php 
-                                $portsById = $device->ports()->get()->keyBy('id');
+                            @php
+                                $portsById = $device
+                                    ->ports()
+                                    ->get()
+                                    ->keyBy('id');
                                 $trunks = [];
-                                foreach($trunk as $port) {
+                                foreach ($trunk as $port) {
                                     $trunks[$port['device_port_id']] = $portsById[$port['device_port_id']]->name ?? 'Unknown';
                                 }
                             @endphp
@@ -260,20 +263,29 @@
                                     </td>
                                     <td style="width:80px">
                                         @if ($port->isMemberOfTrunk())
-                                            {{-- Member of --}}
                                             <span class="tag is-info">{{ $port->trunkName() }}</span>
                                         @else
-                                            {{ $vlans[$port->untaggedVlan()]->name ?? 'No VLAN' }}
+                                            <div class="select">
+                                                <select data-id="{{ $device->id }}" data-port="{{ $port->name }}"
+                                                    data-current-vlan="{{ $port->untaggedVlan() ? $port->untaggedVlan() : 0 }}"
+                                                    class="port-vlan-select" name="" id="">
+                                                    <option value="0">No VLAN</option>
+                                                    @foreach ($vlans as $vlan)
+                                                        <option value="{{ $vlan->id }}"
+                                                            {{ $port->untaggedVlan() == $vlan->id ? 'selected' : '' }}>
+                                                            {{ $vlan->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         @endif
                                     </td>
-                                    <td style="width:100px" class="is-clickable">
-                                        {{-- <a
-                                            onclick="updateTaggedModal('{{ implode(',', $tagged[$port['id']]) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count($tagged[$port['id']]) }}
-                                            VLANs</a> --}}
+                                    <td style="width:100px">
                                         @if ($port->isMemberOfTrunk())
                                             {{ count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) }} VLANs
                                         @else
-                                            {{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }} VLANs
+                                            <a
+                                                onclick="updateTaggedModal('{{ implode(',', $port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
+                                                VLANs</a>
                                         @endif
                                     </td>
                                     <td>

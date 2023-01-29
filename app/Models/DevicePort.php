@@ -38,6 +38,10 @@ class DevicePort extends Model
         return $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
     }
 
+    public function taggedVlans() {
+        return $this->deviceVlanPorts->where('is_tagged', true)->where('device_port_id', $this->id);
+    }
+
     public function isMemberOfTrunk() {
         return $this->deviceUplink()->exists();
     }

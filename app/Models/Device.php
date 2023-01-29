@@ -14,7 +14,7 @@ class Device extends Model
         'building_id',
         'location_id',
         'location_number',
-        'location_desc',
+        'room_id',
         'password',
         'serialnumber',
         'firmware',

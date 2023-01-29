@@ -170,12 +170,12 @@
 
     @if (Auth::user()->role == 'admin')
         @include('modals.PubkeySyncModal')
-        @include('modals.PubkeyDeleteModal')
-        @include('modals.PubkeyAddModal')
-        @include('modals.UserEditModal')
-        @include('modals.MacTypeAddModal')
-        @include('modals.MacTypeIconAddModal')
-        @include('modals.MacTypeDeleteModal')
+        @include('modals.delete.PubkeyDeleteModal')
+        @include('modals.create.PubkeyAddModal')
+        @include('modals.edit.UserEditModal')
+        @include('modals.create.MacTypeAddModal')
+        @include('modals.create.MacTypeIconAddModal')
+        @include('modals.delete.MacTypeDeleteModal')
     @endif
 
     </x-layouts>
