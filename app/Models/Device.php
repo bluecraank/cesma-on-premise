@@ -105,4 +105,8 @@ class Device extends Model
     public function deviceCustomUplinks() {
         return $this->hasOne(DeviceCustomUplink::class);
     }
+
+    public function clients() {
+        return $this->hasMany(Client::class);
+    }
 }

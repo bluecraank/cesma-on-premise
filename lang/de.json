@@ -91,7 +91,11 @@
     "Switch.Edit.Hint": "Switch bearbeiten",
 
     "GUI_External": "Switch in neuen Tab öffnen",
-    "Show": "Mehr anzeigen",
+    "Hint.Edit": "Bearbeiten",
+    "Hint.Delete": "Löschen",
+    "Hint.Add": "Hinzufügen",
+    "Hint.Sync": "Synchronisieren",
+    "Hint.Show": "Mehr anzeigen",
     "Portstats.for": "Statistiken für Port",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
 

@@ -1,11 +1,5 @@
 <x-layouts.main>
     @inject('cc', 'App\Http\Controllers\ClientController')
-    <div style="display:none" class="notification status is-danger">
-        <ul>
-            <li></li>
-        </ul>
-    </div>
-
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
@@ -117,6 +111,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            // Sort uplinks in correct order
+                            uksort($uplinks, 'strnatcmp');
+                        @endphp
                         @foreach ($uplinks as $key => $trunk)
                             @php
                                 $portsById = $device
@@ -153,10 +151,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($vlans as $vlan)
+                        @php
+                            // Sort vlans in correct order
+                            $vlanlist = $vlans->toArray();
+                            uksort($vlanlist, 'strnatcmp');
+                        @endphp
+                        @foreach ($vlanlist as $vlan)
                             <tr>
-                                <td>{{ $vlan->name }}</td>
-                                <td>{{ $vlan->vlan_id }}</td>
+                                <td>{{ $vlan['name'] }}</td>
+                                <td>{{ $vlan['vlan_id'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -238,14 +241,19 @@
                             <th class="has-text-centered" style="width: 70px;">Status</th>
                             <th class="has-text-centered" style="width: 70px;">Port</th>
                             <th>{{ __('Switch.Live.Portname') }}</th>
-                            <th>Untagged</th>
-                            <th>Tagged</th>
-                            <th class="has-text-centered">{{ __('Clients') }}</th>
-                            <th class="has-text-centered">Speed Mbit/s</th>
+                            <th class="has-text-centered">Untagged</th>
+                            <th class="has-text-centered" style="width:130px">Tagged</th>
+                            <th class="has-text-centered" style="width: 150px;">{{ __('Clients') }}</th>
+                            <th class="has-text-centered" style="width: 80px;">Speed Mbit/s</th>
                         </tr>
                     </thead>
 
                     <tbody class="live-body">
+                        @php
+                            $portsByName = $portsByName->sort(function ($a, $b) {
+                                return strnatcmp($a['name'], $b['name']);
+                            });
+                        @endphp
                         @foreach ($portsByName as $id => $port)
                             @if (!str_contains($port['name'], 'Trk'))
                                 <tr style="line-height: 37px;">
@@ -261,12 +269,13 @@
                                     <td>
                                         {{ $port['description'] }}
                                     </td>
-                                    <td style="width:80px">
+                                    <td class="has-text-centered" style="width:110px">
                                         @if ($port->isMemberOfTrunk())
                                             <span class="tag is-info">{{ $port->trunkName() }}</span>
                                         @else
-                                            <div class="select">
-                                                <select data-id="{{ $device->id }}" data-port="{{ $port->name }}"
+                                            <div class="select is-small">
+                                                <select disabled data-id="{{ $device->id }}"
+                                                    data-port="{{ $port->name }}"
                                                     data-current-vlan="{{ $port->untaggedVlan() ? $port->untaggedVlan() : 0 }}"
                                                     class="port-vlan-select" name="" id="">
                                                     <option value="0">No VLAN</option>
@@ -279,19 +288,50 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td style="width:100px">
+                                    <td class="has-text-centered" style="width:130px">
                                         @if ($port->isMemberOfTrunk())
                                             {{ count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) }} VLANs
                                         @else
                                             <a
-                                                onclick="updateTaggedModal('{{ implode(',', $port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
+                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
                                                 VLANs</a>
                                         @endif
                                     </td>
-                                    <td>
-                                        <b>TODO</b>
+                                    <td class="has-text-centered" style="width: 150px;">
+                                        @if ($port->isMemberOfTrunk())
+                                            <span class="tag is-warning">Excluded (Uplink)</span>
+                                        @else
+                                            <div class="dropdown is-hoverable">
+                                                <div class="dropdown-trigger">
+                                                    <button class="button" aria-haspopup="true"
+                                                        aria-controls="dropdown-menu4">
+                                                        <span>
+                                                            {{ isset($clients[$port['name']]) ? count($clients[$port['name']]) : '0' }}
+                                                            Clients
+                                                        </span>
+                                                        <span class="icon is-small">
+                                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                                <div class="dropdown-menu" style="min-width:15rem" id="dropdown-menu4" role="menu">
+                                                    <div class="dropdown-content">
+                                                        <div class="dropdown-item has-text-left">
+                                                            @if (isset($clients[$port['name']]))
+                                                                @foreach ($clients[$port['name']] as $client)
+                                                                    <i
+                                                                        class="fa-solid {{ $cc::getClientIcon($client['type']) }} mr-1"></i>
+                                                                    {{ $client['hostname'] }}
+                                                                    <br>
+                                                                @endforeach
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </td>
-                                    <td class="has-text-centered">
+                                    <td class="has-text-centered" style="width: 80px;">
                                         @if ($port->speed == 0)
                                             <span class="tag is-link ">{{ $port->speed }}</span>
                                         @elseif ($port->speed == 10)

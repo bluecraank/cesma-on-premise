@@ -163,22 +163,6 @@ class DeviceService
         return false;
     }
 
-    static function updateUplinks($device, $uplinks)
-    {
-        $uplinks = explode(',', $uplinks);
-        $uplinks = str_replace(' ', '', $uplinks);
-
-        foreach ($uplinks as $uplink) {
-            // $device->uplinks()->updateOrCreate([
-            //     'name' => $uplink, 
-            //     'device_id' => $device->id
-            // ]);
-
-            // TODO: Update or create uplink
-            // Own table? DeviceUplinkCustom?
-        }
-    }
-
     static function deleteDeviceData(Device $device)
     {
         DeviceBackup::where('device_id', $device->id)->delete();

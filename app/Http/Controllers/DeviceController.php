@@ -103,8 +103,9 @@ class DeviceController extends Controller
         $backups = $device->backups()->latest()->take(15)->get() ?? [];
         $vlanPortsUntagged = $device->vlanPortsUntagged();
         $vlanPortsTagged = $device->vlanPortsTagged();
+        $clients = $device->clients()->get()->groupBy('port_id')->toArray() ?? [];
 
-        return view('switch.view_details', compact('device', 'ports', 'uplinks', 'is_online', 'uplinks', 'vlans', 'backups', 'vlanPortsUntagged', 'vlanPortsTagged', 'portsById', 'portsByName'));
+        return view('switch.view_details', compact('clients', 'device', 'ports', 'uplinks', 'is_online', 'uplinks', 'vlans', 'backups', 'vlanPortsUntagged', 'vlanPortsTagged', 'portsById', 'portsByName'));
     }
 
     public function showBackups(Device $device)

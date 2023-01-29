@@ -38,17 +38,15 @@
         <tbody>
             @foreach ($vlans as $vlan)
                 @php
-                    $scan = "<i class='fas fa-times'></i>";
-                    $sync = "<i class='fas fa-times'></i>";
-                    $clients = "<i class='fas fa-check'></i>";
+                    $scan = $sync = $clients = false;
                     if ($vlan->is_scanned == 1) {
-                        $scan = "<i class='fas fa-check'></i>";
+                        $scan = true;
                     }
                     if ($vlan->is_synced == 1) {
-                        $sync = "<i class='fas fa-check'></i>";
+                        $sync = true;
                     }
                     if ($vlan->is_client_vlan == 0) {
-                        $clients = "<i class='fas fa-times'></i>";
+                        $clients = true;
                     }
                 @endphp
                 <tr>
@@ -66,12 +64,14 @@
                         {{ $vlan->ip_range }}
                     </td>
                     <td class="has-text-centered">
-                        {!! $scan !!}
+                        <i class='fas {{ ($scan) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
                     <td class="has-text-centered">
-                        {!! $sync !!}
+                        <i class='fas {{ ($sync) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
-                    <td class="has-text-centered">{!! $clients !!}</td>
+                    <td class="has-text-centered">   
+                         <i class='fas {{ ($clients) ? 'fa-check' : 'fa-times' }}'></i>
+                    </td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
