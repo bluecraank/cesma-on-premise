@@ -55,6 +55,6 @@ class DevicePort extends Model
     }
 
     public function stats() {
-        return $this->devicePortStats()->orderBy('created_at', 'desc')->first();
+        return $this->devicePortStats()->first();
     }
 }

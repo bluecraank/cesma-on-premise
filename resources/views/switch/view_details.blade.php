@@ -224,6 +224,8 @@
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
                         <span onclick="updateUntaggedPorts('{{ $device->id }}')"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
+                        <span onclick="$('.modal-vlan-bulk-edit').show();"
+                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
                         <span onclick="enableEditing();"
                             class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
@@ -293,7 +295,7 @@
                                             {{ count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) }} VLANs
                                         @else
                                             <a
-                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
+                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['name'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
                                                 VLANs</a>
                                         @endif
                                     </td>
@@ -355,5 +357,6 @@
 
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
+    @include('modals.PortBulkEditVlansModal')
 
     </x-layouts>

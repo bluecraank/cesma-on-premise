@@ -31,17 +31,6 @@ return [
     'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
     
-    // Hard code which ip subnet belongs to which device type
-    'ip_subnet_to_type' => [
-        '192.168.200' => 'printer',
-        '192.168.120' => 'phone',
-        '192.168.95' => 'wifi',
-        '10.50.15' => 'printer'
-    ],
-
-    // Get snmp data from these routers
-    'snmp_routers' => env('SNMP_ROUTERS', ''),
-
     // Replace the domain name in the hostname lookup
     'DNS_CUT_DOMAIN' => env('DNS_CUT_DOMAIN', 'false'),
 

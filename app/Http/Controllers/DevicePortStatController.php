@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\DevicePortStat;
+use Illuminate\Support\Carbon;
 
 class DevicePortStatController extends Controller
 {
@@ -15,11 +16,11 @@ class DevicePortStatController extends Controller
             abort(404, "Port $port_id not found.");
         }
         
-        $port_stats = $port->stats()->latest()->take(30)->get()->reverse();
+        // dd($port);
+        $port_stats = DevicePortStat::where('device_port_id', $port->id)->where('created_at', '>', 
+        Carbon::now()->subHours(3)->toDateTimeString())->get();
 
         $ports = $device->ports()->get();
-
-        $port_stats = DevicePortStat::where('device_port_id', $port->id)->latest()->take(30)->get()->reverse();
 
         if(empty($port_stats)) {
             abort(404, "No data for port $port_id found.");

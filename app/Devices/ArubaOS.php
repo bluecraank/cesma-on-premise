@@ -583,7 +583,8 @@ class ArubaOS implements DeviceInterface
             list($cookie, $api_version) = explode(";", $login_info);
 
             $return = [];
-            $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
+            $port_id = $device->ports()->where('name', $port)->first()->id;
+            $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
             $known_vlans = $device->vlans()->get()->keyBy('id')->toArray();    // Get all known vlans from device
 
             // Add vlan tagged to port
@@ -642,7 +643,7 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
-            $device->vlanports()->where('device_port_id', $port)->where('is_tagged', true)->delete();
+            $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', true)->delete();
 
             proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
 

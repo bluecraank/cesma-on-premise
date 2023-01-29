@@ -1,4 +1,4 @@
-<div class="modal modal-vlan-tagging">
+<div class="modal clickable-tags modal-vlan-tagging">
     <div class="modal-background"></div>
 
     <div style="margin-top: 40px" class="modal-card">

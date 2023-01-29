@@ -274,7 +274,7 @@ function updateTaggedModal(vlans, port, id) {
     modal.show();
 }
 
-$(".modal-vlan-tagging .modal-card-body span.tag").click(function () {
+$(".clickable-tags .modal-card-body span.tag").click(function () {
     $(this).toggleClass('is-primary');
 });
 

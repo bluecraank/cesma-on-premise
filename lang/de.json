@@ -3,6 +3,7 @@
     "Delete.Location": "Standort löschen",
     "Delete.Vlan": "VLAN löschen",
     "Delete.Switch": "Switch löschen",
+    "Edit.Bulk.Ports": "Massenbearbeitung",
     "Delete.Building": "Gebäude löschen",
     "Edit.Room": "Raum bearbeiten",
     "Edit.Location": "Standort bearbeiten",
@@ -45,6 +46,7 @@
     "Button.CreateBackup": "Backup erstellen",
     "Button.SyncVlans": "VLANs synchronisieren",
     "Button.SyncPubkeys": "Öffentliche Schlüssel synchronisieren",
+    "Button.Bulkedit": "Massenbearbeitung",
 
     "Modal.Key.Add": "Schlüssel hinzufügen",
     "Modal.Key.Add.Name": "Schlüsselname",
