@@ -116,7 +116,18 @@ class DeviceService
             ]);
         }
 
+        $custom_uplink_ports = [];
+        $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
+        $custom_uplinks = $device->deviceCustomUplinks()->first();
+        if($custom_uplinks) {
+            $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
+        }
+
+        $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
         foreach ($data['macs'] as $mac) {
+            if(in_array($mac['port'], $combined_uplinks)) {
+                continue;
+            }
             Mac::updateOrCreate(
                 [
                     'mac_address' => $mac['mac'],
@@ -136,8 +147,6 @@ class DeviceService
         $device->mac_address = $data['informations']['mac'] ?? NULL;
         $device->firmware = $data['informations']['firmware'] ?? NULL;
         $device->update();
-
-        // dd($data['informations'], $data['macs']);
     }
 
     static function storeDevice($request)

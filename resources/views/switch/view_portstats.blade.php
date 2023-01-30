@@ -9,9 +9,9 @@
 
                     <h1 class="subtitle">
                         {{ __('Portstats.for') }} {{ $port_id }}
-
                     </h1>
                 </div>
+
                 <div class="column is-6">
                     <div class="select is-pulled-right">
                         <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()">
@@ -20,12 +20,19 @@
                             @endif
 
                             @foreach ($ports as $port)
+                                @if (str_contains($port['name'], 'Trk'))
+                                    @continue
+                                @endif
                                 <option {{ $port['name'] == $port_id ? 'selected' : '' }} value="{{ $port['name'] }}">
                                     {{ $port['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
+                    <div class="is-pulled-right mr-3">
+                        <a class="button is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back') }}</a>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -34,18 +41,20 @@
 
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">Port status</label>
-                {!! $port->link ? '<span class="is-size-2 has-text-success">UP</span>' : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
+                <label class="label">LINK STATUS</label>
+                {!! $port->link
+                    ? '<span class="is-size-2 has-text-success">UP</span>'
+                    : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
             </div>
         </div>
 
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">Speed</label>
+                <label class="label">SPEED</label>
                 <span class="is-size-2 has-text-success">{{ $port_stats->last()->port_speed }} Mbit/s</span>
 
             </div>
-        </div> 
+        </div>
     </div>
 
     <div>
@@ -72,16 +81,16 @@
             </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-12">
             <div class="box">
                 <h2 class="subtitle">Utilization RX/TX</h2>
 
                 <label class="label">RX: {{ $utilization_rx }}%</label>
                 <progress class="progress is-primary" value="{{ $utilization_rx }}"
-                    max="{{ $speed }}">15%</progress>
+                    max="{{ $speed }}">{{ $utilization_rx }}</progress>
                 <label class="label">TX: {{ $utilization_tx }}%</label>
                 <progress class="progress is-link" value="{{ $utilization_tx }}"
-                    max="{{ $speed }}">30%</progress>
+                    max="{{ $speed }}">{{ $utilization_tx }}</progress>
             </div>
         </div>
     </div>

@@ -2,7 +2,7 @@
     <h1 class="title is-pulled-left">{{ __('Header.Switches') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        @if (Auth::user()->role == 'admin')
+        @if (Auth::user()->role >= 1)
             <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
                     class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
@@ -33,7 +33,7 @@
         <tbody>
             @foreach ($devices as $device)
                 <tr>
-                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
                     <td>{{ $device->modelOrUnknown() }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
                     <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
@@ -51,7 +51,7 @@
                                     <i class="fa fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
-                            @if (Auth::user()->role == 'admin')
+                            @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
                                         onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_number }}')"

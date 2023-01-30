@@ -401,10 +401,9 @@ class ArubaOS implements DeviceInterface
 
         if ($backup->successful()) {
             $data = $backup->json()["result_base64_encoded"];
-            $restore = $backup->json()["result_base64_encoded"];
             $data = base64_decode($data);
 
-            $restore = strstr(";", $data);
+            $restore = strstr($data, ";");
 
             if ($data !== NULL and strlen($data) > 10 and $data != false) {
                 BackupController::store(true, $data, $restore, $device);
@@ -521,7 +520,7 @@ class ArubaOS implements DeviceInterface
         return json_encode(['success' => 'false', 'message' => 'Error sftp connection']);
     }
 
-    static function setUntaggedVlanToPort($vlans, $ports, $device): String
+    static function setUntaggedVlanToPort($vlans, $ports, $device, $need_login = true, $logindata = ""): String
     {
 
         $success = 0;
@@ -529,10 +528,15 @@ class ArubaOS implements DeviceInterface
         $failed_ports = [];
         $portcount = count($ports);
 
-        $backup_vlanports = $device->vlanports()->get();
         $vlans_in_db = DeviceVlan::all()->keyBy('id');
 
-        if ($login_info = self::API_LOGIN($device)) {
+        if($need_login) {
+            $login_info = self::API_LOGIN($device);
+        } else {
+            $login_info = $logindata;
+        }
+
+        if ($login_info) {
 
             list($cookie, $api_version) = explode(";", $login_info);
 
@@ -542,7 +546,6 @@ class ArubaOS implements DeviceInterface
                     "port_id": "' . $port . '", 
                     "port_mode": "POM_UNTAGGED"
                 }';
-
                 $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
                 if ($result['success']) {
@@ -558,11 +561,13 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
-            if ($failed !== count($ports)) {
+            if ($failed !== count($ports) and $need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
             }
 
-            self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            if($need_login) {
+                self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            }
 
             if ($success == $portcount) {
                 return json_encode(['success' => 'true', 'message' => __('Vlan.Update.Success', ['success' => $success, 'total' => $portcount])]);
@@ -576,9 +581,15 @@ class ArubaOS implements DeviceInterface
         return json_encode(['success' => 'false', 'message' => 'API Login failed']);
     }
 
-    static function setTaggedVlanToPort($vlans, $port, $device): array
+    static function setTaggedVlanToPort($vlans, $port, $device, $need_login = true, $logindata = ""): array
     {
-        if ($login_info = self::API_LOGIN($device)) {
+        if($need_login) {
+            $login_info = self::API_LOGIN($device);
+        } else {
+            $login_info = $logindata;
+        }
+
+        if ($login_info) {
 
             list($cookie, $api_version) = explode(";", $login_info);
 
@@ -645,9 +656,10 @@ class ArubaOS implements DeviceInterface
 
             $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', true)->delete();
 
-            proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
-
-            self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            if($need_login) {
+                proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
+                self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            }
 
             return $return;
         }

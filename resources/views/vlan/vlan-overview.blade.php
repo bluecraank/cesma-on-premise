@@ -1,7 +1,7 @@
 <x-layouts.main>
     @livewire('search-vlans')
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
     <div class="box">
         <div class="label is-small">Alle Switche</div>
         <div class="buttons are-small">

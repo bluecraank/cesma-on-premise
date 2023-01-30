@@ -32,7 +32,7 @@
                             <div class="field has-addons is-justify-content-center">
 
 
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button disabled title="{{ __('Backup.Restore') }}"
                                             onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
@@ -48,7 +48,7 @@
                                         <i class="fa fa-download"></i>
                                     </a>
                                 </div>
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button title="{{ __('Button.Delete') }}"
                                             onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
@@ -62,8 +62,8 @@
         </table>
     </div>
 
-    @if (Auth::user()->role == 'admin')
-        @include('modals.SwitchDeleteBackupModal')
+    @if (Auth::user()->role >= 1)
+        @include('modals.delete.SwitchDeleteBackupModal')
         @include('modals.SwitchRestoreBackupModal')
     @endif
     </x-layouts>

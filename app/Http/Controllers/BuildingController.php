@@ -19,7 +19,7 @@ class BuildingController extends Controller
     public function store(StoreBuildingRequest $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:buildings|max:100',
+            'name' => 'required|max:100',
             'location_id' => 'required|integer',
         ])->validate();
 

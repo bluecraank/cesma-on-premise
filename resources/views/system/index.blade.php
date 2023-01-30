@@ -48,7 +48,7 @@
             <h1 class="subtitle is-pulled-left">{{ __('System.Addititional Pubkeys') }}</h1>
 
             <div class="is-pulled-right">
-                @if (Auth::user()->role == 'admin')
+                @if (Auth::user()->role == 2)
                     <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
@@ -73,7 +73,7 @@
                             <td>{{ $key->description }}</td>
                             <td>{{ $out }}</td>
                             <td style="width:150px;" class="has-text-centered">
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role == 2)
                                     <button
                                         onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
                                         class="is-small button is-danger"><i class="fas fa-trash"></i></button>
@@ -84,7 +84,7 @@
                 </tbody>
             </table>
 
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role == 2)
                 <a href="/privatekey"
                     class="is-pulled-right is-small mb-5 button is-warning">{{ __('Setup.Privatekey.SSH') }}</a>
                 <div class="is-clearfix"></div>
@@ -112,9 +112,9 @@
                         <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ substr($user->guid, 0, 20) }}...</td>
-                            <td>{{ $user->role }}</td>
+                            <td>{{ $user->getRoleName() }}</td>
                             <td style="width:150px;" class="has-text-centered">
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role == 2)
                                     <button
                                         onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
                                         class="is-small button is-info"><i class="fas fa-cog"></i></button>
@@ -130,7 +130,7 @@
             <h1 class="subtitle is-pulled-left">{{ __('System.MacType') }}</h1>
 
             <div class="is-pulled-right">
-                @if (Auth::user()->role == 'admin')
+                @if (Auth::user()->role >= 1)
                     <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
@@ -157,7 +157,7 @@
                             <td>{{ $mac->description }}</td>
                             <td>{{ $mac->type }}</td>
                             <td class="has-text-centered">
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <button class="button is-small is-danger"
                                         onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i
                                             class="fas fa-trash"></i></button>
@@ -191,7 +191,7 @@
                             <td class="has-text-centered"><i
                                     class="fas {{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}"></i></td>
                             <td class="has-text-centered">
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <button class="button is-info is-small"
                                         onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
                                             class="fas fa-cog"></i></button>
@@ -207,7 +207,7 @@
             <h1 class="subtitle is-pulled-left">SNMP</h1>
 
             <div class="is-pulled-right">
-                @if (Auth::user()->role == 'admin')
+                @if (Auth::user()->role >= 1)
                     <button onclick="$('.modal-add-router').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
@@ -238,7 +238,7 @@
                                 : '<span class="has-text-danger">No Connection</span>' !!}</td>
                             <td>
                                 <div class="field has-addons is-justify-content-center">
-                                    @if (Auth::user()->role == 'admin')
+                                    @if (Auth::user()->role >= 1)
                                         <div class="control">
                                             <button title="{{ __('Switch.Edit.Hint') }}"
                                                 class="button is-info is-small"
@@ -278,7 +278,7 @@
             <h1 class="subtitle is-pulled-left">Vorlagen</h1>
 
             <div class="is-pulled-right">
-                @if (Auth::user()->role == 'admin')
+                @if (Auth::user()->role >= 1)
                     <button onclick="$('.modal-add-template').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
@@ -306,7 +306,7 @@
                             <td>{{ $template->untagged }}</td>
                             <td class="has-text-centered">
                                 <div class="field has-addons is-justify-content-center">
-                                    @if (Auth::user()->role == 'admin')
+                                    @if (Auth::user()->role >= 1)
                                         <div class="control">
                                             <button title="{{ __('Switch.Edit.Hint') }}"
                                                 class="button is-info is-small"
@@ -350,7 +350,7 @@
         </script>
     </div>
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
         @include('modals.PubkeySyncModal')
         @include('modals.delete.PubkeyDeleteModal')
         @include('modals.create.PubkeyAddModal')

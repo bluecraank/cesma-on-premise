@@ -11,7 +11,7 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:rooms|max:100',
+            'name' => 'required|max:100',
             'building_id' => 'required|integer|exists:buildings,id',
         ])->validate();
 

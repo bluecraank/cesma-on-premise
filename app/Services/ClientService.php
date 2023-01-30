@@ -51,7 +51,7 @@ class ClientService {
     }
 
 
-    public function getClients() {
+    static function getClients() {
         $start = microtime(true);
         $macs = Mac::all()->keyBy('mac_address')->toArray();
         $endpoints = self::getClientDataFromProviders();

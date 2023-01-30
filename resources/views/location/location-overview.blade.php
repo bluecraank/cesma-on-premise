@@ -3,7 +3,7 @@
         <h1 class="title is-pulled-left">{{ __('Header.Locations') }}</h1>
 
         <div class="is-pulled-right ml-4">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
                 <button onclick="$('.modal-add-site').show();return false;" class="is-small button is-success"><i
                         class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
@@ -27,7 +27,7 @@
                         <td style="width:150px;">
                             <div class="field has-addons is-justify-content-center">
 
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button
                                             onclick="editLocationModal('{{ $location->id }}', '{{ $location->name }}')"
@@ -50,7 +50,7 @@
         <h1 class="title is-pulled-left">{{ __('Header.Buildings') }}</h1>
 
         <div class="is-pulled-right ml-4">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
                 <button onclick="$('.modal-add-building').show();return false;" class="is-small button is-success"><i
                         class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
@@ -76,7 +76,7 @@
                         <td style="width:150px;">
                             <div class="field has-addons is-justify-content-center">
 
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button
                                             onclick="editBuildingModal('{{ $building->id }}', '{{ $building->name }}', '{{ $building->location_id }}')"
@@ -100,7 +100,7 @@
         <h1 class="title is-pulled-left">{{ __('Header.Rooms') }}</h1>
 
         <div class="is-pulled-right ml-4">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
                 <button onclick="$('.modal-add-room').show();return false;" class="is-small button is-success"><i
                         class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
@@ -126,7 +126,7 @@
                         <td style="width:150px;">
                             <div class="field has-addons is-justify-content-center">
 
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button
                                             onclick="editRoomModal('{{ $room->id }}', '{{ $room->name }}', '{{ $room->building_id }}')"
@@ -147,7 +147,7 @@
 
 
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
         @include('modals.create.LocationAddModal')
         @include('modals.create.BuildingAddModal')
         @include('modals.create.RoomAddModal')

@@ -12,7 +12,7 @@ class SetUserRole extends Command
      *
      * @var string
      */
-    protected $signature = 'user:role {guid : The guid of ldap user object} {role : user / admin}';
+    protected $signature = 'user:role {guid : The guid of ldap user object} {role : 0, 1, 2}';
 
     /**
      * The console command description.
@@ -34,7 +34,7 @@ class SetUserRole extends Command
             return;
         }
 
-        $user->role = $this->argument('role') == 'admin' ? 'admin' : 'user';
+        $user->role = $this->argument('role');
         $user->save();
         
         $this->comment('User role set to "' . $user->role . '" for ' . $user->guid);

@@ -78,7 +78,7 @@
 
     <div class="columns ml-1 mr-3">
         <div class="column is-4">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
                 <div class="box">
                     <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="buttons are-small">
@@ -196,7 +196,7 @@
 
 
         <div class="column is-8">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
                 <script>
                     function enableEditing() {
                         $('.port-vlan-select').each(function() {
@@ -204,7 +204,7 @@
                         });
                         $('.save-vlans').removeClass('is-hidden');
                         $('.edit-vlans').addClass('is-hidden');
-                        $('.modal-vlan-tagging').find('.is-submit').prop('disabled', false);
+                        $('.clickable-tags').find('.is-submit').prop('disabled', false);
                     }
 
                     function disableEditing() {
@@ -213,13 +213,13 @@
                         });
                         $('.save-vlans').addClass('is-hidden');
                         $('.edit-vlans').removeClass('is-hidden');
-                        $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true);
+                        $('.clickable-tags').find('.is-submit').prop('disabled', true);
                     }
                 </script>
             @endif
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
-                    @if (Auth::user()->role == 'admin')
+                    @if (Auth::user()->role >= 1)
                         <span onclick="disableEditing();"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
                         <span onclick="updateUntaggedPorts('{{ $device->id }}')"
@@ -264,7 +264,7 @@
                                             class="fa fa-circle {{ $port['link'] ? 'has-text-success' : 'has-text-danger' }}"></i>
                                     </td>
                                     <td class="has-text-centered">
-                                        <a
+                                        <a class="dark-fix-color"
                                             href="/switch/{{ $device->id }}/ports/{{ $port['name'] }}">{{ $port['name'] }}</a>
 
                                     </td>

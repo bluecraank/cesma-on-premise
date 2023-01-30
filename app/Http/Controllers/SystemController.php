@@ -49,13 +49,13 @@ class SystemController extends Controller
         if ($guid == Auth::user()->guid) {
             return redirect()->back()->withErrors(['message' => __('Msg.Error.UserRoleUpdate')])->withInput(['last_tab' => 'users']);
         }
-
+        
         $user = User::where('guid', $guid)->firstOrFail();
         if (!$user) {
             return redirect()->back()->withErrors(['message' => __('User.NotFound')])->withInput(['last_tab' => 'users']);
         }
 
-        $user->role = ($request['role'] == 0) ? 'user' : 'admin';
+        $user->role = $request['role'];
         if (!$user->save()) {
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'users']);
         }

@@ -2,7 +2,7 @@
     <h1 class="title is-pulled-left">{{ __('Header.Vlans') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        @if (Auth::user()->role == 'admin')
+        @if (Auth::user()->role >= 1)
             <button onclick="$('.modal-add-vlan').show();" class="button is-success is-small"><i
                     class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
@@ -79,7 +79,7 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
-                            @if (Auth::user()->role == 'admin')
+                            @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button
                                         onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"

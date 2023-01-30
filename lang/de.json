@@ -40,6 +40,7 @@
     "Button.Cancel": "Abbrechen",
     "Button.Add": "Hinzufügen",
     "Button.Edit": "Bearbeiten",
+    "Button.Back": "Zum Switch",
     "Button.Sync": "Synchronisieren",
     "Button.Start": "Ausführen",
     "Button.Close": "Schließen",
@@ -101,6 +102,7 @@
     "Portstats.for": "Statistiken für Port",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
 
+    "Role.SuperAdmin": "Superadmin",
     "Role.Admin": "Administrator",
     "Role.User": "Benutzer",
     "System.Addititional Pubkeys": "Öffentliche Schlüssel",
@@ -210,6 +212,7 @@
     "Msg.RoomCreated": "Raum erfolgreich erstellt",
     "Msg.RoomUpdated": "Raum erfolgreich aktualisiert",
     "Msg.RoomDeleted": "Raum erfolgreich gelöscht",
+    "Msg.VlanBulkUpdated": "Massenbearbeitung durchgeführt",
 
     "Vlan.Sync.Title": "VLANs synchronisieren - Ergebnisse",
     "Vlan.Sync.Jobs": "Aufgaben",

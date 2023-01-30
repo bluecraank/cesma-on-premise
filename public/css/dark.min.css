@@ -76,3 +76,11 @@ progress::-moz-progress-bar {
     border-bottom-color: #bdcbdb;
     color: #bdcbdb;
 }
+
+.dark-fix-color {
+    color: #fff !important;
+}
+.dark-fix-color:hover {
+    color: #159dc6 !important;
+    text-decoration: underline;
+}

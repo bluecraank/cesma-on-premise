@@ -23,7 +23,7 @@
             @endforeach
         </section>
         <footer class="modal-card-foot">
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role >= 1)
             <button disabled onclick="updateTaggedVlans('{{ $device->id }}')"
                 class="button is-submit is-primary">{{ __('Button.Save') }}</button>
             @endif

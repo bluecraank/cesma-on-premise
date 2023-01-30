@@ -31,7 +31,7 @@
                         <td>{{ $uplinks }}</td>
                         <td>{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}</td>
                         <td class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
+                            @if (Auth::user()->role >= 1)
                                 <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
                                     class="button is-small is-info"><i class="fas fa-gear"></i>
                                 </a>
@@ -42,7 +42,7 @@
         </table>
     </div>
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
         @include('modals.SwitchUplinkEditModal')
     @endif
     </x-layouts>

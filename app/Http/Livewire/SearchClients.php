@@ -62,7 +62,7 @@ class SearchClients extends Component
                 $query->where('vlan_id', '=', $vlan);
             }
             if ($switch and $switch != 'all') {
-                $query->where('switch_id', '=', $switch);
+                $query->where('device_id', '=', $switch);
             }
             if ($port) {
                 $query->where('port_id', 'like', '%' . $port . '%');

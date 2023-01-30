@@ -336,4 +336,68 @@ class DeviceController extends Controller
             return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
     }
+
+    static function bulkEditPorts(Request $request) {
+        
+        $validator = Validator::make($request->all(), [
+            'device_id' => 'required|integer',
+            'type' => 'required|string|in:tagged,untagged',
+            'ports' => 'required|json',
+            'vlans_selected' => 'required|array|min:1',
+        ]);
+
+        $device = Device::find($request->input('device_id'));
+
+        if (!$device) {
+            return redirect()->back()->withErrors(['message' => __('DeviceNotFound')]);
+        }
+
+        $type = $request->input('type');
+
+        $vlan_ids = $device->vlans->keyBy('id')->toArray();
+        $port_ids = $device->ports->keyBy('id')->toArray();
+
+        // Vlan und Port IDs nicht die richtigen IDs!
+        $ports = json_decode($request->input('ports'), true);
+        $vlans = $request->input('vlans_selected');
+
+        $class = self::$models[$device->type];
+
+        // Check if every VLAN exists
+        foreach($vlans as $vlan) {
+            if(!isset($vlan_ids[$vlan])) {
+                return redirect()->back()->withErrors(['message' => __('VlanNotFound')]);
+            }
+        }
+
+        $logininfo = $class::API_LOGIN($device);
+
+        if(!$logininfo) {
+            return redirect()->back()->withErrors(['message' => __('LoginFailed')]);
+        }
+
+        foreach($ports as $port) {
+            if(!isset($port_ids[$port])) {
+                return redirect()->back()->withErrors(['message' => __('PortNotFound')]);
+            }
+            if($type == 'tagged') {
+                $class::setTaggedVlanToPort($vlans, $port_ids[$port]['name'], $device, false, $logininfo);
+            }
+        }
+
+        if($type == 'untagged') {
+            $formatted_vlans = [];
+            foreach($ports as $key => $port) {
+                $formatted_vlans[] = $vlans[0];
+            };
+            $class::setUntaggedVlanToPort($formatted_vlans, $ports, $device, false, $logininfo);
+        }
+
+        list($cookie, $api_version) = explode(";", $logininfo);
+        $class::API_LOGOUT($device, $cookie, $api_version);
+
+        DeviceService::refreshDevice($device);
+
+        return redirect()->back()->with('success', __('Msg.VlanBulkUpdated'));
+    }
 }

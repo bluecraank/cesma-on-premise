@@ -1,5 +1,5 @@
 @livewireScripts
-@if (Auth::user()->role == 'admin')
+@if (Auth::user()->role >= 1)
     <script src="/js/request.js?{{ config('app.version') }}"></script>
 @endif
 <script src="/js/script.js?{{ config('app.version') }}" type="module"></script>
