@@ -300,9 +300,17 @@
                 <tbody>
 
                     @foreach ($vlan_templates as $template)
+                        @php
+                            $vlan_ids = json_decode($template->vlans, true);
+                            $vlans_vids = [];
+                            foreach ($vlan_ids as $vlan_id) {
+                                $vlan = \App\Models\Vlan::find($vlan_id);
+                                $vlans_vids[] = $vlan->vid;
+                            }
+                        @endphp
                         <tr>
                             <td>{{ $template->name }}</td>
-                            <td>{{ implode(',', json_decode($template->vlans, true)) }}</td>
+                            <td>{{ implode(', ', $vlans_vids) }}</td>
                             <td>{{ $template->untagged }}</td>
                             <td class="has-text-centered">
                                 <div class="field has-addons is-justify-content-center">

@@ -85,27 +85,6 @@ function getCellValue(row, index) {
     return $(row).find('td').eq(index).text()
 }
 
-// MultiSelect
-$('#switch-select-ms').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
-$('#switch-select-ms-2').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
-$('#vlan-select-ms').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
-$('#vlan-select-ms-2').multiSelect({
-    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
-    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
-})
-
 function collapseMenu(action, ele) {
     if (localStorage.getItem('menuIsCollapsed') != 'true' || action == 'hide') {
         $('.is-menu').css('min-width', '54px');
@@ -132,6 +111,27 @@ function collapseMenu(action, ele) {
     }
 }
 
+
+// MultiSelect
+$('#switch-select-ms').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+});
+
+$('#switch-select-ms-2').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+});
+
+$('#vlan-select-ms').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+});
+
+$('#vlan-select-ms-2').multiSelect({
+    selectableHeader: "<div class='content has-text-centered'>Verfügbar</div>",
+    selectionHeader: "<div class='content has-text-centered'>Ausgewählt</div>"
+});
 // Custom notification banner timeout
 setTimeout(function () {
     $(".notification.status").slideUp(250);
