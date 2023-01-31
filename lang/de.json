@@ -139,7 +139,6 @@
     "Menu.Label.System": "System",
     "Menu.Label.Data": "Daten",
 
-    "Header.Clients": "Geräte",
     "Header.Vlans": "VLANs",
     "Header.Switches": "Switche",
     "Header.Log": "Log",

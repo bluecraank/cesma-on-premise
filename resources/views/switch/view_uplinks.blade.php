@@ -20,6 +20,11 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $devices = $devices->sort(function ($a, $b) {
+                        return strnatcmp($a['name'], $b['name']);
+                    });
+                @endphp
                 @foreach ($devices as $device)
                     <tr>
                         <td>{{ $device['name'] }}</td>

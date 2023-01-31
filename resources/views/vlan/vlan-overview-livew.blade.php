@@ -36,6 +36,11 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $vlans = $vlans->sort(function ($a, $b) {
+                    return strnatcmp($a['vlan_id'], $b['vlan_id']);
+                });
+            @endphp
             @foreach ($vlans as $vlan)
                 @php
                     $scan = $sync = $clients = false;

@@ -1,7 +1,7 @@
 @inject('cc', 'App\Services\ClientService')
 
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Header.Clients') }}</h1>
+    <h1 class="title is-pulled-left">{{ trans_choice('Clients', 2) }}</h1>
 
     <div class="is-pulled-right ml-4">
     </div>

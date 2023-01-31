@@ -20,6 +20,11 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $devices = $devices->sort(function ($a, $b) {
+                        return strnatcmp($a['name'], $b['name']);
+                    });
+                @endphp
                 @foreach ($devices as $device)
                     @php
                         if (isset($device->last_backup->status) and $device->last_backup->status == 1) {

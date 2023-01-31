@@ -259,9 +259,9 @@
                         <span onclick="updateUntaggedPorts('{{ $device->id }}')"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
                         <span onclick="$('.modal-vlan-bulk-edit').show();"
-                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
+                            class="mr-5 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
                         <span onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
+                        class="ml-3 mr-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
                         <span onclick="enableEditing();"
                             class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
@@ -281,7 +281,7 @@
                             <th>{{ __('Switch.Live.Portname') }}</th>
                             <th class="has-text-centered">Untagged/Native</th>
                             <th class="has-text-centered" style="width:130px">Tagged/Allowed</th>
-                            <th class="has-text-centered" style="width: 150px;">{{ __('Clients') }}</th>
+                            <th class="has-text-centered" style="width: 150px;">{{ trans_choice('Clients', 2) }}</th>
                             <th class="has-text-centered" style="width: 80px;">Speed Mbit/s</th>
                         </tr>
                     </thead>
@@ -341,7 +341,12 @@
                                         @endif
                                     </td>
                                     <td class="has-text-centered" style="width: 150px;">
-                                        @if ($port->isMemberOfTrunk())
+                                        @php
+                                            $custom_uplinks = $device->deviceCustomUplinks;
+                                            $custom_uplinks = (isset($custom_uplinks)) ? $custom_uplinks->toArray() : ['uplinks' => '[]'];
+                                            $custom_uplinks = json_decode($custom_uplinks['uplinks'], true);
+                                        @endphp
+                                        @if ($port->isMemberOfTrunk() || in_array($port['name'], $custom_uplinks))
                                             <span class="tag is-warning">Excluded (Uplink)</span>
                                         @elseif(isset($clients[$port['name']]) ? false : true)
                                             <span class="is-size-7">{{ __('Msg.NoClients') }}</span>
