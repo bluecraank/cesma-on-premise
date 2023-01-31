@@ -353,7 +353,7 @@ class DeviceController extends Controller
         $type = $request->input('type');
 
         $vlan_ids = $device->vlans->keyBy('id')->toArray();
-        $port_ids = $device->ports->keyBy('id')->toArray();
+        $port_ids = $device->ports->keyBy('name')->toArray();
 
         // Vlan und Port IDs nicht die richtigen IDs!
         $ports = json_decode($request->input('ports'), true);

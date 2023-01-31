@@ -22,7 +22,7 @@
                     @foreach ($ports as $key => $port)
                         @if (!str_contains($port['name'], 'Trk'))
                             <span title="{{ $port['name'] }}" class="is-clickable tag"
-                                data-id="{{ $key }}">{{ $port['name'] }}</span>
+                                data-id="{{ $port['name'] }}">{{ $port['name'] }}</span>
                         @endif
                     @endforeach
                 </div>
