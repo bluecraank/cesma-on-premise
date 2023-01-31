@@ -1,5 +1,5 @@
 <x-layouts.main>
-    @inject('cc', 'App\Http\Controllers\ClientController')
+    @inject('cc', 'App\Services\ClientService')
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
@@ -11,7 +11,8 @@
 
                     <h1 class="subtitle">
                         <i class="location_dot fa fa-location-dot"></i>
-                        {{ $device->location()->first()->name }}
+                        {{ $device->location()->first()->name }} - {{ $device->building()->first()->name }} -
+                        {{ $device->room()->first()->name }} #{{ $device->location_number }}
                     </h1>
                 </div>
                 <div class="column is-6">
@@ -125,9 +126,14 @@
                                 foreach ($trunk as $port) {
                                     $trunks[$port['device_port_id']] = $portsById[$port['device_port_id']]->name ?? 'Unknown';
                                 }
+                                
+                                $uplink_name = $device
+                                    ->ports()
+                                    ->where('name', $key)
+                                    ->first()->description;
                             @endphp
                             <tr>
-                                <td>{{ $key }}</td>
+                                <td>{{ $uplink_name != '' ? $uplink_name : $key }}</td>
                                 <td>{{ implode(', ', $trunks) }}</td>
                             </tr>
                         @endforeach
@@ -153,7 +159,7 @@
                     <tbody>
                         @php
                             // Sort vlans in correct order
-                            $vlanlist = $vlans->toArray();
+                            $vlanlist = $vlans->keyBy('vlan_id')->toArray();
                             uksort($vlanlist, 'strnatcmp');
                         @endphp
                         @foreach ($vlanlist as $vlan)
@@ -237,7 +243,7 @@
                 </div>
 
 
-                <table class="table is-striped is-narrow is-fullwidth">
+                <table id="portoverview" class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
                             <th class="has-text-centered" style="width: 70px;">Status</th>
@@ -268,14 +274,14 @@
                                             href="/switch/{{ $device->id }}/ports/{{ $port['name'] }}">{{ $port['name'] }}</a>
 
                                     </td>
-                                    <td>
+                                    <td data-port="{{ $port->name }}" class="input-field">
                                         {{ $port['description'] }}
                                     </td>
                                     <td class="has-text-centered" style="width:110px">
                                         @if ($port->isMemberOfTrunk())
                                             <span class="tag is-info">{{ $port->trunkName() }}</span>
                                         @else
-                                            <div class="select is-small">
+                                            <div class="select is-small mt-1">
                                                 <select disabled data-id="{{ $device->id }}"
                                                     data-port="{{ $port->name }}"
                                                     data-current-vlan="{{ $port->untaggedVlan() ? $port->untaggedVlan() : 0 }}"
@@ -292,7 +298,8 @@
                                     </td>
                                     <td class="has-text-centered" style="width:130px">
                                         @if ($port->isMemberOfTrunk())
-                                            {{ count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) }} VLANs
+                                            {{ isset($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) ? count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) : 'All' }}
+                                            VLANs
                                         @else
                                             <a
                                                 onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['name'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
@@ -316,7 +323,8 @@
                                                         </span>
                                                     </button>
                                                 </div>
-                                                <div class="dropdown-menu" style="min-width:15rem" id="dropdown-menu4" role="menu">
+                                                <div class="dropdown-menu" style="min-width:15rem"
+                                                    id="dropdown-menu4" role="menu">
                                                     <div class="dropdown-content">
                                                         <div class="dropdown-item has-text-left">
                                                             @if (isset($clients[$port['name']]))
@@ -355,6 +363,23 @@
         </div>
     </div>
 
+    <script>
+        $("#portoverview").on('dblclick', 'td.input-field', function() {
+            let cell_data = $.trim($(this).text());
+            let id = $(this).attr('data-port');
+            let tmp = "<div id=\""+id+"\" class=\"control has-icons-right\"><input class=\"input is-success\" type=\"text\" placeholder=\"Text input\" value=\""+cell_data+"\"><span class=\"is-clickable is-hoverable icon is-small is-right\"><i class=\"fas fa-check\"></i></span></div>";
+
+            $(this).html(tmp);
+
+            $("#"+id).keyup( function(event) {
+            if (event.which == 13) {
+                storePortDescription(this, $(this).find('input').val(), $(this).attr('id'), '{{ $device->id }}');
+            } else if (event.which == 27) {
+                $(this).parent().html($(this).find('input').val());
+            }
+        });
+        });
+    </script>
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
     @include('modals.PortBulkEditVlansModal')

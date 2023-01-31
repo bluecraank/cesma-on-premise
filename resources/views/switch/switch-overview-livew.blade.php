@@ -31,9 +31,18 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $devices = $devices->sort(function ($a, $b) {
+                    return strnatcmp($a['name'], $b['name']);
+                });
+            @endphp
             @foreach ($devices as $device)
                 <tr>
-                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                    @if($device->created_at == $device->updated_at)
+                        <td><div class="has-text-warning" title="{{ __('Hint.NewlyCreated') }}" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
+                    @else
+                        <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                    @endif
                     <td>{{ $device->modelOrUnknown() }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
                     <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
@@ -41,9 +50,15 @@
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
+                                @if($device->created_at == $device->updated_at)
+                                <a title="{{ __('Show') }}" disabled class="button is-success is-small">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @else
                                 <a title="{{ __('Show') }}" class="button is-success is-small" href="/switch/{{ $device->id }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @endif
                             </div>
                             <div class="control">
                                 <a title="{{ __('GUI_External') }}" class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"

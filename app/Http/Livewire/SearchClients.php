@@ -35,8 +35,8 @@ class SearchClients extends Component
         $count_clients = Client::count();
         $vlans = Vlan::all()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendor::all()->keyBy('mac_prefix');
-        $types = MacType::all()->sortBy('mac_type')->pluck('mac_type')->unique();
-        
+        $types = MacType::all()->sortBy('type')->unique();
+
         $hostname = $this->cHOSTNAME;
         $ip = $this->cIP;
         $mac = $this->cMAC;

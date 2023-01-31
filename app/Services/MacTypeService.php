@@ -52,6 +52,7 @@ class MacTypeService
             return redirect()->back()->withErrors(['message' => 'MAC Type not found'])->withInput(['last_tab' => 'macs']);
         }
 
+        $icon = MacTypeIcon::where('mac_type_id', $mac_type->id)->delete();
         if(!$mac_type->delete()) {
             return redirect()->back()->withErrors(['message' => 'MAC Type could not be deleted'])->withInput(['last_tab' => 'macs']);
         }

@@ -79,7 +79,7 @@ class DeviceController extends Controller
         }
 
         if (DeviceService::storeDevice($request)) {
-            return redirect()->back()->with('success', 'Device created');
+            return redirect()->back()->with('success', __('Msg.SwitchCreated'));
         }
 
         return redirect()->back()->withErrors('Could not create device');
@@ -162,7 +162,7 @@ class DeviceController extends Controller
         DeviceService::deleteDeviceData($find);
 
         if ($find->delete()) {
-            LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
+            // LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
 
             return redirect()->back()->with('success', __('Msg.SwitchDeleted'));
         }
@@ -219,15 +219,13 @@ class DeviceController extends Controller
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        if(count($pubkeys) < 2) {
+        if(count($pubkeys) >= 2 && !empty($pubkeys)) {
             return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
         }
 
         if ($device) {
             $class = self::$models[$device->type];
-            $class::uploadPubkeys($device, $pubkeys);
-
-            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
+            return $class::uploadPubkeys($device, $pubkeys);
         }
 
         return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
@@ -239,7 +237,7 @@ class DeviceController extends Controller
 
         $devices = Device::all()->keyBy('id');
 
-        if (count($pubkeys) >= 2 and !empty($pubkeys)) {
+        if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
                 $class = self::$models[$device->type];
                 $class::uploadPubkeys($device, $pubkeys);
@@ -399,5 +397,32 @@ class DeviceController extends Controller
         DeviceService::refreshDevice($device);
 
         return redirect()->back()->with('success', __('Msg.VlanBulkUpdated'));
+    }
+
+    public function setPortName(Request $request) {
+        $return = array('success' => false, 'message' => 'Not implemented', 'data' => $request->all());
+        
+        $device = Device::find($request->input('device_id'));
+
+        if (!$device) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        }
+
+        $class = self::$models[$device->type];
+        $logininfo = $class::API_LOGIN($device);
+
+        if(!$logininfo) {
+            return json_encode(['success' => 'false', 'message' => __('Msg.ApiLoginFailed')]);
+        }
+
+        $port = $request->input('port');
+        $name = $request->input('description');
+
+        $return = $class::setPortName($port, $name, $device, $logininfo);
+
+        list($cookie, $api_version) = explode(";", $logininfo);
+        $class::API_LOGOUT($device, $cookie, $api_version);
+
+        return $return;
     }
 }

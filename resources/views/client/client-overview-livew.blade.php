@@ -1,4 +1,4 @@
-@inject('cc', 'App\Http\Controllers\ClientController')
+@inject('cc', 'App\Services\ClientService')
 
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Header.Clients') }}</h1>
@@ -97,7 +97,7 @@
                                 <option value="all">ALL</option>
                                 <option value="client">Client</option>
                                 @foreach ($types as $type)
-                                    <option value="{{ $type }}">{{ $type }}</option>
+                                    <option value="{{ $type->id }}">{{ $type->type }}</option>
                                 @endforeach
                             </select>
                         </div>

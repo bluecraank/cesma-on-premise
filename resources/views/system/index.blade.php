@@ -153,7 +153,7 @@
                     @foreach ($mac_prefixes as $mac)
                         <tr>
                             <td>{{ $mac->mac_prefix }}</td>
-                            <td>{{ $vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
+                            <td>{{ $mac_vendors[$mac->mac_prefix]->vendor_name ?? 'Unknown' }}</td>
                             <td>{{ $mac->description }}</td>
                             <td>{{ $mac->type }}</td>
                             <td class="has-text-centered">

@@ -9,6 +9,7 @@ use App\Http\Controllers\LogController;
 use App\Models\DeviceVlan;
 use App\Services\PublicKeyService;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 
@@ -55,6 +56,7 @@ class ArubaOS implements DeviceInterface
         $api_username = config('app.api_username');
 
         $api_password =  Crypt::decrypt($device->password);
+
         try {
             $response = Http::connectTimeout(3)->withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json'
@@ -108,7 +110,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -128,7 +130,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -147,7 +149,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -167,7 +169,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -186,7 +188,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $response->json()];
             }
         } catch (\Exception $e) {
-            return ['success' => false, 'data' => []];
+            return ['success' => false, 'data' => $e->getMessage()];
         }
     }
 
@@ -197,7 +199,7 @@ class ArubaOS implements DeviceInterface
         }
 
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => 'Login failed'];
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed')];
         }
 
         $data = [];
@@ -207,7 +209,6 @@ class ArubaOS implements DeviceInterface
         foreach (self::$available_apis as $key => $api) {
             $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version);
 
-            $data[$key] = "[]";
             if ($api_data['success']) {
                 $data[$key] = $api_data['data'];
             }
@@ -219,7 +220,7 @@ class ArubaOS implements DeviceInterface
             'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
             'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
             'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element']),
-            'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element'], $device, $cookie, $api_version),
+            'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element']),
             'uplinks' => self::formatUplinkData($data['ports']['port_element']),
             'success' => true,
         ];
@@ -256,7 +257,7 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function formatMacTableData($data): array
+    static function formatMacTableData($data, $vlans = [], $device = null, $cookie = null, $api_version = null): array
     {
         $return = [];
 
@@ -275,6 +276,10 @@ class ArubaOS implements DeviceInterface
 
     static function formatSystemData($system): array
     {
+        if(empty($system) or !is_array($system) or !isset($system)) {
+            return [];
+        }
+
         $return = [
             'name' => $system['name'],
             'model' => $system['product_model'],
@@ -287,7 +292,7 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function formatPortData(array $ports, array $stats): array
+    static function formatPortData(Array $ports, Array $stats): array
     {
         $return = [];
 
@@ -421,11 +426,11 @@ class ArubaOS implements DeviceInterface
     static function restoreBackup($device, $backup, $password_switch): array
     {
         if ($password_switch != Crypt::decrypt($device->password)) {
-            return ['success' => false, 'data' => 'Switch password incorrect'];
+            return ['success' => false, 'data' => 'Wrong password'];
         }
 
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => 'API Login failed'];
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed')];
         }
 
         list($cookie, $api_version) = explode(";", $login_info);
@@ -467,54 +472,63 @@ class ArubaOS implements DeviceInterface
 
     static function uploadPubkeys($device, $pubkeys = false): String
     {
-
         if (config('app.ssh_private_key')) {
-            $decrypt = Crypt::getPrivateKey();
-            if ($decrypt !== NULL) {
-                $key = PublicKeyLoader::load($decrypt);
-            } else {
-                return json_encode(['success' => 'false', 'message' => 'Error private key']);
+            $private_key = Storage::disk('local')->get('ssh.key');
+
+            if($private_key === NULL) {
+                return json_encode(['success' => 'false', 'message' => 'SSH Key Login Error']);
             }
+
+            $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
+
+            if ($decrypt === NULL) {
+                return json_encode(['success' => 'false', 'message' => 'Error decrypting SSH Key']);
+            }
+
+            $key = PublicKeyLoader::load($decrypt);
+
         } else {
             $key = Crypt::decrypt($device->password);
         }
 
         $keys = PublicKeyService::getPubkeysAsFile();
-        if ($keys != "") {
-            try {
-                $sftp = new SFTP($device->hostname);
-                $sftp->login(config('app.ssh_username'), "fridolin");
-                $upload = $sftp->put('/ssh/mgr_keys/authorized_keys', $keys);
-                $sftp->disconnect();
 
-                if ($upload) {
-                    if ($login_info = self::API_LOGIN($device)) {
-                        list($cookie, $api_version) = explode(";", $login_info);
+        try {
+            $sftp = new SFTP($device->hostname);
+            $sftp->login(config('app.ssh_username'), $key);
+            $upload = $sftp->put('/ssh/mgr_keys/authorized_keys', $keys);
+            $sftp->disconnect();
 
-                        $url = "authentication/ssh";
+            if ($upload) {
+                if ($login_info = self::API_LOGIN($device)) {
+                    list($cookie, $api_version) = explode(";", $login_info);
 
-                        $data = '{
-                            "auth_ssh_login": {
-                                "primary_method": "PAM_PUBLIC_KEY"
-                            },
-                            "auth_ssh_enable": {
-                                "primary_method": "PAM_PUBLIC_KEY"
-                            }
-                        }';
+                    $url = "authentication/ssh";
 
-                        $response = self::API_PUT_DATA($device->hostname, $cookie, $url, $api_version, $data);
-
-                        self::API_LOGOUT($device->hostname, $cookie, $api_version);
-                        if ($response['success']) {
-                            return json_encode(['success' => 'true', 'message' => "Uploaded and aaa configured"]);
+                    $data = '{
+                        "auth_ssh_login": {
+                            "primary_method": "PAM_PUBLIC_KEY"
+                        },
+                        "auth_ssh_enable": {
+                            "primary_method": "PAM_PUBLIC_KEY"
                         }
+                    }';
+
+                    $response = self::API_PUT_DATA($device->hostname, $cookie, $url, $api_version, $data);
+
+                    self::API_LOGOUT($device->hostname, $cookie, $api_version);
+
+                    if ($response['success']) {
+                        return json_encode(['success' => 'true', 'message' => __('Pubkeys.SyncAndEnable.Success')]);
+                    } else {
+                        return json_encode(['success' => 'false', 'message' => __('Pubkeys.SyncAndEnable.Error')]);
                     }
                 }
 
-                return json_encode(['success' => 'true', 'message' => $upload]);
-            } catch (\Exception $e) {
-                return json_encode(['success' => 'false', 'message' => 'Error sftp connection ' . $e->getMessage()]);
+                return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
             }
+        } catch (\Exception $e) {
+            return json_encode(['success' => 'false', 'message' => 'Error SFTP connection: ' . $e->getMessage()]);
         }
 
         return json_encode(['success' => 'false', 'message' => 'Error sftp connection']);
@@ -523,8 +537,7 @@ class ArubaOS implements DeviceInterface
     static function setUntaggedVlanToPort($vlans, $ports, $device, $need_login = true, $logindata = ""): String
     {
 
-        $success = 0;
-        $failed = 0;
+        $success = $failed = 0;
         $failed_ports = [];
         $portcount = count($ports);
 
@@ -546,6 +559,7 @@ class ArubaOS implements DeviceInterface
                     "port_id": "' . $port . '", 
                     "port_mode": "POM_UNTAGGED"
                 }';
+
                 $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
                 if ($result['success']) {
@@ -578,11 +592,12 @@ class ArubaOS implements DeviceInterface
             }
         }
 
-        return json_encode(['success' => 'false', 'message' => 'API Login failed']);
+        return json_encode(['success' => 'false', 'message' => __('Msg.ApiLoginFailed')]);
     }
 
     static function setTaggedVlanToPort($vlans, $port, $device, $need_login = true, $logindata = ""): array
     {
+        $return = [];
         if($need_login) {
             $login_info = self::API_LOGIN($device);
         } else {
@@ -593,7 +608,6 @@ class ArubaOS implements DeviceInterface
 
             list($cookie, $api_version) = explode(";", $login_info);
 
-            $return = [];
             $port_id = $device->ports()->where('name', $port)->first()->id;
             $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
             $known_vlans = $device->vlans()->get()->keyBy('id')->toArray();    // Get all known vlans from device
@@ -666,7 +680,7 @@ class ArubaOS implements DeviceInterface
 
         $return[] = [
             'success' => false,
-            'message' => 'API Login failed',
+            'message' => __('Msg.ApiLoginFailed'),
         ];
 
         return $return;
@@ -761,5 +775,23 @@ class ArubaOS implements DeviceInterface
         $return['time'] = number_format(microtime(true) - $start, 2);
 
         return $return;
+    }
+
+    static function setPortName($port, $name, $device, $logininfo) {
+        list($cookie, $api_version) = explode(";", $logininfo);
+
+        $data = '{
+            "id" : "' . $port . '",
+            "name": "' . $name . '"
+        }';
+
+        $response = self::API_PUT_DATA($device->hostname, $cookie, "ports/" . $port, $api_version, $data);
+
+        if ($response['success']) {
+            $device->ports()->where('name', $port)->update(['description' => $name]);
+            return json_encode(['success' => "true", 'message' => __('Msg.ApiPortNameSet')]);
+        } else {
+            return json_encode(['success' => "false", 'message' => __('Msg.ApiPortNameNotSet')]);
+        }
     }
 }

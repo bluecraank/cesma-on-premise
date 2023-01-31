@@ -388,14 +388,32 @@ function switchSyncPubkeys() {
 //     fetcher(uri, form, ele, cssclass);
 // }
 
+function storePortDescription(ele, description, port, device) {
+    let form = new FormData();
+    let uri = '/switch/' + device + '/action/update-port-name';
+    let cssclass = 'fa-edit';
+    
+    $(ele).find('.icon').hide();
+    form.append('port', port);
+    form.append('description', description);
+    form.append('device_id', device);
+
+    fetcher(uri, form, ele, cssclass, false, function(success) {
+        if(success) {
+            $(ele).parent().html(description);
+        }
+        $(ele).find('.icon').show();
+    });
+}
+
 // Fetcher function
-function fetcher(uri, form, ele, cssclass, timeout = false) {
+async function fetcher(uri, form, ele, cssclass, timeout = false, callback = false) {
 
     let token = $('meta[name="csrf-token"]').attr('content');
     form.append('_token', token);
 
     $(ele).addClass('is-loading');
-    fetch(uri, {
+    await fetch(uri, {
         method: 'POST',
         body: form
     }).then(response => response.json())
@@ -416,6 +434,11 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                         window.location.reload();
                     }, 1100)
                 }
+
+                if(callback) {
+                    callback(true);
+                }
+
             } else {
                 $(ele).addClass('is-danger');
                 $(ele).find('i').addClass('fa-exclamation-triangle');
@@ -425,6 +448,11 @@ function fetcher(uri, form, ele, cssclass, timeout = false) {
                 $.notify(data.message, {
                     style: 'bulma-error'
                 });
+
+                
+                if(callback) {
+                    callback(false);
+                }
             }
         }
         );

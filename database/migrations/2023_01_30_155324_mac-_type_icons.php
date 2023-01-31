@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mac_type_icons', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('mac_type_id')->constrained('mac_types')->onDelete('cascade');
-            $table->string('mac_icon', 255);
-            $table->timestamps();
+        
+        Schema::table('mac_type_icons', function (Blueprint $table) {  
+            $table->foreignId('mac_type_id')->constrained('mac_types')->onDelete('cascade')->change();
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mac_type_icons');
+        //
     }
 };

@@ -87,16 +87,23 @@ class DeviceService
         }
 
         foreach ($data['vlanports'] as $vlanport) {
-            $device->vlanports()->updateOrCreate(
-                [
-                    'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
+            // CX Trunk Discovery
+            if($vlanport['vlan_id'] == "Trunk") {
+                $device->uplinks()->updateOrCreate([
+                    'name' => $vlanport['port_id'],
                     'device_id' => $device->id,
-                    'device_vlan_id' => $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first()->id,
-                ],
-                [
-                    'is_tagged' => $vlanport['is_tagged']
-                ]
-            );
+                    'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
+                ]);
+            } else {
+                $device->vlanports()->updateOrCreate(
+                    [
+                        'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
+                        'device_id' => $device->id,
+                        'device_vlan_id' => $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first()->id,
+                        'is_tagged' => $vlanport['is_tagged']
+                    ]
+                );
+            }
         }
 
         foreach ($data['statistics'] as $statistic) {
@@ -175,7 +182,6 @@ class DeviceService
     static function deleteDeviceData(Device $device)
     {
         DeviceBackup::where('device_id', $device->id)->delete();
-        DevicePortStat::where('device_id', $device->id)->delete();
         DevicePort::where('device_id', $device->id)->delete();
         DeviceVlan::where('device_id', $device->id)->delete();
         DeviceUplink::where('device_id', $device->id)->delete();

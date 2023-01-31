@@ -99,6 +99,8 @@
     "Hint.Add": "Hinzufügen",
     "Hint.Sync": "Synchronisieren",
     "Hint.Show": "Mehr anzeigen",
+    "Hint.Updated": "Aktualisiert ",
+    "Hint.NewlyCreated": "Abfrage wird durchgeführt",
     "Portstats.for": "Statistiken für Port",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
 
@@ -213,6 +215,9 @@
     "Msg.RoomUpdated": "Raum erfolgreich aktualisiert",
     "Msg.RoomDeleted": "Raum erfolgreich gelöscht",
     "Msg.VlanBulkUpdated": "Massenbearbeitung durchgeführt",
+    "Msg.ApiLoginFailed": "Anmeldung an der API fehlgeschlagen",
+    "Msg.ApiPortNameSet": "Portname erfolgreich gesetzt",
+    "Msg.ApiPortNameNotSet": "Portname konnte nicht gesetzt werden",
 
     "Vlan.Sync.Title": "VLANs synchronisieren - Ergebnisse",
     "Vlan.Sync.Jobs": "Aufgaben",
@@ -244,6 +249,7 @@
     "Vlan.IsClientVlan": "Dieses VLAN im Endgerätescan nicht berücksichtigen",
     "Vlan.Sync": "Synchronisieren",
     "Vlan.Edit": "VLAN bearbeiten",
+    "Vlan.Sync.Expected.NotRenamed": "- Nicht umbenannt (VLAN 1 cannot be renamed)",
 
     "Pubkeys.Sync.Success": "Öffentliche Schlüssel erfolgreich synchronisiert",
     "Pubkeys.Sync.NotEnough": "Mindestens 2 Schlüssel müssen vorhanden sein"

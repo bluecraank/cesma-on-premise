@@ -113,6 +113,7 @@ class ClientService {
                     'vlan_id' => $macs[$mac]['vlan_id'],
                     'hostname' => $client['hostname'],
                     'ip_address' => $client['ip_address'],
+                    'type' => self::getClientType($mac),
                 ]);
 
                 if($client->wasRecentlyCreated) {
@@ -125,4 +126,28 @@ class ClientService {
 
         Log::info('Updated '. $updated .' clients | Created '. $created .' clients | Took: '. (microtime(true) - $start) .'s');
     } 
+
+    static function getClientType($mac)
+    {
+        $types = MacType::all()->keyBy('mac_prefix')->toArray();
+
+        $mac_prefix = substr($mac, 0, 6);
+        if (array_key_exists($mac_prefix, $types)) {
+            return $types[$mac_prefix]['id'];
+        }
+
+        return 0;
+    }
+
+    static function getClientIcon($type)
+    {
+        $icons = MacTypeIcon::all()->keyBy('mac_type_id')->toArray();
+        // dd($type, $icons);
+        if (array_key_exists($type, $icons)) {
+            return "fas " . $icons[$type]['mac_icon'];
+        }
+
+        return 'fas fa-desktop';
+    }
+
 }

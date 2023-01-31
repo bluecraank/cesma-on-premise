@@ -42,7 +42,7 @@
         <div class="column">
             <div class="box has-text-centered">
                 <label class="label">LINK STATUS</label>
-                {!! $port->link
+                {!! ($current_port->link == 1)
                     ? '<span class="is-size-2 has-text-success">UP</span>'
                     : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
             </div>

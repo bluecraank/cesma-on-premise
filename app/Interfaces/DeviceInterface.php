@@ -39,7 +39,7 @@
     
         static function formatVlanData(Array $vlans): Array; 
 
-        static function formatMacTableData(Array $macs): Array;
+        static function formatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): Array;
         
         static function formatSystemData(Array $system): Array;
 

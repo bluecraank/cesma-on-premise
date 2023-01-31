@@ -84,3 +84,7 @@ progress::-moz-progress-bar {
     color: #159dc6 !important;
     text-decoration: underline;
 }
+
+table tbody tr:hover {
+    background-color: #495765 !important;
+}
