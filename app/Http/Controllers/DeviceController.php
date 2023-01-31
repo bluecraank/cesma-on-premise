@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
 {
-    static $models = [
+    static $types = [
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
     ];
@@ -74,7 +74,7 @@ class DeviceController extends Controller
             'type' => 'required|string'
         ])->validate();
 
-        if (!in_array($request->input('type'), array_keys(self::$models))) {
+        if (!in_array($request->input('type'), array_keys(self::$types))) {
             return redirect()->back()->withErrors('Device type not found');
         }
 
@@ -177,11 +177,11 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
-        if (!in_array($device->type, array_keys(self::$models))) {
+        if (!in_array($device->type, array_keys(self::$types))) {
             return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
         }
 
-        $class = self::$models[$device->type];
+        $class = self::$types[$device->type];
         $backup = $class::createBackup($device);
 
         if ($backup) {
@@ -200,11 +200,11 @@ class DeviceController extends Controller
         $devices = Device::all()->keyBy('id');
 
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$models))) {
+            if (!in_array($device->type, array_keys(self::$types))) {
                 continue;
             }
 
-            $class = self::$models[$device->type];
+            $class = self::$types[$device->type];
             $class::createBackup($device);
         }
 
@@ -224,7 +224,7 @@ class DeviceController extends Controller
         }
 
         if ($device) {
-            $class = self::$models[$device->type];
+            $class = self::$types[$device->type];
             return $class::uploadPubkeys($device, $pubkeys);
         }
 
@@ -239,7 +239,7 @@ class DeviceController extends Controller
 
         if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
-                $class = self::$models[$device->type];
+                $class = self::$types[$device->type];
                 $class::uploadPubkeys($device, $pubkeys);
             }
 
@@ -254,23 +254,24 @@ class DeviceController extends Controller
 
         $device = Device::find($request->input('device'));
 
-        if ($device) {
-            $vlans = json_decode($request->input('vlans'), true);
-            $ports = json_decode($request->input('ports'), true);
-
-            if(count($vlans) == 0 or count($ports) == 0) {
-                return json_encode(['success' => 'false', 'message' => 'No changes made']);
-            }
-
-            if (is_array($vlans) and is_array($ports) and count($vlans) == count($ports)) {
-                $class = self::$models[$device->type];
-
-                return $class::setUntaggedVlanToPort($vlans, $ports, $device);
-            }
-            
-            return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
+        if (!$device) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
-        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+
+        $vlans = json_decode($request->input('vlans'), true);
+        $ports = json_decode($request->input('ports'), true);
+
+        if(count($vlans) == 0 or count($ports) == 0) {
+            return json_encode(['success' => 'false', 'message' => 'No changes made']);
+        }
+
+        if (is_array($vlans) and is_array($ports) and count($vlans) == count($ports)) {
+            $class = self::$types[$device->type];
+
+            return $class::setUntaggedVlanToPort($vlans, $ports, $device);
+        }
+        
+        return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
     }
 
     static function setTaggedVlanToPort(Request $request)
@@ -298,7 +299,7 @@ class DeviceController extends Controller
         $ins = 0;
         $return = ['message' => ''];
 
-        $class = self::$models[$device->type];
+        $class = self::$types[$device->type];
 
         $result = $class::setTaggedVlanToPort($vlans, $port, $device);
 
@@ -326,7 +327,7 @@ class DeviceController extends Controller
 
         if ($device and $backup) {
             $password_switch = $request->input('password-switch');
-            $class = self::$models[$device->type];
+            $class = self::$types[$device->type];
             $restore = $class::restoreBackup($device, $backup, $password_switch);
 
             LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "' . $backup->created_at . '", "restored": "' . $restore['success'] . '"}');
@@ -359,7 +360,7 @@ class DeviceController extends Controller
         $ports = json_decode($request->input('ports'), true);
         $vlans = $request->input('vlans_selected');
 
-        $class = self::$models[$device->type];
+        $class = self::$types[$device->type];
 
         // Check if every VLAN exists
         foreach($vlans as $vlan) {
@@ -378,6 +379,7 @@ class DeviceController extends Controller
             if(!isset($port_ids[$port])) {
                 return redirect()->back()->withErrors(['message' => __('PortNotFound')]);
             }
+
             if($type == 'tagged') {
                 $class::setTaggedVlanToPort($vlans, $port_ids[$port]['name'], $device, false, $logininfo);
             }
@@ -408,7 +410,7 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
-        $class = self::$models[$device->type];
+        $class = self::$types[$device->type];
         $logininfo = $class::API_LOGIN($device);
 
         if(!$logininfo) {
@@ -424,5 +426,13 @@ class DeviceController extends Controller
         $class::API_LOGOUT($device, $cookie, $api_version);
 
         return $return;
+    }
+
+    public function hasUpdate(Device $device, Request $request) {
+        if($request->time < $device->updated_at) {
+            return json_encode(['success' => true, 'updated' => true, 'message' => __('Msg.ViewOutdated').' <a style="text-decoration:underline" href="/switch/'.$device->id.'">'.__('Msg.ClickToRefresh').'</a>']);
+        } else {
+            return json_encode(['success' => true, 'updated' => false,  'message' => '']);
+        }
     }
 }

@@ -603,38 +603,27 @@ class ArubaCX implements DeviceInterface
             $rest_vlans_uri = "/rest/" . $api_version . "/system/vlans/";
 
             $port_id = $device->ports()->where('name', $port)->first()->id;
-            $alreadyVlans = $device->vlanports()->where('device_port_id', $port_id)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
+            $alreadyVlans = $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', false)->first();    // Get all tagged vlans from port
             $known_vlans = $device->vlans()->get()->keyBy('id')->toArray();    // Get all known vlans from device
+            
+            $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', true)->delete();
 
             $data_builder = [];
             $data_builder['vlan_trunks'] = [];
-            $data_builder['vlan_tag'] = "";
-
             $data_builder['vlan_mode'] = "native-untagged";
-
-            var_dump($alreadyVlans);
-
-            foreach ($alreadyVlans as $device_vlan_id => $vlan) {
-                if ($vlan['is_tagged'] == 0) {
-                    $data_builder['vlan_tag'] = $rest_vlans_uri . $known_vlans[$device_vlan_id]['vlan_id'];
-                }
-            }
+            $data_builder['vlan_tag'] = $rest_vlans_uri . $known_vlans[$alreadyVlans->device_vlan_id]['vlan_id'] ?? $rest_vlans_uri . "1";
 
             foreach ($vlans as $vlan) {
                 if (!in_array($rest_vlans_uri . $known_vlans[$vlan]['vlan_id'], $data_builder['vlan_trunks'])) {
                     $data_builder['vlan_trunks'][] = $rest_vlans_uri . $known_vlans[$vlan]['vlan_id'];
+                    $device->vlanports()->create(['device_port_id' => $port_id, 'device_vlan_id' => $vlan, 'is_tagged' => true]);
                 }
             }
 
-            if (empty($data_builder['vlan_tag'])) {
-                $data_builder['vlan_tag'] = $rest_vlans_uri . "1";
-            }
-            
             $data = json_encode($data_builder);
 
             $uri = self::$port_if_uri . $port;
             $result = self::API_PUT_DATA($device->hostname, $cookie, $uri, $api_version, $data);
-
 
             if ($result['success']) {
                 // LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLANs geändert", "port": "' . $port . '", "vlan": "' . implode(",", $vlans) . '"}');
@@ -652,9 +641,7 @@ class ArubaCX implements DeviceInterface
                     'message' => __('Vlan.Update.Error.Tagged', ['port' => $port, 'vlan' => "(Alle)"]),
                 ];
             }
-
-
-            $device->vlanports()->where('device_port_id', $port_id)->delete();
+            
             if ($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);

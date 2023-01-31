@@ -23,7 +23,12 @@ class DevicePortStatController extends Controller
             abort(404, "No data for port $port_id found.");
         }
 
-        $ports = $device->ports()->get()->sortBy('name');
+        $ports = $device->ports()->get();
+
+        $ports = $ports->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+
 
         if(empty($port_stats)) {
             abort(404, "No data for port $port_id found.");

@@ -46,7 +46,7 @@
                 <button onclick="$('.modal-sync-vlans-specific').hide();return false;" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 
-                <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Switch.Sync.Wait') }}</span>
+                <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>
         </div>
     </form>

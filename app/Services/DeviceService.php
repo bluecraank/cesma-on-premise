@@ -35,13 +35,13 @@ class DeviceService
             self::storeApiData($api_data, $device);
             return json_encode([
                 'success' => "true",
-                'message' => 'Device data refreshed',
+                'message' => __('Msg.RefreshedDevice'),
             ]);
         }
 
         return json_encode([
             'success' => "false",
-            'message' => 'Got no data',
+            'message' => __('Msg.FailedToRefreshDevice'),
         ]);
     }
 
@@ -236,10 +236,10 @@ class DeviceService
                 ]
             );
 
-            return back()->with('success', 'Uplinks wurden gespeichert');
+            return back()->with('success', __('Msg.UplinkUpdated'));
         }
 
-        return back()->with('error', 'Uplinks konnten nicht gespeichert werden');
+        return back()->with('error', __('Msg.UplinkNotUpdated'));
     }
 
     static function syncVlansToAllDevices(Request $request)

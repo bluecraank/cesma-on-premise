@@ -115,7 +115,7 @@ thead th:hover {
 .lds-spinner {
     display: inline-block;
     position: relative;
-    margin-left: -15px;
+    margin-left: -12px;
     margin-top: -10px;
     scale: 0.25;
     width: 30px;
@@ -134,7 +134,7 @@ thead th:hover {
     width: 6px;
     height: 18px;
     border-radius: 20%;
-    background: #000;
+    background: #ffaa0e;
   }
   .lds-spinner div:nth-child(1) {
     transform: rotate(0deg);

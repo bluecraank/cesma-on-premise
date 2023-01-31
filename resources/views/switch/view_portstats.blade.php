@@ -18,7 +18,6 @@
                             @if ($port_id == null)
                                 <option value="" selected>Bitte wählen</option>
                             @endif
-
                             @foreach ($ports as $port)
                                 @if (str_contains($port['name'], 'Trk'))
                                     @continue

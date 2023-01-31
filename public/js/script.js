@@ -24,6 +24,19 @@ $.notify.addStyle('bulma-error', {
     }
 });
 
+$.notify.addStyle('bulma-info', {
+    // html: "<div><i class='fa-solid fa-check mr-1'></i> <span data-notify-text/></div>",
+    html: "<div><div class='notification is-info'><i class='fa-solid fa-info mr-3'></i><span data-notify-html/></div></div>",
+    classes: {
+        base: {
+            "white-space": "nowrap",
+            "background-color": "none",
+            "padding": "0px",
+            "color": "white"
+        },
+    }
+});
+
 $(document).on('keydown', function (e) {
     if (e.keyCode === 27) {
         $('.modal').hide();

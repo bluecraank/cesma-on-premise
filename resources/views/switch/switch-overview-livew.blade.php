@@ -39,7 +39,7 @@
             @foreach ($devices as $device)
                 <tr>
                     @if($device->created_at == $device->updated_at)
-                        <td><div class="has-text-warning" title="{{ __('Hint.NewlyCreated') }}" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
+                        <td><div title="{{ __('Hint.NewlyCreated') }}" class="mr-1 lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
                     @else
                         <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
                     @endif

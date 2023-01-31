@@ -1,7 +1,5 @@
 <div class="modal clickable-tags modal-vlan-bulk-edit">
-    <form onchange="checkVlanCount()" id="bulk-edit-ports"
-        
-        action="/switch/{{ $device->id }}/action/bulk-update-ports" method="post">
+    <form onchange="checkVlanCount()" id="bulk-edit-ports" action="/switch/{{ $device->id }}/action/bulk-update-ports" method="post">
         @csrf
         <input type="hidden" class="ports" value='' name="ports">
         <div class="modal-background"></div>
@@ -64,11 +62,11 @@
             </section>
             <footer class="modal-card-foot">
                 @if (Auth::user()->role >= 1)
-                    <button onclick="$('.modal-card-foot .submit').addClass('is-loading');event.preventDefault();submitBulkEditPorts('{{ $device->id }}');" disabled type="submit" class="button is-submit is-primary">{{ __('Button.Save') }}</button>
+                    <button onclick="event.preventDefault();submitBulkEditPorts(this, '{{ $device->id }}');" disabled type="submit" class="button is-submit is-primary">{{ __('Button.Save') }}</button>
                 @endif
                 <button onclick="$('.modal-vlan-bulk-edit').hide();return false;" type="button"
                     class="is-cancel button">{{ __('Button.Close') }}</button>
-                <span class="is-info is-submit is-hidden">{{ __('Button.Save') }}...</span>
+                <span class="is-info submit-wait is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>
         </div>
 

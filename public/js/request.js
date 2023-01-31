@@ -426,7 +426,8 @@ async function fetcher(uri, form, ele, cssclass, timeout = false, callback = fal
                 $(ele).find('i').removeClass('fa-exclamation-triangle');
                 $(ele).removeClass('is-danger');
                 $.notify(data.message, {
-                    style: 'bulma-success'
+                    style: 'bulma-success',
+                    autoHideDelay: 8000
                 });
 
                 if (timeout) {
@@ -479,9 +480,11 @@ function VlanTemplateModal(id, name, vlans, modal_id) {
     modal.show();
 }
 
-function submitBulkEditPorts(id) {
-
-    let vlans = $("#vlan-select-ms").val();
+function submitBulkEditPorts(ele, id) {
+    $(ele).addClass('is-loading');
+    $(ele).siblings('button').addClass('is-hidden');
+    $(ele).siblings('.submit-wait').removeClass('is-hidden');
+    
     let ports = [];
     let y = 0;
     let modal2 = $('.modal-vlan-bulk-edit');

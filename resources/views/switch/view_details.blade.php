@@ -367,18 +367,40 @@
         $("#portoverview").on('dblclick', 'td.input-field', function() {
             let cell_data = $.trim($(this).text());
             let id = $(this).attr('data-port');
-            let tmp = "<div id=\""+id+"\" class=\"control has-icons-right\"><input class=\"input is-success\" type=\"text\" placeholder=\"Text input\" value=\""+cell_data+"\"><span class=\"is-clickable is-hoverable icon is-small is-right\"><i class=\"fas fa-check\"></i></span></div>";
+            let tmp = "<div id=\"" + id +
+                "\" class=\"control has-icons-right\"><input class=\"input is-success\" type=\"text\" placeholder=\"Text input\" value=\"" +
+                cell_data +
+                "\"><span class=\"is-clickable is-hoverable icon is-small is-right\"><i class=\"fas fa-check\"></i></span></div>";
 
             $(this).html(tmp);
 
-            $("#"+id).keyup( function(event) {
-            if (event.which == 13) {
-                storePortDescription(this, $(this).find('input').val(), $(this).attr('id'), '{{ $device->id }}');
-            } else if (event.which == 27) {
-                $(this).parent().html($(this).find('input').val());
-            }
+            $("#" + id).keyup(function(event) {
+                if (event.which == 13) {
+                    storePortDescription(this, $(this).find('input').val(), $(this).attr('id'),
+                        '{{ $device->id }}');
+                } else if (event.which == 27) {
+                    $(this).parent().html($(this).find('input').val());
+                }
+            });
         });
-        });
+
+        function checkUpdate() {
+            fetch('/switch/{{ $device->id }}/update-available?time={{ $device->updated_at }}')
+            .then(response => response.json())
+            .then(data => {
+                if(data.success && data.updated) {
+                    $.notify(data.message, {
+                        style: 'bulma-info',
+                        autoHide: false,
+                        clickToHide: true
+                    });
+
+                    clearInterval(interval);
+                }
+            });
+        }
+
+        var interval = setInterval(checkUpdate, 10000);
     </script>
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
