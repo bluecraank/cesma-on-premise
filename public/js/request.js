@@ -240,14 +240,16 @@ function updateUntaggedPorts(id) {
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
                 $.notify(data.message, {
-                    style: 'bulma-success'
+                    style: 'bulma-success',
+                    autoHideDelay: 8000
                 });
             } else {
                 $(".live-body").css('opacity', '1');
                 $(".save-vlans").addClass('is-hidden');
                 $(".edit-vlans").removeClass('is-hidden');
                 $.notify(data.message, {
-                    style: 'bulma-error'
+                    style: 'bulma-error',
+                    autoHideDelay: 8000
                 });
             }
         });
@@ -257,13 +259,18 @@ function updateUntaggedPorts(id) {
     });
 }
 
-function updateTaggedModal(vlans, port, id) {
+function updateTaggedModal(vlans, port, id, typ) {
     let vlansSplitted = vlans.split(',');
 
     let modal = $('.modal-vlan-tagging');
     modal.find('.port_id').val(port);
     modal.find('.device_id').val(id);
     modal.find('.port_id_title').html(port);
+    modal.find('.typ-warning').addClass('is-hidden');
+
+    if(typ == 'access') {
+        modal.find('.typ-warning').removeClass('is-hidden');
+    }
 
     modal.find('.modal-card-body span.tag').removeClass('is-primary');
 
@@ -313,19 +320,21 @@ function updateTaggedVlans() {
         .then(data => {
             if (data.success == "true") {
                 $.notify(data.message, {
-                    style: 'bulma-success'
+                    style: 'bulma-success',
+                    autoHideDelay: 8000
                 });
             } else {
                 $.notify(data.message, {
-                    style: 'bulma-error'
+                    style: 'bulma-error',
+                    autoHideDelay: 8000
                 });
             }
             modal.hide();
             modal.find('.is-cancel').removeClass('is-hidden');
             modal.find('.is-info').addClass('is-hidden');
             modal.find('.is-submit').removeClass('is-loading');
-            // $(".save-vlans").addClass('is-hidden');
-            // $(".edit-vlans").removeClass('is-hidden');
+            $(".save-vlans").addClass('is-hidden');
+            $(".edit-vlans").removeClass('is-hidden');
         });
 
 }
@@ -380,15 +389,13 @@ function switchSyncPubkeys() {
     $(".modal-sync-pubkeys").hide();
 }
 
-// function syncVlanSwitch() {
-//     let form = new FormData();
-//     let uri = '/switch/'+$(".syncVlanSwitch").val()+'/vlans/sync';
-//     let cssclass = 'fa-ethernet';
-//     let ele = $(".syncVlanButton");
-//     fetcher(uri, form, ele, cssclass);
-// }
+function storePortDescription(ele, description, old_desc, port, device) {
 
-function storePortDescription(ele, description, port, device) {
+    if(description == old_desc) {
+        $(ele).parent().html(description);
+        return;
+    }
+
     let form = new FormData();
     let uri = '/switch/' + device + '/action/update-port-name';
     let cssclass = 'fa-edit';
@@ -447,7 +454,8 @@ async function fetcher(uri, form, ele, cssclass, timeout = false, callback = fal
                 $(ele).removeClass('is-loading');
                 $(ele).removeClass('is-primary');
                 $.notify(data.message, {
-                    style: 'bulma-error'
+                    style: 'bulma-error',
+                    autoHideDelay: 8000
                 });
 
                 

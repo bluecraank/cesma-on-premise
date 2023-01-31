@@ -80,7 +80,8 @@
     "Switch.Live.VlanSummary": "VLANS INSGESAMT",
     "Switch.Live.Serialnumber": "Seriennummer",
     "Switch.Live.Portname": "Beschreibung",
-    "Switch.Live.NoTrunksFound": "Keine Trunks gefunden",
+    "Switch.Live.NoTrunksFound": "Keine Uplinks gefunden",
+    "Switch.Live.NoCustomUplinks": "Keine benutzerdefinierten Uplinks",
     "Switch.SSH.Output": "Ausgabe",
     "Switch.SSH.Command": "Kommando",
     "Switch.SSH.SelectSwitch": "Switch auswählen",
@@ -102,6 +103,8 @@
     "Hint.NewlyCreated": "Abfrage wird durchgeführt",
     "Portstats.for": "Statistiken für Port",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
+    "Uplinks found": "Gefundene Uplinks",
+    "Custom Uplinks": "Benutzerdefinierte Uplinks",
 
     "Role.SuperAdmin": "Superadmin",
     "Role.Admin": "Administrator",
@@ -161,7 +164,7 @@
     "Login": "Anmelden",
     "Options": "Optionen",
     "Role": "Rolle",
-    "Clients": "Endgeräte",
+    "Clients": "Endgerät|Endgeräte",
     "Type": "Typ",
     "Preview": "Vorschau",
 
@@ -223,7 +226,14 @@
     "Msg.SubmitWait": "Aktion wird ausgeführt. Bitte warten...",
     "Msg.ViewOutdated": "Die Ansicht ist veraltet.",
     "Msg.ClickToRefresh": "Jetzt aktualisieren",
+    "Msg.NoClients": "Keine Endgeräte",
+
+    "edit": "bearbeiten",
     
+    "Port.Access.NoAllowedVlans": "Access Ports haben keine allowed / tagged VLANs",
+    "Port.NativeUntagged.AllVlansAllowed": "Alle VLANs sind auf diesem Port erlaubt",
+    "Port.AccessMode": "ACCESS PORT",
+
     "Vlan.Sync.Title": "VLANs synchronisieren - Ergebnisse",
     "Vlan.Sync.Jobs": "Aufgaben",
     "Vlan.Sync.NoJobs": "Keine Aufgaben vorhanden",
@@ -247,6 +257,7 @@
     "Vlan.Update.Error.Untagged": "Fehler: VLAN :vlan konnte auf Port :port nicht ohne Tag eingerichtet werden",
     "Vlan.Update.Error.Tagged": "Fehler: VLAN :vlan konnte auf Port :port nicht mit Tag eingerichtet werden",
     "Vlan.Update.Success.Tagged": "VLAN :vlan erfolgreich auf Port :port mit Tag eingerichtet",
+    "Vlan.Update.Success.TaggedAll": "Alle VLANs erfolgreich auf Port :port mit Tag eingerichtet",
     "Vlan.Update.Success.Remove.Tagged": "VLAN :vlan erfolgreich von Port :port entfernt",
     "Vlan.Update.Error.Remove.Tagged": "Fehler: VLAN :vlan konnte nicht von Port :port entfernt werden",
     "Vlan.Subnet": "IP-Bereich",

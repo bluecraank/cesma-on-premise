@@ -22,4 +22,9 @@ class DeviceUplink extends Model
     {
         return $this->belongsTo(DevicePort::class);
     }
+    
+    public function deviceVlanPorts()
+    {
+        return $this->hasMany(DeviceVlanPort::class);
+    }
 }

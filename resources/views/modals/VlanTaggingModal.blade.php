@@ -3,7 +3,7 @@
 
     <div style="margin-top: 40px" class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Tag vlans to Port <span class="port_id_title">A4</span></p>
+            <p class="modal-card-title">Port <span class="port_id_title">A4</span> {{ __('edit') }}</p>
             <span class="tag">NOT TAGGED</span>
             <span class="tag is-primary">TAGGED</span>
         </header>
@@ -21,6 +21,22 @@
             @foreach ($vlans as $key => $vlan)
                 <span title="{{ $vlan['name'] }}" class="is-clickable tag" data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
             @endforeach
+
+            <br><br>
+
+            <div class="notification is-warning typ-warning is-hidden">
+                Dieser Port ist zurzeit im Access-Mode.<br>
+                Beim Speichern dieses Formulars wird der Port in den Trunk-Mode gesetzt.
+              </div>
+
+            {{-- <br><br>
+            <input type="checkbox" name="set-port-to-access" class="" value="{{ $device->id }}">
+            <label class="label is-small">Set Port to Access Mode</label>
+
+            <input type="checkbox" name="tag-all-vlans" class="" value="{{ $device->id }}">
+            <label class="label is-small">Tag all Vlans</label> --}}
+
+            {{-- FEATURE IN DEVELOPMENT: Auswahl ob Port als ACCESS Port konfiguriert werden soll oder ob alle VLANs drauf getagged werden sollen --}}
         </section>
         <footer class="modal-card-foot">
             @if (Auth::user()->role >= 1)

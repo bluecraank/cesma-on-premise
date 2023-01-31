@@ -11,7 +11,9 @@ class DevicePortStatController extends Controller
     public function index(Device $device, $port_id = null)
     {
         $current_port = $device->ports()->where('name', $port_id)->first();
-        
+
+        $vlans = $device->vlans()->get()->keyBy('id')->toArray();
+
         if($port_id == null || !$current_port->stats()) {
             abort(404, "Port $port_id not found.");
         }
@@ -42,7 +44,7 @@ class DevicePortStatController extends Controller
         $utilization_tx = $port_stats[0] && $port_stats[0]->port_tx_bps != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $speed = $port_stats[0] ? $port_stats[0]->port_speed / 10 : 0;
 
-        return view('switch.view_portstats', compact('device', 'dataset', 'port_stats', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3'));
+        return view('switch.view_portstats', compact('vlans', 'device', 'dataset', 'port_stats', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3'));
     }
 
     public function getPacketsData($ports) {

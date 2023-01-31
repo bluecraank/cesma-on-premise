@@ -12,10 +12,11 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {        
-        Schema::table('mac_type_icons', function (Blueprint $table) {  
-            $table->foreignId('mac_type_id')->constrained('mac_types')->onDelete('cascade')->change();
+    {
+        Schema::table('device_ports', function (Blueprint $table) {
+            $table->string('vlan_mode')->default('native-untagged');
         });
+
     }
 
     /**

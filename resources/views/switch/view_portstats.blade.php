@@ -46,11 +46,17 @@
                     : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
             </div>
         </div>
-
         <div class="column">
             <div class="box has-text-centered">
                 <label class="label">SPEED</label>
                 <span class="is-size-2 has-text-success">{{ $port_stats->last()->port_speed }} Mbit/s</span>
+
+            </div>
+        </div>
+        <div class="column">
+            <div class="box has-text-centered">
+                <label class="label">PORT MODE</label>
+                <span class="is-size-2 has-text-success">{{ $current_port->vlan_mode }}</span>
 
             </div>
         </div>
@@ -80,16 +86,41 @@
             </div>
         </div>
 
-        <div class="column is-12">
-            <div class="box">
-                <h2 class="subtitle">Utilization RX/TX</h2>
+        <div class="columns">
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Utilization RX/TX</h2>
 
-                <label class="label">RX: {{ $utilization_rx }}%</label>
-                <progress class="progress is-primary" value="{{ $utilization_rx }}"
-                    max="{{ $speed }}">{{ $utilization_rx }}</progress>
-                <label class="label">TX: {{ $utilization_tx }}%</label>
-                <progress class="progress is-link" value="{{ $utilization_tx }}"
-                    max="{{ $speed }}">{{ $utilization_tx }}</progress>
+                    <label class="label">RX: {{ $utilization_rx }}%</label>
+                    <progress class="progress is-primary" value="{{ $utilization_rx }}"
+                        max="{{ $speed }}">{{ $utilization_rx }}</progress>
+                    <label class="label">TX: {{ $utilization_tx }}%</label>
+                    <progress class="progress is-link" value="{{ $utilization_tx }}"
+                        max="{{ $speed }}">{{ $utilization_tx }}</progress>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Native / Untagged VLANs</h2>
+                    <span class="tag is-primary">{{ $current_port->untaggedVlanName() ?? 'No VLAN' }}</span>
+                </div>
+            </div>
+        
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Allowed / Tagged VLANs</h2>
+                    @foreach($current_port->taggedVlans() as $vlan)
+                        <span class="tag is-primary">{{ $vlans[$vlan->device_vlan_id]['name'] }}</span>
+                    @endforeach
+                    @if ($current_port->vlan_mode == "access")
+                        <span class="tag is-info">{{ __('Port.Access.NoAllowedVlans') }}</span>
+                    @elseif(empty($current_port->taggedVlans()->toArray()))
+                        <span class="tag is-info">{{ __('Port.NativeUntagged.AllVlansAllowed') }}</span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

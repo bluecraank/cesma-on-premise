@@ -14,8 +14,8 @@
             <thead>
                 <tr>
                     <th>Switch</th>
-                    <th>Uplinks found</th>
-                    <th>Custom uplinks</th>
+                    <th>{{ __('Uplinks found') }}</th>
+                    <th>{{ __('Custom Uplinks') }}</th>
                     <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>

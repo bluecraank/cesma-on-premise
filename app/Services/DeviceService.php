@@ -19,6 +19,7 @@ use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\VlanService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class DeviceService
 {
@@ -74,6 +75,7 @@ class DeviceService
                     'description' => $port['name'],
                     'link' => $port['link'],
                     'speed' => $port['speed'] ?? 0,
+                    'vlan_mode' => $port['vlan_mode'],
                 ]
             );
         }
@@ -86,6 +88,7 @@ class DeviceService
             ]);
         }
 
+        $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
         foreach ($data['vlanports'] as $vlanport) {
             // CX Trunk Discovery
             if($vlanport['vlan_id'] == "Trunk") {

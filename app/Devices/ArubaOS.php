@@ -306,6 +306,7 @@ class ArubaOS implements DeviceInterface
                 'id' => $port['id'],
                 'link' => $port['is_port_up'],
                 'trunk_group' => $port['trunk_group'],
+                'vlan_mode' => "native-untagged"
             ];
         }
 

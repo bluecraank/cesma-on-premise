@@ -103,7 +103,7 @@
             @endif
 
             <div class="box">
-                <h2 class="subtitle">Uplinks</h2>
+                <h2 class="subtitle">{{ __('Uplinks found') }}</h2>
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -144,6 +144,34 @@
                             </tr>
                         @endif
 
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box">
+                <h2 class="subtitle">{{ __('Custom Uplinks') }}</h2>
+                <table class="table is-striped is-narrow is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Port</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            // Sort uplinks in correct order
+                            $custom_uplinks = $device->deviceCustomUplinks()->first();
+                            $custom_uplinks = json_decode($custom_uplinks->uplinks ?? "[]", true);
+                        @endphp
+                        @if (empty($custom_uplinks))
+                            <tr>
+                                <td colspan="2">{{ __('Switch.Live.NoCustomUplinks') }}</td>
+                            </tr>
+                        @endif
+                        @foreach ($custom_uplinks as $key => $trunk)
+                            <tr>
+                                <td>{{ $trunk }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -232,6 +260,8 @@
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
                         <span onclick="$('.modal-vlan-bulk-edit').show();"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
+                        <span onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
+                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
                         <span onclick="enableEditing();"
                             class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
@@ -249,8 +279,8 @@
                             <th class="has-text-centered" style="width: 70px;">Status</th>
                             <th class="has-text-centered" style="width: 70px;">Port</th>
                             <th>{{ __('Switch.Live.Portname') }}</th>
-                            <th class="has-text-centered">Untagged</th>
-                            <th class="has-text-centered" style="width:130px">Tagged</th>
+                            <th class="has-text-centered">Untagged/Native</th>
+                            <th class="has-text-centered" style="width:130px">Tagged/Allowed</th>
                             <th class="has-text-centered" style="width: 150px;">{{ __('Clients') }}</th>
                             <th class="has-text-centered" style="width: 80px;">Speed Mbit/s</th>
                         </tr>
@@ -298,17 +328,23 @@
                                     </td>
                                     <td class="has-text-centered" style="width:130px">
                                         @if ($port->isMemberOfTrunk())
-                                            {{ isset($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) ? count($vlanPortsTagged[$portsByName[$port->trunkName()]->id]) : 'All' }}
-                                            VLANs
+                                            @php 
+                                                $trunkTaggedVlans = $port->trunkTaggedVlans()->pluck('device_vlan_id')->toArray();
+                                            @endphp
+                                            <a
+                                            onclick="updateTaggedModal('{{ implode(',', $trunkTaggedVlans) }}', '{{ $port->trunkName() }}', '{{ $device->id }}')">{{ count($trunkTaggedVlans) == 0 ? 'All' : count($trunkTaggedVlans) }}
+                                            VLANs</a>
                                         @else
                                             <a
-                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['name'] }}', '{{ $device->id }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
+                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['name'] }}', '{{ $device->id }}', '{{ $port['vlan_mode'] }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
                                                 VLANs</a>
                                         @endif
                                     </td>
                                     <td class="has-text-centered" style="width: 150px;">
                                         @if ($port->isMemberOfTrunk())
                                             <span class="tag is-warning">Excluded (Uplink)</span>
+                                        @elseif(isset($clients[$port['name']]) ? false : true)
+                                            <span class="is-size-7">{{ __('Msg.NoClients') }}</span>
                                         @else
                                             <div class="dropdown is-hoverable">
                                                 <div class="dropdown-trigger">
@@ -316,7 +352,7 @@
                                                         aria-controls="dropdown-menu4">
                                                         <span>
                                                             {{ isset($clients[$port['name']]) ? count($clients[$port['name']]) : '0' }}
-                                                            Clients
+                                                            {{ trans_choice('Clients', count($clients[$port['name']])) }}
                                                         </span>
                                                         <span class="icon is-small">
                                                             <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -367,16 +403,16 @@
         $("#portoverview").on('dblclick', 'td.input-field', function() {
             let cell_data = $.trim($(this).text());
             let id = $(this).attr('data-port');
-            let tmp = "<div id=\"" + id +
-                "\" class=\"control has-icons-right\"><input class=\"input is-success\" type=\"text\" placeholder=\"Text input\" value=\"" +
+            let tmp = "<div data-current-description=\""+cell_data+"\" id=\"" + id +
+                "\" class=\"control\"><input class=\"input is-info\" type=\"text\" placeholder=\"Portname\" value=\"" +
                 cell_data +
-                "\"><span class=\"is-clickable is-hoverable icon is-small is-right\"><i class=\"fas fa-check\"></i></span></div>";
+                "\"></div>";
 
             $(this).html(tmp);
 
             $("#" + id).keyup(function(event) {
                 if (event.which == 13) {
-                    storePortDescription(this, $(this).find('input').val(), $(this).attr('id'),
+                    storePortDescription(this, $(this).find('input').val(), $(this).attr('data-current-description'), $(this).attr('id'),
                         '{{ $device->id }}');
                 } else if (event.which == 27) {
                     $(this).parent().html($(this).find('input').val());
@@ -405,5 +441,6 @@
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
     @include('modals.PortBulkEditVlansModal')
+    @include('modals.SwitchUplinkEditModal')
 
     </x-layouts>
