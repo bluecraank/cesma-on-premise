@@ -227,6 +227,9 @@
     "Msg.ViewOutdated": "Die Ansicht ist veraltet.",
     "Msg.ClickToRefresh": "Jetzt aktualisieren",
     "Msg.NoClients": "Keine Endgeräte",
+    "Msg.RouterCreated": "Router erfolgreich erstellt",
+    "Msg.RouterUpdated": "Router erfolgreich aktualisiert",
+    "Msg.RouterDeleted": "Router erfolgreich gelöscht",
 
     "edit": "bearbeiten",
     

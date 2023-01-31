@@ -17,6 +17,13 @@ class SNMP_Routers implements IClientProvider
                 try {
                     $snmp_data = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 5000000, 1);
                     foreach($snmp_data as $ip => $mac) {
+                        if(count($snmp_data) > 1) {
+                            Router::where('ip', $router)->update(['check' => true]);
+                        } else {
+                            Router::where('ip', $router)->update(['check' => false]);
+                            continue;
+                        }
+
                         $filtered_ip = explode(".", $ip);
                         $filtered_ip = $filtered_ip[11] . "." . $filtered_ip[12] . "." . $filtered_ip[13] . "." . $filtered_ip[14];
                         $filtered_mac = strtolower(str_replace(" ", "", strstr($mac, " ")));
@@ -45,6 +52,7 @@ class SNMP_Routers implements IClientProvider
                         ];
                     }
                 } catch(\Exception $e) {
+                    Router::where('ip', $router)->update(['check' => false]);
                     Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
                 }
         }

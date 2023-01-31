@@ -209,7 +209,7 @@ class DeviceService
 
     static function storeCustomUplinks(Request $request)
     {
-        if ($request->has('uplinks') and $request->uplinks != NULL and $request->device_id != '') {
+        if ($request->has('uplinks') and $request->device_id != '') {
 
             if (preg_match("/[^A-Za-z0-9\,\-]/", $request->uplinks)) {
                 return back()->withErrors(['error' => 'Format error (allowed: 1-10 or 1,2,3,4,5)']);
