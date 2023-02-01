@@ -404,48 +404,50 @@
         </div>
     </div>
 
-    <script>
-        $("#portoverview").on('dblclick', 'td.input-field', function() {
-            let cell_data = $.trim($(this).text());
-            let id = $(this).attr('data-port');
-            let tmp = "<div data-current-description=\""+cell_data+"\" id=\"" + id +
-                "\" class=\"control\"><input class=\"input is-info\" type=\"text\" placeholder=\"Portname\" value=\"" +
-                cell_data +
-                "\"></div>";
+        @if(Auth::user()->role >= 1)
+            <script>
+                $("#portoverview").on('dblclick', 'td.input-field', function() {
+                    let cell_data = $.trim($(this).text());
+                    let id = $(this).attr('data-port');
+                    let tmp = "<div data-current-description=\""+cell_data+"\" id=\"" + id +
+                        "\" class=\"control\"><input class=\"input is-info\" type=\"text\" placeholder=\"Portname\" value=\"" +
+                        cell_data +
+                        "\"></div>";
 
-            $(this).html(tmp);
+                    $(this).html(tmp);
 
-            $("#" + id).keyup(function(event) {
-                if (event.which == 13) {
-                    storePortDescription(this, $(this).find('input').val(), $(this).attr('data-current-description'), $(this).attr('id'),
-                        '{{ $device->id }}');
-                } else if (event.which == 27) {
-                    $(this).parent().html($(this).find('input').val());
-                }
-            });
-        });
-
-        function checkUpdate() {
-            fetch('/switch/{{ $device->id }}/update-available?time={{ $device->updated_at }}')
-            .then(response => response.json())
-            .then(data => {
-                if(data.success && data.updated) {
-                    $.notify(data.message, {
-                        style: 'bulma-info',
-                        autoHide: false,
-                        clickToHide: true
+                    $("#" + id).keyup(function(event) {
+                        if (event.which == 13) {
+                            storePortDescription(this, $(this).find('input').val(), $(this).attr('data-current-description'), $(this).attr('id'),
+                                '{{ $device->id }}');
+                        } else if (event.which == 27) {
+                            $(this).parent().html($(this).find('input').val());
+                        }
                     });
+                });
+            </script>
+        @endif
+        <script>
+            function checkUpdate() {
+                fetch('/switch/{{ $device->id }}/update-available?time={{ $device->updated_at }}')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success && data.updated) {
+                        $.notify(data.message, {
+                            style: 'bulma-info',
+                            autoHide: false,
+                            clickToHide: true
+                        });
 
-                    clearInterval(interval);
-                }
-            });
-        }
+                        clearInterval(interval);
+                    }
+                });
+            }
 
-        var interval = setInterval(checkUpdate, 10000);
-    </script>
-    @include('modals.VlanTaggingModal')
-    @include('modals.SwitchSyncVlansModal')
-    @include('modals.PortBulkEditVlansModal')
-    @include('modals.SwitchUplinkEditModal')
-
+            var interval = setInterval(checkUpdate, 10000);
+        </script>
+        @include('modals.VlanTaggingModal')
+        @include('modals.SwitchSyncVlansModal')
+        @include('modals.PortBulkEditVlansModal')
+        @include('modals.SwitchUplinkEditModal')
     </x-layouts>
