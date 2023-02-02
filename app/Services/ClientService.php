@@ -104,7 +104,7 @@ class ClientService {
                 $mac_already_added[$mac] = true;
                 
                 $client = Client::updateOrCreate([
-                    'id' => $mac,
+                    'id' => md5($mac.$client['hostname']),
                     'mac_address' => $mac
                 ], 
                 [

@@ -1,4 +1,8 @@
 <x-layouts.main>
+    <script>
+        window.device_id = {{ $device->id }};
+        window.timestamp = '{{ $device->updated_at }}'
+    </script>
     @inject('cc', 'App\Services\ClientService')
     <div class="columns ml-1 mr-3">
         <div class="column">
@@ -112,25 +116,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            // Sort uplinks in correct order
-                            uksort($uplinks, 'strnatcmp');
-                        @endphp
-                        @foreach ($uplinks as $key => $trunk)
+                        @foreach ($uplinks as $key => $trunk_ports)
                             @php
-                                $portsById = $device
-                                    ->ports()
-                                    ->get()
-                                    ->keyBy('id');
                                 $trunks = [];
-                                foreach ($trunk as $port) {
+                                
+                                foreach ($trunk_ports as $port) {
                                     $trunks[$port['device_port_id']] = $portsById[$port['device_port_id']]->name ?? 'Unknown';
                                 }
                                 
-                                $uplink_name = $device
-                                    ->ports()
-                                    ->where('name', $key)
-                                    ->first()->description;
+                                $uplink_name = $portsByName->get($key)->description ?? $key;
                             @endphp
                             <tr>
                                 <td>{{ $uplink_name != '' ? $uplink_name : $key }}</td>
@@ -160,7 +154,7 @@
                         @php
                             // Sort uplinks in correct order
                             $custom_uplinks = $device->deviceCustomUplinks()->first();
-                            $custom_uplinks = json_decode($custom_uplinks->uplinks ?? "[]", true);
+                            $custom_uplinks = json_decode($custom_uplinks->uplinks ?? '[]', true);
                         @endphp
                         @if (empty($custom_uplinks))
                             <tr>
@@ -249,6 +243,45 @@
                         $('.edit-vlans').removeClass('is-hidden');
                         $('.clickable-tags').find('.is-submit').prop('disabled', true);
                     }
+
+                    function getApiToken() {
+                        let id = window.device_id;
+                        let csrf = $('meta[name="csrf-token"]').attr('content');
+                        var data = new FormData();
+                        data.append('hash', window.apicookie);
+                        data.append('timestamp', window.apicookie_timestamp);
+
+                        fetch('/switch/' + id + '/action/prepare-api', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrf
+                                },
+                                body: data
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.apicookie_timestamp = data.timestamp;
+                                    window.apicookie = data.hash;
+
+
+                                    let rows = $('#portoverview').find('tr.changed');
+                                    rows.each(function (index, value) {
+                                        let com_id = $(this).attr('wire:id');
+                                        let cookie = window.apicookie;
+                                        if(index != rows.length - 1) {
+                                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, false);
+                                        } else {
+                                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, true);
+                                            window.apicookie = null;
+                                            window.apicookie_timestamp = null;
+                                        }
+                                    });
+                                    
+                                    window.apicookie_timestamp = Date.now();
+                                }
+                            });
+                    }
                 </script>
             @endif
             <div class="box">
@@ -256,12 +289,17 @@
                     @if (Auth::user()->role >= 1)
                         <span onclick="disableEditing();"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
-                        <span onclick="updateUntaggedPorts('{{ $device->id }}')"
+
+                        <span
+                            onclick="getApiToken()"
                             class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
+
                         <span onclick="$('.modal-vlan-bulk-edit').show();"
                             class="mr-5 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
-                        <span onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
-                        class="ml-3 mr-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
+                        <span
+                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
+                            class="ml-3 mr-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
+
                         <span onclick="enableEditing();"
                             class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
                     @endif
@@ -279,175 +317,25 @@
                             <th class="has-text-centered" style="width: 70px;">Status</th>
                             <th class="has-text-centered" style="width: 70px;">Port</th>
                             <th>{{ __('Switch.Live.Portname') }}</th>
-                            <th class="has-text-centered">Untagged/Native</th>
-                            <th class="has-text-centered" style="width:130px">Tagged/Allowed</th>
+                            <th>Untagged/Native</th>
+                            <th style="width:130px">Tagged/Allowed</th>
                             <th class="has-text-centered" style="width: 150px;">{{ trans_choice('Clients', 2) }}</th>
-                            <th class="has-text-centered" style="width: 80px;">Speed Mbit/s</th>
+                            <th class="has-text-centered" style="width: 80px;">Speed</th>
+                            {{-- <th></th> --}}
                         </tr>
                     </thead>
 
                     <tbody class="live-body">
-                        @php
-                            $portsByName = $portsByName->sort(function ($a, $b) {
-                                return strnatcmp($a['name'], $b['name']);
-                            });
-                        @endphp
-                        @foreach ($portsByName as $id => $port)
-                            @if (!str_contains($port['name'], 'Trk'))
-                                <tr style="line-height: 37px;">
-                                    <td class="has-text-centered">
-                                        <i
-                                            class="fa fa-circle {{ $port['link'] ? 'has-text-success' : 'has-text-danger' }}"></i>
-                                    </td>
-                                    <td class="has-text-centered">
-                                        <a class="dark-fix-color"
-                                            href="/switch/{{ $device->id }}/ports/{{ $port['name'] }}">{{ $port['name'] }}</a>
-
-                                    </td>
-                                    <td data-port="{{ $port->name }}" class="input-field">
-                                        {{ $port['description'] }}
-                                    </td>
-                                    <td class="has-text-centered" style="width:110px">
-                                        @if ($port->isMemberOfTrunk())
-                                            <span class="tag is-info">{{ $port->trunkName() }}</span>
-                                        @else
-                                            <div class="select is-small mt-1">
-                                                <select disabled data-id="{{ $device->id }}"
-                                                    data-port="{{ $port->name }}"
-                                                    data-current-vlan="{{ $port->untaggedVlan() ? $port->untaggedVlan() : 0 }}"
-                                                    class="port-vlan-select" name="" id="">
-                                                    <option value="0">No VLAN</option>
-                                                    @foreach ($vlans as $vlan)
-                                                        <option value="{{ $vlan->id }}"
-                                                            {{ $port->untaggedVlan() == $vlan->id ? 'selected' : '' }}>
-                                                            {{ $vlan->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="has-text-centered" style="width:130px">
-                                        @if ($port->isMemberOfTrunk())
-                                            @php 
-                                                $trunkTaggedVlans = $port->trunkTaggedVlans()->pluck('device_vlan_id')->toArray();
-                                            @endphp
-                                            <a
-                                            onclick="updateTaggedModal('{{ implode(',', $trunkTaggedVlans) }}', '{{ $port->trunkName() }}', '{{ $device->id }}')">{{ count($trunkTaggedVlans) == 0 ? 'All' : count($trunkTaggedVlans) }}
-                                            VLANs</a>
-                                        @else
-                                            <a
-                                                onclick="updateTaggedModal('{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port['name'] }}', '{{ $device->id }}', '{{ $port['vlan_mode'] }}')">{{ count(isset($vlanPortsTagged[$port['id']]) ? $vlanPortsTagged[$port['id']]->toArray() : []) ?? 'No VLAN' }}
-                                                VLANs</a>
-                                        @endif
-                                    </td>
-                                    <td class="has-text-centered" style="width: 150px;">
-                                        @php
-                                            $custom_uplinks = $device->deviceCustomUplinks;
-                                            $custom_uplinks = (isset($custom_uplinks)) ? $custom_uplinks->toArray() : ['uplinks' => '[]'];
-                                            $custom_uplinks = json_decode($custom_uplinks['uplinks'], true);
-                                        @endphp
-                                        @if ($port->isMemberOfTrunk() || in_array($port['name'], $custom_uplinks))
-                                            <span class="tag is-warning">Excluded (Uplink)</span>
-                                        @elseif(isset($clients[$port['name']]) ? false : true)
-                                            <span class="is-size-7">{{ __('Msg.NoClients') }}</span>
-                                        @else
-                                            <div class="dropdown is-hoverable">
-                                                <div class="dropdown-trigger">
-                                                    <button class="button" aria-haspopup="true"
-                                                        aria-controls="dropdown-menu4">
-                                                        <span>
-                                                            {{ isset($clients[$port['name']]) ? count($clients[$port['name']]) : '0' }}
-                                                            {{ trans_choice('Clients', count($clients[$port['name']])) }}
-                                                        </span>
-                                                        <span class="icon is-small">
-                                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                                <div class="dropdown-menu" style="min-width:15rem"
-                                                    id="dropdown-menu4" role="menu">
-                                                    <div class="dropdown-content">
-                                                        <div class="dropdown-item has-text-left">
-                                                            @if (isset($clients[$port['name']]))
-                                                                @foreach ($clients[$port['name']] as $client)
-                                                                    <i
-                                                                        class="fa-solid {{ $cc::getClientIcon($client['type']) }} mr-1"></i>
-                                                                    {{ $client['hostname'] }}
-                                                                    <br>
-                                                                @endforeach
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="has-text-centered" style="width: 80px;">
-                                        @if ($port->speed == 0)
-                                            <span class="tag is-link ">{{ $port->speed }}</span>
-                                        @elseif ($port->speed == 10)
-                                            <span class="tag is-danger ">{{ $port->speed }}</span>
-                                        @elseif ($port->speed == 100)
-                                            <span class="tag is-warning">{{ $port->speed }}</span>
-                                        @elseif ($port->speed == 1000)
-                                            <span class="tag is-primary">{{ $port->speed }}</span>
-                                        @elseif ($port->speed == 10000)
-                                            <span class="tag is-success">{{ $port->speed }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endif
+                        @foreach ($ports as $port)
+                            @livewire('port-details', ['device_id' => $device->id, 'port' => $port, 'vlans' => $vlans])
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-        @if(Auth::user()->role >= 1)
-            <script>
-                $("#portoverview").on('dblclick', 'td.input-field', function() {
-                    let cell_data = $.trim($(this).text());
-                    let id = $(this).attr('data-port');
-                    let tmp = "<div data-current-description=\""+cell_data+"\" id=\"" + id +
-                        "\" class=\"control\"><input class=\"input is-info\" type=\"text\" placeholder=\"Portname\" value=\"" +
-                        cell_data +
-                        "\"></div>";
-
-                    $(this).html(tmp);
-
-                    $("#" + id).keyup(function(event) {
-                        if (event.which == 13) {
-                            storePortDescription(this, $(this).find('input').val(), $(this).attr('data-current-description'), $(this).attr('id'),
-                                '{{ $device->id }}');
-                        } else if (event.which == 27) {
-                            $(this).parent().html($(this).find('input').val());
-                        }
-                    });
-                });
-            </script>
-        @endif
-        <script>
-            function checkUpdate() {
-                fetch('/switch/{{ $device->id }}/update-available?time={{ $device->updated_at }}')
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success && data.updated) {
-                        $.notify(data.message, {
-                            style: 'bulma-info',
-                            autoHide: false,
-                            clickToHide: true
-                        });
-
-                        clearInterval(interval);
-                    }
-                });
-            }
-
-            var interval = setInterval(checkUpdate, 10000);
-        </script>
-        @include('modals.VlanTaggingModal')
-        @include('modals.SwitchSyncVlansModal')
-        @include('modals.PortBulkEditVlansModal')
-        @include('modals.SwitchUplinkEditModal')
+    @include('modals.VlanTaggingModal')
+    @include('modals.SwitchSyncVlansModal')
+    @include('modals.PortBulkEditVlansModal')
+    @include('modals.SwitchUplinkEditModal')
     </x-layouts>

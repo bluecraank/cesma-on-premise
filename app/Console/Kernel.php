@@ -60,4 +60,10 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    protected function shortSchedule(\Spatie\ShortSchedule\ShortSchedule $shortSchedule)
+{
+    // this artisan command will run every second
+    $shortSchedule->command('check:job-queue')->everySecond()->withoutOverlapping();
+}
 }

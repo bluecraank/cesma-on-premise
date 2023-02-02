@@ -16,10 +16,14 @@
 
             <label class="label is-small">Verfügbare VLANs</label>
             @php
-                $vlans = $vlans->sortBy('vlan_id')->keyBy('id')->toArray();
+                $vlans = $vlans
+                    ->sortBy('vlan_id')
+                    ->keyBy('id')
+                    ->toArray();
             @endphp
             @foreach ($vlans as $key => $vlan)
-                <span title="{{ $vlan['name'] }}" class="is-clickable tag" data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
+                <span title="{{ $vlan['name'] }}" class="is-clickable tag"
+                    data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
             @endforeach
 
             <br><br>
@@ -27,21 +31,12 @@
             <div class="notification is-warning typ-warning is-hidden">
                 Dieser Port ist zurzeit im Access-Mode.<br>
                 Beim Speichern dieses Formulars wird der Port in den Trunk-Mode gesetzt.
-              </div>
-
-            {{-- <br><br>
-            <input type="checkbox" name="set-port-to-access" class="" value="{{ $device->id }}">
-            <label class="label is-small">Set Port to Access Mode</label>
-
-            <input type="checkbox" name="tag-all-vlans" class="" value="{{ $device->id }}">
-            <label class="label is-small">Tag all Vlans</label> --}}
-
-            {{-- FEATURE IN DEVELOPMENT: Auswahl ob Port als ACCESS Port konfiguriert werden soll oder ob alle VLANs drauf getagged werden sollen --}}
+            </div>
         </section>
         <footer class="modal-card-foot">
             @if (Auth::user()->role >= 1)
-            <button disabled onclick="updateTaggedVlans('{{ $device->id }}')"
-                class="button is-submit is-primary">{{ __('Button.Save') }}</button>
+                <button disabled onclick="updatePortTaggedVlans(this)"
+                    type="button" class="button is-submit is-primary">{{ __('Button.Change') }}</button>
             @endif
             <button onclick="$('.modal-vlan-tagging').hide();return false;" type="button"
                 class="is-cancel button">{{ __('Button.Close') }}</button>

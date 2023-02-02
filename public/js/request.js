@@ -198,147 +198,6 @@ function editUplinkModal(id, name, uplinks) {
     modal.show();
 }
 
-function updateUntaggedPorts(id) {
-    let ports = [];
-    let vlans = [];
-    let device = id;
-
-    let i = 0;
-    $(".port-vlan-select").each(function () {
-        if ($(this).attr('data-current-vlan') != $(this).val()) {
-            device = $(this).attr('data-id');
-
-            let port = $(this).attr('data-port');
-            ports[i] = port;
-            vlans[i] = ($(this).val());
-
-            i++;
-        }
-    });
-
-    let token = $('meta[name="csrf-token"]').attr('content');
-
-    let formData = new FormData();
-    formData.append('ports', JSON.stringify(ports));
-    formData.append('vlans', JSON.stringify(vlans));
-    formData.append('device', device);
-    formData.append('_token', token);
-
-    let uri = '/switch/' + device + '/action/update-untagged-ports';
-
-    $(".live-body").css('opacity', '0.5');
-
-    console.log(JSON.stringify(ports), JSON.stringify(vlans), device, token);
-    fetch(uri, {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success == "true") {
-                $(".live-body").css('opacity', '1');
-                $(".save-vlans").addClass('is-hidden');
-                $(".edit-vlans").removeClass('is-hidden');
-                $.notify(data.message, {
-                    style: 'bulma-success',
-                    autoHideDelay: 8000
-                });
-            } else {
-                $(".live-body").css('opacity', '1');
-                $(".save-vlans").addClass('is-hidden');
-                $(".edit-vlans").removeClass('is-hidden');
-                $.notify(data.message, {
-                    style: 'bulma-error',
-                    autoHideDelay: 8000
-                });
-            }
-        });
-
-    $(".port-vlan-select").each(function () {
-        $(this).prop('disabled', true);
-    });
-}
-
-function updateTaggedModal(vlans, port, id, typ) {
-    let vlansSplitted = vlans.split(',');
-
-    let modal = $('.modal-vlan-tagging');
-    modal.find('.port_id').val(port);
-    modal.find('.device_id').val(id);
-    modal.find('.port_id_title').html(port);
-    modal.find('.typ-warning').addClass('is-hidden');
-
-    if(typ == 'access') {
-        modal.find('.typ-warning').removeClass('is-hidden');
-    }
-
-    modal.find('.modal-card-body span.tag').removeClass('is-primary');
-
-    vlansSplitted.forEach(function (vlan) {
-        modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
-    });
-
-    modal.show();
-}
-
-$(".clickable-tags .modal-card-body span.tag").click(function () {
-    $(this).toggleClass('is-primary');
-});
-
-function updateTaggedVlans() {
-    let modal = $('.modal-vlan-tagging');
-    let port = modal.find('.port_id').val();
-    let device = modal.find('.device_id').val();
-    let token = $('meta[name="csrf-token"]').attr('content');
-
-    let vlans = [];
-
-    let i = 0;
-    modal.find('.modal-card-body span.tag.is-primary').each(function () {
-        let vid = $(this).attr('data-id');
-        vlans[i] = vid;
-        i++;
-    });
-
-    let formData = new FormData();
-    formData.append('port', port);
-    formData.append('vlans', JSON.stringify(vlans));
-    formData.append('device', device);
-    formData.append('_token', token);
-
-    let uri = '/switch/' + device + '/action/update-tagged-ports';
-
-    $(".modal-vlan-tagging .is-cancel").addClass('is-hidden');
-    $(".modal-vlan-tagging .is-info").removeClass('is-hidden');
-    $(".modal-vlan-tagging .is-submit").addClass('is-loading');
-
-    fetch(uri, {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success == "true") {
-                $.notify(data.message, {
-                    style: 'bulma-success',
-                    autoHideDelay: 8000
-                });
-            } else {
-                $.notify(data.message, {
-                    style: 'bulma-error',
-                    autoHideDelay: 8000
-                });
-            }
-            modal.hide();
-            modal.find('.is-cancel').removeClass('is-hidden');
-            modal.find('.is-info').addClass('is-hidden');
-            modal.find('.is-submit').removeClass('is-loading');
-            $(".save-vlans").addClass('is-hidden');
-            $(".edit-vlans").removeClass('is-hidden');
-        });
-
-}
-
 function restoreBackup(id, created_at, device, name) {
     let modal = $('.modal-upload-backup');
     modal.find('.id').val(id);
@@ -387,30 +246,6 @@ function switchSyncPubkeys() {
     let ele = $(".syncPubButton");
     fetcher(uri, form, ele, cssclass);
     $(".modal-sync-pubkeys").hide();
-}
-
-function storePortDescription(ele, description, old_desc, port, device) {
-
-    if(description == old_desc) {
-        $(ele).parent().html(description);
-        return;
-    }
-
-    let form = new FormData();
-    let uri = '/switch/' + device + '/action/update-port-name';
-    let cssclass = 'fa-edit';
-    
-    $(ele).find('.icon').hide();
-    form.append('port', port);
-    form.append('description', description);
-    form.append('device_id', device);
-
-    fetcher(uri, form, ele, cssclass, false, function(success) {
-        if(success) {
-            $(ele).parent().html(description);
-        }
-        $(ele).find('.icon').show();
-    });
 }
 
 // Fetcher function
@@ -488,33 +323,10 @@ function VlanTemplateModal(id, name, vlans, modal_id) {
     modal.show();
 }
 
-function submitBulkEditPorts(ele, id) {
-    $(ele).addClass('is-loading');
-    $(ele).siblings('button').addClass('is-hidden');
-    $(ele).siblings('.submit-wait').removeClass('is-hidden');
-    
-    let ports = [];
-    let y = 0;
-    let modal2 = $('.modal-vlan-bulk-edit');
-    modal2.find('.ports span.tag.is-primary').each(function () {
-        let vid = $(this).attr('data-id');
-        ports[y] = vid;
-        y++;
-    });
-
-    $('#bulk-edit-ports .ports').val(JSON.stringify(ports));
-
-    $('#bulk-edit-ports').submit();
-}
-
-function checkVlanCount() {
-    let vlans = $('#bulk-edit-ports').find('select').val();
-
-    if(vlans.length > 1 && $('#bulk-edit-ports').find('input[name="type"]:checked').val() == 'untagged'){ 
-        $('#bulk-edit-ports').find('.is-submit').prop('disabled', true);
-        $('#bulk-edit-ports').find('.is-untagged-message').removeClass('is-hidden');
+window.addEventListener("scroll", () => {
+    if (window.pageYOffset > 100) {
+        $(".scroll-to-top").removeClass('is-hidden');
     } else {
-        $('#bulk-edit-ports').find('.is-submit').prop('disabled', false);
-        $('#bulk-edit-ports').find('.is-untagged-message').addClass('is-hidden');
-    } 
-}
+        $(".scroll-to-top").addClass('is-hidden');
+    }
+});

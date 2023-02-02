@@ -7,6 +7,7 @@ use App\Interfaces\DeviceInterface;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\LogController;
 use App\Models\DeviceVlan;
+use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
@@ -535,14 +536,13 @@ class ArubaOS implements DeviceInterface
         return json_encode(['success' => 'false', 'message' => 'Error sftp connection']);
     }
 
-    static function setUntaggedVlanToPort($vlans, $ports, $device, $need_login = true, $logindata = ""): String
+    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): Array
     {
-
-        $success = $failed = 0;
-        $failed_ports = [];
-        $portcount = count($ports);
-
-        $vlans_in_db = DeviceVlan::all()->keyBy('id');
+        $data = '{
+            "vlan_id": ' . $vlans[$newVlan]['vlan_id'] . ', 
+            "port_id": "' . $port->name . '", 
+            "port_mode": "POM_UNTAGGED"
+        }';
 
         if($need_login) {
             $login_info = self::API_LOGIN($device);
@@ -551,52 +551,35 @@ class ArubaOS implements DeviceInterface
         }
 
         if ($login_info) {
-
             list($cookie, $api_version) = explode(";", $login_info);
 
-            foreach ($ports as $key => $port) {
-                $data = '{
-                    "vlan_id": ' . $vlans_in_db[$vlans[$key]]->vlan_id . ', 
-                    "port_id": "' . $port . '", 
-                    "port_mode": "POM_UNTAGGED"
-                }';
+            $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-                $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+            if($result['success']) {
+                $old = $port->untaggedVlan();
 
-                if ($result['success']) {
-                    $port_id = $device->ports()->where('name', $port)->first()->id;
-                    $vlan_id = $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', 0)->first()->device_vlan_id ?? 0;
-                    $device->vlanports()->where('device_port_id', $port_id)->where('device_vlan_id', $vlan_id)->update(['device_vlan_id' => $vlans[$key]]);
+                $delete = false;
 
-                    // LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Untagged VLAN geändert", "port": "' . $port . '", "vlan": "' . $vlans[$key] . '"}');
-                    $success++;
-                } else {
-                    $failed++;
-                    $failed_ports[] = __('Vlan.Update.Error.Untagged', ['port' => $port, 'vlan' => $vlans_in_db[$vlans[$key]]->vlan_id]);
+                if($old) {
+                    $delete = DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
-            }
 
-            if ($failed !== count($ports) and $need_login) {
-                proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
+                $created = DeviceVlanPort::updateOrCreate(
+                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
+                );
+                
+                return ['success' => true, 'data' => ''];
+            } else {
+                return ['success' => false, 'data' => $result['data']];
             }
 
             if($need_login) {
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
             }
-
-            if ($success == $portcount) {
-                return json_encode(['success' => 'true', 'message' => __('Vlan.Update.Success', ['success' => $success, 'total' => $portcount])]);
-            } else {
-                return json_encode(['success' => 'false', 'message' => __('Vlan.Update.Error', ['failed' => $failed, 'total' => count($ports)]) . "
-                " . implode("
-                ", $failed_ports)]);
-            }
         }
-
-        return json_encode(['success' => 'false', 'message' => __('Msg.ApiLoginFailed')]);
     }
 
-    static function setTaggedVlanToPort($vlans, $port, $device, $need_login = true, $logindata = ""): array
+    static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login = true, $logindata = ""): array
     {
         $return = [];
         if($need_login) {
@@ -609,67 +592,61 @@ class ArubaOS implements DeviceInterface
 
             list($cookie, $api_version) = explode(";", $login_info);
 
-            $port_id = $device->ports()->where('name', $port)->first()->id;
-            $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
-            $known_vlans = $device->vlans()->get()->keyBy('id')->toArray();    // Get all known vlans from device
-
+            $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
             // Add vlan tagged to port
-            foreach ($vlans as $vlan) {
+            foreach ($taggedVlans as $vlan) {
                 if (!array_key_exists($vlan, $alreadyTaggedVlans)) {
                     $data = '{
-                            "vlan_id": ' . $known_vlans[$vlan]['vlan_id'] . ', 
-                            "port_id": "' . $port . '", 
+                            "vlan_id": ' . $vlans[$vlan]['vlan_id'] . ', 
+                            "port_id": "' . $port->name . '", 
                             "port_mode": "POM_TAGGED_STATIC"
                         }';
 
                     $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-                    if ($result['success']) {
-                        // LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLAN hinzugefügt", "port": "' . $port . '", "vlan": "' . $vlan . '"}');
-
-                        $return[] = [
-                            'success' => true,
-                            'message' => __('Vlan.Update.Success.Tagged', ['port' => $port, 'vlan' => $known_vlans[$vlan]['vlan_id']]),
-                        ];
+                    if($result['success']) {
+                        $old = DeviceVlanPort::where('device_vlan_id', $vlan)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', true)->first();
+                        if($old) {
+                            $old->delete();
+                        }
+        
+                        DeviceVlanPort::updateOrCreate(
+                            ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
+                        );
+                        
+                        $return[] = ['success' => true, 'data' => ''];
                     } else {
-                        $return[] = [
-                            'success' => false,
-                            'message' => __('Vlan.Update.Error.Tagged', ['port' => $port, 'vlan' => $known_vlans[$vlan]['vlan_id']]),
-                        ];
+                        $return[] = ['success' => false, 'data' => $result['data']];
                     }
                 }
             }
 
             // Remove not needed tagged vlans from port
-            if (count($vlans) < count($alreadyTaggedVlans)) {
+            if (count($taggedVlans) < count($alreadyTaggedVlans)) {
                 foreach ($alreadyTaggedVlans as $device_vlan_id => $vlan) {
-                    if (!in_array($device_vlan_id, $vlans)) {
+                    if (!in_array($device_vlan_id, $taggedVlans)) {
                         $data = '{
-                                "vlan_id": ' . $known_vlans[$device_vlan_id]['vlan_id'] . ', 
-                                "port_id": "' . $port . '", 
+                                "vlan_id": ' . $vlans[$device_vlan_id]['vlan_id'] . ', 
+                                "port_id": "' . $port->name . '", 
                                 "port_mode": "POM_TAGGED_STATIC"
                             }';
 
                         $result = self::API_DELETE_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-                        if ($result['success']) {
-                            // LogController::log('Port aktualisiert', '{"switch": "' .  $device->name . '", "info": "Tagged VLAN hinzugefügt", "port": "' . $port . '", "vlan": "' . $vlan . '"}');
+                        if($result['success']) {
 
-                            $return[] = [
-                                'success' => true,
-                                'message' => __('Vlan.Update.Success.Remove.Tagged', ['port' => $port, 'vlan' => $known_vlans[$device_vlan_id]['vlan_id']]),
-                            ];
+                            $old = DeviceVlanPort::where('device_vlan_id', $device_vlan_id)->where('device_port_id', $port->id)->where('device_id', $device->id)->first();
+                            if($old) {
+                                $old->delete();
+                            }
+                            
+                            $return[] = ['success' => true, 'data' => ''];
                         } else {
-                            $return[] = [
-                                'success' => false,
-                                'message' => __('Vlan.Update.Error.Remove.Tagged', ['port' => $port, 'vlan' => $known_vlans[$device_vlan_id]['vlan_id']]),
-                            ];
+                            $return[] = ['success' => false, 'data' => $result['data']];
                         }
                     }
                 }
             }
-
-            $device->vlanports()->where('device_port_id', $port_id)->where('is_tagged', true)->delete();
 
             if($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
@@ -678,13 +655,6 @@ class ArubaOS implements DeviceInterface
 
             return $return;
         }
-
-        $return[] = [
-            'success' => false,
-            'message' => __('Msg.ApiLoginFailed'),
-        ];
-
-        return $return;
     }
 
     static function syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode): array

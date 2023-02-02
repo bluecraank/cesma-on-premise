@@ -48,7 +48,9 @@ class DeviceService
 
     static function storeApiData($data, $device)
     {
-        $device->touch();
+        if(count($data['vlans']) != $device->vlans()->count()) {
+            $device->touch();
+        }
 
         foreach ($data['vlans'] as $vid => $vname) {
             $device->vlans()->updateOrCreate(
@@ -80,6 +82,10 @@ class DeviceService
             );
         }
 
+        if(count($data['uplinks']) != $device->uplinks()->count()) {
+            $device->touch();
+        }
+
         foreach ($data['uplinks'] as $port => $uplink) {
             $device->uplinks()->updateOrCreate([
                 'name' => $uplink,
@@ -88,7 +94,23 @@ class DeviceService
             ]);
         }
 
-        $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
+        // $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
+        $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
+
+        $newVlanPorts = 0;
+        foreach($data['vlanports'] as $vlanport) {
+            if($vlanport['vlan_id'] != "Trunk") {
+                $newVlanPorts++;
+            }
+        }
+
+        if($currentVlanPorts > $newVlanPorts) {
+            DeviceVlanPort::where('device_id', $device->id)->delete();
+            $device->touch();
+        } else if($currentVlanPorts < $newVlanPorts) {
+            $device->touch();
+        }
+        
         foreach ($data['vlanports'] as $vlanport) {
             // CX Trunk Discovery
             if($vlanport['vlan_id'] == "Trunk") {
@@ -98,7 +120,7 @@ class DeviceService
                     'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
                 ]);
             } else {
-                $device->vlanports()->updateOrCreate(
+                $test = $device->vlanports()->updateOrCreate(
                     [
                         'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
                         'device_id' => $device->id,
@@ -106,6 +128,8 @@ class DeviceService
                         'is_tagged' => $vlanport['is_tagged']
                     ]
                 );
+
+                // if($test)
             }
         }
 
@@ -301,5 +325,104 @@ class DeviceService
         $elapsed = microtime(true) - $start;
 
         return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'location_id'));
+    }
+
+    static function setUntaggedVlanToPort(Request $request)
+    {
+
+        $device = Device::find($request->input('device'));
+
+        if (!$device) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        }
+
+        $vlans = json_decode($request->input('vlans'), true);
+        $ports = json_decode($request->input('ports'), true);
+
+        if(count($vlans) == 0 or count($ports) == 0) {
+            return json_encode(['success' => 'false', 'message' => 'No changes made']);
+        }
+
+        if (is_array($vlans) and is_array($ports) and count($vlans) == count($ports)) {
+            $class = self::$types[$device->type];
+
+            return $class::setUntaggedVlanToPort($vlans, $ports, $device);
+        }
+        
+        return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
+    }
+
+    static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated) {
+
+        $device = Device::find($device_id);
+
+        $class = self::$types[$device->type];
+
+        $login_info = $cookie;
+
+        $vlans = $device->vlans()->get()->keyBy('id')->toArray();
+
+        if(!$login_info) {
+            return false;
+        }
+
+        $return = [];
+        if($untaggedIsUpdated) {
+            $success_untagged = $class::setUntaggedVlanToPort($untaggedVlan, $port, $device, $vlans, false, $login_info);
+            $return[] = $success_untagged;
+        }
+
+        if($taggedIsUpdated) {
+            $success_tagged = $class::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $login_info);
+            $return[] = $success_tagged;
+        }
+
+        list($cookie, $api_version) = explode(";", $login_info);
+        $class::API_LOGOUT($device, $cookie, $api_version);
+
+        return $return;
+    }
+
+    // Prevent mass login on switch api, use global cookie instead
+    public function getApiToken($id, Request $request) {
+
+        $device = Device::find($id);
+
+        if(!$device) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        }
+
+        $cookie = $request->all();
+
+        if(isset($cookie['hash']) && $cookie['timestamp'] != "undefined" && (time() - $cookie['timestamp']) < 55) {
+            return json_encode(['success' => 'true', 'hash' => $cookie['hash'], 'timestamp' => $cookie['timestamp']]);	
+        }
+
+
+        if(isset($cookie['hash']) && $cookie['hash'] == "undefined" || (time() - $cookie['timestamp']) > 55) {
+            $class = self::$types[$device->type];
+
+            if($cookie['hash'] != "undefined") {
+                list($cookie, $api_version) = explode(";", base64_decode($cookie['hash']));
+                $class::API_LOGOUT($device, $cookie, $api_version);
+            }
+
+            $login_info = $class::API_LOGIN($device);
+            if(!$login_info) {
+                return json_encode(['success' => 'false', 'message' => 'Failed login']);
+            }
+
+            return json_encode(['success' => 'true', 'hash' => base64_encode($login_info), 'timestamp' => time()]);	
+        }
+    }
+
+    static function closeApiSession($cookie, $id) {
+        $device = Device::find($id);
+        if(!$device) {
+            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        }
+        $class = self::$types[$device->type];
+        list($cookie, $api_version) = explode(";", $cookie);
+        $class::API_LOGOUT($device, $cookie, $api_version);
     }
 }
