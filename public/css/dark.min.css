@@ -88,3 +88,7 @@ progress::-moz-progress-bar {
 table tbody tr:hover {
     background-color: #495765 !important;
 }
+
+.has-custom-text-warning {
+    color: #fdbf11 !important;
+}

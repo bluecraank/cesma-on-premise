@@ -48,7 +48,7 @@
             <h1 class="subtitle is-pulled-left">{{ __('System.Addititional Pubkeys') }}</h1>
 
             <div class="is-pulled-right">
-                @if (Auth::user()->role == 2)
+                @if (Auth::user()->role >= 1)
                     <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
@@ -73,7 +73,7 @@
                             <td>{{ $key->description }}</td>
                             <td>{{ $out }}</td>
                             <td style="width:150px;" class="has-text-centered">
-                                @if (Auth::user()->role == 2)
+                                @if (Auth::user()->role >= 2)
                                     <button
                                         onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
                                         class="is-small button is-danger"><i class="fas fa-trash"></i></button>

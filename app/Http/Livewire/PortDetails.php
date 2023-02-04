@@ -2,7 +2,9 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Controllers\ClientController;
 use App\Models\Device;
+use App\Services\ClientService;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
@@ -15,6 +17,7 @@ class PortDetails extends Component
     public $vlans;
     public $doNotDisable = false;
     public $untaggedVlanId;
+    public $cc;
 
     public $somethingChanged = false;
 
@@ -33,6 +36,7 @@ class PortDetails extends Component
 
     public function mount()
     {
+        $this->cc = ClientService::class;
         $this->port = $this->port->fresh(); 
         $this->untaggedVlanId = $this->port->untaggedVlan();
         $this->newTaggedVlans = [];

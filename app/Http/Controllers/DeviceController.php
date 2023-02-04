@@ -222,7 +222,7 @@ class DeviceController extends Controller
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        if(count($pubkeys) >= 2 && !empty($pubkeys)) {
+        if(count($pubkeys) <= 2 || empty($pubkeys)) {
             return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
         }
 

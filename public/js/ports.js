@@ -105,7 +105,7 @@ function enableEditing() {
     });
 
     $('.port-description-input').each(function() {
-        $(this).prop('readonly', false);
+        $(this).prop('disabled', false);
     });
 
     $('.clickable-tags').find('.is-submit').prop('disabled', false);
@@ -120,7 +120,7 @@ function cancelEditing() {
     });
 
     $('.port-description-input').each(function() {
-        $(this).prop('readonly', true);
+        $(this).prop('disabled', true);
     });
 
     $('.clickable-tags').find('.is-submit').prop('disabled', true);

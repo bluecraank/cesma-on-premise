@@ -5,6 +5,7 @@
         window.msgnothingchanged = '{{ __('Msg.NothingChanged') }}'
     </script>
     @inject('cc', 'App\Services\ClientService')
+
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
@@ -83,26 +84,34 @@
     </div>
 
     <div class="columns ml-1 mr-3">
-        <div class="column is-4">
+        <div class="column is-3">
             @if (Auth::user()->role >= 1)
                 <div class="box">
                     <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="buttons are-small">
-                        <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
-                            <i class="mr-2 fas fa-sync"></i> Refresh
-                        </a>
+                        <div class="columns is-vcentered has-text-centered is-variable is-multiline is-1">
+                            <div class="column is-narrow is-4">
+                                <button onclick="$('.modal-sync-vlans-specific').show();" class="p-1 m-0 is-fullwidth button is-success">
+                                    <i class="mr-1 fas fa-ethernet"></i> Sync Vlans
+                                </button>
+                            </div>
+                            <div class="column is-narrow is-4">
+                                <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
+                                    <i class="mr-1 fas fa-key"></i> Sync Pubkeys
+                                </button>
+                            </div>
+                            <div class="column is-narrow is-4">
+                                <button onclick="sw_actions(this, 'backups', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
+                                    <i class="mr-1 fas fa-hdd"></i> Backup
+                                </button>
+                            </div>
 
-                        <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fas fa-hdd"></i> Backup
-                        </a>
-
-                        <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fas fa-key"></i> Sync Pubkeys
-                        </a>
-
-                        <a onclick="$('.modal-sync-vlans-specific').show();" class="button is-success">
-                            <i class="mr-2 fas fa-ethernet"></i> Sync Vlans
-                        </a>
+                            <div class="column is-narrow is-12 p-1 pb-4">
+                                <button onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="p-1 m-0 is-fullwidth is-success button">
+                                    <i class="mr-1 fas fa-sync"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -224,19 +233,19 @@
         </div>
 
 
-        <div class="column is-8">
+        <div class="column is-9">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role >= 1)
-                            <button onclick="saveEditedPorts(this);" class="is-save-button button is-small is-success is-pulled-right is-hidden"><i class="fas fa-save mr-2"></i> Save</button>
+                            <button onclick="saveEditedPorts(this);" class="is-save-button button is-small is-success is-pulled-right is-hidden"><i class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
                             
-                            <button onclick="cancelEditing(this);" class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i class="fas fa-xmark mr-2"></i> Cancel</button>
+                            <button onclick="cancelEditing(this);" class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
 
                             <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
 
-                            <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> Bulkedit</button>
+                            <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button>
 
-                            <button onclick="enableEditing();" class="is-edit-button button is-small is-info is-pulled-right"><i class="fas fa-edit mr-2"></i> Edit</button>
+                            <button onclick="enableEditing();" class="is-edit-button button is-small is-info is-pulled-right"><i class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
                 </h2>
 
@@ -249,20 +258,20 @@
                 <table id="portoverview" class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
-                            <th class="has-text-centered" style="width: 70px;">Status</th>
-                            <th class="has-text-centered" style="width: 70px;">Port</th>
+                            <th class="has-text-centered" style="width: 45px;">Status</th>
+                            <th class="has-text-centered" style="width: 60px;">Port</th>
                             <th>{{ __('Switch.Live.Portname') }}</th>
                             <th>Untagged/Native</th>
-                            <th style="width:130px">Tagged/Allowed</th>
-                            <th class="has-text-centered" style="width: 150px;">{{ trans_choice('Clients', 2) }}</th>
-                            <th class="has-text-centered" style="width: 80px;">Speed</th>
+                            <th>Tagged/Allowed</th>
+                            <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
+                            <th class="has-text-centered" style="width: 120px;">Speed</th>
                             {{-- <th></th> --}}
                         </tr>
                     </thead>
 
                     <tbody class="live-body">
                         @foreach ($ports as $port)
-                            @livewire('port-details', ['device_id' => $device->id, 'port' => $port, 'vlans' => $vlans])
+                            @livewire('port-details', ['device_id' => $device->id, 'port' => $port, 'vlans' => $vlans, 'cc' => $cc])
                         @endforeach
                     </tbody>
                 </table>

@@ -45,7 +45,7 @@ $("button[name='executeSwitchCommand'").click(async function () {
     }
 });
 
-async function execute(switches, command, type, api_token) {
+async function execute(switches, command) {
     $.each(switches, async function (index, value) {
         $(".output-buttons").append(`<button class='is-loading button' data-id='${value.id}'>${value.name}</button>`);
 
@@ -237,7 +237,6 @@ function switchCreateBackup(ele) {
 
     fetcher(uri, form, ele, cssclass);
 }
-
 
 function switchSyncPubkeys() {
     let form = new FormData();

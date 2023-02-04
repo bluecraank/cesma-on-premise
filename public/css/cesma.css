@@ -192,3 +192,18 @@ thead th:hover {
       opacity: 0;
     }
   }
+
+
+.custom-button-in-port-table {
+  padding: 2.5px;
+  height: auto;
+  width: 100%;
+}
+
+.is-80 {
+    width: 80%;	
+}
+
+.has-custom-text-warning {
+  color: #ff7600 !important;
+}
