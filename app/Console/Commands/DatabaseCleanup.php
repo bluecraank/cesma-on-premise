@@ -9,6 +9,7 @@ use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\Log;
 use App\Models\Mac;
+use App\Models\Vlan;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -41,6 +42,15 @@ class DatabaseCleanup extends Command
         DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         // Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         
+        $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
+
+        Client::where(function($query) use ($vlans_ignore) {
+            foreach ($vlans_ignore as $vlan) {
+                echo $vlan['vid'];
+                $query->orWhere('vlan_id', '=', $vlan['vid']);
+            }
+        })->delete();
+
         
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
 

@@ -759,10 +759,9 @@ class ArubaOS implements DeviceInterface
         $response = self::API_PUT_DATA($device->hostname, $cookie, "ports/" . $port, $api_version, $data);
 
         if ($response['success']) {
-            $device->ports()->where('name', $port)->update(['description' => $name]);
-            return json_encode(['success' => "true", 'message' => __('Msg.ApiPortNameSet')]);
+            return true;
         } else {
-            return json_encode(['success' => "false", 'message' => __('Msg.ApiPortNameNotSet')]);
+            return false;
         }
     }
 }

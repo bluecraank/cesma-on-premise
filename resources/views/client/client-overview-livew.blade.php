@@ -124,13 +124,13 @@
                     $vendor = 'Unknown';
                 }
 
-                $chunks = str_split(strtoupper($client->mac_address), 2);
-                $end = implode(':', $chunks);
+                $splitted_mac = str_split(strtoupper($client->mac_address), 2);
+                $formatted_mac = implode(':', $splitted_mac);
             @endphp
                 <tr>   
-                    <td><i style="" class="mr-2 {{ $cc::getClientIcon($client->type) }} {{ $online }}"></i> {{ substr(strtoupper($client->hostname),0,20) }}</td>
+                    <td><i style="" class="mr-2 {{ $cc::getClientIcon($client->type) }} {{ $online }}"></i>{{ substr(strtoupper($client->hostname),0,20) }}</td>
                     <td>{{ $client->ip_address }}</td>
-                    <td title="{{ $vendor }}">{{ $end }}</td>
+                    <td title="{{ $vendor }}">{{ $formatted_mac }}</td>
                     <td>{{ $client->vlan_id }}</td>
                     <td>{{ $devices[$client->device_id]->name }}</td>
                     <td style="width:100px">{{ $client->port_id }}</td>

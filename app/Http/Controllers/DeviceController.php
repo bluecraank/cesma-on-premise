@@ -333,33 +333,6 @@ class DeviceController extends Controller
         return redirect()->back()->with('success', __('Msg.VlanBulkUpdated'));
     }
 
-    public function setPortName(Request $request) {
-        $return = array('success' => false, 'message' => 'Not implemented', 'data' => $request->all());
-        
-        $device = Device::find($request->input('device_id'));
-
-        if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
-        }
-
-        $class = self::$types[$device->type];
-        $logininfo = $class::API_LOGIN($device);
-
-        if(!$logininfo) {
-            return json_encode(['success' => 'false', 'message' => __('Msg.ApiLoginFailed')]);
-        }
-
-        $port = $request->input('port');
-        $name = $request->input('description');
-
-        $return = $class::setPortName($port, $name, $device, $logininfo);
-
-        list($cookie, $api_version) = explode(";", $logininfo);
-        $class::API_LOGOUT($device, $cookie, $api_version);
-
-        return $return;
-    }
-
     public function hasUpdate(Device $device, Request $request) {
         if($request->time < $device->updated_at) {
             return json_encode(['success' => true, 'updated' => true, 'message' => __('Msg.ViewOutdated').' <a style="text-decoration:underline" href="/switch/'.$device->id.'">'.__('Msg.ClickToRefresh').'</a>']);

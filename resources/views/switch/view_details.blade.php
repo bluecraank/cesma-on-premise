@@ -2,6 +2,7 @@
     <script>
         window.device_id = {{ $device->id }};
         window.timestamp = '{{ $device->updated_at }}'
+        window.msgnothingchanged = '{{ __('Msg.NothingChanged') }}'
     </script>
     @inject('cc', 'App\Services\ClientService')
     <div class="columns ml-1 mr-3">
@@ -224,84 +225,18 @@
 
 
         <div class="column is-8">
-            @if (Auth::user()->role >= 1)
-                <script>
-                    function enableEditing() {
-                        $('.port-vlan-select').each(function() {
-                            $(this).prop('disabled', false);
-                        });
-                        $('.save-vlans').removeClass('is-hidden');
-                        $('.edit-vlans').addClass('is-hidden');
-                        $('.clickable-tags').find('.is-submit').prop('disabled', false);
-                    }
-
-                    function disableEditing() {
-                        $('.port-vlan-select').each(function() {
-                            $(this).prop('disabled', true);
-                        });
-                        $('.save-vlans').addClass('is-hidden');
-                        $('.edit-vlans').removeClass('is-hidden');
-                        $('.clickable-tags').find('.is-submit').prop('disabled', true);
-                    }
-
-                    function getApiToken() {
-                        let id = window.device_id;
-                        let csrf = $('meta[name="csrf-token"]').attr('content');
-                        var data = new FormData();
-                        data.append('hash', window.apicookie);
-                        data.append('timestamp', window.apicookie_timestamp);
-
-                        fetch('/switch/' + id + '/action/prepare-api', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': csrf
-                                },
-                                body: data
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    window.apicookie_timestamp = data.timestamp;
-                                    window.apicookie = data.hash;
-
-
-                                    let rows = $('#portoverview').find('tr.changed');
-                                    rows.each(function (index, value) {
-                                        let com_id = $(this).attr('wire:id');
-                                        let cookie = window.apicookie;
-                                        if(index != rows.length - 1) {
-                                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, false);
-                                        } else {
-                                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, true);
-                                            window.apicookie = null;
-                                            window.apicookie_timestamp = null;
-                                        }
-                                    });
-                                    
-                                    window.apicookie_timestamp = Date.now();
-                                }
-                            });
-                    }
-                </script>
-            @endif
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role >= 1)
-                        <span onclick="disableEditing();"
-                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
+                            <button onclick="saveEditedPorts(this);" class="is-save-button button is-small is-success is-pulled-right is-hidden"><i class="fas fa-save mr-2"></i> Save</button>
+                            
+                            <button onclick="cancelEditing(this);" class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i class="fas fa-xmark mr-2"></i> Cancel</button>
 
-                        <span
-                            onclick="getApiToken()"
-                            class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
+                            <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
 
-                        <span onclick="$('.modal-vlan-bulk-edit').show();"
-                            class="mr-5 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Bulkedit') }}</span>
-                        <span
-                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')"
-                            class="ml-3 mr-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Custom Uplinks') }}</span>
+                            <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> Bulkedit</button>
 
-                        <span onclick="enableEditing();"
-                            class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
+                            <button onclick="enableEditing();" class="is-edit-button button is-small is-info is-pulled-right"><i class="fas fa-edit mr-2"></i> Edit</button>
                     @endif
                 </h2>
 

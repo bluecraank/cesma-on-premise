@@ -44,7 +44,7 @@
                     </div>
                     <div class="field">
                         <p class="control" style="padding-top:16px">
-                            <button type="submit" name="submitT" class="is-fullwidth button is-success">
+                            <button type="submit" class="is-fullwidth button is-success">
                                 Login
                             </button>
                         </p>

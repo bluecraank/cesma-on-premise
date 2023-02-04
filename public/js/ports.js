@@ -1,23 +1,3 @@
-$("#portoverview").on('dblclick', 'td.input-field', function () {
-    let cell_data = $.trim($(this).text());
-    let id = $(this).attr('data-port');
-    let tmp = "<div data-current-description=\"" + cell_data + "\" id=\"" + id +
-        "\" class=\"control\"><input class=\"input is-info\" type=\"text\" placeholder=\"Portname\" value=\"" +
-        cell_data +
-        "\"></div>";
-
-    $(this).html(tmp);
-
-    $("#" + id).keyup(function (event) {
-        if (event.which == 13) {
-            storePortDescription(this, $(this).find('input').val(), $(this).attr('data-current-description'), $(this).attr('id'),
-                '{{ $device->id }}');
-        } else if (event.which == 27) {
-            $(this).parent().html($(this).find('input').val());
-        }
-    });
-});
-
 function checkUpdate() {
     let id = window.device_id
     let time = window.timestamp
@@ -66,30 +46,6 @@ function submitBulkEditPorts(ele, id) {
     $('#bulk-edit-ports .ports').val(JSON.stringify(ports));
 
     $('#bulk-edit-ports').submit();
-}
-
-function storePortDescription(ele, description, old_desc, port, device) {
-
-    if (description == old_desc) {
-        $(ele).parent().html(description);
-        return;
-    }
-
-    let form = new FormData();
-    let uri = '/switch/' + device + '/action/update-port-name';
-    let cssclass = 'fa-edit';
-
-    $(ele).find('.icon').hide();
-    form.append('port', port);
-    form.append('description', description);
-    form.append('device_id', device);
-
-    fetcher(uri, form, ele, cssclass, false, function (success) {
-        if (success) {
-            $(ele).parent().html(description);
-        }
-        $(ele).find('.icon').show();
-    });
 }
 
 function updatePortTaggedVlans(ele) {
@@ -143,6 +99,94 @@ function updateTaggedModal(pid, vlans, port, id, typ) {
     modal.show();
 }
 
+function enableEditing() {
+    $('.port-vlan-select').each(function() {
+        $(this).prop('disabled', false);
+    });
+
+    $('.port-description-input').each(function() {
+        $(this).prop('readonly', false);
+    });
+
+    $('.clickable-tags').find('.is-submit').prop('disabled', false);
+
+    $('.is-save-button').removeClass('is-hidden');
+    $('.is-edit-button').addClass('is-hidden');
+}
+
+function cancelEditing() {
+    $('.port-vlan-select').each(function() {
+        $(this).prop('disabled', true);
+    });
+
+    $('.port-description-input').each(function() {
+        $(this).prop('readonly', true);
+    });
+
+    $('.clickable-tags').find('.is-submit').prop('disabled', true);
+
+    $('.is-save-button').addClass('is-hidden');
+    $('.is-edit-button').removeClass('is-hidden');
+}
+
+function saveEditedPorts(element) {
+    let id = window.device_id;
+    let csrf = $('meta[name="csrf-token"]').attr('content');
+    var data = new FormData();
+    data.append('hash', window.apicookie);
+    data.append('timestamp', window.apicookie_timestamp);
+
+    $(element).addClass('is-loading');
+
+    fetch('/switch/' + id + '/action/prepare-api', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrf
+            },
+            body: data
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.apicookie_timestamp = data.timestamp;
+                window.apicookie = data.hash;
+
+
+                let rows = $('#portoverview').find('tr.changed');
+
+                if (rows.length == 0) {
+                    $.notify(window.msgnothingchanged, {
+                        style: 'bulma-info',
+                        autoHideDelay: 8000
+                    });
+                    $(element).removeClass('is-loading');
+                    return;
+                }
+
+                rows.each(function(index, value) {
+                    let com_id = $(this).attr('wire:id');
+                    let cookie = window.apicookie;
+                    if (index != rows.length - 1) {
+                        window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, false);
+                    } else {
+                        window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, true).then(() => {
+                            $(element).removeClass('is-loading');
+                        });
+                        window.apicookie = null;
+                        window.apicookie_timestamp = null;
+                    }
+                });
+
+                window.apicookie_timestamp = Date.now();
+            } else {
+                $.notify(data.message, {
+                    style: 'bulma-error',
+                    autoHideDelay: 8000
+                });
+            }
+        });
+}
+
 $(document).ready(function () {
     $(".clickable-tags .modal-card-body span.tag").click(function () {
         $(this).toggleClass('is-primary');
@@ -155,5 +199,5 @@ $(document).ready(function () {
             style: 'bulma-success',
             autoHideDelay: 8000
         });
-    })    
+    });
 });

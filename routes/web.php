@@ -120,7 +120,7 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/{id}/action/update-tagged-ports', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
     Route::post('/{id}/action/bulk-update-ports', [DeviceController::class, 'bulkEditPorts'])->where('id', '[0-9]+');
     Route::post('/{id}/action/update-port-name', [DeviceController::class, 'setPortName'])->where('id', '[0-9]+');
-    Route::post('/{id}/action/prepare-api', [DeviceService::class, 'getApiToken'])->where('id', '[0-9]+');
+    Route::post('/{id}/action/prepare-api', [DeviceService::class, 'startApiSession'])->where('id', '[0-9]+');
     Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
 
     // Backup Aktionen

@@ -1,23 +1,27 @@
-<tr id="{{ $port->id }}" class="{{ ($this->somethingChanged) ? 'changed' : '' }}">
+<tr id="{{ $port->id }}" class="{{ $this->somethingChanged ? 'changed' : '' }}">
     <td class="has-text-centered"s><i
             class="fas fa-circle {{ $port->link ? 'has-text-success' : 'has-text-danger' }}"></i></td>
     <td class="has-text-centered">{{ $port->name }}</td>
-    <td>{{ $port->description }}</td>
     <td>
-        <div class="select {{ $this->untaggedVlansUpdated ? 'has-text-warning-dark' : '' }} is-small">
+        <input {{ ($this->doNotDisable) ? '' : 'readonly="true"' }} wire:change="preparePortDescription()" wire:model.debounce.1000ms="portDescription" class="port-description-input is-small input" value="{{ $this->portDescription }}" />
+        <i class="{{ $this->portDescriptionUpdated ? '' : 'is-hidden' }} ml-1 is-warning is-size-7 fa-solid fa-asterisk"></i>
+    </td>
+    <td>
+        <div class="select is-small">
             <select wire:change="prepareUntaggedVlan()" wire:model="untaggedVlanId" class="select port-vlan-select"
-                {{ $doNotDisable ? '' : 'disabled' }} name="" id="">
-                <option value="0">{{ $this->port->untaggedVlan() }}</option>
+                {{ ($this->doNotDisable) ? '' : 'disabled' }} name="" id="">
+                <option value="0">No VLAN</option>
                 @foreach ($vlans as $vlan)
-                    <option {{ $this->port->untaggedVlan() == $vlan->id ? 'selected' : '' }} value="{{ $vlan->id }}">
-                        {{ $vlan->name }}</option>
+                    <option value="{{ $vlan->id }}">{{ $vlan->name }}</option>
                 @endforeach
+                {{-- {{ $this->untaggedVlanId == $vlan->id ? 'selected' : '' }} --}}
             </select>
         </div>
-        {!! $this->untaggedVlansUpdated ? '<i class="ml-1 is-warning is-size-7 fa-solid fa-asterisk"></i>' : '' !!}
+
+        <i class="{{ $this->untaggedVlanUpdated ? '' : 'is-hidden' }} ml-1 is-warning is-size-7 fa-solid fa-asterisk"></i>
     </td>
     <td class="has-text-right">
-        {!! $this->taggedVlansUpdated ? '<i class="ml-1 is-warning is-size-7 fa-solid fa-asterisk"></i>' : '' !!}
+        <i class="{{ $this->taggedVlansUpdated ? '' : 'is-hidden' }} ml-1 is-warning is-size-7 fa-solid fa-asterisk"></i>
         <a class="dark-fix-color"
             onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
             {{ $port->taggedVlans()->count() ?? 0 }} VLANs

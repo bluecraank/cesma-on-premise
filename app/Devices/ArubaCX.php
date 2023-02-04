@@ -554,14 +554,15 @@ class ArubaCX implements DeviceInterface
             if ($result['success']) {
                 $old = $port->untaggedVlan();
 
-                $delete = false;
-
                 if ($old) {
-                    $delete = DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
+                    DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
 
-                $created = DeviceVlanPort::updateOrCreate(
+                DeviceVlanPort::updateOrCreate(
                     ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
+                );
+                DeviceVlanPort::updateOrCreate(
+                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => true],
                 );
 
                 return ['success' => true, 'data' => ''];
@@ -750,10 +751,9 @@ class ArubaCX implements DeviceInterface
         $response = self::API_PATCH_DATA($device->hostname, $cookie, self::$port_if_uri . $port, $api_version, $data);
 
         if ($response['success']) {
-            $device->ports()->where('name', $port)->update(['description' => $name]);
-            return json_encode(['success' => "true", 'message' => __('Msg.ApiPortNameSet')]);
+            return true;
         } else {
-            return json_encode(['success' => "false", 'message' => __('Msg.ApiPortNameNotSet')]);
+            return false;
         }
     }
 }

@@ -98,16 +98,17 @@ class DeviceService
         $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
 
         $newVlanPorts = 0;
+        $trunkDiscovery = 0;
         foreach($data['vlanports'] as $vlanport) {
             if($vlanport['vlan_id'] != "Trunk") {
                 $newVlanPorts++;
+            } else {
+                $trunkDiscovery++;
             }
         }
 
-        if($currentVlanPorts > $newVlanPorts) {
+        if($currentVlanPorts != ($newVlanPorts+$trunkDiscovery)) {
             DeviceVlanPort::where('device_id', $device->id)->delete();
-            $device->touch();
-        } else if($currentVlanPorts < $newVlanPorts) {
             $device->touch();
         }
         
@@ -269,6 +270,24 @@ class DeviceService
         return back()->with('error', __('Msg.UplinkNotUpdated'));
     }
 
+    static function updatePortDescription($logininfo, $port, $device_id, $newDescription) {
+
+        $device = Device::find($device_id);
+
+        if (!$device) {
+            return false;
+        }
+
+        $class = self::$types[$device->type];
+        
+        if(!$logininfo) {
+            return false;
+        }
+
+        return $class::setPortName($port->name, $newDescription, $device, $logininfo);
+    }
+
+
     static function syncVlansToAllDevices(Request $request)
     {
         $location_id = $request->input('location_id');
@@ -327,31 +346,6 @@ class DeviceService
         return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'location_id'));
     }
 
-    static function setUntaggedVlanToPort(Request $request)
-    {
-
-        $device = Device::find($request->input('device'));
-
-        if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
-        }
-
-        $vlans = json_decode($request->input('vlans'), true);
-        $ports = json_decode($request->input('ports'), true);
-
-        if(count($vlans) == 0 or count($ports) == 0) {
-            return json_encode(['success' => 'false', 'message' => 'No changes made']);
-        }
-
-        if (is_array($vlans) and is_array($ports) and count($vlans) == count($ports)) {
-            $class = self::$types[$device->type];
-
-            return $class::setUntaggedVlanToPort($vlans, $ports, $device);
-        }
-        
-        return json_encode(['success' => 'false', 'message' => 'Invalid data received']);
-    }
-
     static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated) {
 
         $device = Device::find($device_id);
@@ -384,7 +378,8 @@ class DeviceService
     }
 
     // Prevent mass login on switch api, use global cookie instead
-    public function getApiToken($id, Request $request) {
+    // Execute way faster
+    public function startApiSession($id, Request $request) {
 
         $device = Device::find($id);
 
@@ -392,28 +387,14 @@ class DeviceService
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
-        $cookie = $request->all();
+        $class = self::$types[$device->type];
 
-        if(isset($cookie['hash']) && $cookie['timestamp'] != "undefined" && (time() - $cookie['timestamp']) < 55) {
-            return json_encode(['success' => 'true', 'hash' => $cookie['hash'], 'timestamp' => $cookie['timestamp']]);	
+        $login_info = $class::API_LOGIN($device);
+        if(!$login_info) {
+            return json_encode(['success' => 'false', 'message' => 'Failed login']);
         }
 
-
-        if(isset($cookie['hash']) && $cookie['hash'] == "undefined" || (time() - $cookie['timestamp']) > 55) {
-            $class = self::$types[$device->type];
-
-            if($cookie['hash'] != "undefined") {
-                list($cookie, $api_version) = explode(";", base64_decode($cookie['hash']));
-                $class::API_LOGOUT($device, $cookie, $api_version);
-            }
-
-            $login_info = $class::API_LOGIN($device);
-            if(!$login_info) {
-                return json_encode(['success' => 'false', 'message' => 'Failed login']);
-            }
-
-            return json_encode(['success' => 'true', 'hash' => base64_encode($login_info), 'timestamp' => time()]);	
-        }
+        return json_encode(['success' => 'true', 'hash' => Crypt::encrypt($login_info), 'timestamp' => time()]);	
     }
 
     static function closeApiSession($cookie, $id) {
