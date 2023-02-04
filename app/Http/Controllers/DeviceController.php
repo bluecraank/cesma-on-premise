@@ -103,7 +103,7 @@ class DeviceController extends Controller
         $uplinks = $device->uplinksGroupedKeyByNameArray();
         uksort($uplinks, 'strnatcmp');
         $vlans = $device->vlans()->get()->keyBy('id') ?? [];
-        $backups = $device->backups()->latest()->take(15)->get() ?? [];
+        $backups = $device->backups()->latest()->take(10)->get() ?? [];
         $vlanPortsUntagged = $device->vlanPortsUntagged();
         $vlanPortsTagged = $device->vlanPortsTagged();
         $clients = $device->clients()->get()->groupBy('port_id')->toArray() ?? [];
