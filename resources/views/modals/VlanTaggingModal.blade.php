@@ -16,7 +16,7 @@
 
             <label class="label is-small">Verfügbare VLANs</label>
             @php
-                $vlans = $vlans
+                $vlans = $device->vlans
                     ->sortBy('vlan_id')
                     ->keyBy('id')
                     ->toArray();

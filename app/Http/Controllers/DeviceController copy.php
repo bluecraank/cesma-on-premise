@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Livewire\WithPagination;
 
 class DeviceController extends Controller
 {
@@ -99,17 +98,26 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function show($device_id)
-    {         
-        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);  
-        $device->type_name = self::$typenames[$device->type];
-
-        $c_uplink = $device->custom_uplink->first();
-        $custom_uplinks = $c_uplink ? implode(', ', json_decode($c_uplink->uplinks, true)) : ''; 
-
+    public function show(Device $device)
+    {   
+        \Debugbar::info("hellop");
+        $ports = $device->ports()->get()->sort(function($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+        $portsById = $ports->keyBy('id');
+        $portsByName = $ports->keyBy('name');
+        $uplinks = $device->uplinks()->get()->keyBy('port_id');
         $is_online = DeviceService::isOnline($device->hostname);
-
-        return view('switch.view_details', compact('device', 'is_online', 'custom_uplinks'));
+        $uplinks = $device->uplinksGroupedKeyByNameArray();
+        uksort($uplinks, 'strnatcmp');
+        $trkUplinks = DeviceUplink::where('device_id', $device->id)->where('name', 'like', '%Trk%')->groupBy('name')->get();
+        $vlans = $device->vlans()->get()->keyBy('id') ?? [];
+        $backups = $device->backups()->latest()->take(10)->get() ?? [];
+        $vlanPortsUntagged = $device->vlanPortsUntagged();
+        $vlanPortsTagged = $device->vlanPortsTagged();
+        $clients = $device->clients()->get()->groupBy('port_id')->toArray() ?? [];
+        $device->type_name = self::$typenames[$device->type] ?? 'Unknown';
+        return view('switch.view_details', compact('clients', 'device', 'ports', 'uplinks', 'is_online', 'trkUplinks', 'uplinks', 'vlans', 'backups', 'vlanPortsUntagged', 'vlanPortsTagged', 'portsById', 'portsByName'));
     }
 
     public function showBackups(Device $device)
@@ -335,7 +343,6 @@ class DeviceController extends Controller
     }
 
     public function hasUpdate(Device $device, Request $request) {
-        \Debugbar::disable();
         if($request->time < $device->updated_at) {
             return json_encode(['success' => true, 'updated' => true, 'message' => __('Msg.ViewOutdated').' <a style="text-decoration:underline" href="/switch/'.$device->id.'">'.__('Msg.ClickToRefresh').'</a>']);
         } else {

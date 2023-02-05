@@ -34,10 +34,6 @@ class DevicePort extends Model
     {
         return $this->hasMany(DevicePortStat::class);
     }
-
-    public function untaggedVlan() {
-        return $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
-    }
     
     public function untaggedVlanId() {
         $id = $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
@@ -47,11 +43,7 @@ class DevicePort extends Model
         $id = $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
         return DeviceVlan::where('id', $id)->first()->name ?? null;
     }
-
-    public function taggedVlans() {
-        return $this->deviceVlanPorts->where('is_tagged', true)->where('device_port_id', $this->id);
-    }
-
+    
     public function isMemberOfTrunk() {
         return $this->deviceUplink()->exists();
     }
@@ -71,9 +63,5 @@ class DevicePort extends Model
 
     public function stats() {
         return $this->devicePortStats()->first();
-    }
-    
-    public function clientsList() {
-        return Client::where('device_id', $this->device_id)->where('port_id', $this->name)->get();
     }
 }

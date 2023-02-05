@@ -13,10 +13,14 @@ class PortDetails extends Component
 {
 
     public $device_id;
+    public $vlanports;
     public $port;
     public $vlans;
+    public $clients;
+    
     public $doNotDisable = false;
     public $untaggedVlanId;
+    public $taggedVlans;
     public $cc;
 
     public $somethingChanged = false;
@@ -32,13 +36,13 @@ class PortDetails extends Component
     public $newUntaggedVlan;
     public $untaggedVlanUpdated = false;
 
-    protected $listeners = ['sendPortVlanUpdate', 'refreshComponent' => '$refresh'];
+    protected $listeners = ['sendPortVlanUpdate'];
 
     public function mount()
     {
         $this->cc = ClientService::class;
-        $this->port = $this->port->fresh(); 
-        $this->untaggedVlanId = $this->port->untaggedVlan();
+        $this->untaggedVlanId = $this->vlanports->where('is_tagged', false)->first()->device_vlan_id ?? 0;
+        $this->taggedVlans = $this->vlanports->where('is_tagged', true);
         $this->newTaggedVlans = [];
         $this->taggedVlansUpdated = false;
         $this->untaggedVlanUpdated = false;
@@ -48,19 +52,9 @@ class PortDetails extends Component
         $this->portDescriptionUpdated = false;
     }
 
-    public function refreshComponent()
-    {
-        $this->port = $this->port->fresh(); 
-        $this->mount();
-    }
-
     public function render()
     {
-        $ports = Device::find($this->device_id)->ports()->get()->sort(function($a, $b) {
-            return strnatcmp($a['name'], $b['name']);
-        });
-
-        return view('livewire.port', compact('ports'));
+        return view('livewire.port', ['port' => $this->port]);
     }
 
     public function prepareUntaggedVlan() {
@@ -77,11 +71,10 @@ class PortDetails extends Component
         $this->somethingChanged = true;
     }
 
-    public function preparePortDescription() {;
+    public function preparePortDescription() {  
         $this->portDescriptionUpdated = true;
         $this->doNotDisable = true;
         $this->somethingChanged = true;
-
     }
 
     public function sendPortVlanUpdate($cookie, $closeSession) {
@@ -116,6 +109,7 @@ class PortDetails extends Component
                 DeviceService::closeApiSession($raw_cookie, $this->device_id);
             }
 
+            $this->port = $this->port->fresh(); 
             $this->mount();
             $this->doNotDisable = true;
 

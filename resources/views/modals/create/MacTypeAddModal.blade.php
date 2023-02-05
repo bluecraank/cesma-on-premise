@@ -43,7 +43,7 @@
                         <select name="mac_type">
                             <option value="">{{ __('Misc.Select.SelectText') }}</option>
                             @foreach($mac_types as $type)
-                                <option value="{{ $type }}">{{ $type }}</option>
+                                <option value="{{ $type }}">{{ $type->type }}</option>
                             @endforeach
                         </select>
                     </div>

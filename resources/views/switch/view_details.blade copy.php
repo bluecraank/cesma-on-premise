@@ -37,19 +37,19 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.VlanSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->vlans->count() }}</p>
+                <p class="subtitle">{{ count($device->vlans()->get()) }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.TrunkSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->uplinks->count() }}</p>
+                <p class="subtitle">{{ count($uplinks) }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ $device->ports->where('link', true)->count() }}/{{ $device->ports->count()-$device->uplinks->groupBy('name')->count() }}</p>
+                <p class="subtitle">{{ count($device->portsOnline()) }}/{{ count($ports) - $trkUplinks->count() }}</p>
             </div>
         </div>
     </div>
@@ -132,28 +132,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $uplinklist = $device->uplinks->sort(function ($a, $b) {
-                            return strnatcmp($a->name, $b->name);
-                        })->groupBy('name');
-                        @endphp
-                        @foreach ($uplinklist as $key => $trunk_ports)
+                        @foreach ($uplinks as $key => $trunk_ports)
                             @php
-                                $trunkids = $trunk_ports->pluck('device_port_id')->toArray();
-
-                                $trunks = implode(', ', array_map(function ($port) use ($device) {
-                                    return $device->ports->where('id', $port)->first()->name;
-
-                                }, $trunkids));
+                                $trunks = [];
+                                
+                                foreach ($trunk_ports as $port) {
+                                    $trunks[$port['device_port_id']] = $portsById[$port['device_port_id']]->name ?? 'Unknown';
+                                }
+                                
+                                $uplink_name = $portsByName->get($key)->description ?? $key;
                             @endphp
-                    
                             <tr>
-                                <td>{{ $key }}</td>
-                                <td class="has-text-right">{{ $trunks }}</td>
+                                <td>{{ $uplink_name != '' ? $uplink_name : $key }}</td>
+                                <td class="has-text-right">{{ implode(', ', $trunks) }}</td>
                             </tr>
                         @endforeach
 
-                        @if ($device->uplinks->count() == 0)
+                        @if (empty($uplinks))
                             <tr>
                                 <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                             </tr>
@@ -173,14 +168,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($device->custom_uplinks))    
-                        @foreach ($device->custom_uplinks as $key => $trunk)
+                        @php
+                            // Sort uplinks in correct order
+                            $custom_uplinks = $device->deviceCustomUplinks()->first();
+                            $custom_uplinks = json_decode($custom_uplinks->uplinks ?? '[]', true);
+                        @endphp
+                        @if (empty($custom_uplinks))
                             <tr>
-                                <td>TODO!</td>
+                                <td colspan="2">{{ __('Switch.Live.NoCustomUplinks') }}</td>
+                            </tr>
+                        @endif
+                        @foreach ($custom_uplinks as $key => $trunk)
+                            <tr>
+                                <td>{{ $portsByName[$trunk]['description'] }}</td>
                                 <td class="has-text-right">{{ $trunk }}</td>
                             </tr>
                         @endforeach
-                        @endif
                     </tbody>
                 </table>
             </div>
@@ -194,9 +197,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $vlanlist = $device->vlans->sort(function ($a, $b) {
-                            return $a['vlan_id'] <=> $b['vlan_id'];
-                        })->toArray();
+                        @php
+                            // Sort vlans in correct order
+                            $vlanlist = $vlans->keyBy('vlan_id')->toArray();
+                            uksort($vlanlist, 'strnatcmp');
                         @endphp
                         @foreach ($vlanlist as $vlan)
                             <tr>
@@ -218,14 +222,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($device->backups as $backup)
+                        @foreach ($backups as $backup)
                             <tr>
                                 <td>{{ $backup->created_at }}</td>
                                 <td class="has-text-right">{{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
                             </tr>
                         @endforeach
 
-                        @if ($device->backups->count() == 0)
+                        @if (count($backups) == 0)
                             <tr>
                                 <td colspan="2">Kein Backup bisher durchgeführt</td>
                             </tr>
@@ -245,7 +249,7 @@
                             
                             <button onclick="cancelEditing(this);" class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
 
-                            <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
+                            <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $device->deviceCustomUplinks()->first() ? implode(',', json_decode($device->deviceCustomUplinks()->first()->uplinks, true)) : '' }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
 
                             <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button>
 
@@ -274,8 +278,8 @@
                     </thead>
 
                     <tbody class="live-body">
-                        @foreach ($device->ports as $port)
-                            @livewire('port-details', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
+                        @foreach ($ports as $port)
+                            @livewire('port-details', ['device_id' => $device->id, 'port' => $port, 'vlans' => $vlans, 'cc' => $cc])
                         @endforeach
                     </tbody>
                 </table>

@@ -14,7 +14,7 @@
 
                 <label class="label is-small">Verfügbare Ports</label>
                 <div class="ports">
-                    @php
+                    {{-- @php
                         $ports = $ports->sortBy('name')->keyBy('id')->toArray();
                     @endphp
                     @foreach ($ports as $key => $port)
@@ -22,14 +22,14 @@
                             <span title="{{ $port['name'] }}" class="is-clickable tag"
                                 data-id="{{ $port['name'] }}">{{ $port['name'] }}</span>
                         @endif
-                    @endforeach
+                    @endforeach --}}
                 </div>
 
                 <br><br>
                 <div class="vlans">
 
                     <select multiple="multiple" id="vlan-select-ms" name="vlans_selected[]">
-                        @php
+                        {{-- @php
                             $vlans = $vlans
                                 ->sortBy('vlan_id')
                                 ->keyBy('id')
@@ -37,7 +37,7 @@
                         @endphp
                         @foreach ($vlans as $vlan)
                             <option value="{{ $vlan['id'] }}">{{ $vlan['name'] }}</option>
-                        @endforeach
+                        @endforeach --}}
                     </select>
 
                 </div>

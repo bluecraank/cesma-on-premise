@@ -1,5 +1,5 @@
 <div class="modal modal-delete-switch">
-    <form action="/switch/delete" method="post">
+    <form onsubmit="$('.modal-delete-switch .is-submit').addClass('is-loading')" action="/switch/delete" method="post">
         <input type="hidden" name="_method" value="delete" />
         @csrf
         <div class="modal-background"></div>
@@ -18,7 +18,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-danger">{{ __('Button.Delete') }}</button>
+                <button class="button is-submit is-danger">{{ __('Button.Delete') }}</button>
                 <button onclick="$('.modal-delete-switch').hide();return false;" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

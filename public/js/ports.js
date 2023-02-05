@@ -147,7 +147,7 @@ function saveEditedPorts(element) {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.success && data.success == "true") {
                 window.apicookie_timestamp = data.timestamp;
                 window.apicookie = data.hash;
 
@@ -179,6 +179,7 @@ function saveEditedPorts(element) {
 
                 window.apicookie_timestamp = Date.now();
             } else {
+                $(element).removeClass('is-loading');
                 $.notify(data.message, {
                     style: 'bulma-error',
                     autoHideDelay: 8000

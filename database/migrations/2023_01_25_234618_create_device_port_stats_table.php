@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('device_port_stats', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('device_port_id')->constrained()->onDelete('cascade');
+            $table->foreignId('device_port_id')->constrained('device_ports')->onDelete('cascade');
             $table->unsignedBigInteger('port_speed')->nullable();
             $table->unsignedDouble('port_rx_bps')->nullable();
             $table->unsignedDouble('port_tx_bps')->nullable();

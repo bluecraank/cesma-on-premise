@@ -19,7 +19,6 @@ use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\VlanService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class DeviceService
 {
@@ -67,8 +66,11 @@ class DeviceService
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
+        $ports = $device->ports();
+
         foreach ($data['ports'] as $port) {
-            $device->ports()->updateOrCreate(
+
+            DevicePort::updateOrCreate(
                 [
                     'name' => $port['id'],
                     'device_id' => $device->id
@@ -82,32 +84,17 @@ class DeviceService
             );
         }
 
-        if(count($data['uplinks']) != $device->uplinks()->count()) {
-            $device->touch();
-        }
-
-        foreach ($data['uplinks'] as $port => $uplink) {
-            $device->uplinks()->updateOrCreate([
-                'name' => $uplink,
-                'device_id' => $device->id,
-                'device_port_id' => $device->ports()->where('name', $port)->first()->id,
-            ]);
-        }
-
         // $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
         $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
 
         $newVlanPorts = 0;
-        $trunkDiscovery = 0;
         foreach($data['vlanports'] as $vlanport) {
             if($vlanport['vlan_id'] != "Trunk") {
                 $newVlanPorts++;
-            } else {
-                $trunkDiscovery++;
             }
         }
 
-        if($currentVlanPorts != ($newVlanPorts+$trunkDiscovery)) {
+        if($currentVlanPorts != $newVlanPorts) {
             DeviceVlanPort::where('device_id', $device->id)->delete();
             $device->touch();
         }
@@ -115,11 +102,7 @@ class DeviceService
         foreach ($data['vlanports'] as $vlanport) {
             // CX Trunk Discovery
             if($vlanport['vlan_id'] == "Trunk") {
-                $device->uplinks()->updateOrCreate([
-                    'name' => $vlanport['port_id'],
-                    'device_id' => $device->id,
-                    'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
-                ]);
+                $data['uplinks'][$vlanport['port_id']] = $vlanport['port_id'];
             } else {
                 $test = $device->vlanports()->updateOrCreate(
                     [
@@ -129,9 +112,19 @@ class DeviceService
                         'is_tagged' => $vlanport['is_tagged']
                     ]
                 );
-
-                // if($test)
             }
+        }
+
+        if(count($data['uplinks']) != $device->uplinks()->count()) {
+            $device->touch();
+        }
+
+        foreach ($data['uplinks'] as $port => $uplink) {
+            DeviceUplink::updateOrCreate([
+                'name' => $uplink,
+                'device_id' => $device->id,
+                'device_port_id' => $device->ports()->where('name', $port)->first()->id,
+            ]);
         }
 
         foreach ($data['statistics'] as $statistic) {
@@ -153,7 +146,7 @@ class DeviceService
 
         $custom_uplink_ports = [];
         $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
-        $custom_uplinks = $device->deviceCustomUplinks()->first();
+        $custom_uplinks = $device->custom_uplink()->first();
         if($custom_uplinks) {
             $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
         }
@@ -181,7 +174,7 @@ class DeviceService
         $device->hardware = $data['informations']['hardware'] ?? NULL;
         $device->mac_address = $data['informations']['mac'] ?? NULL;
         $device->firmware = $data['informations']['firmware'] ?? NULL;
-        $device->update();
+        $device->save();
     }
 
     static function storeDevice($request)
@@ -209,11 +202,18 @@ class DeviceService
 
     static function deleteDeviceData(Device $device)
     {
+        $ports = $device->ports()->get();
         DeviceBackup::where('device_id', $device->id)->delete();
+        DeviceUplink::where('device_id', $device->id)->delete();
+        DeviceCustomUplink::where('device_id', $device->id)->delete();
+        DeviceVlanPort::where('device_id', $device->id)->delete();
+        DevicePortStat::where(function($query) use ($ports) {
+            foreach ($ports as $port) {
+                $query->orWhere('device_port_id', $port->id);
+            }
+        })->delete();
         DevicePort::where('device_id', $device->id)->delete();
         DeviceVlan::where('device_id', $device->id)->delete();
-        DeviceUplink::where('device_id', $device->id)->delete();
-        DeviceVlanPort::where('device_id', $device->id)->delete();
         Client::where('device_id', $device->id)->delete();
         Mac::where('device_id', $device->id)->delete();
     }

@@ -102,7 +102,7 @@ class Device extends Model
         return $this->ports()->where('id', $id)->first()->name;
     }
 
-    public function deviceCustomUplinks() {
+    public function custom_uplink() {
         return $this->hasOne(DeviceCustomUplink::class);
     }
 

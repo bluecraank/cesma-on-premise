@@ -259,19 +259,11 @@
                 </tbody>
             </table>
 
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>Info</p>
-                    <button class="delete" aria-label="delete"></button>
-                </div>
-                <div class="message-body">
-                    Hier können Routing-Geräte definiert werden, die über SNMP abgefragt werden sollen. Die Abfrage
-                    erfolgt über
-                    die
-                    SNMP Community "public".<br>
-                    Durch die Angabe von Routing-Geräte können Endgeräte besser zugeordnet werden.
-                </div>
-            </article>
+            Hier können Routing-Geräte definiert werden, die über SNMP abgefragt werden sollen. Die Abfrage
+            erfolgt über
+            die
+            SNMP Community "public".<br>
+            Durch die Angabe von Routing-Geräte können Endgeräte besser zugeordnet werden.
         </div>
 
         <div class="tabsbox is-hidden" data-id="vorlagen">
@@ -334,16 +326,8 @@
                     @endforeach
                 </tbody>
             </table>
-
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>Info</p>
-                    <button class="delete" aria-label="delete"></button>
-                </div>
-                <div class="message-body">
-                    Erstelle Vorlagen um bei der VLAN-Zuordnung von Ports an einem Switch Zeit zu sparen.
-                </div>
-            </article>
+            
+            Erstelle Vorlagen um bei der VLAN-Zuordnung von Ports an einem Switch Zeit zu sparen.
         </div>
 
         <script>

@@ -4,7 +4,7 @@
             <div class="columns">
                 <div class="column is-6">
                     <h1 class="title">
-                        {{ $device->name }}
+                        {{ $device->name }} - ({{ $current_port->description != "" ? $current_port->description : $port_id }})
                     </h1>
 
                     <h1 class="subtitle">
@@ -105,19 +105,22 @@
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Native / Untagged VLANs</h2>
-                    <span class="tag is-primary">{{ $current_port->untaggedVlanName() ?? 'No VLAN' }}</span>
+                    @php $untagged = $device->vlanports->where('device_port_id', $current_port->id)->where('is_tagged', false)->first() @endphp
+                    <span class="tag is-primary">{{ ($untagged) ? $vlans[$untagged->device_vlan_id]['name'] : 'NO VLAN' }}</span>
                 </div>
             </div>
         
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Allowed / Tagged VLANs</h2>
-                    @foreach($current_port->taggedVlans() as $vlan)
-                        <span class="tag is-primary">{{ $vlans[$vlan->device_vlan_id]['name'] }}</span>
+                    @php $vlanports = $device->vlanports->where('device_port_id', $current_port->id); @endphp
+                    @foreach($vlanports as $vlan)
+                        <span title="ID {{ $vlans[$vlan->device_vlan_id]['vlan_id'] }}" class="tag is-primary">{{ $vlans[$vlan->device_vlan_id]['name'] }}</span>
                     @endforeach
+
                     @if ($current_port->vlan_mode == "access")
                         <span class="tag is-info">{{ __('Port.Access.NoAllowedVlans') }}</span>
-                    @elseif(empty($current_port->taggedVlans()->toArray()))
+                    @elseif($device->vlanports->where('device_port_id', $current_port->id)->count() == 0)
                         <span class="tag is-info">{{ __('Port.NativeUntagged.AllVlansAllowed') }}</span>
                     @endif
                 </div>

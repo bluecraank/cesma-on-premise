@@ -10,7 +10,7 @@
     <td class="is-vcentered">
         <input {{ $this->doNotDisable ? '' : 'disabled' }} wire:change="preparePortDescription()"
             wire:model.debounce.1000ms="portDescription" class="mt-1 is-radiusless port-description-input is-link is-small input is-80"
-            value="{{ $this->portDescription }}" />
+             />
 
         <span class="has-custom-text-warning is-size-4">{{ $this->portDescriptionUpdated ? '*' : '' }}</span>
     </td>
@@ -19,7 +19,7 @@
         <div class="select is-small mt-1 is-link">
             <select {{ $this->doNotDisable ? '' : 'disabled' }} wire:change="prepareUntaggedVlan()" wire:model="untaggedVlanId" class="select is-radiusless port-vlan-select">
                 <option value="0">No VLAN</option>
-                @foreach ($vlans as $vlan)
+                @foreach ($this->vlans as $vlan)
                     <option value="{{ $vlan->id }}">{{ $vlan->name }}</option>
                 @endforeach
             </select>
@@ -30,15 +30,14 @@
 
     <td class="is-vcentered">
         <button class="is-80 button is-small is-outlined is-radiusless is-link mt-1"
-            onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$port->taggedVlans()->pluck('device_vlan_id')->toArray()) }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
-            {{ $port->taggedVlans()->count() ?? 0 }} VLANs
+            onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
+            {{ $this->taggedVlans->count() ?? 0 }} VLANs
         </button>
 
         <span class="has-custom-text-warning is-size-4">{{ $this->taggedVlansUpdated ? '*' : '' }}</span>
     </td>
 
     <td class="has-text-left is-vcentered">
-        @php $clients = $port->clientsList(); @endphp
         @if ($clients->count() > 0)
             <div style="width:100%" class="dropdown is-hoverable is-fullwidth">
                 <div style="width:100%" class="dropdown-trigger">
@@ -54,7 +53,7 @@
                         <div class="dropdown-item">
                             @foreach ($clients as $client)
                                 <div class="has-text-left mt-1 mb-1">
-                                    <i class="{{ $cc::getClientIcon($client->type) }} mr-1"></i> {{ $client->hostname }}
+                                    <i class="mr-1 {{ $cc::getClientIcon($client->type) }}"></i> {{ $client->hostname }}
                                 </div>
                             @endforeach
                         </div>
