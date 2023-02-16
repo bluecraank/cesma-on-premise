@@ -39,20 +39,27 @@ class ClientController extends Controller
 
         $client_ip_addresses = implode(" ", $clients_ips);
 
-        $result = exec("fping -i 50 " . $client_ip_addresses . " 2> /dev/null", $output, $return);
+        $result = exec("fping -A -i 30 " . $client_ip_addresses . " 2> /dev/null", $output, $return);
 
         foreach ($output as $client) {
             $data = explode(" ", $client);
             $key = array_search($data[0], $clients_ips);
             if ($key !== false or $key == 0) {
+
                 if ($data[2] == "alive") {
                     $clients[$key]->online = 1;
+                    $clients[$key]->updated_at = Carbon::now();
                 } else {
                     $clients[$key]->online = 0;
+                    $clients[$key]->updated_at = Carbon::now();
                 }
 
-                if ($clients[$key]->created_at->diffInDays(Carbon::now()) > 7) {
+                // If client was offline for more than 7 days, set status to unknown
+                if ($clients[$key]->updated_at->diffInDays(Carbon::now()) > 7) {
                     $clients[$key]->online = 2;
+
+                    // Disable timestamps to prevent updated_at from being updated
+                    $clients[$key]->timestamps = false;
                 }
 
                 $clients[$key]->save();
@@ -64,13 +71,4 @@ class ClientController extends Controller
         Log::info('Clients pinged in ' . $elapsed . " seconds");
     }
 
-    static function deleteClientsOnUplinks($device)
-    {
-        Client::where('switch_id', $device->id)->where(function ($query) use ($device) {
-            $uplinks = json_decode($device->uplinks, true) ?? [];
-            foreach ($uplinks as $uplink) {
-                $query->orWhere('port_id', $uplink);
-            }
-        })->delete();
-    }
 }

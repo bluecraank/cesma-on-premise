@@ -53,7 +53,9 @@ class ClientService {
 
     static function getClients() {
         $start = microtime(true);
-        $macs = Mac::all()->keyBy('mac_address')->toArray();
+        // $macs = Mac::all()->keyBy('mac_address')->toArray();
+        $macs = Mac::where('type', '!=', 'uplink')->orWhereNull('type')->get()->keyBy('mac_address')->toArray();
+
         $endpoints = self::getClientDataFromProviders();
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
@@ -73,6 +75,9 @@ class ClientService {
 
         $updated = 0;
         $created = 0;
+        $duplicates = 0;
+        $unique = 0;
+        
         $mac_already_added = [];
         foreach($endpoints as $client) {
             foreach($client['mac_addresses'] as $mac) {
@@ -98,13 +103,21 @@ class ClientService {
 
                 // Wurde bereits durchlaufen
                 if(isset($mac_already_added[$mac])) {
+                    $duplicates++;
+                    // Log::debug('Duplicate MAC: '. $mac . ' | '. $client['hostname'] . ' | '. $client['ip_address'] . ' | '. $macs[$mac]['port_id'] . ' | '. $macs[$mac]['device_id'] . ' | '. $macs[$mac]['vlan_id']);
+                    continue;
+                }
+
+                if(empty($mac) || $mac == "") {
                     continue;
                 }
 
                 $mac_already_added[$mac] = true;
-                
+                $unique++;
+
+                // Immernoch unschlüssig ob das hier mit id und mac_address richtig ist
                 $client = Client::updateOrCreate([
-                    'id' => md5($mac.$client['hostname']),
+                    // 'id' => md5($mac.$client['hostname']),
                     'mac_address' => $mac
                 ], 
                 [
@@ -124,7 +137,7 @@ class ClientService {
             }
         }
 
-        Log::info('Updated '. $updated .' clients | Created '. $created .' clients | Took: '. (microtime(true) - $start) .'s');
+        Log::info('Updated '. $updated .' clients | Created '. $created .' clients | Duplicates '. $duplicates .' | Unique '. $unique .' | Took: '. (microtime(true) - $start) .'s');
     } 
 
     static function getClientType($mac)

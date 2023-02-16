@@ -201,4 +201,13 @@ $(document).ready(function () {
             autoHideDelay: 8000
         });
     });
+
+    window.addEventListener('notify-error', message => {
+        let port = message.detail.portid;
+        $('#' + port).css('opacity', '1');
+        $.notify(message.detail.message, {
+            style: 'bulma-error',
+            autoHideDelay: 8000
+        });
+    });
 });

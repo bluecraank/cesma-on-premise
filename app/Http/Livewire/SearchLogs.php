@@ -3,8 +3,8 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Log;
 use App\Traits\WithLogin;
+use danielme85\LaravelLogToDB\LogToDB;
 
 
 class SearchLogs extends Component
@@ -20,8 +20,9 @@ class SearchLogs extends Component
     public function render()
     {
         $searchTerm = '%'.$this->searchTerm.'%';
-        return view('log.log-overview-livew',[
-            'logs' => Log::where('user','like', $searchTerm)->orWhere('data', 'like', $searchTerm)->orWhere('message', 'like', $searchTerm)->get()->sortByDesc('created_at'),
+        return view('system.view_logs_livewire',[
+            // 'logs' => Log::where('user','like', $searchTerm)->orWhere('data', 'like', $searchTerm)->orWhere('message', 'like', $searchTerm)->get()->sortByDesc('created_at'),
+            'logs' => LogToDB::model()->get()
         ]);
     }
 }

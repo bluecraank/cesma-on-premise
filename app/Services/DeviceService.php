@@ -153,9 +153,26 @@ class DeviceService
 
         $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
         foreach ($data['macs'] as $mac) {
+
+            // Do not store macs on uplinks because its not correct discovered
             if(in_array($mac['port'], $combined_uplinks)) {
+                // Store uplink mac address
+                Mac::updateOrCreate(
+                    [
+                        'mac_address' => $mac['mac'],
+                    ],
+                    [
+                        'device_id' => $device->id,
+                        'port_id' => $mac['port'],
+                        'vlan_id' => $mac['vlan'],
+                        'type' => 'uplink',
+                    ]
+                );
                 continue;
             }
+
+            // Update mac address otherwise create new
+            // Update because if a mac address is moved to another port / switch it will be updated
             Mac::updateOrCreate(
                 [
                     'mac_address' => $mac['mac'],

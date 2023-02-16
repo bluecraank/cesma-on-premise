@@ -11,5 +11,6 @@ class Mac extends Model
         'device_id',
         'port_id',
         'vlan_id',
+        'type',
     ];
 }

@@ -100,7 +100,7 @@ class DeviceController extends Controller
      */
     public function show(Device $device)
     {   
-        \Debugbar::info("hellop");
+        // \Debugbar::info("hellop");
         $ports = $device->ports()->get()->sort(function($a, $b) {
             return strnatcmp($a['name'], $b['name']);
         });

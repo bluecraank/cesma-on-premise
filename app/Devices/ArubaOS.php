@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ArubaOS implements DeviceInterface
 {
@@ -556,7 +558,7 @@ class ArubaOS implements DeviceInterface
             $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
             if($result['success']) {
-                $old = $port->untaggedVlan();
+                $old = DeviceVlanPort::where('device_id', $device->id)->where('device_port_id', $port->id)->where('is_tagged', false)->first()->device_vlan_id ?? false;
 
                 $delete = false;
 
@@ -568,8 +570,11 @@ class ArubaOS implements DeviceInterface
                     ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
                 );
                 
+                Log::channel('database')->info(__('Log.Vlan.Untagged.Updated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                 return ['success' => true, 'data' => ''];
             } else {
+                Log::channel('database')->error(__('Log.Vlan.Untagged.NotUpdated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
+
                 return ['success' => false, 'data' => $result['data']];
             }
 
@@ -582,6 +587,8 @@ class ArubaOS implements DeviceInterface
     static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login = true, $logindata = ""): array
     {
         $return = [];
+        $total = 0;
+
         if($need_login) {
             $login_info = self::API_LOGIN($device);
         } else {
@@ -593,9 +600,12 @@ class ArubaOS implements DeviceInterface
             list($cookie, $api_version) = explode(";", $login_info);
 
             $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
+            
             // Add vlan tagged to port
             foreach ($taggedVlans as $vlan) {
                 if (!array_key_exists($vlan, $alreadyTaggedVlans)) {
+                    $total++;
+
                     $data = '{
                             "vlan_id": ' . $vlans[$vlan]['vlan_id'] . ', 
                             "port_id": "' . $port->name . '", 
@@ -614,8 +624,10 @@ class ArubaOS implements DeviceInterface
                             ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
                         );
                         
+                        Log::channel('database')->info(__('Log.Vlan.Tagged.Updated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                         $return[] = ['success' => true, 'data' => ''];
                     } else {
+                        Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                         $return[] = ['success' => false, 'data' => $result['data']];
                     }
                 }
@@ -625,6 +637,8 @@ class ArubaOS implements DeviceInterface
             if (count($taggedVlans) < count($alreadyTaggedVlans)) {
                 foreach ($alreadyTaggedVlans as $device_vlan_id => $vlan) {
                     if (!in_array($device_vlan_id, $taggedVlans)) {
+                        $total++;
+
                         $data = '{
                                 "vlan_id": ' . $vlans[$device_vlan_id]['vlan_id'] . ', 
                                 "port_id": "' . $port->name . '", 
@@ -641,6 +655,7 @@ class ArubaOS implements DeviceInterface
                             }
                             
                             $return[] = ['success' => true, 'data' => ''];
+                            Log::channel('database')->info(__('Log.Vlan.Tagged.Removed', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name]);
                         } else {
                             $return[] = ['success' => false, 'data' => $result['data']];
                         }
@@ -651,6 +666,19 @@ class ArubaOS implements DeviceInterface
             if($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
+            }
+
+            $success = 0;
+            foreach($return as $result) {
+                if($result['success']) {
+                    $success++;
+                }
+            }
+
+            if($success == count($taggedVlans)) {
+                return ['success' => true, 'data' => ''];
+            } else {
+                return ['success' => false, 'data' => __('Vlan.Update.Error.Tagged', ['port' => $port->name, 'success' => $success, 'total' => $total])];
             }
 
             return $return;
@@ -759,8 +787,10 @@ class ArubaOS implements DeviceInterface
         $response = self::API_PUT_DATA($device->hostname, $cookie, "ports/" . $port, $api_version, $data);
 
         if ($response['success']) {
+            Log::channel('database')->info(__('Log.Port.Name.Updated', ['port' => $port, 'name' => $name ?? 'Empty']));
             return true;
         } else {
+            Log::channel('database')->error(__('Log.Port.Name.UpdateFailed', ['port' => $port, 'name' => $name ?? 'Empty']));
             return false;
         }
     }

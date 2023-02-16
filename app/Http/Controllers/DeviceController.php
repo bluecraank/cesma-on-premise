@@ -10,15 +10,13 @@ use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
 use App\Models\DeviceBackup;
-use App\Models\DeviceUplink;
 use App\Models\Room;
 use App\Services\DeviceService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Livewire\WithPagination;
+
 
 class DeviceController extends Controller
 {
@@ -100,12 +98,12 @@ class DeviceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($device_id)
-    {         
-        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);  
+    {
+        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);
         $device->type_name = self::$typenames[$device->type];
 
-        $c_uplink = $device->custom_uplink->first();
-        $custom_uplinks = $c_uplink ? implode(', ', json_decode($c_uplink->uplinks, true)) : ''; 
+        $c_uplink = $device->custom_uplink ? $device->custom_uplink->first() : [];
+        $custom_uplinks = $c_uplink ? implode(', ', json_decode($c_uplink->uplinks, true)) : '';
 
         $is_online = DeviceService::isOnline($device->hostname);
 
@@ -223,7 +221,7 @@ class DeviceController extends Controller
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        if(count($pubkeys) <= 2 || empty($pubkeys)) {
+        if (count($pubkeys) <= 2 || empty($pubkeys)) {
             return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
         }
 
@@ -269,8 +267,9 @@ class DeviceController extends Controller
         }
     }
 
-    static function bulkEditPorts(Request $request) {
-        
+    static function bulkEditPorts(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
             'device_id' => 'required|integer',
             'type' => 'required|string|in:tagged,untagged',
@@ -296,31 +295,31 @@ class DeviceController extends Controller
         $class = self::$types[$device->type];
 
         // Check if every VLAN exists
-        foreach($vlans as $vlan) {
-            if(!isset($vlan_ids[$vlan])) {
+        foreach ($vlans as $vlan) {
+            if (!isset($vlan_ids[$vlan])) {
                 return redirect()->back()->withErrors(['message' => __('VlanNotFound')]);
             }
         }
 
         $logininfo = $class::API_LOGIN($device);
 
-        if(!$logininfo) {
+        if (!$logininfo) {
             return redirect()->back()->withErrors(['message' => __('LoginFailed')]);
         }
 
-        foreach($ports as $port) {
-            if(!isset($port_ids[$port])) {
+        foreach ($ports as $port) {
+            if (!isset($port_ids[$port])) {
                 return redirect()->back()->withErrors(['message' => __('PortNotFound')]);
             }
 
-            if($type == 'tagged') {
+            if ($type == 'tagged') {
                 $class::setTaggedVlanToPort($vlans, $port_ids[$port]['name'], $device, false, $logininfo);
             }
         }
 
-        if($type == 'untagged') {
+        if ($type == 'untagged') {
             $formatted_vlans = [];
-            foreach($ports as $key => $port) {
+            foreach ($ports as $key => $port) {
                 $formatted_vlans[] = $vlans[0];
             };
             $class::setUntaggedVlanToPort($formatted_vlans, $ports, $device, false, $logininfo);
@@ -334,12 +333,33 @@ class DeviceController extends Controller
         return redirect()->back()->with('success', __('Msg.VlanBulkUpdated'));
     }
 
-    public function hasUpdate(Device $device, Request $request) {
-        \Debugbar::disable();
-        if($request->time < $device->updated_at) {
-            return json_encode(['success' => true, 'updated' => true, 'message' => __('Msg.ViewOutdated').' <a style="text-decoration:underline" href="/switch/'.$device->id.'">'.__('Msg.ClickToRefresh').'</a>']);
+    public function hasUpdate(Device $device, Request $request)
+    {
+        // \DebugBar::disable();
+
+        if ($request->time < $device->updated_at) {
+            return response()
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->json(
+                    [
+                        'success' => true,
+                        'updated' => true,
+                        'message' => __('Msg.ViewOutdated') . ' <a style="text-decoration:underline" href="/switch/' . $device->id . '">' . __('Msg.ClickToRefresh') . '</a>'
+                    ],
+                    200,
+                    ['Content-Type' => 'application/json']
+                );
         } else {
-            return json_encode(['success' => true, 'updated' => false,  'message' => '']);
+            return response()
+                ->json(
+                    [
+                        'success' => true,
+                        'updated' => false,
+                        'message' => ''
+                    ],
+                    200,
+                    ['Content-Type' => 'application/json']
+                );
         }
     }
 }

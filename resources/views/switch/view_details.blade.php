@@ -96,17 +96,17 @@
                     <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="buttons are-small">
                         <div class="columns is-vcentered has-text-centered is-variable is-multiline is-1">
-                            <div class="column is-narrow is-4 pb-1">
+                            <div class="column is-narrow is-6 col-md-4 pb-1">
                                 <button onclick="$('.modal-sync-vlans-specific').show();" class="p-1 m-0 is-fullwidth button is-success">
                                     <i class="mr-1 fas fa-ethernet"></i> Sync Vlans
                                 </button>
                             </div>
-                            <div class="column is-narrow is-4 pb-1">
+                            <div class="column is-narrow is-6 col-md-4 pb-1">
                                 <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
                                     <i class="mr-1 fas fa-key"></i> Sync Pubkeys
                                 </button>
                             </div>
-                            <div class="column is-narrow is-4 pb-1">
+                            <div class="column is-narrow is-12 col-md-4 pb-1">
                                 <button onclick="sw_actions(this, 'backups', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
                                     <i class="mr-1 fas fa-hdd"></i> Backup
                                 </button>
@@ -139,6 +139,8 @@
                         @endphp
                         @foreach ($uplinklist as $key => $trunk_ports)
                             @php
+                                $key = ($device->ports->where('name', $key)->first()->description != "") ? $device->ports->where('name', $key)->first()->description : $key;
+
                                 $trunkids = $trunk_ports->pluck('device_port_id')->toArray();
 
                                 $trunks = implode(', ', array_map(function ($port) use ($device) {
@@ -275,7 +277,7 @@
 
                     <tbody class="live-body">
                         @foreach ($device->ports as $port)
-                            @livewire('port-details', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
+                            @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
                         @endforeach
                     </tbody>
                 </table>

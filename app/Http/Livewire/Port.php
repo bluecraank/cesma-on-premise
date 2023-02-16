@@ -6,11 +6,14 @@ use App\Http\Controllers\ClientController;
 use App\Models\Device;
 use App\Services\ClientService;
 use App\Services\DeviceService;
+use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 
-class PortDetails extends Component
+class Port extends Component
 {
+
+    use WithLogin;
 
     public $device_id;
     public $vlanports;
@@ -40,6 +43,7 @@ class PortDetails extends Component
 
     public function mount()
     {
+        $this->checkLogin();
         $this->cc = ClientService::class;
         $this->untaggedVlanId = $this->vlanports->where('is_tagged', false)->first()->device_vlan_id ?? 0;
         $this->taggedVlans = $this->vlanports->where('is_tagged', true);
@@ -84,24 +88,25 @@ class PortDetails extends Component
         if($raw_cookie != "" && $this->untaggedVlanUpdated || $this->taggedVlansUpdated || $this->portDescriptionUpdated) {
             
             if($this->untaggedVlanUpdated || $this->taggedVlansUpdated) {
-                DeviceService::updatePortVlans($raw_cookie, $this->port, $this->device_id, $this->untaggedVlanId, $this->newTaggedVlans, $this->untaggedVlanUpdated, $this->taggedVlansUpdated);
-                $this->dispatchBrowserEvent('notify-success', ['message' => "Port " . $this->port->name ." aktualisiert!", 'portid' => $this->portId]);
-
+                $message = DeviceService::updatePortVlans($raw_cookie, $this->port, $this->device_id, $this->untaggedVlanId, $this->newTaggedVlans, $this->untaggedVlanUpdated, $this->taggedVlansUpdated);
+                
+                $this->dispatchBrowserEvent('notify-success', ['message' => $message, 'portid' => $this->portId]);
             }
  
             if($this->portDescriptionUpdated) {
-                if(DeviceService::updatePortDescription($raw_cookie, $this->port, $this->device_id, $this->portDescription)) {
+                if(DeviceService::updatePortDescription($raw_cookie, $this->port, $this->device_id, $this->portDescription)) {   
                     $this->port->description = $this->portDescription;
                     $this->port->save();
 
                     if($this->port->description == "" || $this->port->description == null) {
-                        $this->dispatchBrowserEvent('notify-success', ['message' => "Port " . $this->port->name . " Name entfernt", 'portid' => $this->portId]);
-
+                        $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
                     }
                     else {
-                        $this->dispatchBrowserEvent('notify-success', ['message' => "Port " . $this->port->name . " zu \"". $this->port->description ."\" geändert!", 'portid' => $this->portId]);
+                        $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
 
                     }
+                } else {
+                    $this->dispatchBrowserEvent('notify-error', ['message' => __('Msg.ApiPortNameSetError', ['port' => $this->port->name]), 'portid' => $this->portId]);
                 }
             }
 

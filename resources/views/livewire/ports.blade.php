@@ -1,3 +1,3 @@
-<tr id="{{ $port->id }}" class="pt-1 {{ $this->somethingChanged ? 'changed' : '' }}">
-
+<tr id="{{ $port->id }}" class="pt-1">
+    Alive! ({{ $port->name }})
 </tr>

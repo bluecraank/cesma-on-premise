@@ -39,6 +39,7 @@ class BackupController extends Controller
             $resDataEncrypted = Crypt::encrypt($restore);
         } else {
             $dataEncrypted = "No data received";
+            $resDataEncrypted = "No data received";
         }
 
         DeviceBackup::create([

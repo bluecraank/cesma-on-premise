@@ -4,7 +4,7 @@
             <div class="columns">
                 <div class="column is-6">
                     <h1 class="title">
-                        {{ $device->name }} - ({{ $current_port->description != "" ? $current_port->description : $port_id }})
+                        {{ $device->name }} - Port {{ $current_port->name }} ({{ $current_port->description != "" ? $current_port->description : $port_id }})
                     </h1>
 
                     <h1 class="subtitle">
@@ -28,7 +28,7 @@
                         </select>
                     </div>
                     <div class="is-pulled-right mr-3">
-                        <a class="button is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back') }}</a>
+                        <a class="button is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
                     </div>
                 </div>
 

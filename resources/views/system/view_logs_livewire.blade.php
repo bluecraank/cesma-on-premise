@@ -17,22 +17,40 @@
         </div>
     </div>
 
-    <table class="table is-narrow is-hoverable is-striped is-fullwidth">
+    <style>
+        .log-debug {
+            background-color: #d1bf84;
+        }
+        .log-info {
+            background-color: #b3d1bf;
+        }
+        .log-error {
+            background-color: #d1bfbf;
+        }
+    </style>
+
+    <table class="table is-narrow is-fullwidth">
         <thead>
             <tr>
+                <th>Level</th>
                 <th>{{ __('Log.User') }}</th>
                 <th class="has-text-centered">{{ __('Log.Action') }}</th>
-                <th class="has-text-centered">{{ __('Log.Data') }}</th>
+                <th>Topic</th>
                 <th style="width:200px;" class="has-text-centered">Timestamp</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($logs as $log)
-                <tr>
-                    <td>{{ $log->user }}</td>
-                    <td style="width:150px;">{{ $log->message }}</td>
+                
+                @php
+                    $context = $log->context['context'] ?? "";
+                @endphp
+                <tr class="log-{{ strtolower($log->level_name) }}">
+                    <td>{{ $log->level_name }}</td>
+                    <td>{{ $log->context['extra'] ?? "No User" }}</td>
+                    <td style="width:450px;">{{ $log->message }}</td>
                     <td>
-                        {{ $log->data }}
+                        {{ $context }}
                     </td>
                     <td class="has-text-centered">{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
 

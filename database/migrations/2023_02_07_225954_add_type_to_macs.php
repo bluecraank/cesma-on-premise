@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('device_uplinks', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
-            $table->foreignId('device_port_id')->constrained('device_ports')->onDelete('cascade');
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('macs', function (Blueprint $table) {
+            $table->string('type')->nullable();
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('device_uplinks');
+        Schema::table('macs', function (Blueprint $table) {
+            //
+        });
     }
 };

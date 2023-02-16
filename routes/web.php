@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,7 +42,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/locations', [LocationController::class, 'index'])->name('locations');
     Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');
-    Route::get('/logs', [LogController::class, 'index'])->name('logs');
+    Route::get('/logs', [SystemController::class, 'index_logs'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
 });
 Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
@@ -51,6 +52,7 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
     Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
+    Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
 });
 
 // Admin only routes
@@ -121,7 +123,6 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/{id}/action/bulk-update-ports', [DeviceController::class, 'bulkEditPorts'])->where('id', '[0-9]+');
     Route::post('/{id}/action/update-port-name', [DeviceController::class, 'setPortName'])->where('id', '[0-9]+');
     Route::post('/{id}/action/prepare-api', [DeviceService::class, 'startApiSession'])->where('id', '[0-9]+');
-    Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
 
     // Backup Aktionen
     Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);
@@ -142,6 +143,11 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
 
 Route::prefix('debug')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::get('/client', [ClientService::class, 'getClients']);
+    Route::get('test', function() {
+        Log::channel('database')->info('TEST', ['extra' => Auth::user()->name]);
+        var_dump(LogToDB::model()->get()->toArray());
+        return response("Test log event created", 200);
+    });
 });
 
 // Login
