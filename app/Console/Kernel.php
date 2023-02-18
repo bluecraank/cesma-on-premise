@@ -19,15 +19,22 @@ class Kernel extends ConsoleKernel
         $schedule->command('device:refresh-all')
         ->everyFiveMinutes()
         ->runInBackground();
+        
+        $schedule->command('clients:get-mac-to-ip')
+        ->everyMinute();
 
         $schedule->command('clients:update')
         ->everyFiveMinutes()
         ->runInBackground();
 
-        $schedule->command('clients:ping')
-        ->everyFifteenMinutes()
-        ->between('05:00', '21:00')
+        $schedule->command('clients:dns-lookup')
+        ->everyFiveMinutes()
         ->runInBackground();
+
+        // $schedule->command('clients:ping')
+        // ->everyFifteenMinutes()
+        // ->between('05:00', '21:00')
+        // ->runInBackground();
 
         $schedule->command('clients:resolve-mac-vendors')
         ->daily()

@@ -100,6 +100,13 @@ class DeviceController extends Controller
     public function show($device_id)
     {
         $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);
+
+        $device->ports = $device->ports->sort(function ($a, $b) {
+            return strnatcmp($a->name, $b->name);
+        });
+
+
+
         $device->type_name = self::$typenames[$device->type];
 
         $c_uplink = $device->custom_uplink ? $device->custom_uplink->first() : [];

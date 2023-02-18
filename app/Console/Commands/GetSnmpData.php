@@ -3,23 +3,24 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Services\ClientService;
 use Illuminate\Support\Facades\Log;
 
-class CheckJobQueue extends Command
+class GetSnmpData extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'check:job-queue';
+    protected $signature = 'clients:get-mac-to-ip';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Check the job queue for pending jobs.';
+    protected $description = 'Retrieve client data from routers (and or baramundi)';
 
     /**
      * Execute the console command.
@@ -28,7 +29,8 @@ class CheckJobQueue extends Command
      */
     public function handle()
     {
-        Log::info('Checking job queue...');
-        return Command::SUCCESS;
+        ClientService::getClientDataFromProviders();
+
+        Log::info('[Clients] MAC to IP lookup finished');
     }
 }

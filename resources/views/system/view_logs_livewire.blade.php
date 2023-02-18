@@ -19,13 +19,13 @@
 
     <style>
         .log-debug {
-            background-color: #d1bf84;
+            color: #d1bf84;
         }
         .log-info {
-            background-color: #b3d1bf;
+            color: #69c78f;
         }
         .log-error {
-            background-color: #d1bfbf;
+            color: #c63d3d;
         }
     </style>
 
@@ -45,8 +45,8 @@
                 @php
                     $context = $log->context['context'] ?? "";
                 @endphp
-                <tr class="log-{{ strtolower($log->level_name) }}">
-                    <td>{{ $log->level_name }}</td>
+                <tr>
+                    <td><span class="log-{{ strtolower($log->level_name) }}">{{ $log->level_name }}</span></td>
                     <td>{{ $log->context['extra'] ?? "No User" }}</td>
                     <td style="width:450px;">{{ $log->message }}</td>
                     <td>

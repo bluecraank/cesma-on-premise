@@ -36,6 +36,6 @@ class RefreshDevices extends Command
             proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
         }
 
-        Log::info('Refreshing '.count($devices).' devices...');
+        Log::info('[Switch] Refreshing '.count($devices).' devices...');
     }
 }

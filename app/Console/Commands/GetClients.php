@@ -31,5 +31,6 @@ class GetClients extends Command
     public function handle()
     {
         ClientService::getClients();
+        Log::info('[Clients] Refreshing clients');
     }
 }

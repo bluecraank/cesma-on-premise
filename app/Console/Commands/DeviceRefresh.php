@@ -41,7 +41,6 @@ class DeviceRefresh extends Command
         }
 
         DeviceService::refreshDevice($device);
-
-        Log::info('Device ' . $device->id . ' refreshed'. ' (' . (microtime(true) - $start) . 's)');
+        // Log::info('Device ' . $device->id . ' refreshed'. ' (' . (microtime(true) - $start) . 's)');
     }
 }

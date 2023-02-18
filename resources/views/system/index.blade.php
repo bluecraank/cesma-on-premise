@@ -67,7 +67,8 @@
                 <tbody>
                     @foreach ($keys as $key)
                         @php
-                            $out = strlen($key->key) > 50 ? substr($key->key, 0, 50) . '...' : $key->key;
+                            $decrypted_key = Crypt::decrypt($key->key);
+                            $out = strlen($decrypted_key) > 50 ? substr($decrypted_key, 0, 50) . '...' : $decrypted_key;
                         @endphp
                         <tr>
                             <td>{{ $key->description }}</td>
@@ -75,7 +76,8 @@
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role >= 2)
                                     <button
-                                        onclick="$('.modal-delete-key').show();$('.modal-delete-key').find('input.desc').val('{{ $key->desc }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
+                                        onclick="$('.modal-delete-key').show();
+                                        $('.modal-delete-key').find('input.desc').val('{{ $key->description }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
                                         class="is-small button is-danger"><i class="fas fa-trash"></i></button>
                                 @endif
                             </td>

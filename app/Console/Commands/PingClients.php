@@ -30,5 +30,6 @@ class PingClients extends Command
     public function handle()
     {
         ClientController::checkOnlineStatus();
+        Log::info('[Clients] Ping finished');
     }
 }

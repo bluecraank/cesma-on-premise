@@ -10,6 +10,7 @@ use App\Models\DeviceUplink;
 use App\Models\Log;
 use App\Models\Mac;
 use App\Models\Vlan;
+use App\Models\SnmpMacData;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -41,7 +42,8 @@ class DatabaseCleanup extends Command
         DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
         DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         // Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
-        
+        SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
+
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
 
         Client::where(function($query) use ($vlans_ignore) {

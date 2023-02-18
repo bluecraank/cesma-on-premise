@@ -175,14 +175,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($device->custom_uplinks))    
-                        @foreach ($device->custom_uplinks as $key => $trunk)
-                            <tr>
-                                <td>TODO!</td>
-                                <td class="has-text-right">{{ $trunk }}</td>
-                            </tr>
-                        @endforeach
+                        @if (isset($device->custom_uplinks)) 
+
+                            @foreach ($device->custom_uplinks as $key => $trunk)
+                                <tr>
+                                    <td>TODO!</td>
+                                    <td class="has-text-right">{{ $trunk }}</td>
+                                </tr>
+                            @endforeach
                         @endif
+
+                        @if(empty($device->custom_uplinks))
+                            <tr>
+                                <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
+                            </tr>
+                        @endif   
                     </tbody>
                 </table>
             </div>
@@ -220,6 +227,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $device->backups = $device->backups->sortByDesc('created_at');
+                        @endphp
                         @foreach ($device->backups as $backup)
                             <tr>
                                 <td>{{ $backup->created_at }}</td>
@@ -229,7 +239,7 @@
 
                         @if ($device->backups->count() == 0)
                             <tr>
-                                <td colspan="2">Kein Backup bisher durchgeführt</td>
+                                <td colspan="2">Bisher kein Backup durchgeführt</td>
                             </tr>
                         @endif
                     </tbody>
@@ -249,7 +259,7 @@
 
                             <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
 
-                            <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button>
+                            {{-- <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button> --}}
 
                             <button onclick="enableEditing();" class="is-edit-button button is-small is-info is-pulled-right"><i class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
@@ -277,7 +287,9 @@
 
                     <tbody class="live-body">
                         @foreach ($device->ports as $port)
-                            @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
+                            @if (!str_contains($port->name, "Trk"))
+                                @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
+                            @endif
                         @endforeach
                     </tbody>
                 </table>

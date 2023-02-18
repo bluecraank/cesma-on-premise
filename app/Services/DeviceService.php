@@ -144,6 +144,7 @@ class DeviceService
             ]);
         }
 
+        // Get custom uplink ports
         $custom_uplink_ports = [];
         $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
         $custom_uplinks = $device->custom_uplink()->first();
@@ -151,23 +152,25 @@ class DeviceService
             $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
         }
 
+        // Check if mac address is on uplink port
         $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
         foreach ($data['macs'] as $mac) {
-
             // Do not store macs on uplinks because its not correct discovered
             if(in_array($mac['port'], $combined_uplinks)) {
                 // Store uplink mac address
                 Mac::updateOrCreate(
                     [
                         'mac_address' => $mac['mac'],
+                        'type' => 'uplink'
                     ],
                     [
                         'device_id' => $device->id,
                         'port_id' => $mac['port'],
                         'vlan_id' => $mac['vlan'],
-                        'type' => 'uplink',
                     ]
                 );
+
+                // Prevent storing same mac address twice
                 continue;
             }
 
@@ -176,6 +179,7 @@ class DeviceService
             Mac::updateOrCreate(
                 [
                     'mac_address' => $mac['mac'],
+                    'type' => NULL
                 ],
                 [
                     'device_id' => $device->id,

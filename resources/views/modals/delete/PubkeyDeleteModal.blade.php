@@ -12,7 +12,7 @@
                 <div class="field">
                     <label class="label">{{ __('Modal.Key.Delete.Desc') }}</label>
                     <div class="control">
-                        <input required class="input desc" disabled name="name" value="" type="text" placeholder="Name">
+                        <input required class="input desc" readonly="true" name="name" value="" type="text" placeholder="Description">
                     </div>
                 </div>
             </section>

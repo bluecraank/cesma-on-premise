@@ -14,49 +14,34 @@ use App\Models\DeviceUplink;
 use App\Models\Mac;
 use App\Models\MacVendor;
 use App\Models\Vlan;
+use App\Models\SnmpMacData;
 use Illuminate\Support\Facades\Log;
 
 class ClientService {
     static function getClientDataFromProviders()
     {
         $start = microtime(true);
+
         // Baramundi
         if (!empty(config('app.baramundi_api_url'))) {
-            $provider = new Baramundi;
-            $endpoints = $provider->queryClientData();
+            Baramundi::queryClientData();
         }
-        echo "Baramundi: " . (microtime(true) - $start) . "s<br>";
+        echo "Baramundi: " . (microtime(true) - $start) . "s\n";
 
         // Routers
         $start = microtime(true);
-        $data = SNMP_Routers::queryClientData();
-        echo "Routers: " . (microtime(true) - $start) . "s<br>";
+        SNMP_Routers::queryClientData();
+        echo "Routers: " . (microtime(true) - $start) . "s\n";
 
-        $start = microtime(true);
-        $merged = array_merge($endpoints, $data);
-
-        if ($merged == null or empty($merged)) {
-            return false;
-        }
-        echo "Merge: " . (microtime(true) - $start) . "s<br>";
-
-        $start = microtime(true);
-        // Sort endpoints by ip address
-        usort($merged, function ($a, $b) {
-            return ip2long($b['ip_address']) <=> ip2long($a['ip_address']);
-        });
-        echo "Sort: " . (microtime(true) - $start) . "s<br>";
-
-        return $merged;
+        return true;
     }
 
 
     static function getClients() {
         $start = microtime(true);
-        // $macs = Mac::all()->keyBy('mac_address')->toArray();
+        
         $macs = Mac::where('type', '!=', 'uplink')->orWhereNull('type')->get()->keyBy('mac_address')->toArray();
-
-        $endpoints = self::getClientDataFromProviders();
+        $endpoints = SnmpMacData::all();
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
         $custom_uplinks = DeviceCustomUplink::all()->keyBy('device_id')->toArray();
@@ -80,60 +65,66 @@ class ClientService {
         
         $mac_already_added = [];
         foreach($endpoints as $client) {
-            foreach($client['mac_addresses'] as $mac) {
-                // MAC Adresse nicht vorhanden in Mac-Datenbank
-                if(!array_key_exists($mac, $macs)) {
-                    continue;
-                }
+            $mac = $client['mac_address'];
+            
+            if(empty($mac) || $mac == "") {
+                continue;
+            }
 
-                // Daten zu dem Gerät nicht vorhanden
-                if(!isset($devices[$macs[$mac]['device_id']])) {
-                    continue;
-                }
+            // MAC Adresse nicht vorhanden in Mac-Datenbank
+            if(!array_key_exists($mac, $macs)) {
+                continue;
+            }
 
-                // Gerät wurde an einem Uplink Port gefunden, ignorieren
-                if(in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
-                    continue;
-                }
+            // Daten zu dem Gerät nicht vorhanden
+            if(!isset($devices[$macs[$mac]['device_id']])) {
+                continue;
+            }
+
+            // Gerät wurde an einem Uplink Port gefunden, ignorieren
+            if(in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
+                continue;
+            }
                 
-                // VLAN ist kein Client VLAN
-                if(in_array($macs[$mac]['vlan_id'], $vlans)) {
-                    continue;
-                }
+            // VLAN ist kein Client VLAN
+            if(in_array($macs[$mac]['vlan_id'], $vlans)) {
+                continue;
+            }
 
-                // Wurde bereits durchlaufen
-                if(isset($mac_already_added[$mac])) {
-                    $duplicates++;
-                    // Log::debug('Duplicate MAC: '. $mac . ' | '. $client['hostname'] . ' | '. $client['ip_address'] . ' | '. $macs[$mac]['port_id'] . ' | '. $macs[$mac]['device_id'] . ' | '. $macs[$mac]['vlan_id']);
-                    continue;
-                }
+            // Wurde bereits durchlaufen
+            if(isset($mac_already_added[$mac])) {
+                $duplicates++;
+                Log::debug('Duplicate MAC: '. $mac . ' | '. $client['hostname'] . ' | '. $client['ip_address'] . ' | '. $macs[$mac]['port_id'] . ' | '. $macs[$mac]['device_id'] . ' | '. $macs[$mac]['vlan_id']);
+                continue;
+            }
 
-                if(empty($mac) || $mac == "") {
-                    continue;
-                }
+            $mac_already_added[$mac] = true;
+            $unique++;
 
-                $mac_already_added[$mac] = true;
-                $unique++;
+            echo "Bis hier \n";
+            if($macs[$mac]['device_id'] == 20) {
+                echo "Bis hier 222 \n";
+            }
 
-                // Immernoch unschlüssig ob das hier mit id und mac_address richtig ist
-                $client = Client::updateOrCreate([
-                    // 'id' => md5($mac.$client['hostname']),
-                    'mac_address' => $mac
-                ], 
-                [
-                    'port_id' => $macs[$mac]['port_id'],
-                    'device_id' => $macs[$mac]['device_id'],
-                    'vlan_id' => $macs[$mac]['vlan_id'],
-                    'hostname' => $client['hostname'],
-                    'ip_address' => $client['ip_address'],
-                    'type' => self::getClientType($mac),
-                ]);
+            // Immernoch unschlüssig ob das hier mit id und mac_address richtig ist
+            $DbClient = Client::updateOrCreate([
+                'id' => md5($mac.$client['hostname']),
+                // 'mac_address' => $mac
+            ], 
+            [
+                'mac_address' => $mac,
+                'port_id' => $macs[$mac]['port_id'],
+                'device_id' => $macs[$mac]['device_id'],
+                'vlan_id' => $macs[$mac]['vlan_id'],
+                // 'hostname' => $client['hostname'],
+                'ip_address' => $client['ip_address'],
+                'type' => self::getClientType($mac),
+            ]);
 
-                if($client->wasRecentlyCreated) {
-                    $created++;
-                } else {
-                    $updated++;
-                }
+            if($DbClient->wasRecentlyCreated) {
+                $created++;
+            } else {
+                $updated++;
             }
         }
 
