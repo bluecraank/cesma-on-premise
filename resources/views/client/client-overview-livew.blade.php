@@ -106,6 +106,12 @@
                </th>
         </thead>
         <tbody>
+            @if($clients->count() == 0)
+                <tr>
+                    <td colspan="7" class="has-text-centered">{{  __('Clients.NoFound') }}</td>
+                </tr>
+            @endif
+
             @foreach($clients as $client)
             @php
                 if($client->online == 1) {
@@ -127,8 +133,8 @@
                 $splitted_mac = str_split(strtoupper($client->mac_address), 2);
                 $formatted_mac = implode(':', $splitted_mac);
             @endphp
-                <tr>   
-                    <td><i style="" class="mr-2 {{ $cc::getClientIcon($client->type) }} {{ $online }}"></i>{{ substr(strtoupper($client->hostname ?? "DEV-".$client->mac_address),0,20) }}</td>
+                <tr class="client-table-row">   
+                    <td style="width:300px" class="hostname-cell"><i style="" class="client-status mr-2 {{ $cc::getClientIcon($client->type) }} {{ $online }}"></i><span title="{{ $client->hostname ?? "DEV-".$client->mac_address }}" class="client-hostname">{{ $client->hostname ?? "DEV-".$client->mac_address }}</span></td>
                     <td>{{ $client->ip_address }}</td>
                     <td title="{{ $vendor }}">{{ $formatted_mac }}</td>
                     <td>{{ $client->vlan_id }}</td>

@@ -21,6 +21,12 @@
                 </tr>
             </thead>
             <tbody>
+                @if (count($locations) == 0)
+                    <tr>
+                        <td colspan="2" style="text-align:center">{{ __('No locations found') }}</td>
+                    </tr>
+                @endif
+
                 @foreach ($locations as $location)
                     <tr>
                         <td>{{ $location->name }}</td>
@@ -69,6 +75,12 @@
                 </tr>
             </thead>
             <tbody>
+                @if (count($buildings) == 0)
+                    <tr>
+                        <td colspan="3" style="text-align:center">{{ __('No buildings found') }}</td>
+                    </tr>
+                @endif
+
                 @foreach ($buildings as $building)
                     <tr>
                         <td>{{ $building->name }}</td>
@@ -119,6 +131,12 @@
                 </tr>
             </thead>
             <tbody>
+                @if (count($rooms) == 0)
+                    <tr>
+                        <td colspan="3" style="text-align:center">{{ __('No rooms found') }}</td>
+                    </tr>
+                @endif
+
                 @foreach ($rooms as $room)
                     <tr>
                         <td>{{ $room->name }}</td>

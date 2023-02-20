@@ -299,7 +299,7 @@
                             $vlans_vids = [];
                             foreach ($vlan_ids as $vlan_id) {
                                 $vlan = \App\Models\Vlan::find($vlan_id);
-                                $vlans_vids[] = $vlan->vid;
+                                $vlans_vids[] = $vlan->vid ?? '';
                             }
                         @endphp
                         <tr>

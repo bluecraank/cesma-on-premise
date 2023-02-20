@@ -35,11 +35,15 @@ class SSHController extends Controller
             'key' => 'required|starts_with:-----BEGIN RSA PRIVATE KEY-----,ends_with:-----END RSA PRIVATE KEY-----'
         ])->validate();
 
+        CLog::info("System", "Import private key");
+
         if ($validator) {
             $key = Crypt::encrypt(request()->input('key'));
             Storage::disk('local')->put('ssh.key', $key);
+            CLog::info("System", "Import private key successful");
             return "Importiert";
         } else {
+            CLog::error("System", "Import private key failed");
             return "{'message': 'Kein gültiger Schlüssel'}";
         }
     }
@@ -157,18 +161,19 @@ class SSHController extends Controller
                     $return->output = $output;
                 }
 
-                // LogController::log('SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
-
+                CLog::info("SSH", "SSH Command executed", $device, $command);
 
                 return json_encode($return, true);
             }
 
             $return->status = 'xmark';
             $return->output = 'Connection Failed';
+
+            CLog::error("SSH", "SSH Connection failed", $device, "Nothing executed");
             return json_encode($return, true);
         }
 
-        // LogController::log('Blocked SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
+        CLog::error("SSH", "SSH Command not allowed", $device, $command);
 
         $return->output = "Command not allowed";
         $return->status = 'xmark';

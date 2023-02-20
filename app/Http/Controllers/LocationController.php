@@ -8,6 +8,7 @@ use App\Models\Location;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class LocationController extends Controller
 {
@@ -38,10 +39,12 @@ class LocationController extends Controller
         ])->validate();
 
         if (Location::create($request->all())) {
-            // LogController::log('Standort erstellt', '{"name": "' . $request->name . '"}');
+            CLog::info("Location", "Create location {$request->name}");
 
             return redirect()->back()->with('success', __('Msg.LocationCreated'));
         }
+
+        CLog::error("Location", "Could not create location {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Location could not be created']);
     }
 
@@ -53,10 +56,12 @@ class LocationController extends Controller
         ])->validate();
 
         if (Location::find($request->id)->update($request->all())) {
-            // LogController::log('Standort bearbeitet', '{"name": "' . $request->name . '"}');
+            CLog::info("Location", "Update location {$request->name}");
 
             return redirect()->back()->with('success', __('Msg.LocationUpdated'));
         }
+
+        CLog::error("Location", "Could not update location {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Location could not be updated']);
     }
 
@@ -72,10 +77,12 @@ class LocationController extends Controller
         }
 
         if ($find->delete()) {
-            // LogController::log('Standort gelöscht', '{"id": "' . $request->id . '"}');
+            CLog::info("Location", "Delete location {$find->name}");
 
             return redirect()->back()->with('success', __('Msg.LocationDeleted'));
         }
+
+        CLog::error("Location", "Could not delete location {$find->name}");
         return redirect()->back()->withErrors(['message' => 'Location could not be deleted']);
     }
 }

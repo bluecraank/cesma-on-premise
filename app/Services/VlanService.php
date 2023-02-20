@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Vlan;
 use App\Models\VlanTemplate;
+use App\Helper\CLog;
 
 class VlanService
 {
@@ -32,7 +33,9 @@ class VlanService
     }
     
     static function updateVlan($request, $scan, $sync, $is_client_vlan) {
-        Vlan::whereId($request['id'])->update([
+        $vlan = Vlan::whereId($request['id'])->first();
+        
+        $vlan->update([
             'name' => $request['name'],
             'description' => $request['description'],
             'ip_range' => $request['ip_range'] ?? null,
@@ -40,6 +43,9 @@ class VlanService
             'is_synced' => $sync,
             'is_client_vlan' => $is_client_vlan,
         ]);
+
+        CLog::info("VLAN", "VLAN {$request->input('name')} ({$vlan->vid}) updated");
+
     }
 
     static function createVlanTaggingTemplate($request) {

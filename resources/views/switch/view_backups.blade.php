@@ -25,6 +25,14 @@
                         return strnatcmp($a['name'], $b['name']);
                     });
                 @endphp
+
+                @if ($devices->count() == 0)
+                    <tr>
+                        <td colspan="5" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                    </tr>
+                @endif
+
+
                 @foreach ($devices as $device)
                     @php
                         if (isset($device->last_backup->status) and $device->last_backup->status == 1) {
@@ -62,12 +70,14 @@
         </table>
     </div>
 
+    @if(Auth::user()->role >= 1)
     <div class="box">
         <div class="label is-small">Alle Switche</div>
         <div class="buttons are-small">
             @include('buttons.ButtonCreateBackup')
         </div>
-    </div>
+    </div> 
+    @endif
 
 
     </x-layouts>

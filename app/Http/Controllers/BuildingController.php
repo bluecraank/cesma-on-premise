@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBuildingRequest;
 use App\Models\Building;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class BuildingController extends Controller
 {
@@ -24,10 +25,12 @@ class BuildingController extends Controller
         ])->validate();
 
         if ($validator and Building::create($request->all())) {
-            // LogController::log('Gebäude erstellt', '{"name": "' . $request->name . '", "location_id": "' . $request->location_id . '"}');
 
+            CLog::info("Building", "Create building {$request->name}");
             return redirect()->back()->with('success', __('Msg.BuildingCreated'));
         }
+
+        CLog::error("Building", "Could not create building {$request->name}");	
         return redirect()->back()->withErrors(['message' => 'Building could not be created']);
     }
 
@@ -47,10 +50,12 @@ class BuildingController extends Controller
         ])->validate();
 
         if ($validator and $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
-            // LogController::log('Gebäude aktualisiert', '{"name": "' . $request->name . '"}');
 
+            CLog::info("Building", "Update building {$request->name}");
             return redirect()->back()->with('success', __('Msg.BuildingUpdated'));
         }
+
+        CLog::error("Building", "Could not update building {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Building could not be updated']);
     }
 
@@ -73,11 +78,12 @@ class BuildingController extends Controller
         }
 
         if ($find->delete()) {
-            // LogController::log('Gebäude gelöscht', '{"name": "' . $building->name . '"}');
+            CLog::info("Building", "Delete building {$find->name}");
 
             return redirect()->back()->with('success', __('Msg.BuildingDeleted'));
         }
 
+        CLog::error("Building", "Could not delete building {$find->name}");
         return redirect()->back()->with('message', 'Could not delete building');
     }
 }

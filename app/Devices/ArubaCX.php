@@ -9,6 +9,8 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Crypt;
+use App\Helper\CLog;
+
 
 class ArubaCX implements DeviceInterface
 {
@@ -643,6 +645,8 @@ class ArubaCX implements DeviceInterface
             'message' => __('Msg.ApiLoginFailed'),
         ];
 
+        Log::channel('database')->error(__('Msg.ApiLoginFailed') . " " . $device->hostname);
+
         return $return;
     }
 
@@ -726,6 +730,9 @@ class ArubaCX implements DeviceInterface
                     }
                 }
             }
+
+
+            CLog::info("VLAN", "VLAN synced on device " . $device->hostname . " ({$i_vlan_created} created, {$i_vlan_chg_name} renamed", $device);
 
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
 

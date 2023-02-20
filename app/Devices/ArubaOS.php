@@ -5,7 +5,6 @@ namespace App\Devices;
 use App\Http\Controllers\BackupController;
 use App\Interfaces\DeviceInterface;
 use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\LogController;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
-use Illuminate\Support\Facades\Log;
+use App\Helper\CLog;
 use Illuminate\Support\Facades\Auth;
 
 class ArubaOS implements DeviceInterface
@@ -624,11 +623,13 @@ class ArubaOS implements DeviceInterface
                             ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
                         );
                         
-                        Log::channel('database')->info(__('Log.Vlan.Tagged.Updated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
+                        Log::channel('database')->info(__('Log.Vlan.Tagged.Updated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
                         $return[] = ['success' => true, 'data' => ''];
                     } else {
-                        Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
+                        Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
                         $return[] = ['success' => false, 'data' => $result['data']];
+
+                        Log::channel('database')->error("Error adding tagged vlan " . $vlans[$vlan]['name'] . " to port " . $port->name . ": " . $result['data'], ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
                     }
                 }
             }
@@ -763,6 +764,8 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
+            CLog::info("VLAN", "VLAN synced on device " . $device->hostname . " ({$i_vlan_created} created, {$i_vlan_chg_name} renamed", $device);
+
             self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
             proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
@@ -787,10 +790,8 @@ class ArubaOS implements DeviceInterface
         $response = self::API_PUT_DATA($device->hostname, $cookie, "ports/" . $port, $api_version, $data);
 
         if ($response['success']) {
-            Log::channel('database')->info(__('Log.Port.Name.Updated', ['port' => $port, 'name' => $name ?? 'Empty']));
             return true;
         } else {
-            Log::channel('database')->error(__('Log.Port.Name.UpdateFailed', ['port' => $port, 'name' => $name ?? 'Empty']));
             return false;
         }
     }

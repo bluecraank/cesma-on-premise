@@ -6,6 +6,7 @@ use App\Http\Controllers\LogController;
 use App\Models\PublicKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use App\Helper\CLog;
 
 class PublicKeyService
 {
@@ -16,7 +17,7 @@ class PublicKeyService
             'key' => Crypt::encrypt($request->input('key')),
         ]);
 
-        // LogController::log('Pubkey erstellt', '{"description": "' . $request->description . '"}');
+        CLog::info("Pubkey", "Create pubkey {$request->description}", null, $request->key);
     }
 
     static function getPublicKeysAsArray()

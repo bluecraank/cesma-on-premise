@@ -10,6 +10,7 @@ use App\Models\Vlan;
 use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class VlanController extends Controller
 {
@@ -99,7 +100,7 @@ class VlanController extends Controller
             'ip_range' => 'nullable|string',
             'scan' => 'nullable|string',
             'sync' => 'nullable|string',
-            'location' => 'required|integer|exists:locations,id'
+            'location_id' => 'required|integer|exists:locations,id'
         ])->validate();
 
         if ($request->input('scan') == "on") {
@@ -118,9 +119,10 @@ class VlanController extends Controller
             return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
+        $request->merge(['is_client_vlan' => true]);
 
         VlanService::createVlan($request, $scan, $sync);
-
+        CLog::info("VLAN", "VLAN {$request->input('name')} ({$request->input('vid')}) created");
         return redirect()->back()->with('success', 'VLAN created');
     }
 
@@ -157,7 +159,6 @@ class VlanController extends Controller
         }
 
         VlanService::updateVlan($request, $scan, $sync, $is_client_vlan);
-
         return redirect()->back()->with('success', __('Msg.VlanUpdated'));
     }
 
@@ -171,10 +172,11 @@ class VlanController extends Controller
     {
         $find = Vlan::findOrFail($vlan->id);
         if ($find->delete()) {
-            // LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '"}');
-
+            CLog::info("VLAN", "VLAN {$find->name} ({$find->vid}) deleted");
             return redirect()->back()->with('success', __('Msg.VlanDeleted'));
         }
+
+        CLog::error("VLAN", "Could not delete VLAN {$find->name} ({$find->vid})");
         return redirect()->back()->withErrors(['message' => 'Could not delete VLAN']);
     }
 }

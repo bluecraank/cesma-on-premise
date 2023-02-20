@@ -13,20 +13,17 @@ class CreateLogTable extends Migration
      */
     public function up()
     {
-        if (Schema::connection(config('logtodb.connection'))->hasTable(config('logtodb.collection')) === false) {
-            Schema::connection(config('logtodb.connection'))->create(config('logtodb.collection'), function (Blueprint $table) {
-                $table->increments('id');
-                $table->text('message')->nullable();
-                $table->string('channel')->nullable();
-                $table->integer('level')->default(0);
-                $table->string('level_name', 20);
-                $table->integer('unix_time');
-                $table->string('datetime')->nullable();
-                $table->longText('context')->nullable();
-                $table->text('extra')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::create('logs', function (Blueprint $table) {
+            $table->string('level');
+            $table->string('category')->nullable();
+            $table->string('user')->nullable();
+            $table->string('user_id')->nullable();
+            $table->integer('device_id')->nullable();
+            $table->string('device_name')->nullable();
+            $table->string('description');
+            $table->string('additional_info')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -36,6 +33,6 @@ class CreateLogTable extends Migration
      */
     public function down()
     {
-        Schema::connection(config('logtodb.connection'))->dropIfExists(config('logtodb.collection'));
+        Schema::dropIfExists('logs');
     }
 }

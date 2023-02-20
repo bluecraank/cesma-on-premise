@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class RoomController extends Controller
 {
@@ -16,10 +17,11 @@ class RoomController extends Controller
         ])->validate();
 
         if (Room::create($request->except('_token', '_method'))) {
-            // LogController::log('Raum erstellt', '{"name": "' . $request->name . '", "location_id": "' . $request->location_id . '"}');
+            CLog::info("Room", "Create room {$request->name}");
             return redirect()->back()->with('success', __('Msg.RoomCreated'));
         }
 
+        CLog::error("Room", "Could not create room {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Room could not be created']);
     }
 
@@ -32,10 +34,11 @@ class RoomController extends Controller
         ])->validate();
 
         if (Room::find($request->id)->update($request->except(['_token', '_method']))) {
-            // LogController::log('Raum aktualisiert', '{"name": "' . $request->name . '"}');
-
+            CLog::info("Room", "Update room {$request->name}");
             return redirect()->back()->with('success', __('Msg.RoomUpdated'));
         }
+
+        CLog::error("Room", "Could not update room {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Room could not be updated']);
     }
 
@@ -47,10 +50,11 @@ class RoomController extends Controller
 
         $find = Room::find($request->id);
         if ($find->delete()) {
-            // LogController::log('Raum gelöscht', '{"name": "' . $find->name . '"}');
-
+            CLog::info("Room", "Delete room {$find->name}");
             return redirect()->back()->with('success', __('Msg.RoomDeleted'));
         }
+
+        CLog::error("Room", "Could not delete room {$find->name}");
         return redirect()->back()->with('message', 'Room could not be deleted');
     }
 }

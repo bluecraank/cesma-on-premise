@@ -93,6 +93,13 @@
     "Switch.SSH.Execute.Title": "Befehl ausführen",
     "Switch.SSH.Execute.Desc": "Soll der Befehl wirklich ausgeführt werden?",
     "Switch.Edit.Hint": "Switch bearbeiten",
+    
+    "Switch.NoFound": "Kein Switch gefunden :(",
+    "Vlan.NoFound": "Kein VLAN gefunden :(",
+    "Clients.NoFound": "Keine Endgeräte gefunden :(",
+    "No rooms found": "Keine Räume gefunden :(",
+    "No buildings found": "Keine Gebäude gefunden :(",
+    "No locations found": "Keine Standorte gefunden :(",
 
     "GUI_External": "Switch in neuen Tab öffnen",
     "Hint.Edit": "Bearbeiten",

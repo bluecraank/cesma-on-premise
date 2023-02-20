@@ -14,6 +14,7 @@ use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class SystemController extends Controller
 {
@@ -42,8 +43,6 @@ class SystemController extends Controller
     }
 
     public function index_logs() {
-        // LogToDB::model()->get();
-
         return view('system.view_logs');
     }
 
@@ -66,6 +65,8 @@ class SystemController extends Controller
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'users']);
         }
 
+        CLog::info("System", "Update role of user {$user->name} to {$user->role}");
+
         return redirect()->back()->with('success', __('Msg.UserRoleUpdated'))->withInput(['last_tab' => 'users']);
     }
 
@@ -79,8 +80,10 @@ class SystemController extends Controller
         $status = VlanService::createVlanTaggingTemplate($request->all());
 
         if ($status) {
+            CLog::info("System", "Create vlan template {$request->name}");
             return redirect()->back()->with('success', __('Msg.VlanTemplateCreated'))->withInput(['last_tab' => 'vorlagen']);
         } else {
+            CLog::error("System", "Could not create vlan template {$request->name}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'vorlagen']);
         }
     }
@@ -101,9 +104,11 @@ class SystemController extends Controller
         $template->name = $request['name'];
         $template->vlans = json_encode($request['vlans_selected']);
         if (!$template->save()) {
+            CLog::error("System", "Could not update vlan template {$request->name}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'vorlagen']);
         }
 
+        CLog::info("System", "Update vlan template {$request->name}");
         return redirect()->back()->with('success', __('Msg.VlanTemplateUpdated'))->withInput(['last_tab' => 'vorlagen']);
     }
 
@@ -119,9 +124,11 @@ class SystemController extends Controller
         }
 
         if (!$template->delete()) {
+            CLog::error("System", "Could not delete vlan template {$template->name}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'vorlagen']);
         }
 
+        CLog::info("System", "Delete vlan template {$template->name}");
         return redirect()->back()->with('success', __('Msg.VlanTemplateDeleted'))->withInput(['last_tab' => 'vorlagen']);
     }
 
@@ -150,8 +157,10 @@ class SystemController extends Controller
         ]);
 
         if ($status) {
+            CLog::info("System", "Create router {$request->ip}");
             return redirect()->back()->with('success', __('Msg.RouterCreated'))->withInput(['last_tab' => 'snmp']);
         } else {
+            CLog::error("System", "Could not create router {$request->ip}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'snmp']);
         }
     }
@@ -184,9 +193,11 @@ class SystemController extends Controller
         $router->ip = $request['ip'];
         $router->check = $check;
         if (!$router->save()) {
+            CLog::error("System", "Could not update router {$request->ip}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'snmp']);
         }
 
+        CLog::info("System", "Update router {$request->ip}");
         return redirect()->back()->with('success', __('Msg.RouterUpdated'))->withInput(['last_tab' => 'snmp']);
     }
 
@@ -202,9 +213,11 @@ class SystemController extends Controller
         }
 
         if (!$router->delete()) {
+            CLog::error("System", "Could not delete router {$request->ip}");
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'snmp']);
         }
 
+        CLog::info("System", "Delete router {$request->ip}");
         return redirect()->back()->with('success', __('Msg.RouterDeleted'))->withInput(['last_tab' => 'snmp']);
     }
 }

@@ -41,6 +41,13 @@
                     return strnatcmp($a['vlan_id'], $b['vlan_id']);
                 });
             @endphp
+
+            @if ($vlans->count() == 0)
+                <tr>
+                    <td colspan="8" class="has-text-centered">{{ __('Vlan.NoFound') }}</td>
+                </tr>
+            @endif
+
             @foreach ($vlans as $vlan)
                 @php
                     $scan = $sync = $clients = false;
@@ -50,7 +57,7 @@
                     if ($vlan->is_synced == 1) {
                         $sync = true;
                     }
-                    if ($vlan->is_client_vlan == 0) {
+                    if ($vlan->is_client_vlan == 1) {
                         $clients = true;
                     }
                 @endphp

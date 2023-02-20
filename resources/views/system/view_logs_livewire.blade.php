@@ -34,23 +34,27 @@
             <tr>
                 <th>Level</th>
                 <th>{{ __('Log.User') }}</th>
-                <th class="has-text-centered">{{ __('Log.Action') }}</th>
+                <th>{{ __('Log.Action') }}</th>
                 <th>Topic</th>
+                <th>Zusatzinfos</th>
+                <th>Switch</th>
                 <th style="width:200px;" class="has-text-centered">Timestamp</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($logs as $log)
-                
-                @php
-                    $context = $log->context['context'] ?? "";
-                @endphp
                 <tr>
-                    <td><span class="log-{{ strtolower($log->level_name) }}">{{ $log->level_name }}</span></td>
-                    <td>{{ $log->context['extra'] ?? "No User" }}</td>
-                    <td style="width:450px;">{{ $log->message }}</td>
+                    <td><span class="log-{{ strtolower($log->level) }}">{{ strtoupper($log->level) }}</span></td>
+                    <td>{{ $log->user ?? "No User" }}</td>
+                    <td style="width:450px;">{{ $log->description }}</td>
                     <td>
-                        {{ $context }}
+                        {{ $log->category }}
+                    </td>
+                    <td>
+                        {{  substr($log->additional_info, 0, 20) }}
+                    </td>
+                    <td>
+                        {{ $log->device_name }}
                     </td>
                     <td class="has-text-centered">{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
 

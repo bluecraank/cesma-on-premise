@@ -7,6 +7,7 @@ use App\Models\MacTypeIcon;
 use App\Models\MacVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class MacTypeService
 {
@@ -41,6 +42,8 @@ class MacTypeService
             'description' => $request->input('mac_desc'),
         ]);
 
+        CLog::info("MAC", "Create MacType {$mac_prefix} {$mac_type} {$request->input('mac_desc')}");
+
         return redirect()->back()->with('success', __('Msg.MacTypeAdded'))->withInput(['last_tab' => 'macs']);
     }
     
@@ -56,6 +59,8 @@ class MacTypeService
         if(!$mac_type->delete()) {
             return redirect()->back()->withErrors(['message' => 'MAC Type could not be deleted'])->withInput(['last_tab' => 'macs']);
         }
+
+        CLog::info("MAC", "Delete MacType {$mac_type->mac_prefix} {$mac_type->type} {$mac_type->description}");
 
         return redirect()->back()->with('success', __('Msg.MacTypeDeleted'))->withInput(['last_tab' => 'macs']);
     }
@@ -74,6 +79,8 @@ class MacTypeService
             ['mac_type_id' => $mac_type->id],
             ['mac_icon' => $icon]
         );
+
+        CLog::info("MAC", "Create MacTypeIcon {$mac_type->mac_prefix} {$mac_type->type} {$mac_type->description} {$icon}");
 
         return redirect()->back()->with('success', __('Msg.MacTypeIconAdded'))->withInput(['last_tab' => 'macs']);
 

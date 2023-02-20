@@ -58,12 +58,14 @@ class BackupController extends Controller
      */
     public function destroy(Request $request) {
         $find = DeviceBackup::find($request->input('id'));
+        $device = Device::where('id', $find->device_id)->first();
 
         if ($find->delete()) {
-            // LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
+            CLog::info("Backup", 'Backup for device ' . $device->name . ' has been deleted', $device, "ID: " . $device->id);
             return redirect()->back()->with('success', __('Msg.BackupCreated'));
         }
 
+        CLog::error("Backup", 'Backup for device ' . $device->name . ' could not be deleted', $device, "ID: " . $device->id);
         return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
     }
 
@@ -128,6 +130,6 @@ class BackupController extends Controller
 
         Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($backups, $modDevices, $totalError));
 
-        Log::info('Success! Email has been sent successfully.');
+        CLog::info("Backup", 'Backup status mail has been sent');
     }
 }

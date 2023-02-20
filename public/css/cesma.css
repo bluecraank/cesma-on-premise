@@ -207,3 +207,36 @@ thead th:hover {
 .has-custom-text-warning {
   color: #ff7600 !important;
 }
+
+.client-status {
+  vertical-align: middle;
+}
+
+.client-hostname {
+  width: 60%;
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+  /* white-space: nowrap; */
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.client-table-row {
+  vertical-align: middle;
+  height: 42.5px;
+}
+
+.client-table-row td {
+  font-size: 13px;
+}
+
+.client-table-row td {
+  vertical-align: middle;
+}
+
+/* 
+.hostname-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} */

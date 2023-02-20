@@ -25,6 +25,13 @@
                         return strnatcmp($a['name'], $b['name']);
                     });
                 @endphp
+
+                @if ($devices->count() == 0)
+                    <tr>
+                        <td colspan="4" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                    </tr>
+                @endif
+
                 @foreach ($devices as $device)
                     <tr>
                         <td>{{ $device['name'] }}</td>

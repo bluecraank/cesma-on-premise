@@ -9,6 +9,9 @@ use App\Services\DeviceService;
 use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
+use App\Helper\CLog;
+use Illuminate\Support\Facades\Auth;	
+use App\Models\DeviceVlan;
 
 class Port extends Component
 {
@@ -83,6 +86,8 @@ class Port extends Component
 
     public function sendPortVlanUpdate($cookie, $closeSession) {
 
+        $device = Device::where('id', $this->device_id)->first();
+
         $raw_cookie = Crypt::decrypt($cookie);
 
         if($raw_cookie != "" && $this->untaggedVlanUpdated || $this->taggedVlansUpdated || $this->portDescriptionUpdated) {
@@ -90,24 +95,41 @@ class Port extends Component
             if($this->untaggedVlanUpdated || $this->taggedVlansUpdated) {
                 $message = DeviceService::updatePortVlans($raw_cookie, $this->port, $this->device_id, $this->untaggedVlanId, $this->newTaggedVlans, $this->untaggedVlanUpdated, $this->taggedVlansUpdated);
                 
+                $vlans = DeviceVlan::where('device_id', $this->device_id);
+                if($this->untaggedVlanUpdated) {
+                    CLog::info("SwitchPort", "Set untagged vlan for port " . $this->port->name . " to " . $vlans->where('id', $this->untaggedVlanId)->first()->name, $device, "Port {$this->port->name}");
+                }
+
+                if($this->taggedVlansUpdated) {
+                    $tagged_vlans = $vlans->whereIn('id', $this->newTaggedVlans)->get()->pluck('name')->toArray();
+                    CLog::info("SwitchPort", "Set tagged vlans for port " . $this->port->name . " to " . implode(", ", $tagged_vlans), $device, "Port {$this->port->name}");
+                }
+
                 $this->dispatchBrowserEvent('notify-success', ['message' => $message, 'portid' => $this->portId]);
             }
  
-            if($this->portDescriptionUpdated) {
+            if($this->portDescriptionUpdated) { 
+                $currentDescription = $this->port->description;
                 if(DeviceService::updatePortDescription($raw_cookie, $this->port, $this->device_id, $this->portDescription)) {   
                     $this->port->description = $this->portDescription;
                     $this->port->save();
 
                     if($this->port->description == "" || $this->port->description == null) {
                         $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
+                        
+                        CLog::info("SwitchPort", "Removed port description \"{$currentDescription}\"", $device, "Port {$this->port->name}");
                     }
                     else {
                         $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
+                        
 
+                        CLog::info("SwitchPort", "Set port description from \"{$currentDescription}\" to \"{$this->port->description}\"", $device, "Port {$this->port->name}");
                     }
                 } else {
                     $this->dispatchBrowserEvent('notify-error', ['message' => __('Msg.ApiPortNameSetError', ['port' => $this->port->name]), 'portid' => $this->portId]);
+                    
                 }
+                
             }
 
             if($closeSession) {

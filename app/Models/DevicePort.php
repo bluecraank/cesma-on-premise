@@ -34,6 +34,10 @@ class DevicePort extends Model
     {
         return $this->hasMany(DevicePortStat::class);
     }
+
+    public function untaggedVlan() {
+        return $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
+    }
     
     public function untaggedVlanId() {
         $id = $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;

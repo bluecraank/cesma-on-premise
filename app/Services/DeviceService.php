@@ -384,12 +384,12 @@ class DeviceService
         $return = [];
         if($untaggedIsUpdated) {
             $success_untagged = $class::setUntaggedVlanToPort($untaggedVlan, $port, $device, $vlans, false, $login_info);
-            $return[] = $success_untagged;
+            $return['untagged'] = $success_untagged;
         }
 
         if($taggedIsUpdated) {
             $success_tagged = $class::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $login_info);
-            $return[] = $success_tagged;
+            $return['tagged'] = $success_tagged;
         }
 
         list($cookie, $api_version) = explode(";", $login_info);

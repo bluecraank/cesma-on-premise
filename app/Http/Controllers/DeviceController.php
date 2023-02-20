@@ -6,6 +6,7 @@ use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
+use App\Helper\CLog;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
@@ -85,9 +86,11 @@ class DeviceController extends Controller
         }
 
         if (DeviceService::storeDevice($request)) {
+            CLog::info("Switch", "Switch {$request->input('name')} created");
             return redirect()->back()->with('success', __('Msg.SwitchCreated'));
         }
 
+        CLog::error("Switch", "Switch {$request->input('name')} could not be created");
         return redirect()->back()->withErrors('Could not create device');
     }
 
@@ -104,8 +107,6 @@ class DeviceController extends Controller
         $device->ports = $device->ports->sort(function ($a, $b) {
             return strnatcmp($a->name, $b->name);
         });
-
-
 
         $device->type_name = self::$typenames[$device->type];
 
@@ -146,11 +147,12 @@ class DeviceController extends Controller
         }
 
         if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
-            // LogController::log('Switch aktualisiert', '{"name": "' . $request->name . '", "id": "' . $request->id . '"}');
+            CLog::info("Switch", "Switch {$device->whereId($request->input('id'))->first()->name} updated", $device, $device->id);
 
             return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
         }
 
+        CLog::error("Switch", "Switch {$device->name} could not be updated", $device, $device->id);
         return redirect()->back()->withErrors(['message' => 'Could not update device']);
     }
 
@@ -163,6 +165,7 @@ class DeviceController extends Controller
     public function destroy(Request $device)
     {
         $find = Device::find($device->input('id'));
+        $tmp = $find;
 
         if (!$find) {
             return redirect()->back()->with('message', __('DeviceNotFound'));
@@ -171,7 +174,7 @@ class DeviceController extends Controller
         DeviceService::deleteDeviceData($find);
 
         if ($find->delete()) {
-            // LogController::log('Switch gelöscht', '{"name": "' . $find->name . '", "hostname": "' . $find->hostname . '"}');
+            CLog::info("Switch", "Switch {$tmp->name} deleted", $tmp, "ID: ".$tmp->id);
 
             return redirect()->back()->with('success', __('Msg.SwitchDeleted'));
         }
@@ -194,13 +197,15 @@ class DeviceController extends Controller
         $backup = $class::createBackup($device);
 
         if ($backup) {
-            // LogController::log('Backup erstellt', '{"switch": "' .  $device->name . '"}');
+            CLog::info("Switch", "Backup for switch {$device->name} created", $device, "ID: ".$device->id);
 
             return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
         } else {
+            CLog::error("Switch", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
             return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
         }
 
+        CLog::error("Switch", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
         return json_encode(['success' => 'false', 'message' => __('DeviceNotFound') . $request->device_id]);
     }
 
@@ -217,6 +222,7 @@ class DeviceController extends Controller
             $class::createBackup($device);
         }
 
+        CLog::info("Switch", "Backup for all switches created");
         return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
     }
 
@@ -229,14 +235,19 @@ class DeviceController extends Controller
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
         if (count($pubkeys) <= 2 || empty($pubkeys)) {
+            CLog::error("Pubkey", "Not enough public keys to upload to switch {$device->name}", $device, $device->id);
             return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
         }
 
         if ($device) {
             $class = self::$types[$device->type];
+
+            CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
+
             return $class::uploadPubkeys($device, $pubkeys);
         }
 
+        CLog::error("Pubkey", "Could not upload public keys to switch {$device->name}", $device, $device->id);
         return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
     }
 
@@ -249,12 +260,17 @@ class DeviceController extends Controller
         if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
                 $class = self::$types[$device->type];
+
+                CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
+
                 $class::uploadPubkeys($device, $pubkeys);
             }
 
+            CLog::info("Pubkey", "Uploading public keys to all switches");
             return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
         }
 
+        CLog::error("Pubkey", "Not enough public keys to upload to all switches");
         return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
     }
 
@@ -268,76 +284,14 @@ class DeviceController extends Controller
             $class = self::$types[$device->type];
             $restore = $class::restoreBackup($device, $backup, $password_switch);
 
-            LogController::log('Backupwiederherstellung', '{"switch": "' .  $device->name . '", "backup_datum": "' . $backup->created_at . '", "restored": "' . $restore['success'] . '"}');
+            if ($restore['success']) {
+                CLog::info("Backup", "Backup for switch {$device->name} restored", $device, $device->id);
+            } else {
+                CLog::error("Backup", "Backup for switch {$device->name} could not be restored", $device, $device->id);
+            }
 
             return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
-    }
-
-    static function bulkEditPorts(Request $request)
-    {
-
-        $validator = Validator::make($request->all(), [
-            'device_id' => 'required|integer',
-            'type' => 'required|string|in:tagged,untagged',
-            'ports' => 'required|json',
-            'vlans_selected' => 'required|array|min:1',
-        ]);
-
-        $device = Device::find($request->input('device_id'));
-
-        if (!$device) {
-            return redirect()->back()->withErrors(['message' => __('DeviceNotFound')]);
-        }
-
-        $type = $request->input('type');
-
-        $vlan_ids = $device->vlans->keyBy('id')->toArray();
-        $port_ids = $device->ports->keyBy('name')->toArray();
-
-        // Vlan und Port IDs nicht die richtigen IDs!
-        $ports = json_decode($request->input('ports'), true);
-        $vlans = $request->input('vlans_selected');
-
-        $class = self::$types[$device->type];
-
-        // Check if every VLAN exists
-        foreach ($vlans as $vlan) {
-            if (!isset($vlan_ids[$vlan])) {
-                return redirect()->back()->withErrors(['message' => __('VlanNotFound')]);
-            }
-        }
-
-        $logininfo = $class::API_LOGIN($device);
-
-        if (!$logininfo) {
-            return redirect()->back()->withErrors(['message' => __('LoginFailed')]);
-        }
-
-        foreach ($ports as $port) {
-            if (!isset($port_ids[$port])) {
-                return redirect()->back()->withErrors(['message' => __('PortNotFound')]);
-            }
-
-            if ($type == 'tagged') {
-                $class::setTaggedVlanToPort($vlans, $port_ids[$port]['name'], $device, false, $logininfo);
-            }
-        }
-
-        if ($type == 'untagged') {
-            $formatted_vlans = [];
-            foreach ($ports as $key => $port) {
-                $formatted_vlans[] = $vlans[0];
-            };
-            $class::setUntaggedVlanToPort($formatted_vlans, $ports, $device, false, $logininfo);
-        }
-
-        list($cookie, $api_version) = explode(";", $logininfo);
-        $class::API_LOGOUT($device, $cookie, $api_version);
-
-        DeviceService::refreshDevice($device);
-
-        return redirect()->back()->with('success', __('Msg.VlanBulkUpdated'));
     }
 
     public function hasUpdate(Device $device, Request $request)

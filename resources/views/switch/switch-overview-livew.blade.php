@@ -36,6 +36,13 @@
                     return strnatcmp($a['name'], $b['name']);
                 });
             @endphp
+
+            @if ($devices->count() == 0)
+                <tr>
+                    <td colspan="5" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                </tr>
+            @endif
+
             @foreach ($devices as $device)
                 <tr>
                     @if($device->created_at == $device->updated_at)

@@ -1,5 +1,5 @@
 <div class="modal modal-add-vlan">
-    <form action="/vlan/create" method="post">
+    <form action="/vlan" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
@@ -39,7 +39,7 @@
                 <div class="field">
                     <label class="label">{{ __('Location') }}</label>
                     <div class="select is-fullwidth">
-                        <select name="location">
+                        <select name="location_id">
                             @foreach($locations as $location)
                                 <option value="{{ $location->id }}">{{ $location->name }}</option>
                             @endforeach
