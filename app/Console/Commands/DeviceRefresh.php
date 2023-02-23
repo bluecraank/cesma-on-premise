@@ -42,18 +42,16 @@ class DeviceRefresh extends Command
             return;
         }
 
-        $refreshed = DeviceService::refreshDevice($device);
-        $refreshed = json_decode($refreshed, true);
+        $refresh = DeviceService::refreshDevice($device);
+        $refreshStatus = json_decode($refresh, true);
 
-        var_dump($refreshed);
-
-        if($refreshed['success'] == "false") {
-            CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshed['message']);
-            Log::error("Failed to refresh device " . $device->name . " ERROR: " . $refreshed['message']);
+        if($refreshStatus['success'] == "false") {
+            CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshStatus['message']);
+            Log::error("Failed to refresh device " . $device->name);
             return;
         }
 
         CLog::info("Automated task", "Successfully refreshed device " . $device->name, $device, "Took " . number_format(microtime(true) - $start, 2) . " sec.");
-        Log::info("Successfully refreshed device " . $device->name . " Took " .  number_format(microtime(true) - $start, 2) . " seconds to refresh device");
+        Log::info("Successfully refreshed device " . $device->name);
     }
 }

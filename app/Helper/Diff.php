@@ -35,7 +35,7 @@ class Diff
         return json_encode($diff, JSON_UNESCAPED_UNICODE);
     }
 
-    public static function visualize($diff) {
+    public static function visualize($diff, $log = null) {
         if($diff == null || json_decode($diff) == null || json_decode($diff) == []) {
             return $diff;
         }
@@ -43,7 +43,8 @@ class Diff
         $diff = is_array($diff) ? $diff : json_decode($diff, true);
         $diff = self::changeUnwantedKeys($diff);
         $diff = json_encode($diff, JSON_PRETTY_PRINT);
-        print("<pre>".$diff."</pre>");
+
+        return view('system.visualize_changes', compact('diff', 'log'));
     }
 
     public static function changeUnwantedKeys($dimension) {

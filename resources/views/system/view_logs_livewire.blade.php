@@ -1,3 +1,4 @@
+@inject('DiffClass', 'App\Helper\Diff')
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Header.Log') }}</h1>
 
@@ -32,6 +33,24 @@
         }
     </style>
 
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@1.4/dist/css/pretty-print-json.dark-mode.css>
+<script src="https://cdn.jsdelivr.net/npm/pretty-print-json@1.4/dist/pretty-print-json.min.js"></script>
+
+<div class="modal is-changes-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Changes made on <span class="topic"></span> at <span class="date"></span></p>
+        <button class="delete" aria-label="close" onclick="$('.is-changes-modal').removeClass('is-active')"></button>
+      </header>
+      <section class="modal-card-body">
+        <pre class="changes" style="background:none;"></pre>
+      </section>
+      {{-- <footer class="modal-card-foot"> --}}
+      {{-- </footer> --}}
+    </div>
+  </div>
+
     <table class="table is-narrow is-fullwidth">
         <thead>
             <tr>
@@ -54,7 +73,7 @@
                         {{ $log->category }}
                     </td>
                     <td style="width:250px;">
-                        {{  $log->additional_info }}
+                        {{ $DiffClass::visualize($log->additional_info, $log) }}
                     </td>
                     <td>
                         {{ $log->device_name }}
