@@ -10,6 +10,7 @@ use App\Models\DeviceVlanPort;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Crypt;
 use App\Helper\CLog;
+use Illuminate\Support\Facades\Log;
 
 
 class ArubaCX implements DeviceInterface
@@ -66,10 +67,14 @@ class ArubaCX implements DeviceInterface
             // Return cookie if login was successful
             if ($response->successful() and !empty($response->header('Set-Cookie'))) {
                 return $response->cookies()->toArray()[0]['Name'] . "=" . $response->cookies()->toArray()[0]['Value'] . ";" . $api_version;
+            } else {
+                Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $response->body());
             }
         } catch (\Exception $e) {
+            Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $e->getMessage());
             return "";
         }
+
         return "";
     }
 
@@ -186,11 +191,11 @@ class ArubaCX implements DeviceInterface
     static function API_REQUEST_ALL_DATA($device): array
     {
         if (!$device) {
-            return ['success' => false, 'data' => __('DeviceNotFound')];
+            return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
         }
 
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => __('Msg.ApiLoginFailed')];
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed"];
         }
 
         $data = [];
@@ -622,6 +627,7 @@ class ArubaCX implements DeviceInterface
                 }
 
                 foreach ($taggedVlans as $vlan) {
+                    $return[] = ['success' => true, 'data' => ''];
                     DeviceVlanPort::updateOrCreate(
                         ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
                     );
@@ -629,8 +635,9 @@ class ArubaCX implements DeviceInterface
                 
                 $return[] = ['success' => true, 'data' => ''];
             } else {
-                $return[] = ['success' => false, 'data' => $result['data']];
-            }
+                foreach ($taggedVlans as $vlan) {
+                    $return[] = ['success' => false, 'data' => ''];
+                }            }
 
             if ($need_login) {
                 DeviceService::refreshDevice($device);

@@ -14,6 +14,8 @@ use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
 use App\Helper\CLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class ArubaOS implements DeviceInterface
 {
@@ -70,8 +72,11 @@ class ArubaOS implements DeviceInterface
             // Return cookie if login was successful
             if ($response->successful() and !empty($response->json()['cookie'])) {
                 return $response->json()['cookie'] . ";" . $api_version;
+            } else {
+                Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $response->body());
             }
         } catch (\Exception $e) {
+            Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $e->getMessage());
             return "";
         }
         return "";
@@ -197,11 +202,11 @@ class ArubaOS implements DeviceInterface
     static function API_REQUEST_ALL_DATA($device): array
     {
         if (!$device) {
-            return ['success' => false, 'data' => __('DeviceNotFound')];
+            return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
         }
 
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => __('Msg.ApiLoginFailed')];
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed. See logfile for details"];
         }
 
         $data = [];

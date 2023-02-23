@@ -20,8 +20,8 @@ class CreateLogTable extends Migration
             $table->string('user_id')->nullable();
             $table->integer('device_id')->nullable();
             $table->string('device_name')->nullable();
-            $table->string('description');
-            $table->string('additional_info')->nullable();
+            $table->longText('description');
+            $table->longText('additional_info')->nullable();
             $table->timestamps();
         });
     }

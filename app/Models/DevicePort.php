@@ -15,6 +15,11 @@ class DevicePort extends Model
         'vlan_mode'
     ];
 
+    protected $appends = [
+        'untagged',
+        'tagged'
+    ];
+
     public function device()
     {
         return $this->belongsTo(Device::class);
@@ -35,6 +40,21 @@ class DevicePort extends Model
         return $this->hasMany(DevicePortStat::class);
     }
 
+    public function getUntaggedAttribute() {
+        $id = $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
+        return DeviceVlan::where('id', $id)->first() ?? null;
+    }
+
+    public function getTaggedAttribute() {
+        $ids = $this->deviceVlanPorts->where('is_tagged', true)->all() ?? null;
+        $vlans = [];
+        foreach($ids as $id) {
+            $vlans[] = DeviceVlan::where('id', $id->device_vlan_id)->first() ?? null;
+        }
+
+        return $vlans;
+    }
+
     public function untaggedVlan() {
         return $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
     }
@@ -46,6 +66,15 @@ class DevicePort extends Model
     public function untaggedVlanName() {
         $id = $this->deviceVlanPorts->where('is_tagged', false)->first()->device_vlan_id ?? null;
         return DeviceVlan::where('id', $id)->first()->name ?? null;
+    }
+
+    public function taggedVlanNames() {
+        $ids = $this->deviceVlanPorts->where('is_tagged', true)->all() ?? null;
+        $vlans = [];
+        foreach($ids as $id) {
+            $vlans[] = DeviceVlan::where('id', $id->device_vlan_id)->first()->name ?? null;
+        }
+        return $vlans;
     }
     
     public function isMemberOfTrunk() {

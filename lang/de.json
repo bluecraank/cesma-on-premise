@@ -262,6 +262,7 @@
     "Vlan:Sync.Log.NotDeleted": "- Nicht gelöscht",
     "Vlan.Sync.Log.NotRenamed": "- Nicht umbenannt",
     "Vlan.Sync.Time": "Synchronisiert in :time Sekunden",
+
     "Vlan.Update.Success": ":success von :total Ports aktualisiert",
     "Vlan.Update.Tagging.Success": ":success von :total VLANs auf Port :port aktualisiert",
     "Vlan.Update.Error": ":failed von :total Ports konnten nicht aktualisiert werden",
@@ -271,6 +272,12 @@
     "Vlan.Update.Success.TaggedAll": "Alle VLANs erfolgreich auf Port :port mit Tag eingerichtet",
     "Vlan.Update.Success.Remove.Tagged": "VLAN :vlan erfolgreich von Port :port entfernt",
     "Vlan.Update.Error.Remove.Tagged": "Fehler: VLAN :vlan konnte nicht von Port :port entfernt werden",
+
+    "Switch.Port.Untagged.Success": "VLAN :vlan erfolgreich auf Port :port ohne Tag eingerichtet",
+    "Switch.Port.Untagged.Error": "VLAN :vlan konnte nicht auf Port :port ohne Tag eingerichtet werden",
+    "Switch.Port.Tagged.Success": ":success von :total VLANs erfolgreich auf Port :port mit Tag eingerichtet",
+    "Switch.Port.Tagged.Error": "Die gewünschten VLANs konnten nicht auf Port :port mit Tag eingerichtet werden",
+    
     "Vlan.Subnet": "IP-Bereich",
     "Vlan.Scan": "NMAP-Scan",
     "Vlan.IsClientVlan": "Dieses VLAN im Endgerätescan nicht berücksichtigen",

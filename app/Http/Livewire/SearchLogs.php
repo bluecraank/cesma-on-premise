@@ -4,14 +4,16 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Traits\WithLogin;
+use Livewire\WithPagination;
 use App\Models\Log;
 
 
 class SearchLogs extends Component
 {
     use WithLogin;
+    use WithPagination;
 
-    public $searchTerm = "";
+    public $topic = "";
 
     public function mount() {
         $this->checkLogin();
@@ -19,10 +21,14 @@ class SearchLogs extends Component
 
     public function render()
     {
-        $searchTerm = '%'.$this->searchTerm.'%';
+        if($this->topic == "Port") {
+            $topic = "Port";
+        } else {
+            $topic = '%'.$this->topic.'%';
+        }
         return view('system.view_logs_livewire',[
-            // 'logs' => Log::where('user','like', $searchTerm)->orWhere('data', 'like', $searchTerm)->orWhere('message', 'like', $searchTerm)->get()->sortByDesc('created_at'),
-            'logs' => Log::all()->sortByDesc('created_at'),
+            'logs' => Log::where('category', 'LIKE', $topic)->latest()->paginate(100),
+            'topics' => Log::select('category')->distinct()->get(),
         ]);
     }
 }

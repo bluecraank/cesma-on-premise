@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&display=swap');
-
-
-
+/* @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&family=Raleway:wght@300;400;700&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&family=Raleway:wght@300;400;700&family=Titillium+Web:wght@300;400;700&display=swap');
 .is-logo {
     margin-top: 5px;
     font-family: 'Kdam Thmor Pro', sans-serif;
@@ -105,11 +105,10 @@ thead th:hover {
 }
 
 .is-username-info {
-    /* position: absolute; */
-    /* bottom: 0px; */
-    /* left: 50%; */
-    /* transform: translate(-50%, -19%); */
-    margin-top:25px;
+    position: absolute;
+    bottom: 2.5em;
+    left: 50%;
+    transform: translate(-50%, -19%);
 }
 
 .lds-spinner {
@@ -240,3 +239,12 @@ thead th:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 } */
+
+
+html, body {
+  font-size: 13px !important;
+  /* font-family: 'Nunito', sans-serif; */
+  /* font-family: 'Raleway', sans-serif; */
+  font-family: 'Titillium Web', sans-serif;
+
+}

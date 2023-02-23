@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         ->everyFiveMinutes()
         ->runInBackground();
         
-        $schedule->command('clients:get-mac-to-ip')
+        $schedule->command('clients:query-providers')
         ->everyMinute();
 
         $schedule->command('clients:update')
@@ -30,11 +30,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('clients:dns-lookup')
         ->everyFiveMinutes()
         ->runInBackground();
-
-        // $schedule->command('clients:ping')
-        // ->everyFifteenMinutes()
-        // ->between('05:00', '21:00')
-        // ->runInBackground();
 
         $schedule->command('clients:resolve-mac-vendors')
         ->daily()

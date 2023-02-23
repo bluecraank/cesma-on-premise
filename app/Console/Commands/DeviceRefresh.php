@@ -37,13 +37,23 @@ class DeviceRefresh extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            CLog::error("JobHandler", "Failed to refresh device, device not found", $device);
+            CLog::error("Automated task", "Failed to refresh device, device not found", $device);
             Log::error("Failed to refresh device, device not found");
             return;
         }
 
-        DeviceService::refreshDevice($device);
-        CLog::info("JobHandler", "Successfully refreshed device " . $device->name, $device, "Took " . number_format(microtime(true) - $start, 2) . " sec.");
+        $refreshed = DeviceService::refreshDevice($device);
+        $refreshed = json_decode($refreshed, true);
+
+        var_dump($refreshed);
+
+        if($refreshed['success'] == "false") {
+            CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshed['message']);
+            Log::error("Failed to refresh device " . $device->name . " ERROR: " . $refreshed['message']);
+            return;
+        }
+
+        CLog::info("Automated task", "Successfully refreshed device " . $device->name, $device, "Took " . number_format(microtime(true) - $start, 2) . " sec.");
         Log::info("Successfully refreshed device " . $device->name . " Took " .  number_format(microtime(true) - $start, 2) . " seconds to refresh device");
     }
 }

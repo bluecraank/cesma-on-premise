@@ -6,14 +6,14 @@ use Illuminate\Console\Command;
 use App\Services\ClientService;
 use Illuminate\Support\Facades\Log;
 
-class GetSnmpData extends Command
+class QueryClientProviders extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'clients:get-mac-to-ip';
+    protected $signature = 'clients:query-providers';
 
     /**
      * The console command description.
@@ -29,8 +29,8 @@ class GetSnmpData extends Command
      */
     public function handle()
     {
-        ClientService::getClientDataFromProviders();
-
-        Log::info('[Clients] MAC to IP lookup finished');
+        if(ClientService::getClientDataFromProviders()) {
+            Log::info('[Clients] Client data retrieved from providers');
+        }
     }
 }

@@ -8,11 +8,14 @@
     <div class="is-pulled-right">
         <div class="field">
             <div class="control has-icons-right">
-                <input class="input" type="text" wire:model.debounce.500ms="searchTerm"
-                    placeholder="{{ __('Search.Placeh.Log') }}">
-                <span class="icon is-small is-right">
-                    <i class="fas fa-search fa-xs"></i>
-                </span>
+                <div class="select">
+                    <select wire:model.debounce.500ms="topic" name="topic" id="">
+                        <option value="">Select context</option>
+                        @foreach($topics as $topic)
+                            <option value="{{ $topic->category }}">{{ $topic->category }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -35,8 +38,8 @@
                 <th>Level</th>
                 <th>{{ __('Log.User') }}</th>
                 <th>{{ __('Log.Action') }}</th>
-                <th>Topic</th>
-                <th>Zusatzinfos</th>
+                <th>Category</th>
+                <th style="width:250px;">Additional info</th>
                 <th>Switch</th>
                 <th style="width:200px;" class="has-text-centered">Timestamp</th>
             </tr>
@@ -50,8 +53,8 @@
                     <td>
                         {{ $log->category }}
                     </td>
-                    <td>
-                        {{  substr($log->additional_info, 0, 20) }}
+                    <td style="width:250px;">
+                        {{  $log->additional_info }}
                     </td>
                     <td>
                         {{ $log->device_name }}
@@ -61,4 +64,7 @@
                 </tr>
             @endforeach
     </table>
+    <div>
+        {{ $logs->links('pagination::default') }}
+    </div>
 </div>

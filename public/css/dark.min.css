@@ -80,7 +80,7 @@ progress::-moz-progress-bar {
 .dark-fix-color {
     color: #fff !important;
 }
-.dark-fix-color:hover {
+.dark-fix-color:hover:not(.is-static) {
     color: #159dc6 !important;
     text-decoration: underline;
 }

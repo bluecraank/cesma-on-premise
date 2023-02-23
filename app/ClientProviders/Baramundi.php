@@ -15,7 +15,7 @@ class Baramundi implements IClientProvider
      */
     static function queryClientData(): array
     {
-        $url = config('app.baramundi_api_url') . "/bCOnnect/v1.1/Endpoints.json";
+        $url = config('app.baramundi_api_url') . "/bConnect/v1.1/Endpoints.json";
         $username = config('app.baramundi_username');
         $password = config('app.baramundi_password');
 

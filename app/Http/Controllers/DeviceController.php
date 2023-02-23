@@ -17,6 +17,7 @@ use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\Diff;
 
 
 class DeviceController extends Controller
@@ -146,13 +147,24 @@ class DeviceController extends Controller
             $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);
         }
 
-        if ($device->whereId($request->input('id'))->update($request->except('_token', '_method'))) {
-            CLog::info("Switch", "Switch {$device->whereId($request->input('id'))->first()->name} updated", $device, $device->id);
+        $device = Device::find($request->input('id'));
 
+        // dd($device);
+
+        if(!$device) {
+            return redirect()->back()->withErrors(['message' => 'Device not found']);
+        }
+
+        $tmp = $device->attributesToArray();
+
+        if ($device->update($request->except('_token', '_method'))) {
+            CLog::info("Switch", "Updated device {$device->name}", $device, Diff::compare($tmp, $device));
+            // dd(Diff::compare($tmp, $device));
             return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
         }
 
-        CLog::error("Switch", "Switch {$device->name} could not be updated", $device, $device->id);
+
+        CLog::error("Switch", "Failed to update device {$device->name}", $device, $device);
         return redirect()->back()->withErrors(['message' => 'Could not update device']);
     }
 

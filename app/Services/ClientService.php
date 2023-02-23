@@ -14,29 +14,49 @@ use App\Models\DeviceUplink;
 use App\Models\Mac;
 use App\Models\MacVendor;
 use App\Models\Vlan;
+use App\Models\Router;
 use App\Models\SnmpMacData;
 use Illuminate\Support\Facades\Log;
+use App\Helper\CLog;
 
 class ClientService {
+
+    /*
+    * Query client data from all providers
+    * @return bool
+    */
     static function getClientDataFromProviders()
     {
-        $start = microtime(true);
+        $queriedAtLeastOneProvider = false;
 
-        // Baramundi
+        // Baramundi API
+        $start = microtime(true);
         if (!empty(config('app.baramundi_api_url'))) {
+            $queriedAtLeastOneProvider = true;
             Baramundi::queryClientData();
+            Log::debug("[Clients] Baramundi queried in " . number_format((microtime(true) - $start), 2) . " seconds");
+        } else {
+            Log::info("[Clients] Baramundi API not set. Skipping.");	
         }
-        echo "Baramundi: " . (microtime(true) - $start) . "s\n";
 
-        // Routers
+        // SNMP Routers
         $start = microtime(true);
-        SNMP_Routers::queryClientData();
-        echo "Routers: " . (microtime(true) - $start) . "s\n";
+        if(Router::all()->count() > 0) {
+            $queriedAtLeastOneProvider = true;
+            SNMP_Routers::queryClientData();
+            Log::debug("[Clients] Routers queried in " . number_format((microtime(true) - $start), 2) . " seconds");
+        } else {
+            Log::info("[Clients] No Routers set. Skipping.");
+        }
 
-        return true;
+        return $queriedAtLeastOneProvider;
     }
 
 
+    /*
+    * Get all clients from all providers
+    * @return array
+    */
     static function getClients() {
         $start = microtime(true);
         
@@ -53,17 +73,14 @@ class ClientService {
         }
 
         foreach($uplinks as $dev_id => $uplink) {
-            foreach($uplink as $up) {
-                $array_uplinks[$dev_id][] = $up['name']; 
+            foreach($uplink as $each_uplink) {
+                $array_uplinks[$dev_id][] = $each_uplink['name']; 
             }
         }
 
-        $updated = 0;
-        $created = 0;
-        $duplicates = 0;
-        $unique = 0;
-        
+        $updated = $created = 0;
         $mac_already_added = [];
+
         foreach($endpoints as $client) {
             $mac = $client['mac_address'];
             
@@ -93,30 +110,19 @@ class ClientService {
 
             // Wurde bereits durchlaufen
             if(isset($mac_already_added[$mac])) {
-                $duplicates++;
-                Log::debug('Duplicate MAC: '. $mac . ' | '. $client['hostname'] . ' | '. $client['ip_address'] . ' | '. $macs[$mac]['port_id'] . ' | '. $macs[$mac]['device_id'] . ' | '. $macs[$mac]['vlan_id']);
                 continue;
             }
 
             $mac_already_added[$mac] = true;
-            $unique++;
 
-            echo "Bis hier \n";
-            if($macs[$mac]['device_id'] == 20) {
-                echo "Bis hier 222 \n";
-            }
-
-            // Immernoch unschlüssig ob das hier mit id und mac_address richtig ist
             $DbClient = Client::updateOrCreate([
                 'id' => md5($mac.$client['hostname']),
-                // 'mac_address' => $mac
             ], 
             [
                 'mac_address' => $mac,
                 'port_id' => $macs[$mac]['port_id'],
                 'device_id' => $macs[$mac]['device_id'],
                 'vlan_id' => $macs[$mac]['vlan_id'],
-                // 'hostname' => $client['hostname'],
                 'ip_address' => $client['ip_address'],
                 'type' => self::getClientType($mac),
             ]);
@@ -128,7 +134,7 @@ class ClientService {
             }
         }
 
-        Log::info('Updated '. $updated .' clients | Created '. $created .' clients | Duplicates '. $duplicates .' | Unique '. $unique .' | Took: '. (microtime(true) - $start) .'s');
+        Log::info("[Clients] Updated {$updated} and created {$created} clients.");
     } 
 
     static function getClientType($mac)

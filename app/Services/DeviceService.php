@@ -39,6 +39,13 @@ class DeviceService
             ]);
         }
 
+        if(app()->runningInConsole()) {
+            return json_encode([
+                'success' => "false",
+                'message' => $api_data['message'],
+            ]);
+        }
+
         return json_encode([
             'success' => "false",
             'message' => __('Msg.FailedToRefreshDevice'),

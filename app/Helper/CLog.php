@@ -28,10 +28,15 @@ class CLog
 
     public static function write($category, $level, $description, $device = null, $additional_info = null)
     {
+
+        $user = auth()->user()->name ?? "Unknown";
+        if(app()->runningInConsole()) {
+            $user = "Console";
+        }
         $log = new Log();
         $log->category = $category;
         $log->level = $level;
-        $log->user = auth()->user()->name ?? 'unknown';
+        $log->user = $user;
         $log->user_id = auth()->user()->guid ?? null;
         $log->device_id = $device->id ?? null;
         $log->device_name = $device->name ?? null;
