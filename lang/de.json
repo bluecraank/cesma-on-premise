@@ -109,10 +109,13 @@
     "Hint.Show": "Mehr anzeigen",
     "Hint.Updated": "Aktualisiert ",
     "Hint.NewlyCreated": "Abfrage wird durchgeführt",
-    "Portstats.for": "Informationen über Port ",
+    "Portstats.for": "Informationen & Statistiken",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
     "Uplinks found": "Gefundene Uplinks",
     "Custom Uplinks": "Benutzerdefinierte Uplinks",
+
+    "RX": "Empfangen",
+    "TX": "Gesendet",
 
     "Role.SuperAdmin": "Superadmin",
     "Role.Admin": "Administrator",

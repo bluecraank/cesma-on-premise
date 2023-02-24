@@ -274,7 +274,6 @@
                             <th>Tagged/Allowed</th>
                             <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
                             <th class="has-text-centered" style="width: 120px;">Speed</th>
-                            {{-- <th></th> --}}
                         </tr>
                     </thead>
 

@@ -21,6 +21,14 @@ class DevicePortStatController extends Controller
         $port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>', 
         Carbon::now()->subHours(3)->toDateTimeString())->get();
 
+        // $port_stats_avg = DevicePortStat::inRandomOrder()->where('device_port_id', $current_port->id)->get()->take(100);
+
+        $date_newest_stat = $port_stats->last()->created_at;
+
+        $all_port_stats = DevicePortStat::where('device_port_id', $current_port->id)->get();
+        $avg_utilization_rx = number_format($all_port_stats->avg('port_rx_bps')*8/1024/1024, 2);
+        $avg_utilization_tx = number_format($all_port_stats->avg('port_tx_bps')*8/1024/1024, 2);
+
         if(empty($port_stats) or count($port_stats) == 0 or $port_stats == null or count($port_stats->toArray()) == 0) {
             abort(404, "No data for port $port_id found.");
         }
@@ -44,7 +52,7 @@ class DevicePortStatController extends Controller
         $utilization_tx = $port_stats[0] && $port_stats[0]->port_tx_bps != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $speed = $port_stats[0] ? $port_stats[0]->port_speed / 10 : 0;
 
-        return view('switch.view_portstats', compact('vlans', 'device', 'dataset', 'port_stats', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3'));
+        return view('switch.view_portstats', compact('vlans', 'device', 'dataset', 'port_stats', 'date_newest_stat', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3', 'avg_utilization_rx', 'avg_utilization_tx'));
     }
 
     public function getPacketsData($ports) {
@@ -61,8 +69,8 @@ class DevicePortStatController extends Controller
             ];
         }
 
-        $port_data[] = ['label' => 'Empfangen', 'data' => $chartRX];
-        $port_data[] = ['label' => 'Gesendet', 'data' => $chartTX];
+        $port_data[] = ['label' => __('RX'), 'data' => $chartRX];
+        $port_data[] = ['label' => __('TX'), 'data' => $chartTX];
 
         $dataset = [
             'datasets' => $port_data,
@@ -87,8 +95,8 @@ class DevicePortStatController extends Controller
             ];
         }
 
-        $port_data[] = ['label' => 'Empfangen', 'data' => $chartRX];
-        $port_data[] = ['label' => 'Gesendet', 'data' => $chartTX];
+        $port_data[] = ['label' => __('RX'), 'data' => $chartRX];
+        $port_data[] = ['label' => __('TX'), 'data' => $chartTX];
 
         $dataset = [
             'datasets' => $port_data,
@@ -113,8 +121,8 @@ class DevicePortStatController extends Controller
             ];
         }
 
-        $port_data[] = ['label' => 'Empfangen', 'data' => $chartRX];
-        $port_data[] = ['label' => 'Gesendet', 'data' => $chartTX];
+        $port_data[] = ['label' => __('RX'), 'data' => $chartRX];
+        $port_data[] = ['label' => __('TX'), 'data' => $chartTX];
 
         $dataset = [
             'datasets' => $port_data,
