@@ -136,30 +136,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $uplinklist = $device->uplinks
-                                ->sort(function ($a, $b) {
-                                    return strnatcmp($a->name, $b->name);
-                                })
-                                ->groupBy('name');
-                        @endphp
-                        @foreach ($uplinklist as $key => $trunk_ports)
-                            @php
-                                $key = $device->ports->where('name', $key)->first()->description != '' ? $device->ports->where('name', $key)->first()->description : $key;
-                                
-                                $trunkids = $trunk_ports->pluck('device_port_id')->toArray();
-                                
-                                $trunks = implode(
-                                    ', ',
-                                    array_map(function ($port) use ($device) {
-                                        return $device->ports->where('id', $port)->first()->name;
-                                    }, $trunkids),
-                                );
-                            @endphp
-
+                        @foreach ($found_uplinks as $trunk => $ports_in_trunk)
                             <tr>
-                                <td>{{ $key }}</td>
-                                <td class="has-text-right">{{ $trunks }}</td>
+                                <td>{{ $trunk }}</td>
+                                <td class="has-text-right">{{ $ports_in_trunk }}</td>
                             </tr>
                         @endforeach
 
@@ -168,7 +148,6 @@
                                 <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                             </tr>
                         @endif
-
                     </tbody>
                 </table>
             </div>
@@ -211,14 +190,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php 
-                                $vlanlist = $device->vlans
-                                ->sort(function ($a, $b) {
-                                    return $a['vlan_id'] <=> $b['vlan_id'];
-                                })
-                                ->toArray();
-                        @endphp
-                        @foreach ($vlanlist as $vlan)
+                        @foreach ($device->vlans as $vlan)
                             <tr>
                                 <td>{{ $vlan['name'] }}</td>
                                 <td class="has-text-right">{{ $vlan['vlan_id'] }}</td>
@@ -239,7 +211,7 @@
                     </thead>
                     <tbody>
                         @php
-                            $device->backups = $device->backups->sortByDesc('created_at');
+                            $device->backups = $device->backups->sortByDesc('created_at')->take(15);
                         @endphp
                         @foreach ($device->backups as $backup)
                             <tr>

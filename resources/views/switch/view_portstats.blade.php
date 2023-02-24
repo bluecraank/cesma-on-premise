@@ -12,8 +12,8 @@
                     </h1>
                 </div>
 
-                <div class="column is-6">
-                    <div class="select is-pulled-right">
+                <div class="column is-6 mt-2">
+                    <div class="select is-small is-pulled-right">
                         <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()">
                             @if ($port_id == null)
                                 <option value="" selected>Bitte wählen</option>
@@ -23,12 +23,12 @@
                                     @continue
                                 @endif
                                 <option {{ $port['name'] == $port_id ? 'selected' : '' }} value="{{ $port['name'] }}">
-                                    {{ $port['name'] }}</option>
+                                    Port {{ $port['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="is-pulled-right mr-3">
-                        <a class="button is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
+                        <a class="button is-small is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="columns">
+        <div class="columns is-multiline ml-1 mr-3">
             <div class="column is-12">
                 <div class="box">
                     <h2 class="subtitle">Utilization RX/TX</h2>
@@ -101,21 +101,20 @@
             </div>
         </div>
 
-        <div class="columns">
+        <div class="columns is-multiline ml-1 mr-3">
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Native / Untagged VLANs</h2>
-                    @php $untagged = $device->vlanports->where('device_port_id', $current_port->id)->where('is_tagged', false)->first() @endphp
-                    <span class="tag is-primary">{{ ($untagged) ? $vlans[$untagged->device_vlan_id]['name'] : 'NO VLAN' }}</span>
+                    <span class="tag is-primary">{{ ($current_port->untagged) ? $current_port->untagged->name : 'NO VLAN' }}</span>
                 </div>
             </div>
         
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Allowed / Tagged VLANs</h2>
-                    @php $vlanports = $device->vlanports->where('device_port_id', $current_port->id); @endphp
+                    @php $vlanports = $current_port->tagged; @endphp
                     @foreach($vlanports as $vlan)
-                        <span title="ID {{ $vlans[$vlan->device_vlan_id]['vlan_id'] }}" class="tag is-primary">{{ $vlans[$vlan->device_vlan_id]['name'] }}</span>
+                        <span title="ID {{ $vlan['vlan_id'] }}" class="tag is-primary">{{ $vlan['name'] }}</span>
                     @endforeach
 
                     @if ($current_port->vlan_mode == "access")

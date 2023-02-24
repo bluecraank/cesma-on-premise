@@ -105,21 +105,50 @@ class DeviceController extends Controller
     {
         $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);
 
+        // Sort ports
         $device->ports = $device->ports->sort(function ($a, $b) {
             return strnatcmp($a->name, $b->name);
         });
 
+        // Get name for firmware model
         $device->type_name = self::$typenames[$device->type];
 
-        $custom_uplinks = $device->custom_uplink ? $device->custom_uplink->first() : [];
+        // Get uplinks
+        $found_uplinks = $device->uplinks->sort(function ($a, $b) {
+            return strnatcmp($a->name, $b->name);
+        })->groupBy('name');
 
-        $custom_uplinks_comma_seperated = $custom_uplinks ? implode(', ', json_decode($custom_uplinks->uplinks, true)) : '';
+        // Get port names for uplinks
+        $generated_uplinks = [];
+        foreach($found_uplinks as $key => $ports) {
+            $name = $device->ports->where('name', $key)->first()->description;
+            if ($name == '') {
+                $name = $key;
+            }
 
-        $custom_uplinks_array = json_decode($custom_uplinks->uplinks) ?? [];
+            $new_ports = array_map(function ($ports) use ($device) {
+                return $device->ports->where('id', $ports['device_port_id'])->first()->name;
+            }, $ports->toArray());
 
+            $generated_uplinks[$name] = implode(",", $new_ports);
+        }
+        $found_uplinks = $generated_uplinks;
+
+        // Get custom uplinks
+        $custom_uplinks = $device->custom_uplink ? $device->custom_uplink->first()->uplinks : "[]";
+        $custom_uplinks_comma_seperated = implode(', ', json_decode($custom_uplinks, true));
+        $custom_uplinks_array = json_decode($custom_uplinks) ?? [];
+
+
+        // Sort vlans 
+        $device->vlans = $device->vlans->sort(function ($a, $b) {
+            return strnatcmp($a->vlan_id, $b->vlan_id);
+        });
+
+        // Get online status
         $is_online = DeviceService::isOnline($device->hostname);
 
-        return view('switch.view_details', compact('device', 'is_online', 'custom_uplinks_comma_seperated', 'custom_uplinks_array'));
+        return view('switch.view_details', compact('device', 'is_online', 'found_uplinks', 'custom_uplinks_comma_seperated', 'custom_uplinks_array'));
     }
 
     public function showBackups(Device $device)
