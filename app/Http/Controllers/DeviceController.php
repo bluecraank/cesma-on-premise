@@ -111,12 +111,15 @@ class DeviceController extends Controller
 
         $device->type_name = self::$typenames[$device->type];
 
-        $c_uplink = $device->custom_uplink ? $device->custom_uplink->first() : [];
-        $custom_uplinks = $c_uplink ? implode(', ', json_decode($c_uplink->uplinks, true)) : '';
+        $custom_uplinks = $device->custom_uplink ? $device->custom_uplink->first() : [];
+
+        $custom_uplinks_comma_seperated = $custom_uplinks ? implode(', ', json_decode($custom_uplinks->uplinks, true)) : '';
+
+        $custom_uplinks_array = json_decode($custom_uplinks->uplinks) ?? [];
 
         $is_online = DeviceService::isOnline($device->hostname);
 
-        return view('switch.view_details', compact('device', 'is_online', 'custom_uplinks'));
+        return view('switch.view_details', compact('device', 'is_online', 'custom_uplinks_comma_seperated', 'custom_uplinks_array'));
     }
 
     public function showBackups(Device $device)
@@ -149,8 +152,6 @@ class DeviceController extends Controller
 
         $device = Device::find($request->input('id'));
 
-        // dd($device);
-
         if(!$device) {
             return redirect()->back()->withErrors(['message' => 'Device not found']);
         }
@@ -159,7 +160,6 @@ class DeviceController extends Controller
 
         if ($device->update($request->except('_token', '_method'))) {
             CLog::info("Switch", "Updated device {$device->name}", $device, Diff::compare($tmp, $device));
-            // dd(Diff::compare($tmp, $device));
             return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
         }
 

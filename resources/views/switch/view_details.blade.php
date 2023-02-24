@@ -49,7 +49,9 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ $device->ports->where('link', true)->count() }}/{{ $device->ports->count()-$device->uplinks->groupBy('name')->count() }}</p>
+                <p class="subtitle">
+                    {{ $device->ports->where('link', true)->count() }}/{{ $device->ports->count() - $device->uplinks->groupBy('name')->count() }}
+                </p>
             </div>
         </div>
     </div>
@@ -94,29 +96,31 @@
             @if (Auth::user()->role >= 1)
                 <div class="box">
                     <h2 class="subtitle">{{ __('Actions') }}</h2>
-                    <div class="buttons are-small">
-                        <div class="columns is-vcentered has-text-centered is-variable is-multiline is-1">
-                            <div class="column is-narrow is-6 col-md-4 pb-1">
-                                <button onclick="$('.modal-sync-vlans-specific').show();" class="p-1 m-0 is-fullwidth button is-success">
-                                    <i class="mr-1 fas fa-ethernet"></i> Sync Vlans
-                                </button>
-                            </div>
-                            <div class="column is-narrow is-6 col-md-4 pb-1">
-                                <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
-                                    <i class="mr-1 fas fa-key"></i> Sync Pubkeys
-                                </button>
-                            </div>
-                            <div class="column is-narrow is-12 col-md-4 pb-1">
-                                <button onclick="sw_actions(this, 'backups', {{ $device->id }})" class="p-1 m-0 is-fullwidth button is-success">
-                                    <i class="mr-1 fas fa-hdd"></i> Backup
-                                </button>
-                            </div>
+                    <div class="columns is-variable is-multiline">
+                        <div class="column has-text-centered is-narrow is-6 col-md-4 pb-0">
+                            <button onclick="$('.modal-sync-vlans-specific').show();"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
+                            </button>
+                        </div>
+                        <div class="column is-narrow is-6 col-md-4 pb-0">
+                            <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-key"></i> Sync Pubkeys
+                            </button>
+                        </div>
+                        <div class="column is-narrow is-12 col-md-4 pb-0">
+                            <button onclick="sw_actions(this, 'backups', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-hdd"></i> Backup
+                            </button>
+                        </div>
 
-                            <div class="column is-narrow is-12 p-1 pb-4">
-                                <button onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="p-1 m-0 is-fullwidth is-success button">
-                                    <i class="mr-1 fas fa-sync"></i> Refresh
-                                </button>
-                            </div>
+                        <div class="column is-narrow is-12 col-md-4 pb-4">
+                            <button onclick="sw_actions(this, 'refresh', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth is-success button is-small">
+                                <i class="is-hidden-touch mr-1 fas fa-sync"></i> Refresh
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -133,22 +137,26 @@
                     </thead>
                     <tbody>
                         @php
-                            $uplinklist = $device->uplinks->sort(function ($a, $b) {
-                            return strnatcmp($a->name, $b->name);
-                        })->groupBy('name');
+                            $uplinklist = $device->uplinks
+                                ->sort(function ($a, $b) {
+                                    return strnatcmp($a->name, $b->name);
+                                })
+                                ->groupBy('name');
                         @endphp
                         @foreach ($uplinklist as $key => $trunk_ports)
                             @php
-                                $key = ($device->ports->where('name', $key)->first()->description != "") ? $device->ports->where('name', $key)->first()->description : $key;
-
+                                $key = $device->ports->where('name', $key)->first()->description != '' ? $device->ports->where('name', $key)->first()->description : $key;
+                                
                                 $trunkids = $trunk_ports->pluck('device_port_id')->toArray();
-
-                                $trunks = implode(', ', array_map(function ($port) use ($device) {
-                                    return $device->ports->where('id', $port)->first()->name;
-
-                                }, $trunkids));
+                                
+                                $trunks = implode(
+                                    ', ',
+                                    array_map(function ($port) use ($device) {
+                                        return $device->ports->where('id', $port)->first()->name;
+                                    }, $trunkids),
+                                );
                             @endphp
-                    
+
                             <tr>
                                 <td>{{ $key }}</td>
                                 <td class="has-text-right">{{ $trunks }}</td>
@@ -175,21 +183,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($device->custom_uplinks)) 
+                        @if (isset($custom_uplinks_array))
 
-                            @foreach ($device->custom_uplinks as $key => $trunk)
+                            @foreach ($custom_uplinks_array as $port)
                                 <tr>
-                                    <td>TODO!</td>
-                                    <td class="has-text-right">{{ $trunk }}</td>
+                                    <td>{{  $device->ports->where('name', $port)->first()->description ?? $port }}</td>
+                                    <td class="has-text-right">{{ $port }}</td>
                                 </tr>
                             @endforeach
                         @endif
 
-                        @if(empty($device->custom_uplinks))
+                        @if (empty($custom_uplinks_array))
                             <tr>
                                 <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                             </tr>
-                        @endif   
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -203,9 +211,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $vlanlist = $device->vlans->sort(function ($a, $b) {
-                            return $a['vlan_id'] <=> $b['vlan_id'];
-                        })->toArray();
+                        @php 
+                                $vlanlist = $device->vlans
+                                ->sort(function ($a, $b) {
+                                    return $a['vlan_id'] <=> $b['vlan_id'];
+                                })
+                                ->toArray();
                         @endphp
                         @foreach ($vlanlist as $vlan)
                             <tr>
@@ -233,7 +244,8 @@
                         @foreach ($device->backups as $backup)
                             <tr>
                                 <td>{{ $backup->created_at }}</td>
-                                <td class="has-text-right">{{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
+                                <td class="has-text-right">
+                                    {{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
                             </tr>
                         @endforeach
 
@@ -253,15 +265,24 @@
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role >= 1)
-                            <button onclick="saveEditedPorts(this);" class="is-save-button button is-small is-success is-pulled-right is-hidden"><i class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
-                            
-                            <button onclick="cancelEditing(this);" class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
+                        <button onclick="saveEditedPorts(this);"
+                            class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
+                                class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
 
-                            <button onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks }}')" class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-up-down mr-2"></i> Uplinks</button>
+                        <button onclick="cancelEditing(this);"
+                            class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i
+                                class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
 
-                            {{-- <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button> --}}
+                        <button
+                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
+                            class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i
+                                class="fas fa-up-down mr-2"></i> Uplinks</button>
 
-                            <button onclick="enableEditing();" class="is-edit-button button is-small is-info is-pulled-right"><i class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
+                        {{-- <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button> --}}
+
+                        <button onclick="enableEditing();"
+                            class="is-edit-button button is-small is-info is-pulled-right"><i
+                                class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
                 </h2>
 
@@ -287,7 +308,7 @@
 
                     <tbody class="live-body">
                         @foreach ($device->ports as $port)
-                            @if (!str_contains($port->name, "Trk"))
+                            @if (!str_contains($port->name, 'Trk'))
                                 @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
                             @endif
                         @endforeach
