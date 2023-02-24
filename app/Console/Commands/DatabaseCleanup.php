@@ -40,7 +40,7 @@ class DatabaseCleanup extends Command
         Mac::whereDate('created_at', '<=', now()->subWeek(1))->delete();
         Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
         DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
-        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
+        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(4))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
 
@@ -48,7 +48,6 @@ class DatabaseCleanup extends Command
 
         Client::where(function($query) use ($vlans_ignore) {
             foreach ($vlans_ignore as $vlan) {
-                echo $vlan['vid'];
                 $query->orWhere('vlan_id', '=', $vlan['vid']);
             }
         })->delete();
@@ -74,6 +73,6 @@ class DatabaseCleanup extends Command
             }
         }
 
-        \Illuminate\Support\Facades\Log::info('Database cleaned up');
+        \Illuminate\Support\Facades\Log::info('[System] Database cleaned up');
     }
 }

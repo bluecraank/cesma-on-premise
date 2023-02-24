@@ -48,7 +48,7 @@ class GetHostname extends Command
             }
 
             $client->timestamps = false;
-            $client->hostname = $hostname;
+            $client->hostname = rtrim($hostname, ".");
             $client->save();
         }
 
