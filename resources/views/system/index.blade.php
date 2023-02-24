@@ -1,3 +1,5 @@
+@section('title', 'System')
+
 <x-layouts.main>
     <div class="box tab-parent">
         <h1 class="title is-pulled-left">{{ __('Header.System') }}</h1>

@@ -1,3 +1,6 @@
+@section('title', $device->name)
+
+
 <x-layouts.main>
     <script>
         window.device_id = {{ $device->id }};

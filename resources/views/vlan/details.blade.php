@@ -1,3 +1,5 @@
+@section('title', $vlan['name'])
+
 <x-layouts.main>
     <div style="display:none" class="notification status is-danger">
         <ul>

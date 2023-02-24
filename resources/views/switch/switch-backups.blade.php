@@ -1,3 +1,5 @@
+@section('title', 'All Backups for ' . $device->name)
+
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Backups') }} {{ $device->name }}</h1>

@@ -1,3 +1,5 @@
+@section('title', 'Port '.$current_port->name . ' on ' . $device->name)
+
 <x-layouts.main>
     <div class="columns ml-1 mr-3">
         <div class="column">

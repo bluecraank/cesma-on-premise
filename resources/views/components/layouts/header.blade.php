@@ -26,7 +26,7 @@
     <script src="/js/notify.min.js?{{ config('app.version') }}"></script>
     <script src="/js/script.js?{{ config('app.version') }}"></script>
     <script src="/js/theme.js"></script>
-    <title>{{ ucfirst(Route::currentRouteName()) }} | CESMA</title>
+    <title>@yield('title') | CESMA</title>
 </head>
 <noscript>
     <div class="no-use">

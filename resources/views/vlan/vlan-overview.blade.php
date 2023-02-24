@@ -1,3 +1,5 @@
+@section('title', 'All VLANs')
+
 <x-layouts.main>
     @livewire('search-vlans')
 

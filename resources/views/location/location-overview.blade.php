@@ -1,3 +1,5 @@
+@section('title', 'Locations, Buildings and Rooms')
+
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Locations') }}</h1>

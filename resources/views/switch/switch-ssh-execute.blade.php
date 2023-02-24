@@ -1,3 +1,5 @@
+@section('title', 'SSH Execute')
+
 <x-layouts.main>
     <div class="box">
         <div class="columns">
