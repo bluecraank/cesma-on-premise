@@ -50,8 +50,7 @@ class DeviceRefresh extends Command
             Log::error("Failed to refresh device " . $device->name);
             return;
         }
-
-        CLog::info("Automated task", "Successfully refreshed device " . $device->name, $device, "Took " . number_format(microtime(true) - $start, 2) . " sec.");
+        // unnecessary, but just to be sure
         Log::info("Successfully refreshed device " . $device->name);
     }
 }
