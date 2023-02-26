@@ -4,12 +4,12 @@
     @livewire('search-vlans')
 
     @if (Auth::user()->role >= 1)
-    <div class="box">
-        <div class="label is-small">Alle Switche</div>
-        <div class="buttons are-small">
-            @include('buttons.ButtonSyncVlan')
+        <div class="box">
+            <div class="label is-small">Alle Switche</div>
+            <div class="buttons are-small">
+                @include('buttons.ButtonSyncVlan')
+            </div>
         </div>
-    </div>
 
         @include('modals.create.VlanAddModal')
 

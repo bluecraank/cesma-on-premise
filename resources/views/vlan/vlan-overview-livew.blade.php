@@ -28,7 +28,7 @@
                 <th>Name</th>
                 <th>{{ __('Description') }}</th>
                 <th>{{ __('Vlan.Subnet') }}</th>
-                <th class="has-text-centered">Scan</th>
+                {{-- <th class="has-text-centered">Scan</th> --}}
                 <th class="has-text-centered">Sync</th>
                 <th class="has-text-centered">Endgeräte-VLAN</th>
 
@@ -36,12 +36,6 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $vlans = $vlans->sort(function ($a, $b) {
-                    return strnatcmp($a['vlan_id'], $b['vlan_id']);
-                });
-            @endphp
-
             @if ($vlans->count() == 0)
                 <tr>
                     <td colspan="8" class="has-text-centered">{{ __('Vlan.NoFound') }}</td>
@@ -75,9 +69,9 @@
                     <td>
                         {{ $vlan->ip_range }}
                     </td>
-                    <td class="has-text-centered">
+                    {{-- <td class="has-text-centered">
                         <i class='fas {{ ($scan) ? 'fa-check' : 'fa-times' }}'></i>
-                    </td>
+                    </td> --}}
                     <td class="has-text-centered">
                         <i class='fas {{ ($sync) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
@@ -108,4 +102,6 @@
             @endforeach
         </tbody>
     </table>
+
+    {{ $vlans->links('pagination::default') }}
 </div>
