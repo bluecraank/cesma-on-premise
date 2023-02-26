@@ -227,7 +227,7 @@ class ArubaCX implements DeviceInterface
             'vlans' => self::formatVlanData($data['vlans']),
             'ports' => self::formatPortData($data['ports'], $data['portstats']),
             'vlanports' => self::formatPortVlanData($data['vlanport']),
-            'statistics' => self::formatExtendedPortStatisticData($data['portstats']),
+            'statistics' => self::formatExtendedPortStatisticData($data['portstats'], $data['ports']),
             'macs' => self::formatMacTableData([], $data['vlans'], $device, $cookie, $api_version),
             'uplinks' => self::formatUplinkData($data['ports']),
             'success' => true,
@@ -335,7 +335,7 @@ class ArubaCX implements DeviceInterface
         return $return;
     }
 
-    static function formatPortSimpleStatisticData($portstats): array
+    static function formatExtendedPortStatisticData($portstats, $portdata): array
     {
         $return = [];
 
@@ -345,27 +345,6 @@ class ArubaCX implements DeviceInterface
 
         foreach ($portstats as $port) {
             if ($port['ifindex'] < 1000) {
-                $return[$port['ifindex']] = [
-                    "id" => $port['ifindex'],
-                    "name" => $port['description'],
-                    "port_speed_mbps" => ($port['link_speed'] != 0) ? $port['link_speed'] / 1000000 : 0,
-                ];
-            }
-        }
-        return $return;
-    }
-
-    static function formatExtendedPortStatisticData($portstats): array
-    {
-        $return = [];
-
-        if (empty($portstats) or !is_array($portstats) or !isset($portstats)) {
-            return $return;
-        }
-
-        foreach ($portstats as $port) {
-            if ($port['ifindex'] < 1000) {
-
                 $packets_tx = (isset($port['statistics']['tx_packets'])) ? $port['statistics']['tx_packets'] : 0;
                 $packets_rx = (isset($port['statistics']['rx_packets'])) ? $port['statistics']['rx_packets'] : 0;
                 $no_errors = (isset($port['statistics']['total_packets_no_errors'])) ? $port['statistics']['total_packets_no_errors'] : 0;
@@ -384,6 +363,12 @@ class ArubaCX implements DeviceInterface
                     "port_tx_bps" => (isset($port['rate_statistics']['tx_bytes_per_second'])) ? $port['rate_statistics']['tx_bytes_per_second'] : 0,
                     "port_rx_bps" => (isset($port['rate_statistics']['rx_bytes_per_second'])) ? $port['rate_statistics']['rx_bytes_per_second'] : 0,
                 ];
+            }
+        }
+
+        foreach($portdata as $port) {
+            if ($port['ifindex'] < 1000) {
+                $return[$port['ifindex']]['port_status'] = ($port['link_state'] == "up") ? true : false;
             }
         }
 

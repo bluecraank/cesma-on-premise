@@ -16,7 +16,19 @@
 
                 <div class="column is-6 mt-2">
                     <div class="select is-small is-pulled-right">
-                        <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()">
+                        <select onchange="location.href='?timespan='+$(this).val()">
+                            <option {{ app('request')->input('timespan') == '15' ? 'selected' : '' }} value="15">15 minutes</option>
+                            <option {{ app('request')->input('timespan') == '30' ? 'selected' : '' }} value="30">30 minutes</option>
+                            <option {{ app('request')->input('timespan') == '60' ? 'selected' : '' }} value="60">60 minutes</option>
+                            <option {{ app('request')->input('timespan') == '120' ? 'selected' : '' }} value="120">2 hours</option>
+                            <option {{ app('request')->input('timespan') ?? 'selected' }} {{ app('request')->input('timespan') == '180' ? 'selected' : '' }} value="180">3 hours</option>
+                            <option {{ app('request')->input('timespan') == '360' ? 'selected' : '' }} value="360">6 hours</option>
+                            <option {{ app('request')->input('timespan') == '720' ? 'selected' : '' }} value="720">12 hours</option>
+                            <option {{ app('request')->input('timespan') == '1440' ? 'selected' : '' }} value="1440">24 hours</option>
+                        </select>
+                    </div>
+                    <div class="select is-small is-pulled-right mr-3">
+                        <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()+'?timespan={{ app('request')->input('timespan') }}'">
                             @if ($port_id == null)
                                 <option value="" selected>Bitte wählen</option>
                             @endif
@@ -49,7 +61,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Last check</p>
-            <p class="title">{{ $date_newest_stat->diffForHumans() }}</p>
+            <p class="title">{{ $last_stat->created_at->diffForHumans() }}</p>
           </div>
         </div>
       </nav>
@@ -57,8 +69,8 @@
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">LINK STATUS</label>
-                @if ($current_port->link == 1)
+                <label class="label">STATUS</label>
+                @if ($last_stat->port_status)
                     <span class="is-size-2 has-text-success">UP</span>
                 @else
                     <span class="is-size-2 has-text-danger">DOWN</span>
@@ -68,7 +80,6 @@
         <div class="column">
             <div class="box has-text-centered">
                 <label class="label">SPEED</label>
-                {{-- <span class="is-size-2 has-text-success">{{ $port_stats->last()->port_speed }} Mbit/s</span> --}}
                 @if ($port_stats->last()->port_speed == 0)
                     <span class="is-size-2 has-text-link" style="width: 100%;">{{ $port->speed }}</span>
                 @elseif ($port_stats->last()->port_speed == 10)
@@ -78,13 +89,13 @@
                 @elseif ($port_stats->last()->port_speed == 1000)
                     <span class="is-size-2 has-text-success"style="width: 100%;">1 Gbit/s</span>
                 @elseif ($port_stats->last()->port_speed == 10000)
-                    <span class="is-size-2" style="background-color: #3a743a;color: #fff;">10 Gbit/s</span>
+                    <span class="is-size-2" style="width:100%;color:chartreuse;">10 Gbit/s</span>
                 @endif
             </div>
         </div>
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">PORT MODE</label>
+                <label class="label">MODE</label>
                 <span class="is-size-2 has-text-info">{{ $current_port->vlan_mode }}</span>
             </div>
         </div>
@@ -115,33 +126,36 @@
         </div>
 
         <div class="columns is-multiline ml-1 mr-3">
-            <div class="column is-12">
+            <div class="column is-6">
                 <div class="box">
-                    <h2 class="subtitle">Utilization RX/TX (Last check / average)</h2>
-                    <div class="columns">
-                        <div class="is-6 column">
-                            <label class="label">Last query RX: {{ $utilization_rx }}%</label>
+                    <h2 class="subtitle">Utilization RX</h2>
+                    <div class="columns is-multiline">
+                        <div class="is-12 column">
+                            <label class="label">Lastest load: {{ $utilization_rx }}%</label>
                             <progress class="progress is-primary" value="{{ $utilization_rx }}"
                                 max="{{ $speed }}">{{ $utilization_rx }}</progress>
                         </div>
 
-                        <div class="is-6 column">
-                            <label class="label">Average RX: {{ $avg_utilization_rx }}%</label>
+                        <div class="is-12 column">
+                            <label class="label">Average load: {{ $avg_utilization_rx }}%</label>
                             <progress class="progress is-info" value="{{ $avg_utilization_rx }}"
                                 max="{{ $speed }}">{{ $avg_utilization_rx }}</progress>
                         </div>
                     </div>
-
-                    <h2 class="subtitle">Utilization RX/TX (Last check / average)</h2>
-                    <div class="columns">
-                        <div class="is-6 column">
-                            <label class="label">Last query TX: {{ $utilization_tx }}%</label>
+                </div>
+            </div>
+            <div class="column is-6">   
+                <div class="box">
+                    <h2 class="subtitle">Utilization TX</h2>
+                    <div class="columns is-multiline">
+                        <div class="is-12 column">
+                            <label class="label">Lastest load: {{ $utilization_tx }}%</label>
                             <progress class="progress is-primary" value="{{ $utilization_tx }}"
                                 max="{{ $speed }}">{{ $utilization_tx }}</progress>
                         </div>
 
-                        <div class="is-6 column">
-                            <label class="label">Average TX: {{ $avg_utilization_tx }}%</label>
+                        <div class="is-12 column">
+                            <label class="label">Average load: {{ $avg_utilization_tx }}%</label>
                             <progress class="progress is-info" value="{{ $avg_utilization_tx }}"
                                 max="{{ $speed }}">{{ $avg_utilization_tx }}</progress>
                         </div>

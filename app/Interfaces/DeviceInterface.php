@@ -32,8 +32,8 @@
         static function restoreBackup(Device $device, DeviceBackup $backup, String $password): Array;
 
         static function formatPortData(Array $ports, Array $stats): Array;
-    
-        static function formatPortSimpleStatisticData(Array $portstats): Array;
+
+        static function formatExtendedPortStatisticData(Array $portstats, Array $portdata): Array;
 
         static function formatPortVlanData(Array $vlanports): Array;
     

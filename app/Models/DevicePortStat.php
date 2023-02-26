@@ -9,6 +9,7 @@ class DevicePortStat extends Model
     protected $fillable = [
         'device_port_id',
         'port_speed',
+        'port_status',
         'port_rx_bps',
         'port_tx_bps',
         'port_rx_pps',

@@ -138,6 +138,7 @@ class DeviceService
             DevicePortStat::create([
                 'device_port_id' => $device->ports()->where('name', $statistic['id'])->first()->id,
                 'port_speed' => $statistic['port_speed_mbps'] ?? 0,
+                'port_status' => $statistic['port_status'] ?? false,
                 'port_rx_bps' => $statistic['port_rx_bps'] ?? 0,
                 'port_tx_bps' => $statistic['port_tx_bps'] ?? 0,
                 'port_rx_pps' => $statistic['port_rx_pps'] ?? 0,

@@ -234,7 +234,7 @@ class ArubaOS implements DeviceInterface
             'vlans' => self::formatVlanData($data['vlans']['vlan_element']),
             'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
             'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
-            'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element']),
+            'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']),
             'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element']),
             'uplinks' => self::formatUplinkData($data['ports']['port_element']),
             'success' => true,
@@ -332,26 +332,7 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function formatPortSimpleStatisticData($portstats): array
-    {
-        $return = [];
-
-        if (empty($portstats) or !is_array($portstats) or !isset($portstats)) {
-            return $return;
-        }
-
-        foreach ($portstats as $port) {
-            $return[$port['id']] = [
-                "id" => $port['id'],
-                "name" => $port['name'],
-                "port_speed_mbps" => $port['port_speed_mbps'],
-            ];
-        }
-
-        return $return;
-    }
-
-    static function formatExtendedPortStatisticData($portstats): array
+    static function formatExtendedPortStatisticData($portstats, $portdata): array
     {
         $return = [];
 
@@ -373,6 +354,10 @@ class ArubaOS implements DeviceInterface
                 "port_tx_bps" => $port['throughput_tx_bps'],
                 "port_rx_bps" => $port['throughput_rx_bps'],
             ];
+        }
+
+        foreach($portdata as $port) {
+            $return[$port['id']]['port_status'] = $port['is_port_up'];
         }
 
         return $return;
