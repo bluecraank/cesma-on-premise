@@ -20,12 +20,17 @@
     @livewireScripts
 
     @if (Route::is('details'))
-        <script src="/js/ports.js"></script>
+        <script src="/js/api_ports.js"></script>
+    @endif
+
+    @if (Auth::user()->role >= 1) 
+        <script src="/js/api.js"></script>
     @endif
 
     <script src="/js/notify.min.js?{{ config('app.version') }}"></script>
-    <script src="/js/script.js?{{ config('app.version') }}"></script>
-    <script src="/js/theme.js"></script>
+    <script src="/js/functions.js?{{ config('app.version') }}"></script>
+    <script src="/js/theme.js?{{ config('app.version') }}"></script>
+
     <title>@yield('title') | CESMA</title>
 </head>
 <noscript>
