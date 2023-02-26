@@ -17,7 +17,7 @@
 
         static function API_PUT_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function API_GET_DATA(String $hostname, String $cookie, String $api, String $api_version): Array;
+        static function API_GET_DATA(String $hostname, String $cookie, String $api, String $api_version, Bool $plain): Array;
 
         static function API_POST_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 

@@ -23,7 +23,7 @@
         <script src="/js/api_ports.js"></script>
     @endif
 
-    @if (Auth::user()->role >= 1) 
+    @if (Auth::user() && Auth::user()->role >= 1) 
         <script src="/js/api.js"></script>
     @endif
 

@@ -121,18 +121,25 @@ class ArubaCX implements DeviceInterface
         }
     }
 
-    static function API_GET_DATA($hostname, $cookie, $api, $version): array
+    static function API_GET_DATA($hostname, $cookie, $api, $version, $plain = false): array
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
 
         try {
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-                'Cookie' => "$cookie",
-            ])->get($api_url);
+            if($plain) {
+                $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Cookie' => "$cookie",
+                ])->get($api_url);
+            } else {
+                $response = Http::withoutVerifying()->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Cookie' => "$cookie",
+                ])->get($api_url);
+            }
 
             if ($response->successful()) {
-                return ['success' => true, 'data' => $response->json()];
+                return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
             } else {
                 return ['success' => false, 'data' => $response->json()];
             }
@@ -442,13 +449,16 @@ class ArubaCX implements DeviceInterface
         list($cookie, $api_version) = explode(";", $login_info);
 
         $data = self::API_GET_DATA($device->hostname, $cookie, "configs/running-config", $api_version);
+        $dataraw = self::API_GET_DATA($device->hostname, $cookie, "configs/running-config", $api_version, true);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
-        if ($data['success']) {
-            $encoded = json_encode($data['data'], true);
-            if (strlen($encoded) > 10) {
-                BackupController::store(true, $encoded, $data, $device);
+        if ($data['success'] && $dataraw['success']) {
+            $json = json_encode($data['data'], true);
+            $plain = $dataraw['data'];
+
+            if (strlen($json) > 10) {
+                BackupController::store(true, $plain, $json, $device);
                 return true;
             } else {
                 BackupController::store(false, false, false, $device);

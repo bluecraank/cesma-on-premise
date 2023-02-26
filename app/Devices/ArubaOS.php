@@ -122,18 +122,25 @@ class ArubaOS implements DeviceInterface
         }
     }
 
-    static function API_GET_DATA($hostname, $cookie, $api, $version): array
+    static function API_GET_DATA($hostname, $cookie, $api, $version, $plain = false): array
     {
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
 
         try {
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-                'Cookie' => "$cookie",
-            ])->get($api_url);
+            if($plain) {
+                $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Cookie' => "$cookie",
+                ])->get($api_url);
+            } else {
+                $response = Http::withoutVerifying()->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Cookie' => "$cookie",
+                ])->get($api_url);
+            }
 
             if ($response->successful()) {
-                return ['success' => true, 'data' => $response->json()];
+                return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
             } else {
                 return ['success' => false, 'data' => $response->json()];
             }

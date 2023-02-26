@@ -1,5 +1,6 @@
 <?php
 
+use App\Devices\ArubaCX;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LocationController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
+use App\Models\Device;
 use App\Services\ClientService;
 use App\Services\DeviceService;
 use App\Services\MacTypeService;
@@ -150,6 +152,11 @@ Route::prefix('debug')->middleware(['role.admin', 'auth:sanctum'])->group(functi
     });
     Route::get('/visualize', function() {
         App\Helper\Diff::visualize('	{"tagged":{"old":[{"id":5,"device_id":1,"name":"VOIP","vlan_id":120,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":17,"device_id":1,"name":"XGS:Clients","vlan_id":520,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"}],"new":[{"id":5,"device_id":1,"name":"VOIP","vlan_id":120,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":6,"device_id":1,"name":"DRUCKER","vlan_id":200,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":13,"device_id":1,"name":"XGS:IT","vlan_id":502,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":14,"device_id":1,"name":"XGS:Server","vlan_id":510,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":15,"device_id":1,"name":"XGS:BDE","vlan_id":512,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":16,"device_id":1,"name":"XGS:Drucker","vlan_id":515,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"},{"id":17,"device_id":1,"name":"XGS:Clients","vlan_id":520,"created_at":"2023-02-23T12:15:28.000000Z","updated_at":"2023-02-23T12:15:28.000000Z"}]}}');
+    });
+
+    Route::get('/backup', function() {
+        $device = Device::find(2);
+        ArubaCX::createBackup($device);
     });
 });
 

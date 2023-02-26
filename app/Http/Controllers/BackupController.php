@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
+use App\Helper\CLog;
 use App\Mail\SendBackupStatus;
 use App\Models\Device;
 use App\Models\DeviceBackup;
