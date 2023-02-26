@@ -47,9 +47,9 @@
                     <thead>
                         <tr>
                             <th>Switch</th>
-                            <th>Untagged</th>
+                            <th>Untagged / Native</th>
                             <th></th>
-                            <th>Tagged</th>
+                            <th>Tagged / Allowed</th>
                         </tr>
                     </thead>
                     <tbody>
