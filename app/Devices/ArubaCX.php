@@ -2,16 +2,21 @@
 
 namespace App\Devices;
 
-use App\Http\Controllers\BackupController;
-use Illuminate\Support\Facades\Http;
 use App\Interfaces\DeviceInterface;
-use App\Models\DeviceVlan;
-use App\Models\DeviceVlanPort;
-use App\Services\DeviceService;
+
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Crypt;
-use App\Helper\CLog;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
+
+use App\Helper\CLog;
+use App\Models\DeviceVlanPort;
+use App\Services\PublicKeyService;
+use App\Http\Controllers\BackupController;
 
 class ArubaCX implements DeviceInterface
 {
@@ -209,14 +214,6 @@ class ArubaCX implements DeviceInterface
                 $data[$key] = $api_data['data'];
             }
         }
-
-        // $system_data = self::formatSystemData($data['status']);
-        // $vlan_data = self::formatVlanData($data['vlans']);
-        // $port_data = self::formatPortData($data['ports']);
-        // $portstat_data = self::formatPortSimpleStatisticData($data['portstats']);
-        // $vlanport_data = self::formatPortVlanData($data['vlanport']);
-        // $mac_data = self::formatMacTableData($data['vlans'], $device, $cookie, $api_version);
-        // PortstatsController::store(self::formatExtendedPortStatisticData($data['portstats']), $device->id);
 
         $data = [
             'informations' => self::formatSystemData($data['status']),
@@ -632,15 +629,16 @@ class ArubaCX implements DeviceInterface
                         ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
                     );
                 }
-                
+
                 $return[] = ['success' => true, 'data' => ''];
             } else {
                 foreach ($taggedVlans as $vlan) {
                     $return[] = ['success' => false, 'data' => ''];
-                }            }
+                }
+            }
 
             if ($need_login) {
-                DeviceService::refreshDevice($device);
+                proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
             }
 
@@ -661,95 +659,94 @@ class ArubaCX implements DeviceInterface
     {
 
         $start = microtime(true);
-        $not_found = $chg_name = $return = [];
-        $return['log'] = [];
+        $not_found = $chg_name = [];
 
         $i_not_found = $i_chg_name = $i_vlan_created = $i_vlan_chg_name = 0;
-
-        $return['log'][] = "<b>" . __('Vlan.Sync.Jobs') . "</b></br>";
+        $return = [];
 
         foreach ($syncable_vlans as $key => $vlan) {
             if (!array_key_exists($key, $current_vlans)) {
                 $not_found[$key] = $vlan;
-                $return['log'][] = "<span class='tag is-link'>VLAN $key</span> " . __('Vlan.Sync.Create');
                 $i_not_found++;
             } else {
                 if ($vlan['name'] != $current_vlans[$key]['name']) {
                     $chg_name[$key] = $vlan;
-                    $return['log'][] = "<span class='tag is-link'>VLAN $key</span> " . __('Vlan.Sync.Name') . " ({$current_vlans[$key]['name']} => {$vlan['name']})";
                     $i_chg_name++;
                 }
             }
         }
 
         if ($i_not_found == 0 && $i_chg_name == 0) {
-            $return['log'][] = __('Vlan.Sync.NoJobs');
-            $return['time'] = number_format(microtime(true) - $start, 2);
-            return $return;
+            return [];
         }
 
-        $return['log'][] = "</br><b>[Log]</b></br>";
+        if (!$testmode && !$login_info = self::API_LOGIN($device)) {
+            return [];
+        }
 
         if (!$testmode) {
-            if (!$login_info = self::API_LOGIN($device)) {
-                $return['log'][] = "<span class='tag is-danger'>API</span> Login fehlgeschlagen";
-                $return['time'] = number_format(microtime(true) - $start, 2);
-                return $return;
-            }
-
             list($cookie, $api_version) = explode(";", $login_info);
-
-            if ($create_vlans) {
-                foreach ($not_found as $key => $vlan) {
-                    $data = '{
-                        "name": "' . $vlan->name . '",
-                        "id": ' . $vlan->vid . '
-                    }';
-
-                    $response = self::API_POST_DATA($device->hostname, $cookie, "system/vlans", $api_version, $data);
-
-                    if ($response['success']) {
-                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.Created');
-                        $i_vlan_created++;
-                    } else {
-                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.NotCreated');
-                    }
-                }
-            }
-
-            if ($rename_vlans) {
-                foreach ($chg_name as $vlan) {
-                    $data = '{
-                        "name": "' . $vlan->name . '"
-                    }';
-
-                    $response = self::API_PUT_DATA($device->hostname, $cookie, "system/vlans/" . $vlan->vid, $api_version, $data);
-
-                    if ($response['success']) {
-                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.Renamed');
-                        $i_vlan_chg_name++;
-                    } else {
-                        if ($vlan->vid != 1) {
-                            $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.NotRenamed');
-                        } else {
-                            $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan->vid}</span> " . __('Vlan.Sync.Expected.NotRenamed');
-                        }
-                    }
-                }
-            }
-
-
-            CLog::info("VLAN", "VLAN synced on device " . $device->hostname . " ({$i_vlan_created} created, {$i_vlan_chg_name} renamed", $device);
-
-            self::API_LOGOUT($device->hostname, $cookie, $api_version);
-
-            proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
         }
 
-        $return['log'][] = "</br><b>[" . __('Vlan.Sync.Results') . "]</b></br>";
-        $return['log'][] = __('Vlan.Sync.Result.Created', ['created' => $i_vlan_created, 'total' => $i_not_found]);
-        $return['log'][] = __('Vlan.Sync.Result.Renamed', ['renamed' => $i_vlan_chg_name, 'total' => $i_chg_name]);
-        $return['time'] = number_format(microtime(true) - $start, 2);
+        if ($create_vlans) {
+            foreach ($not_found as $key => $vlan) {
+                $return[$vlan->vid]['name'] = $vlan->name;
+
+                $data = '{
+                    "name": "' . $vlan->name . '",
+                    "id": ' . $vlan->vid . '
+                }';
+
+                if (!$testmode) {
+                    // $response = self::API_POST_DATA($device->hostname, $cookie, "system/vlans", $api_version, $data);
+                } else {
+                    $response['success'] = true;
+                }
+
+                if ($response['success']) {
+                    $i_vlan_created++;
+                }
+
+                $return[$vlan->vid]['created'] = $response['success'];
+            }
+        }
+
+        if ($rename_vlans) {
+            foreach ($chg_name as $vlan) {
+                $return[$vlan->vid]['old'] = $current_vlans[$vlan->vid]['name'];
+                $return[$vlan->vid]['name'] = $current_vlans[$vlan->vid]['name'];
+
+                $data = '{
+                    "name": "' . $vlan->name . '"
+                }';
+
+                if (!$testmode) {
+                    $response = self::API_PUT_DATA($device->hostname, $cookie, "system/vlans/" . $vlan->vid, $api_version, $data);
+                } else {
+                    $response['success'] = true;
+                }
+
+                if ($response['success']) {
+                    $i_vlan_chg_name++;
+                    $return[$vlan->vid]['name'] = $vlan->name;
+                }
+                $return[$vlan->vid]['changed'] = ($response['success']) ? true : false;
+            }
+        }
+
+        if (!$testmode) {
+            $logdata = [
+                "summary" => [
+                    "created" => $i_vlan_created, 
+                    "renamed" => $i_vlan_chg_name
+                ],
+                "vlans" => $return
+            ];
+    
+            CLog::info("Sync", "VLANs synced on device " . $device->name, $device, json_encode($logdata));
+            
+            self::API_LOGOUT($device->hostname, $cookie, $api_version);
+        }
 
         return $return;
     }

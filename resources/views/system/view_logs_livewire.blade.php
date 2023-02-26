@@ -44,7 +44,7 @@
         <button class="delete" aria-label="close" onclick="$('.is-changes-modal').removeClass('is-active')"></button>
       </header>
       <section class="modal-card-body">
-        <pre class="changes" style="background:none;"></pre>
+        <pre class="changes p-0 is-size-6" style="background:none;"></pre>
       </section>
       {{-- <footer class="modal-card-foot"> --}}
       {{-- </footer> --}}

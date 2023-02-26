@@ -2,20 +2,21 @@
 
 namespace App\Devices;
 
-use App\Http\Controllers\BackupController;
 use App\Interfaces\DeviceInterface;
+
 use Illuminate\Support\Facades\Http;
-use App\Models\DeviceVlan;
-use App\Models\DeviceVlanPort;
-use App\Services\PublicKeyService;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
-use App\Helper\CLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
+
+use App\Helper\CLog;
+use App\Models\DeviceVlanPort;
+use App\Services\PublicKeyService;
+use App\Http\Controllers\BackupController;
 
 class ArubaOS implements DeviceInterface
 {
@@ -283,7 +284,7 @@ class ArubaOS implements DeviceInterface
 
     static function formatSystemData($system): array
     {
-        if(empty($system) or !is_array($system) or !isset($system)) {
+        if (empty($system) or !is_array($system) or !isset($system)) {
             return [];
         }
 
@@ -299,7 +300,7 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function formatPortData(Array $ports, Array $stats): array
+    static function formatPortData(array $ports, array $stats): array
     {
         $return = [];
 
@@ -483,7 +484,7 @@ class ArubaOS implements DeviceInterface
         if (config('app.ssh_private_key')) {
             $private_key = Storage::disk('local')->get('ssh.key');
 
-            if($private_key === NULL) {
+            if ($private_key === NULL) {
                 return json_encode(['success' => 'false', 'message' => 'SSH Key Login Error']);
             }
 
@@ -494,7 +495,6 @@ class ArubaOS implements DeviceInterface
             }
 
             $key = PublicKeyLoader::load($decrypt);
-
         } else {
             $key = Crypt::decrypt($device->password);
         }
@@ -542,7 +542,7 @@ class ArubaOS implements DeviceInterface
         return json_encode(['success' => 'false', 'message' => 'Error sftp connection']);
     }
 
-    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): Array
+    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): array
     {
         $data = '{
             "vlan_id": ' . $vlans[$newVlan]['vlan_id'] . ', 
@@ -550,7 +550,7 @@ class ArubaOS implements DeviceInterface
             "port_mode": "POM_UNTAGGED"
         }';
 
-        if($need_login) {
+        if ($need_login) {
             $login_info = self::API_LOGIN($device);
         } else {
             $login_info = $logindata;
@@ -561,19 +561,19 @@ class ArubaOS implements DeviceInterface
 
             $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-            if($result['success']) {
+            if ($result['success']) {
                 $old = DeviceVlanPort::where('device_id', $device->id)->where('device_port_id', $port->id)->where('is_tagged', false)->first()->device_vlan_id ?? false;
 
                 $delete = false;
 
-                if($old) {
+                if ($old) {
                     $delete = DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
 
                 $created = DeviceVlanPort::updateOrCreate(
                     ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
                 );
-                
+
                 Log::channel('database')->info(__('Log.Vlan.Untagged.Updated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                 return ['success' => true, 'data' => ''];
             } else {
@@ -582,7 +582,7 @@ class ArubaOS implements DeviceInterface
                 return ['success' => false, 'data' => $result['data']];
             }
 
-            if($need_login) {
+            if ($need_login) {
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
             }
         }
@@ -593,7 +593,7 @@ class ArubaOS implements DeviceInterface
         $return = [];
         $total = 0;
 
-        if($need_login) {
+        if ($need_login) {
             $login_info = self::API_LOGIN($device);
         } else {
             $login_info = $logindata;
@@ -604,7 +604,7 @@ class ArubaOS implements DeviceInterface
             list($cookie, $api_version) = explode(";", $login_info);
 
             $alreadyTaggedVlans = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', 1)->get()->keyBy('device_vlan_id')->toArray();    // Get all tagged vlans from port
-            
+
             // Add vlan tagged to port
             foreach ($taggedVlans as $vlan) {
                 if (!array_key_exists($vlan, $alreadyTaggedVlans)) {
@@ -618,23 +618,23 @@ class ArubaOS implements DeviceInterface
 
                     $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-                    if($result['success']) {
+                    if ($result['success']) {
                         $old = DeviceVlanPort::where('device_vlan_id', $vlan)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', true)->first();
-                        if($old) {
+                        if ($old) {
                             $old->delete();
                         }
-        
+
                         DeviceVlanPort::updateOrCreate(
                             ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
                         );
-                        
-                        Log::channel('database')->info(__('Log.Vlan.Tagged.Updated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
+
+                        Log::channel('database')->info(__('Log.Vlan.Tagged.Updated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port " . $port->name . " | Device " . $device->hostname]);
                         $return[] = ['success' => true, 'data' => ''];
                     } else {
-                        Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
+                        Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port " . $port->name . " | Device " . $device->hostname]);
                         $return[] = ['success' => false, 'data' => $result['data']];
 
-                        Log::channel('database')->error("Error adding tagged vlan " . $vlans[$vlan]['name'] . " to port " . $port->name . ": " . $result['data'], ['extra' => Auth::user()->name, 'context' => "Port ". $port->name . " | Device " . $device->hostname]);
+                        Log::channel('database')->error("Error adding tagged vlan " . $vlans[$vlan]['name'] . " to port " . $port->name . ": " . $result['data'], ['extra' => Auth::user()->name, 'context' => "Port " . $port->name . " | Device " . $device->hostname]);
                     }
                 }
             }
@@ -653,13 +653,13 @@ class ArubaOS implements DeviceInterface
 
                         $result = self::API_DELETE_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
 
-                        if($result['success']) {
+                        if ($result['success']) {
 
                             $old = DeviceVlanPort::where('device_vlan_id', $device_vlan_id)->where('device_port_id', $port->id)->where('device_id', $device->id)->first();
-                            if($old) {
+                            if ($old) {
                                 $old->delete();
                             }
-                            
+
                             $return[] = ['success' => true, 'data' => ''];
                             Log::channel('database')->info(__('Log.Vlan.Tagged.Removed', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name]);
                         } else {
@@ -669,19 +669,19 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
-            if($need_login) {
+            if ($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
             }
 
             $success = 0;
-            foreach($return as $result) {
-                if($result['success']) {
+            foreach ($return as $result) {
+                if ($result['success']) {
                     $success++;
                 }
             }
 
-            if($success == count($taggedVlans)) {
+            if ($success == count($taggedVlans)) {
                 return ['success' => true, 'data' => ''];
             } else {
                 return ['success' => false, 'data' => __('Vlan.Update.Error.Tagged', ['port' => $port->name, 'success' => $success, 'total' => $total])];
@@ -695,96 +695,101 @@ class ArubaOS implements DeviceInterface
     {
 
         $start = microtime(true);
-        $not_found = $chg_name = $return = [];
-        $return['log'] = [];
-
+        $not_found = $chg_name = [];
         $i_not_found = $i_chg_name = $i_vlan_created = $i_vlan_chg_name = 0;
-
-        $return['log'][] = "<b>" . __('Vlan.Sync.Jobs') . "</b></br>";
+        $return = [];
 
         foreach ($syncable_vlans as $key => $vlan) {
             if (!array_key_exists($key, $current_vlans)) {
                 $not_found[$key] = $vlan;
-                $return['log'][] = "<span class='tag is-link'>VLAN $key</span> " . __('Vlan.Sync.Create');
                 $i_not_found++;
             } else {
                 if ($vlan['name'] != $current_vlans[$key]['name']) {
                     $chg_name[$key] = $vlan;
-                    $return['log'][] = "<span class='tag is-link'>VLAN $key</span> " . __('Vlan.Sync.Name') . " ({$current_vlans[$key]['name']} => {$vlan['name']})";
                     $i_chg_name++;
                 }
             }
         }
 
         if ($i_not_found == 0 && $i_chg_name == 0) {
-            $return['log'][] = __('Vlan.Sync.NoJobs');
-            $return['time'] = number_format(microtime(true) - $start, 2);
+            return [];
+        }
+
+        if (!$testmode && !$login_info = self::API_LOGIN($device)) {
             return $return;
         }
 
-        $return['log'][] = "</br><b>[Log]</b></br>";
-
         if (!$testmode) {
-            if (!$login_info = self::API_LOGIN($device)) {
-                $return['log'][] = "<span class='tag is-danger'>API</span> Login fehlgeschlagen";
-                $return['time'] = number_format(microtime(true) - $start, 2);
-                return $return;
-            }
-
             list($cookie, $api_version) = explode(";", $login_info);
-
-            if ($create_vlans) {
-                foreach ($not_found as $key => $vlan) {
-                    $data = '{
-                        "vlan_id": ' . $vlan['vid'] . ',
-                        "name": "' . $vlan['name'] . '"
-                    }';
-
-                    $response = self::API_POST_DATA($device->hostname, $cookie, "vlans", $api_version, $data);
-
-                    if ($response['success']) {
-                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.Created');
-                        $i_vlan_created++;
-                    } else {
-                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.NotCreated');
-                    }
-                }
-            }
-
-            if ($rename_vlans) {
-                foreach ($chg_name as $vlan) {
-                    $data = '{
-                        "vlan_id": ' . $vlan['vid'] . ', 
-                        "name": "' . $vlan['name'] . '"
-                    }';
-
-                    $response = self::API_PUT_DATA($device->hostname, $cookie, "vlans/" . $vlan['vid'], $api_version, $data);
-
-                    if ($response['success']) {
-                        $return['log'][] = "<span class='tag is-success'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.Renamed');
-                        $i_vlan_chg_name++;
-                    } else {
-                        $return['log'][] = "<span class='tag is-danger'>VLAN {$vlan['vid']}</span> " . __('Vlan.Sync.Log.NotRenamed');
-                    }
-                }
-            }
-
-            CLog::info("VLAN", "VLAN synced on device " . $device->hostname . " ({$i_vlan_created} created, {$i_vlan_chg_name} renamed", $device);
-
-            self::API_LOGOUT($device->hostname, $cookie, $api_version);
-
-            proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
         }
 
-        $return['log'][] = "</br><b>[" . __('Vlan.Sync.Results') . "]</b></br>";
-        $return['log'][] = __('Vlan.Sync.Result.Created', ['created' => $i_vlan_created, 'total' => $i_not_found]);
-        $return['log'][] = __('Vlan.Sync.Result.Renamed', ['renamed' => $i_vlan_chg_name, 'total' => $i_chg_name]);
-        $return['time'] = number_format(microtime(true) - $start, 2);
+        if ($create_vlans) {
+            foreach ($not_found as $key => $vlan) {
+                $return[$vlan->vid]['name'] = $vlan->name;
+
+                $data = '{
+                    "vlan_id": ' . $vlan['vid'] . ',
+                    "name": "' . $vlan['name'] . '"
+                }';
+
+                if (!$testmode) {
+                    // $response = self::API_POST_DATA($device->hostname, $cookie, "vlans", $api_version, $data);
+                } else {
+                    $response = ['success' => true];
+                }
+
+                if ($response['success']) {
+                    $i_vlan_created++;
+                }
+
+                $return[$vlan->vid]['created'] = $response['success'];
+            }
+        }
+
+        if ($rename_vlans) {
+            foreach ($chg_name as $vlan) {
+                $return[$vlan->vid]['old'] = $current_vlans[$vlan->vid]['name'];
+                $return[$vlan->vid]['name'] = $current_vlans[$vlan->vid]['name'];
+
+                $data = '{
+                    "vlan_id": ' . $vlan['vid'] . ', 
+                    "name": "' . $vlan['name'] . '"
+                }';
+
+                if (!$testmode) {
+                    $response = self::API_PUT_DATA($device->hostname, $cookie, "vlans/" . $vlan['vid'], $api_version, $data);
+                } else {
+                    $response = ['success' => true];
+                }
+
+                if ($response['success']) {
+                    $i_vlan_chg_name++;
+                    $return[$vlan->vid]['name'] = $vlan->name;
+                }
+
+                $return[$vlan['vid']]['changed'] = ($response['success']) ? true : false;
+            }
+        }
+
+        if (!$testmode) {
+            $logdata = [
+                "summary" => [
+                    "created" => $i_vlan_created, 
+                    "renamed" => $i_vlan_chg_name
+                ],
+                "vlans" => $return
+            ];
+    
+            CLog::info("Sync", "VLANs synced on device " . $device->name, $device, json_encode($logdata));
+
+            self::API_LOGOUT($device->hostname, $cookie, $api_version);
+        }
 
         return $return;
     }
 
-    static function setPortName($port, $name, $device, $logininfo) {
+    static function setPortName($port, $name, $device, $logininfo)
+    {
         list($cookie, $api_version) = explode(";", $logininfo);
 
         $data = '{

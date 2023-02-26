@@ -287,6 +287,7 @@
     "Vlan.Sync": "Synchronisieren",
     "Vlan.Edit": "VLAN bearbeiten",
     "Vlan.Sync.Expected.NotRenamed": "- Nicht umbenannt (VLAN 1 cannot be renamed)",
+    "Sync.Start": "Synchronisation starten",
 
 
     "Log.Vlan.Tagged.Updated": "VLAN :vlan auf Port :port mit Tag eingerichtet",

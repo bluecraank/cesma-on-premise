@@ -355,7 +355,7 @@ class DeviceService
         $devices = Device::all()->keyBy('id');
         $location_id = $device->location_id;
         $current_vlans = $device->vlans()->get()->keyBy('vlan_id')->toArray();
-        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('location_id', $device->location_id)->get()->keyBy('vid')->toArray();
+        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('location_id', $device->location_id)->get()->keyBy('vid');
 
         $results = [];
 
