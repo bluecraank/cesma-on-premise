@@ -17,7 +17,8 @@ class DevicePort extends Model
 
     protected $appends = [
         'untagged',
-        'tagged'
+        'tagged',
+        'taggedId'
     ];
 
     public function device()
@@ -50,6 +51,16 @@ class DevicePort extends Model
         $vlans = [];
         foreach($ids as $id) {
             $vlans[] = DeviceVlan::where('id', $id->device_vlan_id)->first() ?? null;
+        }
+
+        return $vlans;
+    }
+
+    public function getTaggedIdAttribute() {
+        $ids = $this->deviceVlanPorts->where('is_tagged', true)->all() ?? null;
+        $vlans = [];
+        foreach($ids as $id) {
+            $vlans[] = DeviceVlan::where('id', $id->device_vlan_id)->first()->id ?? null;
         }
 
         return $vlans;
