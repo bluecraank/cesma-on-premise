@@ -20,6 +20,7 @@ class Port extends Component
 
     use WithLogin;
 
+    public $loaded = null;
     public $device_id;
     public $vlanports;
     public $port;
@@ -50,6 +51,9 @@ class Port extends Component
     {
         $this->checkLogin();
         $this->cc = ClientService::class;
+    }
+
+    public function fetchPort() {
         $this->untaggedVlanId = $this->vlanports->where('is_tagged', false)->first()->device_vlan_id ?? 0;
         $this->taggedVlans = $this->vlanports->where('is_tagged', true);
         $this->newTaggedVlans = [];
@@ -59,6 +63,7 @@ class Port extends Component
         $this->somethingChanged = false;
         $this->portDescription = $this->port->description;
         $this->portDescriptionUpdated = false;
+        $this->loaded = true;
     }
 
     public function render()

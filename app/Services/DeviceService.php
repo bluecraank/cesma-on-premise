@@ -135,21 +135,29 @@ class DeviceService
         }
 
         foreach ($data['statistics'] as $statistic) {
-            DevicePortStat::create([
-                'device_port_id' => $device->ports()->where('name', $statistic['id'])->first()->id,
-                'port_speed' => $statistic['port_speed_mbps'] ?? 0,
-                'port_status' => $statistic['port_status'] ?? false,
-                'port_rx_bps' => $statistic['port_rx_bps'] ?? 0,
-                'port_tx_bps' => $statistic['port_tx_bps'] ?? 0,
-                'port_rx_pps' => $statistic['port_rx_pps'] ?? 0,
-                'port_tx_pps' => $statistic['port_tx_pps'] ?? 0,
-                'port_rx_bytes' => $statistic['port_rx_bytes'] ?? 0,
-                'port_tx_bytes' => $statistic['port_tx_bytes'] ?? 0,
-                'port_rx_packets' => $statistic['port_rx_packets'] ?? 0,
-                'port_tx_packets' => $statistic['port_tx_packets'] ?? 0,
-                'port_rx_errors' => $statistic['port_rx_errors'] ?? 0,
-                'port_tx_errors' => $statistic['port_tx_errors'] ?? 0
-            ]);
+            if(!isset($statistic['id']) or !$statistic['id']) {
+                continue;
+            }
+            
+            $id = $device->ports()->where('name', $statistic['id'])->first() ?? null;
+            $id = $id->id ?? null;
+            if($id) {
+                DevicePortStat::create([
+                    'device_port_id' => $id,
+                    'port_speed' => $statistic['port_speed_mbps'] ?? 0,
+                    'port_status' => $statistic['port_status'] ?? false,
+                    'port_rx_bps' => $statistic['port_rx_bps'] ?? 0,
+                    'port_tx_bps' => $statistic['port_tx_bps'] ?? 0,
+                    'port_rx_pps' => $statistic['port_rx_pps'] ?? 0,
+                    'port_tx_pps' => $statistic['port_tx_pps'] ?? 0,
+                    'port_rx_bytes' => $statistic['port_rx_bytes'] ?? 0,
+                    'port_tx_bytes' => $statistic['port_tx_bytes'] ?? 0,
+                    'port_rx_packets' => $statistic['port_rx_packets'] ?? 0,
+                    'port_tx_packets' => $statistic['port_tx_packets'] ?? 0,
+                    'port_rx_errors' => $statistic['port_rx_errors'] ?? 0,
+                    'port_tx_errors' => $statistic['port_tx_errors'] ?? 0
+                ]);
+            }
         }
 
         // Get custom uplink ports
