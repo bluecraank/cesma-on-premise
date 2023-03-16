@@ -11,6 +11,13 @@
 
     <div class="is-clearfix"></div>
 
+
+    <div class="notification is-danger">
+        <p>
+            <b>Learning-Phase:</b> Die Client-Übersicht generiert sich über Zeit. Es kann daher sein, dass nicht korrekte Daten angezeigt werden.
+        </p>
+    </div>
+
     <div class="table-container">
     <table class="table is-narrow is-hoverable is-striped is-fullwidth ">
         <thead>
