@@ -36,13 +36,13 @@
                         <span>SNMP</span>
                     </a>
                 </li>
-                <li data-tab="vorlagen"
+                {{-- <li data-tab="vorlagen"
                     onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='vorlagen']`).removeClass('is-hidden');">
                     <a>
                         <span class="icon is-small"><i class="fa-solid fa-list-check"></i></span>
                         <span>VLAN-Vorlagen</span>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </div>
 
@@ -263,11 +263,7 @@
                 </tbody>
             </table>
 
-            Hier können Routing-Geräte definiert werden, die über SNMP abgefragt werden sollen. Die Abfrage
-            erfolgt über
-            die
-            SNMP Community "public".<br>
-            Durch die Angabe von Routing-Geräte können Endgeräte besser zugeordnet werden.
+           <p>Um die Endgeräte besser zuordnen zu können, können hier Routing-Geräte definiert werden, die über SNMP abgefragt werden. Die Abfrage erfolgt über die Community "public"           </p>
         </div>
 
         <div class="tabsbox is-hidden" data-id="vorlagen">
