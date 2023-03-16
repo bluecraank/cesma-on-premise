@@ -81,7 +81,7 @@
             <div class="box has-text-centered">
                 <label class="label">SPEED</label>
                 @if ($port_stats->last()->port_speed == 0)
-                    <span class="is-size-2 has-text-link" style="width: 100%;">{{ $port->speed }}</span>
+                    <span class="is-size-2 has-text-link" style="width: 100%;">0</span>
                 @elseif ($port_stats->last()->port_speed == 10)
                     <span class="is-size-2 has-text-danger"style="width: 100%;">10 Mbit/s</span>
                 @elseif ($port_stats->last()->port_speed == 100)

@@ -30,8 +30,8 @@ class DevicePortStatController extends Controller
 
         $all_port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>', 
         Carbon::now()->subMinutes($timespan)->toDateTimeString())->get();
-        $avg_utilization_rx = number_format($all_port_stats->avg('port_rx_bps')*8/1024/1024, 2);
-        $avg_utilization_tx = number_format($all_port_stats->avg('port_tx_bps')*8/1024/1024, 2);
+        $avg_utilization_rx = number_format($all_port_stats->avg('port_rx_bps')*8/1024/1024 / $port_stats[0]->port_speed * 100, 2);
+        $avg_utilization_tx = number_format($all_port_stats->avg('port_tx_bps')*8/1024/1024 / $port_stats[0]->port_speed * 100, 2);
 
         if(empty($port_stats) or count($port_stats) == 0 or $port_stats == null or count($port_stats->toArray()) == 0) {
             abort(404, "No data for port $port_id found.");

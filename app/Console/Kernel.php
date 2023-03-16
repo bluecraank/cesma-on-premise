@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         
         // Backups erstellen
         $schedule->command('device:backup-all')
-        ->dailyAt('08:00')
+        ->dailyAt('10:30')
         ->runInBackground();
 
         $schedule->command('database:cleanup')

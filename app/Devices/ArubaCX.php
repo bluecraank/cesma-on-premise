@@ -445,14 +445,11 @@ class ArubaCX implements DeviceInterface
             if (strlen($json) > 10) {
                 BackupController::store(true, $plain, $json, $device);
                 return true;
-            } else {
-                BackupController::store(false, false, false, $device);
-                return false;
             }
-        } else {
-            BackupController::store(false, false, false, $device);
-            return false;
         }
+
+        BackupController::store(false, false, false, $device);
+        return false;
     }
 
     static function restoreBackup($device, $backup, $password_switch): array
