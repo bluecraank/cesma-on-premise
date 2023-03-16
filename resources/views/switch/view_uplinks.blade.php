@@ -1,3 +1,5 @@
+@section('title', 'Uplinks')
+
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Uplinks') }}</h1>
@@ -14,26 +16,42 @@
             <thead>
                 <tr>
                     <th>Switch</th>
-                    <th>Uplinks</th>
+                    <th>{{ __('Uplinks found') }}</th>
+                    <th>{{ __('Custom Uplinks') }}</th>
                     <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $devices = $devices->sort(function ($a, $b) {
+                        return strnatcmp($a['name'], $b['name']);
+                    });
+                @endphp
+
+                @if ($devices->count() == 0)
+                    <tr>
+                        <td colspan="4" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                    </tr>
+                @endif
+
                 @foreach ($devices as $device)
                     <tr>
                         <td>{{ $device['name'] }}</td>
                         @php
-                            $uplinks = json_decode($device['uplinks'], true);
-                            if ($uplinks == null or empty($uplinks) or !$uplinks) {
-                                $uplinks = [];
-                            }
-                            $uplinks = implode(',', $uplinks);
-                        @endphp
-                        <td>{{ $uplinks }}</td>
+                            $uplinks = $device->uplinks->sort(function ($a, $b) {
+                                return strnatcmp($a['name'], $b['name']);
+                            })->pluck('name')->toArray();
+                            $uplinks = implode(', ', $uplinks);
 
+                            $c_uplink = $device->custom_uplink;
+                            $custom_uplink = isset($c_uplink) ? implode(', ', json_decode($c_uplink->uplinks, true)) : ''; 
+                        @endphp
+
+                        <td>{{ $uplinks }}</td>
+                        <td>{{ $custom_uplink }}</td>
                         <td class="has-text-centered">
-                            @if (Auth::user()->role == 'admin')
-                                <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $uplinks }}')"
+                            @if (Auth::user()->role >= 1)
+                                <a onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplink }}')"
                                     class="button is-small is-info"><i class="fas fa-gear"></i>
                                 </a>
                             @endif
@@ -43,7 +61,7 @@
         </table>
     </div>
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
         @include('modals.SwitchUplinkEditModal')
     @endif
     </x-layouts>

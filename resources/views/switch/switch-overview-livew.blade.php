@@ -2,9 +2,9 @@
     <h1 class="title is-pulled-left">{{ __('Header.Switches') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        @if (Auth::user()->role == 'admin')
+        @if (Auth::user()->role >= 1)
             <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
-                    class="fas fa-plus"></i></button>
+                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
     </div>
 
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <table class="table is-narrow is-hoverable is-bordered is-fullwidth">
+    <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
                 <th>Name</th>
@@ -31,27 +31,41 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($devices as $device)
-                @php
-                    $uplinks = json_decode($device->uplinks, true);
-                    if ($uplinks == null) {
-                        $uplinks = [];
-                    }
-                    
-                    $uplinks_string = implode(',', $uplinks);
-                @endphp
+            @php
+                $devices = $devices->sort(function ($a, $b) {
+                    return strnatcmp($a['name'], $b['name']);
+                });
+            @endphp
+
+            @if ($devices->count() == 0)
                 <tr>
-                    <td><i title="Aktualisiert {{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ $device->online }}"></i> <a href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
-                    <td>{{ json_decode($device->system_data, true)['model'] }}</td>
-                    <td>{{ json_decode($device->system_data, true)['firmware'] }}</td>
-                    <td>{{ $locations[$device->location]->name }}, {{ $buildings[$device->building]->name }},
-                        {{ $device->details }} #{{ $device->number }}</td>
+                    <td colspan="5" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                </tr>
+            @endif
+
+            @foreach ($devices as $device)
+                <tr>
+                    @if($device->created_at == $device->updated_at)
+                        <td><div title="{{ __('Hint.NewlyCreated') }}" class="mr-1 lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
+                    @else
+                        <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                    @endif
+                    <td>{{ $device->modelOrUnknown() }}</td>
+                    <td>{{ $device->firmwareOrUnknown() }}</td>
+                    <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
+                        - {{ $device->room()->first()->name ?? 'Unknown' }} #{{ $device->location_number }}</td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
+                                @if($device->created_at == $device->updated_at)
+                                <a title="{{ __('Show') }}" disabled class="button is-success is-small">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @else
                                 <a title="{{ __('Show') }}" class="button is-success is-small" href="/switch/{{ $device->id }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @endif
                             </div>
                             <div class="control">
                                 <a title="{{ __('GUI_External') }}" class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
@@ -59,14 +73,14 @@
                                     <i class="fa fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
-                            @if (Auth::user()->role == 'admin')
+                            @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location }}', '{{ $device->building }}', '{{ $device->details }}', '{{ $device->number }}', '{{ $uplinks_string }}')"
+                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_number }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">
-                                    <button title="{{ __('Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
+                                    <button title="{{ __('Button.Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
                                         class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                 </div>
                             @endif

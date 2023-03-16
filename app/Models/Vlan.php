@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Vlan extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -15,7 +13,18 @@ class Vlan extends Model
         'description',
         'location_id',
         'ip_range',
-        'scan',
-        'sync',
+        'is_client_vlan',
+        'is_synced',
+        'is_scanned'
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function deviceVlans()
+    {
+        return $this->hasMany(DeviceVlan::class);
+    }
 }

@@ -1,19 +1,21 @@
+@section('title', 'All VLANs')
+
 <x-layouts.main>
     @livewire('search-vlans')
 
-    @if (Auth::user()->role == 'admin')
-    <div class="box">
-        <div class="label is-small">Alle Switche</div>
-        <div class="buttons are-small">
-            @include('buttons.ButtonSyncVlan')
+    @if (Auth::user()->role >= 1)
+        <div class="box">
+            <div class="label is-small">Alle Switche</div>
+            <div class="buttons are-small">
+                @include('buttons.ButtonSyncVlan')
+            </div>
         </div>
-    </div>
 
-        @include('modals.VlanAddModal')
+        @include('modals.create.VlanAddModal')
 
-        @include('modals.VlanEditModal')
+        @include('modals.edit.VlanEditModal')
 
-        @include('modals.VlanDeleteModal')
+        @include('modals.delete.VlanDeleteModal')
 
         @include('modals.VlanSyncModal')
     @endif

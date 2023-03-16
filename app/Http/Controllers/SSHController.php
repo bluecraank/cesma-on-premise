@@ -7,8 +7,8 @@ use App\Models\Device;
 use App\Models\Location;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
-use App\Http\Controllers\EncryptionController;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
@@ -35,11 +35,15 @@ class SSHController extends Controller
             'key' => 'required|starts_with:-----BEGIN RSA PRIVATE KEY-----,ends_with:-----END RSA PRIVATE KEY-----'
         ])->validate();
 
+        CLog::info("System", "Import private key");
+
         if ($validator) {
-            $key = EncryptionController::encrypt(request()->input('key'));
+            $key = Crypt::encrypt(request()->input('key'));
             Storage::disk('local')->put('ssh.key', $key);
+            CLog::info("System", "Import private key successful");
             return "Importiert";
         } else {
+            CLog::error("System", "Import private key failed");
             return "{'message': 'Kein gültiger Schlüssel'}";
         }
     }
@@ -47,12 +51,13 @@ class SSHController extends Controller
     static function performSSH(Request $request)
     {
         $device = Device::find($request->input('id'));
+
+        if(!$device) {
+            return json_encode(['status' => 'xmark', 'output' => 'Switch nicht gefunden'], true);
+        }	
+
         $command = $request->input('command');
 
-        $user = User::where("api_token", "=", $request->input('api_token'));
-        if (!$user) {
-            return "Error";
-        }
         $return = new \stdClass();
         $return->status = 'check';
         $return->output = '';
@@ -61,13 +66,24 @@ class SSHController extends Controller
         if (SSHController::checkCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
-                $decrypt = EncryptionController::decrypt(Storage::disk('local')->get('ssh.key'));
-                if ($decrypt === NULL) {
+                $private_key = Storage::disk('local')->get('ssh.key');
+
+                if($private_key === NULL) {
                     $return->status = 'xmark';
-                    $return->output = 'Kein Schlüssel vorhanden';
+                    $return->output = 'Privatekey aktiviert, aber kein Schlüssel vorhanden';
                     return json_encode($return, true);
                 }
+
+                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
+
+                if ($decrypt === NULL) {
+                    $return->status = 'xmark';
+                    $return->output = 'Entschlüsselung des Schlüssels fehlgeschlagen';
+                    return json_encode($return, true);
+                }
+
                 $key = PublicKeyLoader::load($decrypt);
+
             } else {
                 $key = $request->input('passphrase');
             }
@@ -101,7 +117,7 @@ class SSHController extends Controller
                     $ssh->read("Press any key to continue");
                     $ssh->write("\n");
                 } else {
-                    $ssh->read(json_decode($device->system_data, true)['name'] . "#");
+                    $ssh->read($device->named . "#");
                 }
 
                 $ssh->write("conf\n");
@@ -145,18 +161,19 @@ class SSHController extends Controller
                     $return->output = $output;
                 }
 
-                LogController::log('SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
-
+                CLog::info("SSH", "SSH Command executed", $device, $command);
 
                 return json_encode($return, true);
             }
 
             $return->status = 'xmark';
             $return->output = 'Connection Failed';
+
+            CLog::error("SSH", "SSH Connection failed", $device, "Nothing executed");
             return json_encode($return, true);
         }
 
-        LogController::log('Blocked SSH Befehl', '{"switch": "' . $device->name . '", "command": "' . $command . '"}');
+        CLog::error("SSH", "SSH Command not allowed", $device, $command);
 
         $return->output = "Command not allowed";
         $return->status = 'xmark';

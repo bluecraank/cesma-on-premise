@@ -2,28 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    use HasFactory;
-
-
     public $incrementing = false;
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'switch_id',
+        'id',
+        'device_id',
         'vlan_id',
         'port_id',
         'mac_address',
         'ip_address',
         'hostname',
-        'id',
         'type',
-        'created_at',
-        'updated_at',
         'online'
     ];
 }

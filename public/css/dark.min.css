@@ -71,3 +71,24 @@ progress::-webkit-progress-bar {
 progress::-moz-progress-bar {
     background: white !important;
 }
+
+.tabs li.is-active a {
+    border-bottom-color: #bdcbdb;
+    color: #bdcbdb;
+}
+
+.dark-fix-color {
+    color: #fff !important;
+}
+.dark-fix-color:hover:not(.is-static) {
+    color: #159dc6 !important;
+    text-decoration: underline;
+}
+
+table tbody tr:hover {
+    background-color: #495765 !important;
+}
+
+.has-custom-text-warning {
+    color: #fdbf11 !important;
+}

@@ -1,21 +1,27 @@
+@section('title', $device->name)
+
+
 <x-layouts.main>
-    @inject('cc', 'App\Http\Controllers\ClientController')
-    <div style="display:none" class="notification status is-danger">
-        <ul>
-            <li></li>
-        </ul>
-    </div>
+    <script>
+        window.device_id = {{ $device->id }};
+        window.timestamp = '{{ $device->updated_at }}'
+        window.msgnothingchanged = '{{ __('Msg.NothingChanged') }}'
+    </script>
+    @inject('cc', 'App\Services\ClientService')
 
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
                 <div class="column is-6">
-                    <h1 class="title"><i class="fa fa-circle {{ $status }} online_status"></i> {{ $device->name }}
+                    <h1 class="title"><i
+                            class="fa fa-circle {{ $is_online ? 'has-text-success' : 'has-text-danger' }} online_status"></i>
+                        {{ $device->name }}
                     </h1>
 
                     <h1 class="subtitle">
                         <i class="location_dot fa fa-location-dot"></i>
-                        {{ $device->full_location }}
+                        {{ $device->location()->first()->name }} - {{ $device->building()->first()->name }} -
+                        {{ $device->room()->first()->name }} #{{ $device->location_number }}
                     </h1>
                 </div>
                 <div class="column is-6">
@@ -28,25 +34,27 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.LastUpdate') }}</strong></p>
-                <p class="subtitle">{{ $device->format_time }}</p>
+                <p class="subtitle">{{ $device->updated_at->diffForHumans() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.VlanSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->count_vlans }}</p>
+                <p class="subtitle">{{ $device->vlans->count() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.TrunkSummary') }}</strong></p>
-                <p class="subtitle">{{ $device->count_trunks }}</p>
+                <p class="subtitle">{{ $device->uplinks->count() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>Ports online</strong></p>
-                <p class="subtitle">{{ $ports_online }}/{{ $device->count_ports }}</p>
+                <p class="subtitle">
+                    {{ $device->ports->where('link', true)->count() }}/{{ $device->ports->count() - $device->uplinks->groupBy('name')->count() }}
+                </p>
             </div>
         </div>
     </div>
@@ -56,78 +64,122 @@
         <div class="column">
             <div class="box">
                 <label class="label">Hostname</label>
-                {{ $system->name }}
+                {{ $device->named }}
             </div>
         </div>
 
         <div class="column">
             <div class="box">
                 <label class="label">{{ __('Switch.Live.Serialnumber') }}</label>
-                {{ $system->serial }}
+                {{ $device->serial }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Firmware</label>
-                {{ $system->firmware }}
+                {{ $device->firmware }}
             </div>
         </div>
         <div class="column">
             <div class="box">
                 <label class="label">Hardware</label>
-                {{ $system->hardware }}
+                {{ $device->hardware }}
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <label class="label">TYP</label>
+                {{ $device->type_name }}
             </div>
         </div>
     </div>
 
     <div class="columns ml-1 mr-3">
-        <div class="column is-4">
-            @if (Auth::user()->role == 'admin')
-            <div class="box">
-                <h2 class="subtitle">{{ __('Actions') }}</h2>
-                    <div class="buttons are-small">
-                        <a onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button">
-                            <i class="mr-2 fas fa-sync"></i> Refresh
-                        </a>
+        <div class="column is-3">
+            @if (Auth::user()->role >= 1)
+                <div class="box">
+                    <h2 class="subtitle">{{ __('Actions') }}</h2>
+                    <div class="columns is-variable is-multiline">
+                        <div class="column has-text-centered is-narrow is-6 col-md-4 pb-0">
+                            <button onclick="$('.modal-sync-vlans-specific').show();"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
+                            </button>
+                        </div>
+                        <div class="column is-narrow is-6 col-md-4 pb-0">
+                            <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-key"></i> Sync Pubkeys
+                            </button>
+                        </div>
+                        <div class="column is-narrow is-12 col-md-4 pb-0">
+                            <button onclick="sw_actions(this, 'backups', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth button is-small is-success">
+                                <i class="is-hidden-touch mr-1 fas fa-hdd"></i> Backup
+                            </button>
+                        </div>
 
-                        <a onclick="sw_actions(this, 'backups', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fas fa-hdd"></i> Backup
-                        </a>
-
-                        <a onclick="sw_actions(this, 'pubkeys', {{ $device->id }})" class="button is-success">
-                            <i class="mr-2 fas fa-key"></i> Sync Pubkeys
-                        </a>
-
-                        <a onclick="$('.modal-sync-vlans-specific').show();" class="button is-success">
-                            <i class="mr-2 fas fa-ethernet"></i> Sync Vlans
-                        </a>
+                        <div class="column is-narrow is-12 col-md-4 pb-4">
+                            <button onclick="sw_actions(this, 'refresh', {{ $device->id }})"
+                                class="p-1 m-0 is-fullwidth is-success button is-small">
+                                <i class="is-hidden-touch mr-1 fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
                     </div>
-            </div>
+                </div>
             @endif
 
             <div class="box">
-                <h2 class="subtitle">Trunks</h2>
+                <h2 class="subtitle">{{ __('Uplinks found') }}</h2>
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>{{ __('Switch.Live.Members') }}</th>
+                            <th class="has-text-right">{{ __('Switch.Live.Members') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($trunks as $key => $trunk)
+                        @foreach ($found_uplinks as $trunk => $ports_in_trunk)
                             <tr>
-                                <td>{{ $key }}</td>
-                                <td>{{ implode(', ', $trunk) }}</td>
+                                <td>{{ $trunk }}</td>
+                                <td class="has-text-right">{{ $ports_in_trunk }}</td>
                             </tr>
                         @endforeach
 
-                        @if (empty($trunks))
+                        @if ($device->uplinks->count() == 0)
                             <tr>
                                 <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
                             </tr>
                         @endif
+                    </tbody>
+                </table>
+            </div>
 
+            <div class="box">
+                <h2 class="subtitle">{{ __('Custom Uplinks') }}</h2>
+                <table class="table is-striped is-narrow is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Description') }}</th>
+                            <th class="has-text-right">Port</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (isset($custom_uplinks_array))
+
+                            @foreach ($custom_uplinks_array as $port)
+                                <tr>
+                                    <td>{{  $device->ports->where('name', $port)->first()->description ?? $port }}</td>
+                                    <td class="has-text-right">{{ $port }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+
+                        @if (empty($custom_uplinks_array))
+                            <tr>
+                                <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -137,14 +189,14 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>ID</th>
+                            <th class="has-text-right">ID</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (json_decode($device->vlan_data) as $vlan)
+                        @foreach ($device->vlans as $vlan)
                             <tr>
-                                <td>{{ $vlan->name }}</td>
-                                <td>{{ $vlan->vlan_id }}</td>
+                                <td>{{ $vlan['name'] }}</td>
+                                <td class="has-text-right">{{ $vlan['vlan_id'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -157,16 +209,26 @@
                     <thead>
                         <tr>
                             <th>{{ __('Backup.Created') }}</th>
-                            <th>Status</th>
+                            <th class="has-text-right">Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($backups as $backup)
+                        @php
+                            $device->backups = $device->backups->sortByDesc('created_at')->take(15);
+                        @endphp
+                        @foreach ($device->backups as $backup)
                             <tr>
                                 <td>{{ $backup->created_at }}</td>
-                                <td>{{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
+                                <td class="has-text-right">
+                                    {{ $backup->status == 1 ? __('Backup.Success') : __('Backup.Failed') }}</td>
                             </tr>
                         @endforeach
+
+                        @if ($device->backups->count() == 0)
+                            <tr>
+                                <td colspan="2">Bisher kein Backup durchgeführt</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
 
@@ -174,37 +236,28 @@
         </div>
 
 
-        <div class="column is-8">
-            @if (Auth::user()->role == 'admin')
-            <script>
-                function enableEditing() {
-                    $('.port-vlan-select').each(function() {
-                        $(this).prop('disabled', false);
-                    });
-                    $('.save-vlans').removeClass('is-hidden');
-                    $('.edit-vlans').addClass('is-hidden');
-                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', false);
-                }
-
-                function disableEditing() {
-                    $('.port-vlan-select').each(function() {
-                        $(this).prop('disabled', true);
-                    });
-                    $('.save-vlans').addClass('is-hidden');
-                    $('.edit-vlans').removeClass('is-hidden');
-                    $('.modal-vlan-tagging').find('.is-submit').prop('disabled', true);
-                }
-            </script>
-            @endif
+        <div class="column is-9">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
-                    @if (Auth::user()->role == 'admin')
-                    <span onclick="disableEditing();"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Cancel') }}</span>
-                    <span onclick="updateUntaggedPorts('{{ $device->id }}')"
-                        class="ml-3 hover-underline save-vlans is-hidden is-pulled-right is-size-7 is-clickable">{{ __('Button.Save') }}</span>
-                    <span onclick="enableEditing();"
-                        class="hover-underline is-pulled-right is-size-7 edit-vlans is-clickable">{{ __('Button.Edit') }}</span>
+                    @if (Auth::user()->role >= 1)
+                        <button onclick="saveEditedPorts(this);"
+                            class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
+                                class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
+
+                        <button onclick="cancelEditing(this);"
+                            class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i
+                                class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
+
+                        <button
+                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
+                            class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i
+                                class="fas fa-up-down mr-2"></i> Uplinks</button>
+
+                        {{-- <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button> --}}
+
+                        <button onclick="enableEditing();"
+                            class="is-edit-button button is-small is-info is-pulled-right"><i
+                                class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
                 </h2>
 
@@ -214,102 +267,23 @@
                 </div>
 
 
-                <table class="table is-striped is-narrow is-fullwidth">
+                <table id="portoverview" class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
-                            <th class="has-text-centered" style="width: 70px;">Status</th>
-                            <th class="has-text-centered" style="width: 70px;">Port</th>
+                            <th class="has-text-centered" style="width: 45px;">Status</th>
+                            <th class="has-text-centered" style="width: 60px;">Port</th>
                             <th>{{ __('Switch.Live.Portname') }}</th>
-                            <th>Untagged</th>
-                            <th>Tagged</th>
-                            <th class="has-text-centered">{{ __('Clients') }}</th>
-                            <th class="has-text-centered">Speed Mbit/s</th>
+                            <th>Untagged/Native</th>
+                            <th>Tagged/Allowed</th>
+                            <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
+                            <th class="has-text-centered" style="width: 120px;">Speed</th>
                         </tr>
                     </thead>
 
                     <tbody class="live-body">
                         @foreach ($device->ports as $port)
-                            @if (!str_contains($port['id'], 'Trk'))
-
-                                <tr style="line-height: 37px;">
-                                    <td class="has-text-centered">
-                                        <i
-                                            class="fa fa-circle {{ $port['is_port_up'] ? 'has-text-success' : 'has-text-danger' }}"></i>
-                                    </td>
-                                    <td class="has-text-centered">
-                                        <a href="/switch/{{ $device->id }}/ports/{{ $port['id'] }}">{{ $port['id'] }}</a>
-                                    </td>
-                                    <td>
-                                        {{ $port['name'] }}
-                                    </td>
-                                    <td style="width:80px   ">
-                                        @if (str_contains($untagged[$port['id']], 'Trk'))
-                                            {{ $untagged[$port['id']] }}
-                                        @else
-                                            <div class="select">
-                                                <select data-id="{{ $device->id }}" data-port="{{ $port['id'] }}"
-                                                    data-current-vlan="{{ $untagged[$port['id']] ? $untagged[$port['id']] : 0 }}"
-                                                    class="port-vlan-select" disabled>
-                                                    <option value="0">Kein VLAN</option>
-                                                    @foreach (json_decode($device->vlan_data) as $vlan)
-                                                        {{ $untagged[$port['id']] }}
-                                                        <option value="{{ $vlan->vlan_id }}"
-                                                            {{ $untagged[$port['id']] == $vlan->vlan_id ? 'selected' : '' }}>
-                                                            {{ $vlan->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td style="width:100px" class="is-clickable">
-                                        <a
-                                            onclick="updateTaggedModal('{{ implode(',', $tagged[$port['id']]) }}', '{{ $port['id'] }}', '{{ $device->id }}')">{{ count($tagged[$port['id']]) }}
-                                            VLANs</a>
-                                    </td>
-                                    <td>
-                                        @if (isset($clients[$port['id']]))
-                                        <div class="dropdown is-hoverable">
-                                            <div class="dropdown-trigger">
-                                              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                                                <span>{{ count($clients[$port['id']]) }} {{ __('Clients') }}</span>
-                                                <span class="icon is-small">
-                                                  <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                </span>
-                                              </button>
-                                            </div>
-                                            <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-                                              <div class="dropdown-content">
-                                                <div class="dropdown-item">
-                                                  @foreach ($clients[$port['id']] as $client)
-                                                        <div><i class="{{ $cc::getClientIcon($client->type) }}"></i> {{ $client->hostname }}</div>
-                                                  @endforeach
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        @else
-                                        
-                                        @endif
-                                    </td>
-                                    <td class="has-text-centered">
-                                        @if ($port_statistic[$port['id']]['port_speed_mbps'] == 0)
-                                            <span
-                                                class="tag is-link ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10)
-                                            <span
-                                                class="tag is-danger ">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 100)
-                                            <span
-                                                class="tag is-warning">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 1000)
-                                            <span
-                                                class="tag is-primary">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @elseif ($port_statistic[$port['id']]['port_speed_mbps'] == 10000)
-                                            <span
-                                                class="tag is-success">{{ $port_statistic[$port['id']]['port_speed_mbps'] }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
+                            @if (!str_contains($port->name, 'Trk'))
+                                @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
                             @endif
                         @endforeach
                     </tbody>
@@ -317,8 +291,8 @@
             </div>
         </div>
     </div>
-
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
-
+    @include('modals.PortBulkEditVlansModal')
+    @include('modals.SwitchUplinkEditModal')
     </x-layouts>

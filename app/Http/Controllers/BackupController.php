@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
+use App\Helper\CLog;
 use App\Mail\SendBackupStatus;
-use App\Models\Backup;
 use App\Models\Device;
+use App\Models\DeviceBackup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -20,7 +22,7 @@ class BackupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $backups = Backup::all()->keyBy('id');
+        $backups = DeviceBackup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
 
@@ -31,17 +33,20 @@ class BackupController extends Controller
         return view('switch.view_backups', compact('backups', 'devices'));
     }
 
-    static function store($success, $data, $device) {
+    static function store($success, $data, $restore, $device) {
 
         if ($success and $data and !is_array($data)) {
-            $dataEncrypted = EncryptionController::encrypt($data);
+            $dataEncrypted = Crypt::encrypt($data);
+            $resDataEncrypted = Crypt::encrypt($restore);
         } else {
             $dataEncrypted = "No data received";
+            $resDataEncrypted = "No data received";
         }
 
-        Backup::create([
+        DeviceBackup::create([
             'device_id' => $device->id,
             'data' => $dataEncrypted,
+            'restore_data' => $resDataEncrypted,
             'status' => ($success) ? 1 : 0,
         ]);
     }
@@ -53,19 +58,16 @@ class BackupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request) {
-        $find = Backup::find($request->input('id'));
+        $find = DeviceBackup::find($request->input('id'));
+        $device = Device::where('id', $find->device_id)->first();
+
         if ($find->delete()) {
-            LogController::log('Backup gelöscht', '{"id": "' . $request->id . '", "device_id": "' . $find->device_id . '", "created_at": "' . $find->created_at . '"}');
+            CLog::info("Backup", 'Backup for device ' . $device->name . ' has been deleted', $device, "ID: " . $device->id);
             return redirect()->back()->with('success', __('Msg.BackupCreated'));
         }
 
+        CLog::error("Backup", 'Backup for device ' . $device->name . ' could not be deleted', $device, "ID: " . $device->id);
         return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
-    }
-
-    static function getBackupsBySwitchId($id) {
-        $backups = Backup::where('device_id', $id)->get()->sortByDesc('created_at')->keyBy('id');
-        $device = Device::find($id);
-        return view('switch.switch-backups', compact('backups', 'device'));
     }
 
     static function backupAll() {
@@ -76,13 +78,13 @@ class BackupController extends Controller
                     $start = microtime(true);
                     ArubaOS::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo "Backup created: " . $device->name . " (" . $elapsed . "sec)\n";
+                    echo __('Msg.BackupCreated').": " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 case 'aruba-cx':
                     $start = microtime(true);
                     ArubaCX::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo "Backup created: " . $device->name . " (" . $elapsed . "sec)\n";
+                    echo __('Msg.BackupCreated').": " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 default:
                     echo "Error: Unknown device type: " . $device->type . "\n";
@@ -93,10 +95,11 @@ class BackupController extends Controller
     }
 
     static function downloadBackup($id) {
-        $backup = Backup::find($id);
+        $backup = DeviceBackup::find($id);
         $device = Device::find($backup->device_id);
         $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
-        $data = EncryptionController::decrypt($backup->data);
+        $data = Crypt::decrypt($backup->data);
+
         if ($data == NULL) {
             $data = "Decrypting error (Wrong encryption key?)";
         }
@@ -106,7 +109,7 @@ class BackupController extends Controller
 
     static function sendMail() {
 
-        $backups = Backup::all()->keyBy('id');
+        $backups = DeviceBackup::all()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
         $modDevices = [];
@@ -128,6 +131,6 @@ class BackupController extends Controller
 
         Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($backups, $modDevices, $totalError));
 
-        Log::info('Success! Email has been sent successfully.');
+        CLog::info("Backup", 'Backup status mail has been sent');
     }
 }

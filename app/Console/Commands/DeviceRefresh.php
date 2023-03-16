@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Http\Controllers\DeviceController;
+use App\Services\DeviceService;
+use App\Helper\CLog;
 use Illuminate\Support\Facades\Log;
 
 class DeviceRefresh extends Command
@@ -35,12 +37,19 @@ class DeviceRefresh extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            Log::error('Device not found');
+            CLog::error("Automated task", "Failed to refresh device, device not found", $device);
+            Log::error("Failed to refresh device, device not found");
             return;
         }
 
-        DeviceController::refresh($device);
+        $refresh = DeviceService::refreshDevice($device);
+        $refreshStatus = json_decode($refresh, true);
 
-        Log::info('Device ' . $device->id . ' refreshed'. ' (' . (microtime(true) - $start) . 's)');
+        if($refreshStatus['success'] == "false") {
+            CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshStatus['message']);
+            Log::error("Failed to refresh device " . $device->name);
+            return;
+        }
+        Log::info("Successfully refreshed device " . $device->name);
     }
 }

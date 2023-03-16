@@ -1,3 +1,5 @@
+@section('title', 'Preferences')
+
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Usersettings') }}</h1>

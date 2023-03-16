@@ -13,4 +13,19 @@ class Building extends Model
         'name',
         'location_id'
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function getLocationName()
+    {
+        return $this->location->name;
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
 }

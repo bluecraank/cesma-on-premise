@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'category',
+        'level',
+        'user',
+        'user_id',
+        'device_id',
+        'device_name',
+        'description',
+        'additional_info',
+    ];
 }

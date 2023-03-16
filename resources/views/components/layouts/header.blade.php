@@ -13,12 +13,25 @@
     <link rel="stylesheet" href="/css/multi-select.css">
     <link rel="stylesheet" href="/css/cesma.css">
 
-    @livewireStyles
-
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/jquery.multi-select.js"></script>
-    <script src="/js/theme.js"></script>
-    <title>{{ ucfirst(Route::currentRouteName()) }} | CESMA</title>
+
+    @livewireStyles
+    @livewireScripts
+
+    @if (Route::is('details'))
+        <script src="/js/api_ports.js"></script>
+    @endif
+
+    @if (Auth::user() && Auth::user()->role >= 1) 
+        <script src="/js/api.js"></script>
+    @endif
+
+    <script src="/js/notify.min.js?{{ config('app.version') }}"></script>
+    <script src="/js/functions.js?{{ config('app.version') }}"></script>
+    <script src="/js/theme.js?{{ config('app.version') }}"></script>
+
+    <title>@yield('title') | CESMA</title>
 </head>
 <noscript>
     <div class="no-use">
