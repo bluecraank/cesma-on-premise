@@ -1,3 +1,5 @@
+@section('title', 'All Backups for ' . $device->name)
+
 <x-layouts.main>
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Header.Backups') }} {{ $device->name }}</h1>
@@ -32,7 +34,7 @@
                             <div class="field has-addons is-justify-content-center">
 
 
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button disabled title="{{ __('Backup.Restore') }}"
                                             onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
@@ -48,9 +50,9 @@
                                         <i class="fa fa-download"></i>
                                     </a>
                                 </div>
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role >= 1)
                                     <div class="control">
-                                        <button title="{{ __('Delete') }}"
+                                        <button title="{{ __('Button.Delete') }}"
                                             onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>
@@ -62,8 +64,8 @@
         </table>
     </div>
 
-    @if (Auth::user()->role == 'admin')
-        @include('modals.SwitchDeleteBackupModal')
+    @if (Auth::user()->role >= 1)
+        @include('modals.delete.SwitchDeleteBackupModal')
         @include('modals.SwitchRestoreBackupModal')
     @endif
     </x-layouts>

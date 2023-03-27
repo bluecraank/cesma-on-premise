@@ -4,60 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\MacAddress;
+use App\Models\MacVendor;
 use App\Models\MacVendors;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class MacAddressController extends Controller
 {
-    static function store($mac, $port, $vlan, $device_id)
-    {
-        $newMacAddress = MacAddress::create([
-            'mac_address' => $mac,
-            'device_id' => $device_id,
-            'port_id' => $port,
-            'vlan_id' => $vlan,
-        ]);
-
-        if ($newMacAddress) {
-            return true;
-        }
-
-        return false;
-    }
-
-    static function refreshMacDataFromSwitch($id, $data, $json_uplinks)
-    {
-        $uplinks = json_decode($json_uplinks, true);
-
-        foreach ($data as $mac) {
-            try {
-                $port = $mac['port'];
-
-                if (in_array($mac['port'], $uplinks)) {
-                    $port = "UPLINK-".$mac['port'];
-                }
-
-                MacAddress::updateOrCreate(
-                    [
-                        'mac_address' => $mac['mac'],
-                    ],
-                    [
-                        'port_id' => $port,
-                        'vlan_id' => $mac['vlan'],
-                        'device_id' => $id,
-                    ]
-                );
-            } catch (\Exception $e) {
-                Log::error('[MAC_Resolve] Database error, trying next time');
-            }
-        }
-    }
-
     static function getMacVendor()
     {
         $macs = Client::all();
-        $vendors = MacVendors::all()->keyBy('mac_prefix');
+        $vendors = MacVendor::all()->keyBy('mac_prefix');
 
         $mac_prefixes = [];
         foreach ($macs as $mac) {
@@ -76,7 +33,7 @@ class MacAddressController extends Controller
                 if ($vendor_res->successful() and $vendor_res->status() == 200) {
                     $vendor_res = $vendor_res->body();
 
-                    MacVendors::firstOrCreate([
+                    MacVendor::firstOrCreate([
                         'mac_prefix' => $vendor,
                         'vendor_name' => $vendor_res,
                     ]);

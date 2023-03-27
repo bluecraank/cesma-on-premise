@@ -2,9 +2,9 @@
     <h1 class="title is-pulled-left">{{ __('Header.Vlans') }}</h1>
 
     <div class="is-pulled-right ml-4">
-        @if (Auth::user()->role == 'admin')
+        @if (Auth::user()->role >= 1)
             <button onclick="$('.modal-add-vlan').show();" class="button is-success is-small"><i
-                    class="fas fa-plus"></i></button>
+                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
     </div>
 
@@ -28,7 +28,7 @@
                 <th>Name</th>
                 <th>{{ __('Description') }}</th>
                 <th>{{ __('Vlan.Subnet') }}</th>
-                <th class="has-text-centered">Scan</th>
+                {{-- <th class="has-text-centered">Scan</th> --}}
                 <th class="has-text-centered">Sync</th>
                 <th class="has-text-centered">Endgeräte-VLAN</th>
 
@@ -36,19 +36,23 @@
             </tr>
         </thead>
         <tbody>
+            @if ($vlans->count() == 0)
+                <tr>
+                    <td colspan="8" class="has-text-centered">{{ __('Vlan.NoFound') }}</td>
+                </tr>
+            @endif
+
             @foreach ($vlans as $vlan)
                 @php
-                    $scan = "<i class='fas fa-times'></i>";
-                    $sync = "<i class='fas fa-times'></i>";
-                    $clients = "<i class='fas fa-check'></i>";
-                    if ($vlan->scan == 1) {
-                        $scan = "<i class='fas fa-check'></i>";
+                    $scan = $sync = $clients = false;
+                    if ($vlan->is_scanned == 1) {
+                        $scan = true;
                     }
-                    if ($vlan->sync == 1) {
-                        $sync = "<i class='fas fa-check'></i>";
+                    if ($vlan->is_synced == 1) {
+                        $sync = true;
                     }
-                    if ($vlan->is_client_vlan == 0) {
-                        $clients = "<i class='fas fa-times'></i>";
+                    if ($vlan->is_client_vlan == 1) {
+                        $clients = true;
                     }
                 @endphp
                 <tr>
@@ -65,13 +69,15 @@
                     <td>
                         {{ $vlan->ip_range }}
                     </td>
+                    {{-- <td class="has-text-centered">
+                        <i class='fas {{ ($scan) ? 'fa-check' : 'fa-times' }}'></i>
+                    </td> --}}
                     <td class="has-text-centered">
-                        {!! $scan !!}
+                        <i class='fas {{ ($sync) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
-                    <td class="has-text-centered">
-                        {!! $sync !!}
+                    <td class="has-text-centered">   
+                         <i class='fas {{ ($clients) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
-                    <td class="has-text-centered">{!! $clients !!}</td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
@@ -79,10 +85,10 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
-                            @if (Auth::user()->role == 'admin')
+                            @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button
-                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->scan }}', '{{ $vlan->sync }}', '{{ $vlan->is_client_vlan }}')"
+                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                             <div class="control">
@@ -96,4 +102,6 @@
             @endforeach
         </tbody>
     </table>
+
+    {{ $vlans->links('pagination::default') }}
 </div>

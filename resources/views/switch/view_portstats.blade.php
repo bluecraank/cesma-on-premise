@@ -1,51 +1,104 @@
+@section('title', 'Port '.$current_port->name . ' on ' . $device->name)
+
 <x-layouts.main>
     <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="columns">
                 <div class="column is-6">
                     <h1 class="title">
-                        {{ $device->name }}
+                        Port {{ $current_port->name }} on Switch {{ $device->name }}
                     </h1>
 
                     <h1 class="subtitle">
-                        {{ __('Portstats.for') }} {{ $port_id }}
-
+                        {{ __('Portstats.for') }}
                     </h1>
                 </div>
-                <div class="column is-6">
-                    <div class="select is-pulled-right">
-                        <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()">
+
+                <div class="column is-6 mt-2">
+                    <div class="select is-small is-pulled-right">
+                        <select onchange="location.href='?timespan='+$(this).val()">
+                            <option {{ app('request')->input('timespan') == '15' ? 'selected' : '' }} value="15">15 minutes</option>
+                            <option {{ app('request')->input('timespan') == '30' ? 'selected' : '' }} value="30">30 minutes</option>
+                            <option {{ app('request')->input('timespan') == '60' ? 'selected' : '' }} value="60">60 minutes</option>
+                            <option {{ app('request')->input('timespan') == '120' ? 'selected' : '' }} value="120">2 hours</option>
+                            <option {{ app('request')->input('timespan') ?? 'selected' }} {{ app('request')->input('timespan') == '180' ? 'selected' : '' }} value="180">3 hours</option>
+                            <option {{ app('request')->input('timespan') == '360' ? 'selected' : '' }} value="360">6 hours</option>
+                            <option {{ app('request')->input('timespan') == '720' ? 'selected' : '' }} value="720">12 hours</option>
+                            <option {{ app('request')->input('timespan') == '1440' ? 'selected' : '' }} value="1440">24 hours</option>
+                        </select>
+                    </div>
+                    <div class="select is-small is-pulled-right mr-3">
+                        <select onchange="location.href='/switch/{{ $device->id }}/ports/'+$(this).val()+'?timespan={{ app('request')->input('timespan') }}'">
                             @if ($port_id == null)
                                 <option value="" selected>Bitte wählen</option>
                             @endif
-
                             @foreach ($ports as $port)
-                                <option {{ $port['id'] == $port_id ? 'selected' : '' }} value="{{ $port['id'] }}">
-                                    {{ $port['id'] }}</option>
+                                @if (str_contains($port['name'], 'Trk'))
+                                    @continue
+                                @endif
+                                <option {{ $port['name'] == $port_id ? 'selected' : '' }} value="{{ $port['name'] }}">
+                                    Port {{ $port['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
+                    <div class="is-pulled-right mr-3">
+                        <a class="button is-small is-info" href="/switch/{{ $device->id }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <div class="columns ml-1 mr-3">
 
+    <nav class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">ALIAS</p>
+            <p class="title">{{  ($current_port->description != '') ? $current_port->description : 'No alias' }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Last check</p>
+            <p class="title">{{ $last_stat->created_at->diffForHumans() }}</p>
+          </div>
+        </div>
+      </nav>
+
+    <div class="columns ml-1 mr-3">
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">Port status</label>
-                {!! $ports[$port_id]['is_port_up'] ? '<span class="is-size-2 has-text-success">UP</span>' : '<span class="is-size-2 has-text-danger">DOWN</a>' !!}
+                <label class="label">STATUS</label>
+                @if ($last_stat->port_status)
+                    <span class="is-size-2 has-text-success">UP</span>
+                @else
+                    <span class="is-size-2 has-text-danger">DOWN</span>
+                @endif
             </div>
         </div>
-
         <div class="column">
             <div class="box has-text-centered">
-                <label class="label">Speed</label>
-                <span class="is-size-2 has-text-success">{{ $port_stats[$port_id]['port_speed_mbps'] }} Mbit/s</span>
-
+                <label class="label">SPEED</label>
+                @if ($port_stats->last()->port_speed == 0)
+                    <span class="is-size-2 has-text-link" style="width: 100%;">0</span>
+                @elseif ($port_stats->last()->port_speed == 10)
+                    <span class="is-size-2 has-text-danger"style="width: 100%;">10 Mbit/s</span>
+                @elseif ($port_stats->last()->port_speed == 100)
+                    <span class="is-size-2 has-text-warning"style="width: 100%;">100 Mbit/s</span>
+                @elseif ($port_stats->last()->port_speed == 1000)
+                    <span class="is-size-2 has-text-success"style="width: 100%;">1 Gbit/s</span>
+                @elseif ($port_stats->last()->port_speed == 10000)
+                    <span class="is-size-2" style="width:100%;color:chartreuse;">10 Gbit/s</span>
+                @endif
             </div>
-        </div> 
+        </div>
+        <div class="column">
+            <div class="box has-text-centered">
+                <label class="label">MODE</label>
+                <span class="is-size-2 has-text-info">{{ $current_port->vlan_mode }}</span>
+            </div>
+        </div>
     </div>
 
     <div>
@@ -72,16 +125,67 @@
             </div>
         </div>
 
-        <div class="column is-4">
-            <div class="box">
-                <h2 class="subtitle">Utilization RX/TX</h2>
+        <div class="columns is-multiline ml-1 mr-3">
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Utilization RX</h2>
+                    <div class="columns is-multiline">
+                        <div class="is-12 column">
+                            <label class="label">Lastest load: {{ $utilization_rx }}%</label>
+                            <progress class="progress is-primary" value="{{ $utilization_rx }}"
+                                max="{{ $speed }}">{{ $utilization_rx }}</progress>
+                        </div>
 
-                <label class="label">RX: {{ $utilization_rx }}%</label>
-                <progress class="progress is-primary" value="{{ $utilization_rx }}"
-                    max="{{ $speed }}">15%</progress>
-                <label class="label">TX: {{ $utilization_tx }}%</label>
-                <progress class="progress is-link" value="{{ $utilization_tx }}"
-                    max="{{ $speed }}">30%</progress>
+                        <div class="is-12 column">
+                            <label class="label">Average load: {{ $avg_utilization_rx }}%</label>
+                            <progress class="progress is-info" value="{{ $avg_utilization_rx }}"
+                                max="{{ $speed }}">{{ $avg_utilization_rx }}</progress>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-6">   
+                <div class="box">
+                    <h2 class="subtitle">Utilization TX</h2>
+                    <div class="columns is-multiline">
+                        <div class="is-12 column">
+                            <label class="label">Lastest load: {{ $utilization_tx }}%</label>
+                            <progress class="progress is-primary" value="{{ $utilization_tx }}"
+                                max="{{ $speed }}">{{ $utilization_tx }}</progress>
+                        </div>
+
+                        <div class="is-12 column">
+                            <label class="label">Average load: {{ $avg_utilization_tx }}%</label>
+                            <progress class="progress is-info" value="{{ $avg_utilization_tx }}"
+                                max="{{ $speed }}">{{ $avg_utilization_tx }}</progress>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns is-multiline ml-1 mr-3">
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Native / Untagged VLANs</h2>
+                    <span class="tag is-primary m-1">{{ ($current_port->untagged) ? $current_port->untagged->name : 'NO VLAN' }}</span>
+                </div>
+            </div>
+        
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Allowed / Tagged VLANs</h2>
+                    @php $vlanports = $current_port->tagged; @endphp
+                    @foreach($vlanports as $vlan)
+                        <span title="ID {{ $vlan['vlan_id'] }}" class="tag is-primary m-1">{{ $vlan['name'] }}</span>
+                    @endforeach
+
+                    @if ($current_port->vlan_mode == "access")
+                        <span class="tag is-info">{{ __('Port.Access.NoAllowedVlans') }}</span>
+                    @elseif($device->vlanports->where('device_port_id', $current_port->id)->count() == 0)
+                        <span class="tag is-info">{{ __('Port.NativeUntagged.AllVlansAllowed') }}</span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

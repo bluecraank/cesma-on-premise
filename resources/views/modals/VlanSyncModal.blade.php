@@ -1,5 +1,5 @@
 <div class="modal modal-sync-vlans">
-    <form action="/switch/every/vlans" id="form-sync-vlans" method="post">
+    <form action="/switch/action/sync-vlans" id="form-sync-vlans" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
@@ -58,7 +58,7 @@
                 <button onclick="$('.modal-sync-vlans').hide();return false;" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 
-                <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Switch.Sync.Wait') }}</span>
+                <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>
         </div>
     </form>

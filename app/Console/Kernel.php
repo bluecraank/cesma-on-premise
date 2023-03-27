@@ -19,14 +19,16 @@ class Kernel extends ConsoleKernel
         $schedule->command('device:refresh-all')
         ->everyFiveMinutes()
         ->runInBackground();
+        
+        $schedule->command('clients:query-providers')
+        ->everyMinute();
 
         $schedule->command('clients:update')
         ->everyFiveMinutes()
         ->runInBackground();
 
-        $schedule->command('clients:ping')
-        ->everyFifteenMinutes()
-        ->between('05:00', '21:00')
+        $schedule->command('clients:dns-lookup')
+        ->everyFiveMinutes()
         ->runInBackground();
 
         $schedule->command('clients:resolve-mac-vendors')
@@ -36,7 +38,7 @@ class Kernel extends ConsoleKernel
         
         // Backups erstellen
         $schedule->command('device:backup-all')
-        ->dailyAt('08:00')
+        ->dailyAt('10:30')
         ->runInBackground();
 
         $schedule->command('database:cleanup')
@@ -60,4 +62,10 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    protected function shortSchedule(\Spatie\ShortSchedule\ShortSchedule $shortSchedule)
+{
+    // this artisan command will run every second
+    $shortSchedule->command('check:job-queue')->everySecond()->withoutOverlapping();
+}
 }

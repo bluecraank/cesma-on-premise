@@ -13,4 +13,14 @@ class Location extends Model
         'name',
     ];
 
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
+    
+    public function buildings()
+    {
+        return $this->hasMany(Building::class);
+    }
+
 }

@@ -30,6 +30,6 @@ class ResolveMacVendors extends Command
     public function handle()
     {
         MacAddressController::getMacVendor();
-        Log::info('Mac vendors resolved');
+        Log::info('[MAC] Vendors resolved');
     }
 }

@@ -2,3 +2,11 @@
 aside.menu{
     background: #eaeaea;
 }
+
+.light-mode-fix {
+    color: #4e4e4e;
+}
+
+table tr, table td, table th {
+    vertical-align: middle !important;
+}

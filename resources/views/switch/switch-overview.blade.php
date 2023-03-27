@@ -1,7 +1,9 @@
+@section('title', 'All Switches')
+
 <x-layouts.main>
     @livewire('search-devices')
 
-    @if (Auth::user()->role == 'admin')
+    @if (Auth::user()->role >= 1)
         <div class="box">
             <div class="label is-small">Alle Switche</div>
             <div class="buttons are-small">
@@ -11,11 +13,11 @@
             </div>
         </div>
 
-        @include('modals.SwitchCreateModal')
+        @include('modals.create.SwitchCreateModal')
 
-        @include('modals.SwitchEditModal')
+        @include('modals.edit.SwitchEditModal')
 
-        @include('modals.SwitchDeleteModal')
+        @include('modals.delete.SwitchDeleteModal')
 
         @include('modals.PubkeySyncModal')
 

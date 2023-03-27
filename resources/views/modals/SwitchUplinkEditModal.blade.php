@@ -1,5 +1,5 @@
 <div class="modal modal-edit-uplinks">
-    <form action="/switch/uplinks/update" method="post">
+    <form action="/switch/uplinks" method="post">
         @csrf
         @method('PUT')
 
@@ -9,7 +9,7 @@
                 <p class="modal-card-title">{{ __('Uplink.Edit') }}</p>
             </header>
             <section class="modal-card-body">
-                <input type="hidden" name="id" class="device-id input">
+                <input type="hidden" name="device_id" class="device-id input">
 
                 <div class="field">
                     <label class="label">Switch</label>
@@ -22,7 +22,7 @@
                     <label class="label">Uplinks</label>
                     <div class="control">
                         <input type="text" name="uplinks" class="device-uplinks input"
-                            placeholder="Uplink1,Uplink2,50,51">
+                            placeholder="49,50,51 or 49-51">
                     </div>
                 </div>
             </section>

@@ -1,7 +1,6 @@
 <div class="modal modal-sync-pubkeys">
-    <form action="/switch/every/pubkeys" onsubmit="event.preventDefault(); syncPubkeys();" id="form-sync-pubkeys"
+    <form action="/switch/action/sync-pubkeys" onsubmit="event.preventDefault(); switchSyncPubkeys();" id="form-sync-pubkeys"
         method="post">
-        @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">

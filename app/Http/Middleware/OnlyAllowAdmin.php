@@ -16,7 +16,7 @@ class OnlyAllowAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user()->role == 'user') {
+        if(auth()->user()->role == 0) {
             return abort(403, 'Unauthorized action.');
         }
 

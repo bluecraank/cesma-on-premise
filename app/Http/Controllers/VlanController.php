@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateVlanRequest;
 use App\Models\Device;
+use App\Models\DeviceVlanPort;
 use App\Models\Location;
 use App\Models\Vlan;
+use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\CLog;
 
 class VlanController extends Controller
 {
@@ -27,80 +30,77 @@ class VlanController extends Controller
         ));
     }
 
-    static function AddVlansFromDevice($vlans, $device, $location)
+    public function getPortsByVlan($id)
     {
-        foreach ($vlans as $vlan) {
-            $vlan = Vlan::firstOrCreate([
-                'vid' => $vlan['vlan_id'],
-            ], [
-                'name' => $vlan['name'],
-                'description' => "VLAN " . $vlan['vlan_id'] . " found on " . $device,
-                'location_id' => $location,
-            ]);
-        }
-    }
-
-
-    public function getPortsByVlan($vlan)
-    {
-        $vlan_db = Vlan::where('vid', $vlan)->first();
+        $vlan = Vlan::where('vid', $id)->first();
         $vlans = [];
-        $devices = Device::all()->sortBy('name');
+        $devices = Device::all()->sortBy('name')->keyBy('name');
         $ports = [];
         $count_untagged = 0;
         $count_tagged = 0;
         $count_online = 0;
         $has_vlan = 0;
 
+        $untagged = [];
+        $tagged = [];
+
         foreach ($devices as $device) {
-            $ports[$device->name] = [];
 
-            $found_on = false;
-            $vlans = json_decode($device->vlan_port_data, true);
-            $port_data = json_decode($device->port_data, true);
+            $untagged[$device->id] = [];
+            $tagged[$device->id] = [];
 
-            foreach ($vlans as $port_vlan_key => $port_vlan) {
-                if ($port_vlan['vlan_id'] == $vlan) {
-                    if (!$found_on) {
-                        $found_on = true;
-                        $has_vlan++;
-                    }
+            if($device->vlans()->where('vlan_id', $id)->first()) {
+                $vlans[$device->id] = $device->vlans()->where('vlan_id', $id)->first()->id;
 
-                    if (isset($port_vlan['is_tagged']) and !$port_vlan['is_tagged']) {
-                        $count_untagged++;
-                        $ports[$device->name]['untagged'][] = $port_vlan['port_id'];
+                $vlanports[$device->id] = $device->vlanports()->where('device_vlan_id', $vlans[$device->id])->get();
 
-                        if (isset($port_data[$port_vlan['port_id']]) and $port_data[$port_vlan['port_id']]['is_port_up']) {
-                            $count_online++;
-                        }
-                    } else {
-                        $ports[$device->name]['tagged'][] = $port_vlan['port_id'];
-                        $count_tagged++;
-                    }
+                $has_vlan++;
+            }   
+        }
+
+        foreach($vlanports as $key => $device) {
+            foreach($device as $vlanport) {
+                $port = $vlanport->devicePort()->first();
+                
+                if($port->link) {
+                    $count_online++;
+                }
+
+                if($vlanport->is_tagged) {
+                    $tagged[$key][] = $port->name;
+                    $count_tagged++;
+                } else {
+                    $untagged[$key][] = $port->name;
+                    $count_untagged++;
                 }
             }
         }
 
+
+        // dd($untagged, $tagged);
+
         return view('vlan.details', compact(
-            'ports',
             'has_vlan',
             'count_untagged',
             'count_tagged',
             'count_online',
-            'vlan_db'
+            'devices',
+            'untagged',
+            'tagged',
+            'vlan'
         ));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'vid' => 'required|integer|unique:vlans',
+            'vid' => 'required|integer|unique:vlans|between:1,4096',
             'name' => 'required|string',
             'description' => 'nullable|string',
             'ip_range' => 'nullable|string',
             'scan' => 'nullable|string',
             'sync' => 'nullable|string',
-            'location' => 'required|integer|exists:locations,id'
+            'location_id' => 'required|integer|exists:locations,id'
         ])->validate();
 
         if ($request->input('scan') == "on") {
@@ -119,20 +119,11 @@ class VlanController extends Controller
             return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
-        if ($vlan = Vlan::create([
-            'vid' => $request['vid'],
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'ip_range' => $request['ip_range'] ?? null,
-            'scan' => $scan,
-            'sync' => $sync,
-            'location_id' => $request['location']
-        ])) {
-            LogController::log('VLAN erstellt', '{"name": "' .  $request['name'] . '", "vid": "' . $request['vid'] . '", "description": "' . $request['description'] . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
-            return redirect()->route('vlan.index')->with('success', __('Msg.VlanCreated'));
-        }
+        $request->merge(['is_client_vlan' => true]);
 
-        return redirect()->back()->withErrors(['message' => 'VLAN could not be created']);
+        VlanService::createVlan($request, $scan, $sync);
+        CLog::info("VLAN", "VLAN {$request->input('name')} ({$request->input('vid')}) created");
+        return redirect()->back()->with('success', 'VLAN created');
     }
 
     /**
@@ -167,20 +158,8 @@ class VlanController extends Controller
             $is_client_vlan = true;
         }
 
-        if (Vlan::whereId($request['id'])->update([
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'ip_range' => $request['ip_range'] ?? null,
-            'scan' => $scan,
-            'sync' => $sync,
-            'is_client_vlan' => $is_client_vlan,
-        ])) {
-            $vlanD = Vlan::whereId($request['id'])->first();
-            LogController::log('VLAN aktualisiert', '{"name": "' . $request->name . '", "vid": "' . $vlanD->vid . '", "description": "' . $request->description . '" "scan": "' . $scan . '", "sync": "' . $sync . '"}');
-
-            return redirect()->back()->with('success', __('Msg.VlanUpdated'));
-        }
-        return redirect()->back()->withErrors(['message' => 'VLAN could not be updated']);
+        VlanService::updateVlan($request, $scan, $sync, $is_client_vlan);
+        return redirect()->back()->with('success', __('Msg.VlanUpdated'));
     }
 
     /**
@@ -191,12 +170,13 @@ class VlanController extends Controller
      */
     public function destroy(Request $vlan)
     {
-        $find = Vlan::find($vlan->id);
+        $find = Vlan::findOrFail($vlan->id);
         if ($find->delete()) {
-            LogController::log('VLAN gelöscht', '{"name": "' . $find->name . '", "vid": "' . $find->vid . '"}');
-
+            CLog::info("VLAN", "VLAN {$find->name} ({$find->vid}) deleted");
             return redirect()->back()->with('success', __('Msg.VlanDeleted'));
         }
+
+        CLog::error("VLAN", "Could not delete VLAN {$find->name} ({$find->vid})");
         return redirect()->back()->withErrors(['message' => 'Could not delete VLAN']);
     }
 }

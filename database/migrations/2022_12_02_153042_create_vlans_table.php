@@ -18,12 +18,11 @@ return new class extends Migration
             $table->integer('vid')->unique();
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->string('location_id')->references('id')->on('locations');
-            $table->boolean('is_client_vlan')->default(true);
+            $table->foreignId('location_id')->constrained();
             $table->string('ip_range')->nullable();
-            $table->boolean('scan')->default(false);
-            $table->boolean('sync')->default(true);
-
+            $table->boolean('is_client_vlan')->default(true);
+            $table->boolean('is_scanned')->default(false);
+            $table->boolean('is_synced')->default(true);
             $table->timestamps();
         });
     }
