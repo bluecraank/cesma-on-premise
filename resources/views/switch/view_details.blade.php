@@ -100,13 +100,13 @@
                 <div class="box">
                     <h2 class="subtitle">{{ __('Actions') }}</h2>
                     <div class="columns is-variable is-multiline">
-                        <div class="column has-text-centered is-narrow is-6 col-md-4 pb-0">
+                        <div class="column has-text-centered is-narrow is-6 is-12-tablet col-md-4 pb-0">
                             <button onclick="$('.modal-sync-vlans-specific').show();"
                                 class="p-1 m-0 is-fullwidth button is-small is-success">
                                 <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
                             </button>
                         </div>
-                        <div class="column is-narrow is-6 col-md-4 pb-0">
+                        <div class="column is-narrow is-6 is-12-tablet col-md-4 pb-0">
                             <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})"
                                 class="p-1 m-0 is-fullwidth button is-small is-success">
                                 <i class="is-hidden-touch mr-1 fas fa-key"></i> Sync Pubkeys
@@ -236,7 +236,7 @@
         </div>
 
 
-        <div class="column is-9">
+        <div class="column is-12">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role >= 1)
@@ -267,6 +267,7 @@
                 </div>
 
 
+                <div class="table-container">
                 <table id="portoverview" class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -276,7 +277,7 @@
                             <th>Untagged/Native</th>
                             <th>Tagged/Allowed</th>
                             <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
-                            <th class="has-text-centered" style="width: 120px;">Speed</th>
+                            <th class="has-text-centered" style="max-width: 120px;">Speed</th>
                         </tr>
                     </thead>
 
@@ -288,6 +289,7 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
     </div>

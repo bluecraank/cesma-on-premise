@@ -13,6 +13,7 @@
     min-width: 180px;
     min-height: 100vh;
     max-height: 100vh;
+    z-index: 999;
 }
 
 .menu {
