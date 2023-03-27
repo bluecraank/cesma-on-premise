@@ -1,9 +1,11 @@
 <div class="column is-narrow is-menu">
     <aside class="menu">
         <div style="padding-bottom:40px;">
-            <h2 class="is-logo has-text-centered"><i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>
-                <span class="logo-text">cesma</span></h2>
-            </h2>
+            <div class="has-text-centered">
+                    <i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>
+                    <span class="logo-text is-logo">cesma</span>
+                    <span style="margin-top:-10px;" class="is-block is-size-7 has-text-weight-bold">ON PREMISE</span>
+            </div>
 
             <div class="menu-items">
                 <p class="menu-label">{{ __('Menu.Label.Action') }}</p>
