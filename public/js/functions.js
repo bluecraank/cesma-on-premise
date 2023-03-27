@@ -47,43 +47,6 @@ $(document).mouseup(function (e) {
     }
 });
 
-$(document).ready(function () {
-
-    $(window).keydown(function (event) {
-        if (event.keyCode == 13) {
-            event.preventDefault();
-            return false;
-        }
-    });
-});
-
-// Table Sorting
-$('th').click(function (e) {
-    if (e.target !== e.currentTarget) return;
-    var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-    this.asc = !this.asc
-    if (!this.asc) { rows = rows.reverse() }
-    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
-})
-
-$('th label').click(function (e) {
-    var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).attr('data-row')))
-
-    console.log($(this).index());
-
-    $('th label').children().addClass('is-hidden');
-    $(this).children().removeClass('is-hidden');
-    $(this).children().toggleClass('fa-angle-down');
-    $(this).children().toggleClass('fa-angle-up');
-
-    this.asc = !this.asc
-
-    if (!this.asc) { rows = rows.reverse() }
-    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
-})
-
 function comparer(index) {
     return function (a, b) {
         var valA = getCellValue(a, index), valB = getCellValue(b, index)
@@ -148,3 +111,35 @@ $(document).ready(function () {
 setTimeout(function () {
     $(".notification.status").slideUp(250);
 }, 6000)
+
+
+// Table Sorting
+$(document).ready(function () {
+    $('.table thead tr th').click(function (e) {
+        if($(e).children().length > 0) {
+            return;
+        }
+        
+        if (e.target !== e.currentTarget) return;
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        this.asc = !this.asc
+        if (!this.asc) { rows = rows.reverse() }
+        for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+    });
+
+    $('th label').click(function (e) {
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).attr('data-row')))
+    
+        $('th label').children().addClass('is-hidden');
+        $(this).children().removeClass('is-hidden');
+        $(this).children().toggleClass('fa-angle-down');
+        $(this).children().toggleClass('fa-angle-up');
+    
+        this.asc = !this.asc
+    
+        if (!this.asc) { rows = rows.reverse() }
+        for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+    })
+});

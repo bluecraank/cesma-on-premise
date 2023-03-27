@@ -20,7 +20,7 @@
                 <div class="field">
                     <label class="label">ID</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-vid" name="vid" placeholder="VLAN Beschreibung">
+                        <input class="input vlan-vid" type="number" max="4096" min="1" name="vid" placeholder="VLAN ID">
                         <span class="icon is-small is-left">
                             <i class="fa fa-info"></i>
                         </span>

@@ -21,7 +21,7 @@
                     </p>
                 </div>
 
-                <label class="label">Gebäudename</label>
+                <label class="label">Raumname</label>
                 <div class="field">
                     <p class="control is-expanded">
                         <input required class="input" type="text" name="name" placeholder="Gebäudename / Straße">

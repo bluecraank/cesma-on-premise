@@ -473,8 +473,6 @@ class ArubaCX implements DeviceInterface
             "configuration" => $backup->restore_data,
         ];
 
-        var_dump(json_encode($data));
-
         $restore = Http::connectTimeout(30)->withoutVerifying()->withHeaders([
             'Cookie' => $cookie,
         ])->put($api_url, $data);

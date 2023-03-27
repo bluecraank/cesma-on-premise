@@ -47,11 +47,11 @@ class DatabaseCleanup extends Command
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
 
         Client::where(function($query) use ($vlans_ignore) {
+            $query->where('vlan_id', 0);
             foreach ($vlans_ignore as $vlan) {
-                $query->orWhere('vlan_id', '=', $vlan['vid']);
+                $query->orWhere('vlan_id', $vlan['vid']);
             }
         })->delete();
-
         
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
 
