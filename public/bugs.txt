@@ -1,2 +1,0 @@
-Custom uplinks zeigt nicht alle an (z.b sw sknuv1)
-Undefined array key beim auruf von statistik seite bei der utilization berechnung
