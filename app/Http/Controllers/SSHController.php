@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\CLog;
 use Illuminate\Http\Request;
 use App\Models\Device;
 use App\Models\Location;

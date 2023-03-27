@@ -14,7 +14,7 @@
             </div>
         </section>
         <footer class="modal-card-foot">
-            <button onclick="$('.modal-confirmation-command').hide();return false;" type="button"
+            <button onclick="$('.modal-confirmation-command').hide();" type="button"
                 name="executeSwitchCommand" class="button is-danger">Ausführen</button>
             <button onclick="$('.modal-confirmation-command').hide();return false;" type="button"
                 class="button">{{ __('Button.Cancel') }}</button>
