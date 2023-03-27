@@ -103,7 +103,7 @@ class DeviceController extends Controller
      */
     public function show($device_id)
     {
-        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->find($device_id);
+        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->where('id', $device_id)->firstOrFail();
         
         // Sort ports
         $device->ports = $device->ports->sort(function ($a, $b) {

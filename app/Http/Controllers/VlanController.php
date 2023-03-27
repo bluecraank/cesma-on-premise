@@ -32,7 +32,7 @@ class VlanController extends Controller
 
     public function getPortsByVlan($id)
     {
-        $vlan = Vlan::where('vid', $id)->first();
+        $vlan = Vlan::where('vid', $id)->firstOrFail();
         $vlans = [];
         $devices = Device::all()->sortBy('name')->keyBy('name');
         $ports = [];
