@@ -47,9 +47,9 @@ class DevicePortStatController extends Controller
         $dataset3 = $this->getBytesData($port_stats);
         $dataset2 = $this->getPacketsData($port_stats);
         
-        $utilization_rx = $port_stats[0] && $port_stats[0]->port_rx_bps != 0 ? number_format(($port_stats[0]->port_rx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
-        $utilization_tx = $port_stats[0] && $port_stats[0]->port_tx_bps != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
-        $speed = $port_stats[0] ? $port_stats[0]->port_speed / 10 : 0;
+        $utilization_rx = (isset($port_stats[0]) && $port_stats[0]->port_rx_bps) != 0 ? number_format(($port_stats[0]->port_rx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
+        $utilization_tx = (isset($port_stats[0]) && $port_stats[0]->port_tx_bps) != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
+        $speed = (isset($port_stats[0])) ? $port_stats[0]->port_speed / 10 : 0;
 
         return view('switch.view_portstats', compact('vlans', 'device', 'dataset', 'port_stats', 'last_stat', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3', 'avg_utilization_rx', 'avg_utilization_tx'));
     }

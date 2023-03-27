@@ -135,7 +135,7 @@ class DeviceController extends Controller
         $found_uplinks = $generated_uplinks;
 
         // Get custom uplinks
-        $custom_uplinks = $device->custom_uplink ? $device->custom_uplink->first()->uplinks : "[]";
+        $custom_uplinks = $device->custom_uplink?->uplinks ?? '[]';
         $custom_uplinks_comma_seperated = implode(', ', json_decode($custom_uplinks, true));
         $custom_uplinks_array = json_decode($custom_uplinks) ?? [];
 

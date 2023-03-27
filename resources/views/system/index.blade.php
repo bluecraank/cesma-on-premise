@@ -120,7 +120,7 @@
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role == 2)
                                     <button
-                                        onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('option.{{ $user->role }}').prop('selected', 'true');$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
+                                        onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('select').val({{ $user->role }});$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
                                         class="is-small button is-info"><i class="fas fa-cog"></i></button>
                                 @endif
                             </td>

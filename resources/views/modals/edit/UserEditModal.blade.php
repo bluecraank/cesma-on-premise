@@ -19,10 +19,10 @@
                 <div class="field">
                     <label class="label">{{ __('Role') }}</label>
                     <div class="select is-fullwidth">
-                        <select name="role">
-                            <option {{ (Auth::user()->role == 0) ? 'selected' : '' }} class="user" value="0">{{ __('Role.User') }}</option>
-                            <option {{ (Auth::user()->role == 1) ? 'selected' : '' }} class="admin" value="1">{{ __('Role.Admin') }}</option>
-                            <option {{ (Auth::user()->role == 2) ? 'selected' : '' }} class="superadmin" value="2">{{ __('Role.SuperAdmin') }}</option>
+                        <select class="role" name="role">
+                            <option class="user" value="0">{{ __('Role.User') }}</option>
+                            <option class="admin" value="1">{{ __('Role.Admin') }}</option>
+                            <option class="superadmin" value="2">{{ __('Role.SuperAdmin') }}</option>
                         </select>
                     </div>
                 </div>
