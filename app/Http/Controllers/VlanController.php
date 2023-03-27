@@ -94,7 +94,7 @@ class VlanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'vid' => 'required|integer|unique:vlans',
+            'vid' => 'required|integer|unique:vlans|between:1,4096',
             'name' => 'required|string',
             'description' => 'nullable|string',
             'ip_range' => 'nullable|string',

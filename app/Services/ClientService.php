@@ -99,7 +99,7 @@ class ClientService {
             }
 
             // Gerät wurde an einem Uplink Port gefunden, ignorieren
-            if(in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
+            if(isset($array_uplinks[$macs[$mac]['device_id']]) && in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
                 continue;
             }
                 

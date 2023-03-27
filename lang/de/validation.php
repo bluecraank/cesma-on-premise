@@ -178,5 +178,5 @@ return [
     |
     */
 
-    'attributes'           => [],
+    'attributes'           => ['vid' => "VLAN ID", 'name' => "Name", 'description' => "Beschreibung"],
 ];

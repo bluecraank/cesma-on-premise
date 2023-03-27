@@ -19,8 +19,8 @@
                 <div class="subtitle">{{ __('User.ChangeTheme') }}</div>
                 <div class="field">
                     <div class="control">
-                        <label class="label is-small">Themes</label>
-                        <div class="select is-small is-fullwidth">
+                        <label class="label">Themes</label>
+                        <div class="select is-fullwidth">
                             <select id="themeSwitch" name="theme">
                                 <option
                                     @php echo (isset($_COOKIE['theme']) and $_COOKIE['theme']=='light' ) ? 'selected' : '' @endphp
@@ -32,7 +32,10 @@
                         </div>
                         <script>
                             var themeSwitch = document.getElementById('themeSwitch');
-                            themeSwitch.value = (localStorage.getItem('theme'));
+                            if(localStorage.getItem('theme')) {
+
+                                themeSwitch.value = (localStorage.getItem('theme'));
+                            }
 
                             themeSwitch.addEventListener('change', function(event) {
                                 let theme = $(this).val();

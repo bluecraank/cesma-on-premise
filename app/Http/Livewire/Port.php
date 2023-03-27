@@ -122,6 +122,7 @@ class Port extends Component
 
                 if($this->taggedVlansUpdated) {
                     $success = $error = 0;
+                    
                     foreach($message['tagged'] as $vlan) {
                         if($vlan['success']) {
                             $success++;

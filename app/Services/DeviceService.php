@@ -39,7 +39,7 @@ class DeviceService
             ]);
         }
 
-        if(app()->runningInConsole()) {
+        if (app()->runningInConsole()) {
             return json_encode([
                 'success' => "false",
                 'message' => $api_data['message'],
@@ -54,7 +54,7 @@ class DeviceService
 
     static function storeApiData($data, $device)
     {
-        if(count($data['vlans']) != $device->vlans()->count()) {
+        if (count($data['vlans']) != $device->vlans()->count()) {
             $device->touch();
         }
 
@@ -73,7 +73,12 @@ class DeviceService
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
-        $ports = $device->ports();
+        $vlans = $data['vlans'];
+        DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
+            foreach ($vlans as $vid => $vname) {
+                $query->where('vlan_id', '!=', $vid);
+            }
+        })->delete();
 
         foreach ($data['ports'] as $port) {
 
@@ -95,20 +100,20 @@ class DeviceService
         $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
 
         $newVlanPorts = 0;
-        foreach($data['vlanports'] as $vlanport) {
-            if($vlanport['vlan_id'] != "Trunk") {
+        foreach ($data['vlanports'] as $vlanport) {
+            if ($vlanport['vlan_id'] != "Trunk") {
                 $newVlanPorts++;
             }
         }
 
-        if($currentVlanPorts != $newVlanPorts) {
+        if ($currentVlanPorts != $newVlanPorts) {
             DeviceVlanPort::where('device_id', $device->id)->delete();
             $device->touch();
         }
-        
+
         foreach ($data['vlanports'] as $vlanport) {
             // CX Trunk Discovery
-            if($vlanport['vlan_id'] == "Trunk") {
+            if ($vlanport['vlan_id'] == "Trunk") {
                 $data['uplinks'][$vlanport['port_id']] = $vlanport['port_id'];
             } else {
                 $test = $device->vlanports()->updateOrCreate(
@@ -122,7 +127,7 @@ class DeviceService
             }
         }
 
-        if(count($data['uplinks']) != $device->uplinks()->count()) {
+        if (count($data['uplinks']) != $device->uplinks()->count()) {
             $device->touch();
         }
 
@@ -135,13 +140,13 @@ class DeviceService
         }
 
         foreach ($data['statistics'] as $statistic) {
-            if(!isset($statistic['id']) or !$statistic['id']) {
+            if (!isset($statistic['id']) or !$statistic['id']) {
                 continue;
             }
-            
+
             $id = $device->ports()->where('name', $statistic['id'])->first() ?? null;
             $id = $id->id ?? null;
-            if($id) {
+            if ($id) {
                 DevicePortStat::create([
                     'device_port_id' => $id,
                     'port_speed' => $statistic['port_speed_mbps'] ?? 0,
@@ -164,7 +169,7 @@ class DeviceService
         $custom_uplink_ports = [];
         $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
         $custom_uplinks = $device->custom_uplink()->first();
-        if($custom_uplinks) {
+        if ($custom_uplinks) {
             $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
         }
 
@@ -172,7 +177,7 @@ class DeviceService
         $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
         foreach ($data['macs'] as $mac) {
             // Do not store macs on uplinks because its not correct discovered
-            if(in_array($mac['port'], $combined_uplinks)) {
+            if (in_array($mac['port'], $combined_uplinks)) {
                 // Store uplink mac address
                 Mac::updateOrCreate(
                     [
@@ -244,7 +249,7 @@ class DeviceService
         DeviceUplink::where('device_id', $device->id)->delete();
         DeviceCustomUplink::where('device_id', $device->id)->delete();
         DeviceVlanPort::where('device_id', $device->id)->delete();
-        DevicePortStat::where(function($query) use ($ports) {
+        DevicePortStat::where(function ($query) use ($ports) {
             foreach ($ports as $port) {
                 $query->orWhere('device_port_id', $port->id);
             }
@@ -307,7 +312,8 @@ class DeviceService
         return back()->with('error', __('Msg.UplinkNotUpdated'));
     }
 
-    static function updatePortDescription($logininfo, $port, $device_id, $newDescription) {
+    static function updatePortDescription($logininfo, $port, $device_id, $newDescription)
+    {
 
         $device = Device::find($device_id);
 
@@ -316,8 +322,8 @@ class DeviceService
         }
 
         $class = self::$types[$device->type];
-        
-        if(!$logininfo) {
+
+        if (!$logininfo) {
             return false;
         }
 
@@ -383,7 +389,8 @@ class DeviceService
         return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'location_id'));
     }
 
-    static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated) {
+    static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated)
+    {
 
         $device = Device::find($device_id);
 
@@ -393,17 +400,17 @@ class DeviceService
 
         $vlans = $device->vlans()->get()->keyBy('id')->toArray();
 
-        if(!$login_info) {
+        if (!$login_info) {
             return false;
         }
 
         $return = [];
-        if($untaggedIsUpdated) {
+        if ($untaggedIsUpdated) {
             $success_untagged = $class::setUntaggedVlanToPort($untaggedVlan, $port, $device, $vlans, false, $login_info);
             $return['untagged'] = $success_untagged;
         }
 
-        if($taggedIsUpdated) {
+        if ($taggedIsUpdated) {
             $success_tagged = $class::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $login_info);
             $return['tagged'] = $success_tagged;
         }
@@ -416,27 +423,29 @@ class DeviceService
 
     // Prevent mass login on switch api, use global cookie instead
     // Execute way faster
-    public function startApiSession($id, Request $request) {
+    public function startApiSession($id, Request $request)
+    {
 
         $device = Device::find($id);
 
-        if(!$device) {
+        if (!$device) {
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
         $class = self::$types[$device->type];
 
         $login_info = $class::API_LOGIN($device);
-        if(!$login_info) {
+        if (!$login_info) {
             return json_encode(['success' => 'false', 'message' => 'Failed login']);
         }
 
-        return json_encode(['success' => 'true', 'hash' => Crypt::encrypt($login_info), 'timestamp' => time()]);	
+        return json_encode(['success' => 'true', 'hash' => Crypt::encrypt($login_info), 'timestamp' => time()]);
     }
 
-    static function closeApiSession($cookie, $id) {
+    static function closeApiSession($cookie, $id)
+    {
         $device = Device::find($id);
-        if(!$device) {
+        if (!$device) {
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
         $class = self::$types[$device->type];

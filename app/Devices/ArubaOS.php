@@ -652,10 +652,11 @@ class ArubaOS implements DeviceInterface
                                 $old->delete();
                             }
 
-                            $return[] = ['success' => true, 'data' => ''];
-                            Log::channel('database')->info(__('Log.Vlan.Tagged.Removed', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name]);
+                            // $return[] = ['success' => true, 'data' => ''];
+
+                            Log::channel('database')->info(__('Log.Vlan.Tagged.Removed', ['vlan' => $vlans[$device_vlan_id]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name]);
                         } else {
-                            $return[] = ['success' => false, 'data' => $result['data']];
+                            // $return[] = ['success' => false, 'data' => $result['data']];
                         }
                     }
                 }
@@ -664,19 +665,6 @@ class ArubaOS implements DeviceInterface
             if ($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
-            }
-
-            $success = 0;
-            foreach ($return as $result) {
-                if ($result['success']) {
-                    $success++;
-                }
-            }
-
-            if ($success == count($taggedVlans)) {
-                return ['success' => true, 'data' => ''];
-            } else {
-                return ['success' => false, 'data' => __('Vlan.Update.Error.Tagged', ['port' => $port->name, 'success' => $success, 'total' => $total])];
             }
 
             return $return;

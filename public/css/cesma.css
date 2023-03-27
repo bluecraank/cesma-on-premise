@@ -27,8 +27,8 @@
 }
 
 .menu-list a {
-    padding-top: 5px !important;
-    padding-bottom: 5px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
 }
 
 .menu-items {
@@ -247,4 +247,8 @@ html, body {
   /* font-family: 'Raleway', sans-serif; */
   font-family: 'Titillium Web', sans-serif;
 
+}
+
+table thead tr th label {
+  cursor: pointer;
 }
