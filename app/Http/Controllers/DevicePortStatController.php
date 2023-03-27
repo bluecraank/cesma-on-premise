@@ -47,6 +47,7 @@ class DevicePortStatController extends Controller
         $dataset3 = $this->getBytesData($port_stats);
         $dataset2 = $this->getPacketsData($port_stats);
         
+        // Fixed undefined array index
         $utilization_rx = (isset($port_stats[0]) && $port_stats[0]->port_rx_bps) != 0 ? number_format(($port_stats[0]->port_rx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $utilization_tx = (isset($port_stats[0]) && $port_stats[0]->port_tx_bps) != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $speed = (isset($port_stats[0])) ? $port_stats[0]->port_speed / 10 : 0;
