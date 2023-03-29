@@ -26,9 +26,9 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>{{ __('Location') }}</th>
                 <th>{{ __('Description') }}</th>
                 <th>{{ __('Vlan.Subnet') }}</th>
-                {{-- <th class="has-text-centered">Scan</th> --}}
                 <th class="has-text-centered">Sync</th>
                 <th class="has-text-centered">Endgeräte-VLAN</th>
 
@@ -44,10 +44,7 @@
 
             @foreach ($vlans as $vlan)
                 @php
-                    $scan = $sync = $clients = false;
-                    if ($vlan->is_scanned == 1) {
-                        $scan = true;
-                    }
+                    $sync = $clients = false;
                     if ($vlan->is_synced == 1) {
                         $sync = true;
                     }
@@ -63,15 +60,15 @@
                         {{ $vlan->name }}
                     </td>
                     <td>
+                        {{ $vlan->location?->name }}
+                    </td>
+                    <td>
                         {{ $vlan->description }}
                     </td>
 
                     <td>
                         {{ $vlan->ip_range }}
                     </td>
-                    {{-- <td class="has-text-centered">
-                        <i class='fas {{ ($scan) ? 'fa-check' : 'fa-times' }}'></i>
-                    </td> --}}
                     <td class="has-text-centered">
                         <i class='fas {{ ($sync) ? 'fa-check' : 'fa-times' }}'></i>
                     </td>

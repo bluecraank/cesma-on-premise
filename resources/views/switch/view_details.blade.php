@@ -236,7 +236,7 @@
         </div>
 
 
-        <div class="column is-12">
+        <div class="column is-12-mobile is-12-tablet is-9-desktop">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
                     @if (Auth::user()->role >= 1)
