@@ -37,7 +37,7 @@ class DeviceRefresh extends Command
         $device = Device::find($this->argument('id'));
         
         if(!$device) {
-            CLog::error("Automated task", "Failed to refresh device, device not found", $device);
+            // CLog::error("Automated task", "Failed to refresh device, device not found", $device);
             Log::error("Failed to refresh device, device not found");
             return;
         }
@@ -46,7 +46,7 @@ class DeviceRefresh extends Command
         $refreshStatus = json_decode($refresh, true);
 
         if($refreshStatus['success'] == "false") {
-            CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshStatus['message']);
+            // CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshStatus['message']);
             Log::error("Failed to refresh device " . $device->name);
             return;
         }

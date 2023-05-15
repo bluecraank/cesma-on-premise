@@ -29,26 +29,32 @@ class GetHostname extends Command
      */
     public function handle()
     {
-        $clients = Client::all();
+        $clients = Client::whereNotNull('ip_address')->get();
 
         foreach ($clients as $client) {
 
-            if($client->ip_address == "") {
-                continue;
-            }
-
+            // DNS lookup for ip address of client
             $output = "";
-            $get = exec('timeout 0.35 host '.$client->ip_address, $output, $errors);
+            exec('timeout 0.35 host '.$client->ip_address, $output, $errors);
             $result = $output[0] ?? "";
             $found = strstr($result, "pointer");
             $hostname = str_replace(["pointer", " "], "", $found);
 
+            // Skip if no hostname was found
             if(!$hostname or $hostname == null or $hostname == "") {
                 continue;
             }
-
-            $client->timestamps = false;
+            
+            // Do not update stale clients (last updated older than 24 hours ago)
+            if($clients->updated_at < now()->subDay()) {
+                continue;
+            }
+            
             $client->hostname = rtrim($hostname, ".");
+
+            // Dont touch updated_at
+            $client->timestamps = false;
+            
             $client->save();
         }
 

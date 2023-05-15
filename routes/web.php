@@ -49,10 +49,11 @@ Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
     Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
     Route::get('/{device:id}', [DeviceController::class, 'show'])->name('details')->where('id', '[0-9]+');
     Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
-    Route::get('/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
     Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
 });
+
+Route::get('/switch/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
 
 // Admin only routes
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {

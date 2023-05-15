@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('vlans', function (Blueprint $table) {
-            $table->id();
-            $table->integer('vid')->unique();
+            $table->primary(['vid', 'location_id']);
+            $table->integer('vid');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->foreignId('location_id')->constrained();

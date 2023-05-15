@@ -388,6 +388,7 @@ class ArubaOS implements DeviceInterface
     static function createBackup($device): bool
     {
         if (!$login_info = self::API_LOGIN($device)) {
+            BackupController::store(false, false, false, $device);
             return false;
         }
 

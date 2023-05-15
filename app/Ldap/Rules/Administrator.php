@@ -15,7 +15,8 @@ class Administrator extends Rule
     public function isValid()
     {
         $administrators = Group::find(config('app.ldap_admin_group'));
+        $user = Group::find(config('app.ldap_user_group'));
 
-        return $this->user->groups()->recursive()->exists($administrators);
+        return $this->user->groups()->recursive()->exists($administrators) || $this->user->groups()->recursive()->exists($user);
     }
 }
