@@ -15,8 +15,8 @@
         </td>
 
         <td class="is-vcentered">
-            <input {{ $this->doNotDisable ? '' : 'disabled' }} wire:change="preparePortDescription()"
-                wire:model.debounce.1000ms="portDescription" class="mt-1 is-radiusless port-description-input is-link is-small input is-80"
+            <input {{ $this->doNotDisable ? '' : 'disabled' }}  wire:change="preparePortDescription()"
+                wire:model.debounce.1000ms="portDescription" class="mt-1 is-radiusless  @if(!$readonly) port-description-input @endif is-link is-small input is-80"
                 />
 
             <span class="has-custom-text-warning is-size-4">{{ $this->portDescriptionUpdated ? '*' : '' }}</span>
@@ -24,7 +24,7 @@
 
         <td class="is-vcentered">
             <div class="select is-small mt-1 is-link">
-                <select {{ $this->doNotDisable ? '' : 'disabled' }} wire:change="prepareUntaggedVlan()" wire:model="untaggedVlanId" class="select is-radiusless port-vlan-select">
+                <select {{ $this->doNotDisable ? '' : 'disabled' }} @if(!$readonly) wire:change="prepareUntaggedVlan()" @endif wire:model="untaggedVlanId" class="select is-radiusless @if(!$readonly) port-vlan-select @endif">
                     <option value="0">No VLAN</option>
                     @foreach ($this->vlans as $vlan)
                         <option value="{{ $vlan->id }}">{{ $vlan->name }}</option>

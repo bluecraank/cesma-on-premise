@@ -50,7 +50,10 @@ class Diff
     public static function changeUnwantedKeys($dimension) {
 
         // Bei mehr Anwendungsfällen dieser Funktionen, sollte ein Array mitgegeben werden welche Keys nicht gewollt sind
-
+        if(!is_array($dimension)) {
+            return $dimension;
+        }
+        
         foreach($dimension as $key => $value) {
             if($key == "created_at" || $key == "updated_at" || $key == "id") {
                 unset($dimension[$key]);

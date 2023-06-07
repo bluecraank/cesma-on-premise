@@ -25,7 +25,7 @@ class UpdateVlanRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'id' => 'required|integer',
+            'vid' => 'required|integer',
             'description' => 'required|string',
         ];
     }

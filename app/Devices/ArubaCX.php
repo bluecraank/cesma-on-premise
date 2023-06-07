@@ -277,7 +277,14 @@ class ArubaCX implements DeviceInterface
         foreach ($vlan_macs as $key => $macs) {
             foreach ($macs as $mac) {
                 $mac_filtered = str_replace(":", "", strtolower($mac['mac_addr']));
+
+                // skip if mac-port ist empty
+                if (empty($mac['port']) || !isset($mac['port'])) {
+                    continue;
+                }
+
                 $return[$mac_filtered] = [
+                    // Expecting 1/1/1 as Port, so we need to explode the key
                     'port' => explode("/", key($mac['port']))[2],
                     'mac' => $mac_filtered,
                     'vlan' => $key,

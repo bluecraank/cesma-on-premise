@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Vlan extends Model
 {
 
+    protected $primaryKey = 'vid';
+
     protected $fillable = [
         'name',
         'vid',

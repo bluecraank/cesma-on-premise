@@ -46,7 +46,7 @@ class GetHostname extends Command
             }
             
             // Do not update stale clients (last updated older than 24 hours ago)
-            if($clients->updated_at < now()->subDay()) {
+            if($client->updated_at < now()->subDay()) {
                 continue;
             }
             

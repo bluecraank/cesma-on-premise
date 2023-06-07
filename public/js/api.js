@@ -150,6 +150,7 @@ function deleteRoomModal(id, name) {
 
 function editVlanModal(id, name, description, ip, scan, sync, is_client_vlan) {
     let modal = $('.modal-edit-vlan');
+    console.log(id, name)
     modal.find('.vlan-id').val(id);
     modal.find('.vlan-name').val(name);
     modal.find('.vlan-desc').val(description);

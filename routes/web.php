@@ -13,6 +13,7 @@ use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
+use App\Models\Client;
 use App\Services\DeviceService;
 use App\Services\MacTypeService;
 use Illuminate\Support\Facades\Route;
@@ -142,3 +143,10 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
 
 // Login
 Auth::routes();
+
+
+Route::get('/export', function() {
+    $clients = Client::where('vlan_id', '520')->orWhere('vlan_id', '530');
+    $clients = $clients->where('ip_address', 'NOT LIKE', '192.168.%')->get();
+    dd($clients);
+});

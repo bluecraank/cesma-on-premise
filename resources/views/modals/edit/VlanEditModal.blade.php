@@ -10,7 +10,7 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <input type="hidden" class="vlan-id" name="id">
+                    <input type="hidden" class="vlan-id" name="vid">
                     <label class="label">Name*</label>
                     <p class="control has-icons-left">
                         <input class="input vlan-name" name="name" placeholder="Name des VLANs">

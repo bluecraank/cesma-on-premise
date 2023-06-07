@@ -289,7 +289,32 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+                </div>
+
+                <h2 class="subtitle">Trunks (experimental)</h2>
+                <div class="table-container">
+                    <table class="table is-striped is-narrow is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th class="has-text-centered" style="width: 45px;">Status</th>
+                                <th class="has-text-centered" style="width: 60px;">Port</th>
+                                <th>{{ __('Switch.Live.Portname') }}</th>
+                                <th>Untagged/Native</th>
+                                <th>Tagged/Allowed</th>
+                                <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
+                                <th class="has-text-centered" style="max-width: 120px;">Speed</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            @foreach ($device->ports as $port)
+                                @if (str_contains($port->name, 'Trk'))
+                                    @livewire('port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc, 'readonly' => true])
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                    </div>
             </div>
         </div>
     </div>

@@ -33,7 +33,8 @@ class VlanService
     }
     
     static function updateVlan($request, $scan, $sync, $is_client_vlan) {
-        $vlan = Vlan::whereId($request['id'])->first();
+        // dd($request->all());
+        $vlan = Vlan::where('vid', $request['vid'])->first();
         
         $vlan->update([
             'name' => $request['name'],

@@ -42,6 +42,8 @@ class Port extends Component
 
     private $portId;
 
+    public $readonly;
+
     public $newUntaggedVlan;
     public $untaggedVlanUpdated = false;
 
@@ -68,7 +70,7 @@ class Port extends Component
 
     public function render()
     {
-        return view('livewire.port', ['port' => $this->port]);
+        return view('livewire.port', ['port' => $this->port, 'readonly' => $this->readonly]);
     }
 
     public function prepareUntaggedVlan() {

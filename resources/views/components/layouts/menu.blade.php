@@ -4,7 +4,7 @@
             <div class="has-text-centered">
                     <i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>
                     <span class="logo-text is-logo">cesma</span>
-                    <span style="margin-top:-10px;" class="is-block is-size-7 has-text-weight-bold">ON PREMISE</span>
+                    <span style="margin-top:-10px;" class="is-block is-size-7 has-text-weight-bold">PROD</span>
             </div>
 
             <div class="menu-items">

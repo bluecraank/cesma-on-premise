@@ -85,11 +85,11 @@
                             @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button
-                                        onclick="editVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"
+                                        onclick="editVlanModal('{{ $vlan->vid }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                             <div class="control">
-                                <button onclick="deleteVlanModal('{{ $vlan->id }}', '{{ $vlan->name }}')"
+                                <button onclick="deleteVlanModal('{{ $vlan->vid }}', '{{ $vlan->name }}')"
                                     class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                             </div>
                             @endif

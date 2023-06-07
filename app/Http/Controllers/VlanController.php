@@ -170,7 +170,7 @@ class VlanController extends Controller
      */
     public function destroy(Request $vlan)
     {
-        $find = Vlan::findOrFail($vlan->id);
+        $find = Vlan::findOrFail($vlan->vid);
         if ($find->delete()) {
             CLog::info("VLAN", "VLAN {$find->name} ({$find->vid}) deleted");
             return redirect()->back()->with('success', __('Msg.VlanDeleted'));

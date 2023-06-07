@@ -80,8 +80,9 @@ class DeviceService
             }
         })->delete();
 
-        foreach ($data['ports'] as $port) {
+        $existingPorts = $device->ports()->get('name')->keyBy('name')->toArray();
 
+        foreach ($data['ports'] as $port) {
             DevicePort::updateOrCreate(
                 [
                     'name' => $port['id'],
@@ -94,6 +95,15 @@ class DeviceService
                     'vlan_mode' => $port['vlan_mode'],
                 ]
             );
+            $existingPorts[$port['id']] = true;
+        }
+
+        foreach($existingPorts as $port => $isExisting) {
+            if(is_bool($isExisting) and $isExisting) {
+                continue;
+            }
+
+            DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
         }
 
         // $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
@@ -129,6 +139,7 @@ class DeviceService
 
         if (count($data['uplinks']) != $device->uplinks()->count()) {
             $device->touch();
+            $device->uplinks()->delete();
         }
 
         foreach ($data['uplinks'] as $port => $uplink) {

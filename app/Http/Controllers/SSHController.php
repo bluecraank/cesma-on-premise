@@ -145,14 +145,15 @@ class SSHController extends Controller
                     $output = $newoutput;
                 }
 
-                if ($device->type == "aruba-os") {
-                } else {
-                    $oldoutput = $output;
-                    $output = strstr($output, json_decode($device->system_data, true)['name'] . "#");
-                    if ($output == false) {
-                        $output = $oldoutput;
-                    }
-                }
+                // if ($device->type == "aruba-os") {
+
+                // } else {
+                //     $oldoutput = $output;
+                //     $output = strstr($output, json_decode($device->system_data, true)['name'] . "#");
+                //     if ($output == false) {
+                //         $output = $oldoutput;
+                //     }
+                // }
 
                 if (SSHController::substr_count_array($output, array("Invalid", "not found", "Incomplete")) != 0) {
                     $return->status = 'xmark';

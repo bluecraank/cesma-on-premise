@@ -714,7 +714,7 @@ class ArubaOS implements DeviceInterface
                 }';
 
                 if (!$testmode) {
-                    // $response = self::API_POST_DATA($device->hostname, $cookie, "vlans", $api_version, $data);
+                    $response = self::API_POST_DATA($device->hostname, $cookie, "vlans", $api_version, $data);
                 } else {
                     $response = ['success' => true];
                 }
