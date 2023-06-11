@@ -30,9 +30,6 @@ return [
     'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
     'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
     'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
-    
-    // Replace the domain name in the hostname lookup
-    'DNS_CUT_DOMAIN' => env('DNS_CUT_DOMAIN', 'false'),
 
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 
@@ -177,6 +174,7 @@ return [
 
     'providers' => [
         Barryvdh\Debugbar\ServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         /*
          * Laravel Framework Service Providers...
          */
