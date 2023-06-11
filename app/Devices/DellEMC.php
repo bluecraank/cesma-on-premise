@@ -25,17 +25,17 @@ class DellEMC implements DeviceInterface {
     ];
 
     static function getSnmpData(Device $device): array {    
-        $snmp_data1 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
-        $snmp_data2 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
-        $snmp_data3 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
-        $snmp_data4 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
-        $snmp_data5 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
-        $snmp_data6 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
-        $snmp_data7 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
+        $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+        $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
+        $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
+        $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
+        $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
         // $snmp_data9 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
-        // $snmp_data10 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToIf'], 5000000, 1);
-        $snmp_data8 = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
-        $hostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
+        // $snmpIfNames0 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToIf'], 5000000, 1);
+        $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
+        $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
 
         $ports = [];
         $allVlans = [];
@@ -43,12 +43,12 @@ class DellEMC implements DeviceInterface {
         $portExtendedIndex = [];
         $allVlansByIndex = [];
 
-        if(is_object($hostname) || !is_array($snmp_data1) || !is_array($snmp_data2) || !is_array($snmp_data3) || !is_array($snmp_data4) || !is_array($snmp_data5)) {
+        if(is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes) || !is_array($snmpIpToMac) || !is_array($snmpPortsAssignedToVlans) || !is_array($snmpPortIndexToQBridgeIndex)) {
             return ['message' => 'Failed to get data from device', 'success' => false];
         }
 
 
-        foreach($snmp_data5 as $key => $value) {
+        foreach($snmpPortIndexToQBridgeIndex as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
             $value = str_replace("INTEGER: ", "", $value);
@@ -57,7 +57,7 @@ class DellEMC implements DeviceInterface {
 
         
         // dd($portExtendedIndex);
-        foreach($snmp_data2 as $key => $value) {
+        foreach($snmpIfIndexes as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
             if(str_contains($value, 'vlan')) {
@@ -87,7 +87,7 @@ class DellEMC implements DeviceInterface {
         }
 
 
-        foreach($snmp_data4 as $key => $value) {
+        foreach($snmpPortsAssignedToVlans as $key => $value) {
             $vlan_id = explode(".", $key);
             $vlan_id = $vlan_id[count($vlan_id) - 1];
             $value = str_replace("Hex-STRING: ", "", $value);
@@ -106,7 +106,7 @@ class DellEMC implements DeviceInterface {
             $allVlans[$vlan_id] = array_merge($allVlans[$vlan_id], ['ports' => $ports]);
         }
 
-        foreach($snmp_data1 as $key => $value) {
+        foreach($snmpIfNames as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
 
@@ -133,7 +133,7 @@ class DellEMC implements DeviceInterface {
         }
         
 
-        foreach($snmp_data7 as $key => $value) {
+        foreach($snmpIfHighSpeed as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
            $value = str_replace("Gauge32: ", "", $value);
@@ -142,7 +142,7 @@ class DellEMC implements DeviceInterface {
             }
         }
 
-        foreach($snmp_data6 as $key => $value) {
+        foreach($snmpIfOperStatus as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
             $value = str_replace("INTEGER: ", "", $value);
@@ -160,9 +160,9 @@ class DellEMC implements DeviceInterface {
         $data = [
             'ports' => self::formatPortData($allPorts, []),
             'vlans' => self::formatVlanData($allVlans),
-            'macs' => self::formatMacTableData($snmp_data3, $allVlansByIndex, $device, "", ""),
+            'macs' => self::formatMacTableData($snmpIpToMac, $allVlansByIndex, $device, "", ""),
             'vlanports' => self::formatPortVlanData([$allPorts, $allVlans]),
-            'informations' => self::formatSystemData(['data' => $snmp_data8, 'hostname' => $hostname]),
+            'informations' => self::formatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname]),
             'statistics' => self::formatExtendedPortStatisticData([], $allPorts),
             'uplinks' => self::formatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
             'success' => true,
