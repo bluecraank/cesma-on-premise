@@ -25,10 +25,11 @@ return new class extends Migration
             $table->string('firmware')->nullable();
             $table->string('hardware')->nullable();
             $table->string('named')->nullable();
-            $table->foreignId('location_id')->constrained();
+            $table->foreignId('site_id')->constrained();
             $table->foreignId('building_id')->constrained();
             $table->foreignId('room_id')->constrained();
-            $table->integer('location_number')->nullable();
+            $table->integer('location_description')->nullable();
+            $table->date('last_seen')->nullable();
             $table->string('type');
             $table->timestamps();
         });

@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::dropIfExists('vlans');
 
         Schema::create('vlans', function (Blueprint $table) {
-            $table->primary(['vid', 'location_id']);
+            $table->primary(['vid', 'site_id']);
             $table->integer('vid');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->foreignId('location_id')->constrained();
+            $table->foreignId('site_id')->constrained();
             $table->string('ip_range')->nullable();
             $table->boolean('is_client_vlan')->default(true);
             $table->boolean('is_scanned')->default(false);

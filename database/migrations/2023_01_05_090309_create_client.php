@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
+            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->string('hostname')->nullable();
             $table->integer('vlan_id');
             $table->string('port_id');
             $table->string('mac_address');
             $table->string('ip_address')->nullable();
-            $table->integer('online')->default(0);
             $table->string('type')->default('client');
             $table->timestamps();
         });

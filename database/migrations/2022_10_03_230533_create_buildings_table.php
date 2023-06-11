@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('buildings', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('location_id')->constrained();
+            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -14,14 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('vlans', function (Blueprint $table) {
-            $table->primary(['vid', 'location_id']);
+            $table->id();
             $table->integer('vid');
-            $table->string('name')->nullable();
+            $table->string('name');
             $table->string('description')->nullable();
-            $table->foreignId('location_id')->constrained();
+            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->string('ip_range')->nullable();
             $table->boolean('is_client_vlan')->default(true);
-            $table->boolean('is_scanned')->default(false);
             $table->boolean('is_synced')->default(true);
             $table->timestamps();
         });
