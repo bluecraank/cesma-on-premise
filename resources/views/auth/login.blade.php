@@ -1,3 +1,5 @@
+@section('title', 'Anmelden')
+
 <x-layouts.header />
 
 <body>

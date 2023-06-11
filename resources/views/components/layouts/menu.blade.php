@@ -2,13 +2,13 @@
     <aside class="menu">
         <div style="padding-bottom:40px;">
             <div class="has-text-centered">
-                    <i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>
-                    <span class="logo-text is-logo">cesma</span>
-                    <span style="margin-top:-10px;" class="is-block is-size-7 has-text-weight-bold">PROD</span>
+                <i style="font-size:25px;margin-left:-6px" class="fa fa-terminal"></i>
+                <span class="logo-text is-logo">cesma</span>
+                <span style="margin-top:-10px;" class="is-block is-size-7 has-text-weight-bold">DEV</span>
             </div>
 
             <div class="menu-items">
-                <p class="menu-label">{{ __('Menu.Label.Action') }}</p>
+                <p class="menu-label">{{ __('Action') }}</p>
                 <ul class="menu-list">
                     <li>
                         <a href="{{ route('perform-ssh') }}"
@@ -18,7 +18,7 @@
                         </a>
                     </li>
                 </ul>
-                <p class="menu-label">{{ __('Menu.Label.Management') }}</p>
+                <p class="menu-label">{{ __('Management') }}</p>
                 <ul class="menu-list">
                     <li>
                         <a href="{{ route('dashboard') }}" class="{{ request()->is('/') ? 'has-text-primary' : '' }}">
@@ -34,17 +34,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('vlans') }}"
-                            class="{{ request()->is('vlans') ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('vlans') }}" class="{{ request()->is('vlans') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-ethernet"></i></span>
                             <span>{{ __('Menu.Vlans') }}</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('uplinks') }}"
-                            class="{{ request()->is('switch/uplinks') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-up-down"></i></span>
-                            <span>{{ __('Menu.Uplinks') }}</span>
                         </a>
                     </li>
                     <li>
@@ -56,7 +48,7 @@
                     </li>
                 </ul>
 
-                <p class="menu-label">{{ __('Menu.Label.User') }}</p>
+                <p class="menu-label">{{ __('User') }}</p>
                 <ul class="menu-list">
                     <li>
                         <a href="{{ route('user-settings') }}"
@@ -67,11 +59,26 @@
                     </li>
                 </ul>
 
-                <p class="menu-label">{{ __('Menu.Label.System') }}</p>
+                <p class="menu-label">{{ __('Locations') }}</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('locations') }}"
-                            class="{{ request()->is('locations') ? 'has-text-primary' : '' }}">
+                        <a href="{{ route('buildings') }}"
+                            class="{{ request()->is('buildings') ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-building"></i></span> <span>{{ __('Buildings') }}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('rooms') }}" class="{{ request()->is('rooms') ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-door-open"></i></span>
+                            <span>{{ __('Rooms') }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="menu-label">{{ __('System') }}</p>
+                <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('sites') }}" class="{{ request()->is('sites') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-location-dot"></i></span>
                             <span>{{ __('Menu.Locations') }}</span>
                         </a>
@@ -79,7 +86,7 @@
                     <li>
                         <a href="{{ route('system') }}"
                             class="{{ request()->is('system') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('Menu.System') }}</span>
+                            <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('System') }}</span>
                         </a>
                     </li>
                     <li>
@@ -106,9 +113,23 @@
                     CESMA {{ config('app.version') }}
                 </p>
 
-
-                <button class="is-radiusless button is-fullwidth" style="position:absolute;bottom:0;"
-                    onclick="collapseMenu(false, this)"><i class="fas fa-angle-left"></i></button>
+                <div class="site-selection">
+                    <form id="site-form" action="{{ route('change-site') }}" method="post">
+                    
+                        @method('PUT')
+                        @csrf
+                        <select onchange="event.preventDefault();document.getElementById('site-form').submit();" name="site_id">
+                            <option value="{{  Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
+                            @foreach (Auth::user()->availableSites() as $site)
+                                @if($site->id == Auth::user()->currentSite()->id)
+                                    @continue
+                                @endif
+                                
+                                <option value="{{ $site->id }}">{{ $site->name }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
             </div>
 
         </div>

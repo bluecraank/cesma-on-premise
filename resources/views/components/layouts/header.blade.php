@@ -19,11 +19,11 @@
     @livewireStyles
     @livewireScripts
 
-    @if (Route::is('details'))
+    @if (Route::is('show-device'))
         <script src="/js/api_ports.js?{{ config('app.version') }}"></script>
     @endif
 
-    @if (Auth::user() && Auth::user()->role >= 1) 
+    @if (Auth::user() && Auth::user()->role >= 1)
         <script src="/js/api.js?{{ config('app.version') }}"></script>
     @endif
 
@@ -31,7 +31,13 @@
     <script src="/js/functions.js?{{ config('app.version') }}"></script>
     <script src="/js/theme.js?{{ config('app.version') }}"></script>
 
-    <title>@yield('title') | CESMA</title>
+    @guest
+        <title>@yield('title') | CESMA</title>
+    @endguest
+
+    @auth
+        <title>@yield('title') | {{ Auth::user()?->currentSite()->name ?? '' }} | CESMA</title>
+    @endauth
 </head>
 <noscript>
     <div class="no-use">
