@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Header.Switches') }}</h1>
+    <h1 class="title is-pulled-left">{{ __('Switches') }}</h1>
 
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role >= 1)
@@ -26,8 +26,10 @@
                 <th>Name</th>
                 <th>Modell</th>
                 <th>Firmware</th>
-                <th>Standort</th>
-                <th style="width:150px;text-align:center">Aktionen</th>
+                <th>{{ __('Building') }}</th>
+                <th>{{ __('Room') }}</th>
+                <th>{{ __('Description') }}</th>
+                <th style="width:150px;text-align:center">{{ __('Actions') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -39,7 +41,7 @@
 
             @if ($devices->count() == 0)
                 <tr>
-                    <td colspan="5" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
+                    <td colspan="7" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
                 </tr>
             @endif
 
@@ -48,12 +50,13 @@
                     @if($device->created_at == $device->updated_at)
                         <td><div title="{{ __('Hint.NewlyCreated') }}" class="mr-1 lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
                     @else
-                        <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="/switch/{{ $device->id }}">{{ $device->name }}</href></td>
+                        <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="{{ route('show-device', $device->id) }}">{{ $device->name }}</href></td>
                     @endif
                     <td>{{ $device->modelOrUnknown() }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
-                    <td>{{ $device->location()->first()->name ?? 'Unknown' }}, {{ $device->building()->first()->name ?? 'Unknown' }}
-                        - {{ $device->room()->first()->name ?? 'Unknown' }} #{{ $device->location_number }}</td>
+                    <td>{{ $device->building()->first()->name }}</td>
+                    <td>{{ $device->room()->first()->name }}</td>
+                    <td>{{ $device->location_description }}</td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
@@ -76,7 +79,7 @@
                             @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->location_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_number }}')"
+                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->site_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_description }}')"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">

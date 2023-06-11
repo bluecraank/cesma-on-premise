@@ -2,7 +2,7 @@
 
 <x-layouts.main>
     <div class="box">
-        <h1 class="title is-pulled-left">{{ __('Header.Backups') }} {{ $device->name }}</h1>
+        <h1 class="title is-pulled-left">{{ __('Backups') }} - {{ $device->name }}</h1>
 
         <div class="is-pulled-right ml-4">
         </div>

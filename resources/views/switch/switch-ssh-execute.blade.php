@@ -4,7 +4,7 @@
     <div class="box">
         <div class="columns">
             <div class="column is-4">
-                <h1 class="title">{{ __('Header.SSH') }}</h1>
+                <h1 class="title">{{ __('SSH') }}</h1>
                 <form action="" method="post" id="executeForm">
                     <input type="hidden" name="api_token" value="{{ Auth::user()->api_token }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -13,10 +13,9 @@
                             <label class="label">{{ __('Switch.SSH.SelectSwitch') }}</label>
                             <div class="select is-fullwidth is-small">
                                 <select name="execute-specify-switch" id="">
-                                    <option value="every-switch">{{ __('Switch.SSH.AllSwitches') }}</option>
-                                    <option selected value="specific-switch">{{ __('Switch.SSH.SelectSwitch') }}
+                                    <option value="every-switch">{{ __('Switch.SSH.AllSwitches') }} - {{  Auth::user()->currentSite()->name }}</option>
+                                    <option selected value="specific-switch">{{ __('Switch.SSH.SelectSwitch') }} - {{  Auth::user()->currentSite()->name }}
                                     </option>
-                                    <option value="specific-location">{{ __('Switch.SSH.ByLocation') }}</option>
                                 </select>
                             </div>
                         </div>
@@ -34,8 +33,8 @@
                                 <div class="location-select control has-icons-left is-hidden">
                                     <div class="select is-fullwidth is-small">
                                         <select required name="execute-switch-select-loc">
-                                            @foreach ($locations as $location)
-                                                <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                            @foreach ($sites as $site)
+                                                <option value="{{ $site->id }}">{{ $site->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>

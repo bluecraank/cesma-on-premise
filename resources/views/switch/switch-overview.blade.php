@@ -1,4 +1,4 @@
-@section('title', 'All Switches')
+@section('title', __('Switches'))
 
 <x-layouts.main>
     @livewire('search-devices')
