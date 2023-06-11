@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Devices\ArubaCX;
 use App\Devices\ArubaOS;
+use App\Devices\DellEMC;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Helper\CLog;
@@ -25,12 +26,14 @@ class DeviceController extends Controller
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
         'dell-emc' => DellEMC::class,
+        'dell-emc-powerswitch' => DellEMC::class,
     ];
 
     static $typenames = [
         'aruba-os' => 'HP ArubaOS',
         'aruba-cx' => 'HP ArubaOS-CX',
-        'dell-emc' => 'Dell EMC OS10 Enterprise'
+        'dell-emc' => 'Dell EMC OS10 Enterprise',
+        'dell-emc-powerswitch' => "Dell EMC PowerSwitch"
     ];
 
     /**

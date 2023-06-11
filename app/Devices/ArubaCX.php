@@ -17,6 +17,7 @@ use App\Helper\CLog;
 use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
 use App\Http\Controllers\BackupController;
+use App\Models\Device;
 
 class ArubaCX implements DeviceInterface
 {
@@ -35,6 +36,11 @@ class ArubaCX implements DeviceInterface
     ];
 
     static $port_if_uri = "system/interfaces/1%2F1%2F";
+
+    static function getSnmpData(Device $device): array
+    {
+        return [];
+    }
 
     static function API_GET_VERSIONS($hostname): string
     {
@@ -238,7 +244,7 @@ class ArubaCX implements DeviceInterface
         return $data;
     }
 
-    static function formatUplinkData($ports)
+    static function formatUplinkData($ports): array
     {
         $uplinks = [];
         foreach ($ports as $port) {

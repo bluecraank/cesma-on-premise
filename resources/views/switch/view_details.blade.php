@@ -50,7 +50,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading"><strong>{{ __('Switch.Live.LastUpdate') }}</strong></p>
-                <p class="subtitle">{{ $device->updated_at->diffForHumans() }}</p>
+                <p class="subtitle">{{ $device->last_seen?->diffForHumans() ?? 'Never' }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">

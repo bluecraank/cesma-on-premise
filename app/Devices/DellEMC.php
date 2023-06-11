@@ -25,17 +25,17 @@ class DellEMC implements DeviceInterface {
     ];
 
     static function getSnmpData(Device $device): array {    
-        $snmp_data1 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['if_name'], 5000000, 1);
-        $snmp_data2 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['if_index'], 5000000, 1);
-        $snmp_data3 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
-        $snmp_data4 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
-        $snmp_data5 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
-        $snmp_data6 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
-        $snmp_data7 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
-        // $snmp_data9 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['macToPort'], 5000000, 1);
-        // $snmp_data10 = snmp2_real_walk("10.50.2.200", 'public', self::$snmp_oids['macToIf'], 5000000, 1);
-        $snmp_data8 = snmp2_get("10.50.2.200", 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
-        $hostname = snmp2_get("10.50.2.200", 'public', self::$snmp_oids['hostname'], 5000000, 1);
+        $snmp_data1 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        $snmp_data2 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        $snmp_data3 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+        $snmp_data4 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
+        $snmp_data5 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
+        $snmp_data6 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
+        $snmp_data7 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
+        // $snmp_data9 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
+        // $snmp_data10 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToIf'], 5000000, 1);
+        $snmp_data8 = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
+        $hostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
 
         $ports = [];
         $allVlans = [];

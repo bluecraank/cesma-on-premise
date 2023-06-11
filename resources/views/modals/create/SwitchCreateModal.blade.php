@@ -35,6 +35,7 @@
                                 <option value="aruba-os">HP ArubaOS</option>
                                 <option value="aruba-cx">HP ArubaCX</option>
                                 <option value="dell-emc">Dell EMC OS10 Enterprise</option>
+                                <option value="dell-emc-powerswitch">Dell EMC PowerSwitch (N1548P ...)</option>
                             </select>
                         </div>
                     </div>

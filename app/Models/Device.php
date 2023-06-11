@@ -24,6 +24,10 @@ class Device extends Model
         'type',
     ];
 
+    protected $dates = [
+        'last_seen',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *

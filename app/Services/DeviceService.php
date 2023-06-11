@@ -28,6 +28,7 @@ class DeviceService
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
         'dell-emc' => DellEMC::class,
+        'dell-emc-powerswitch' => DellEMC::class,
     ];
 
     static function refreshDevice(Device $device)
@@ -58,7 +59,7 @@ class DeviceService
 
     static function storeApiData($data, $device)
     {
-        $device->touch();
+        $device->touch('last_seen');
 
         foreach ($data['vlans'] as $vid => $vname) {
             $device->vlans()->updateOrCreate(
