@@ -1,9 +1,9 @@
 <?php
 
 use App\Devices\ArubaCX;
+use App\Devices\DellEMC;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
 use App\Http\Controllers\BackupController;
@@ -13,7 +13,8 @@ use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
-use App\Models\Client;
+use App\Http\Controllers\SiteController;
+use App\Models\Device;
 use App\Services\DeviceService;
 use App\Services\MacTypeService;
 use Illuminate\Support\Facades\Route;
@@ -39,49 +40,50 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
     Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports')->where('id', '[0-9]+');
-    Route::get('/locations', [LocationController::class, 'index'])->name('locations');
+    Route::get('/sites', [SiteController::class, 'index'])->name('sites');
     Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');
     Route::get('/logs', [SystemController::class, 'index_logs'])->name('logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('clients');
+    Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings');
+    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms');
 });
-Route::prefix('switch')->middleware('auth:sanctum')->group(function () {
+Route::prefix('device')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
-    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('details')->where('id', '[0-9]+');
-    Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('backups-switch')->where('id', '[0-9]+');
+    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
+    Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('device-backups')->where('id', '[0-9]+');
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
     Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
 });
 
-Route::get('/switch/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
+Route::get('/device/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
 
 // Admin only routes
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     // Allgemeine Aktionen
     Route::get('/execute', [SSHController::class, 'index'])->name('perform-ssh');
-    Route::post('/location', [LocationController::class, 'store']);
-    Route::post('/building', [BuildingController::class, 'store']);
-    Route::post('/room', [RoomController::class, 'store']);
-    Route::put('/building', [BuildingController::class, 'update']);
-    Route::put('/location', [LocationController::class, 'update']);
-    Route::put('/room', [RoomController::class, 'update']);
-    Route::delete('/building', [BuildingController::class, 'destroy']);
-    Route::delete('/location', [LocationController::class, 'destroy']);
-    Route::delete('/room', [RoomController::class, 'destroy']);
 
-    // Vlan Aktionen
-    Route::post('/vlan', [VlanController::class, 'store']);
-    Route::delete('/vlan', [VlanController::class, 'destroy']);    
-    Route::put('/vlan', [VlanController::class, 'update']);
+    Route::post('/sites', [SiteController::class, 'store'])->name('create-site');
+    Route::put('/sites', [SiteController::class, 'update'])->name('update-site');
+    Route::delete('/sites', [SiteController::class, 'destroy'])->name('delete-site');
+    Route::put('/sites/change', [SiteController::class, 'changeSite'])->name('change-site');
 
-    Route::post('/vlan-template', [SystemController::class, 'storeTemplate']);
-    Route::delete('/vlan-template', [SystemController::class, 'deleteTemplate']);
-    Route::put('/vlan-template', [SystemController::class, 'updateTemplate']);
+    Route::post('/buildings', [BuildingController::class, 'store'])->name('create-building');
+    Route::put('/buildings', [BuildingController::class, 'update'])->name('update-building');
+    Route::delete('/buildings', [BuildingController::class, 'destroy'])->name('delete-building');
+
+    Route::post('/rooms', [RoomController::class, 'store']);
+    Route::put('/rooms', [RoomController::class, 'update']);
+    Route::delete('/rooms', [RoomController::class, 'destroy']);
+
+    Route::post('/vlans', [VlanController::class, 'store']);
+    Route::put('/vlans', [VlanController::class, 'update']);
+    Route::delete('/vlans', [VlanController::class, 'destroy']);    
 
     Route::post('/router', [SystemController::class, 'storeRouter']);
-    Route::delete('/router', [SystemController::class, 'deleteRouter']);
     Route::put('/router', [SystemController::class, 'updateRouter']);
+    Route::delete('/router', [SystemController::class, 'deleteRouter']);
 
     // Pubkey Aktionen
     Route::post('/pubkey/add', [PublicKeyController::class, 'store']);
@@ -91,6 +93,7 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
         $key = $request->input('key');
         return "<pre>".Crypt::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
     });
+    
     Route::get('/privatekey', function() {
         if(!Storage::disk('local')->get('ssh.key')) {
             return view('ssh.encrypt');
@@ -98,7 +101,6 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
             return response('SSH Key already exists', 400);
         }
     });
-
 
     // User Aktionen
     Route::put('/user/role', [SystemController::class, 'updateUserRole']);
@@ -109,12 +111,11 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::delete('/clients/type', [MacTypeService::class, 'delete']);   
 });
 
-Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
+Route::prefix('device')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
     // Views
     Route::put('/uplinks', [DeviceService::class, 'storeCustomUplinks']);
-    Route::get('/topology', [DeviceController::class, 'view_topology'])->name('topology');
 
-    // Aktionen für bestimmten Switch
+    // Aktionen für bestimmten device
     Route::post('/{device:id}/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
     Route::post('/{device:id}/action/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
     Route::post('/{device:id}/action/sync-vlans', [DeviceService::class, 'syncVlansToDevice'])->where('id', '[0-9]+');
@@ -130,9 +131,9 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::delete('/backup/delete', [BackupController::class, 'destroy']);
 
     // Switch Aktionen
-    Route::post('/create', [DeviceController::class, 'store']);
-    Route::put('/update', [DeviceController::class, 'update']);
-    Route::delete('/delete', [DeviceController::class, 'destroy']);
+    Route::post('/create', [DeviceController::class, 'store'])->name('create-switch');
+    Route::put('/update', [DeviceController::class, 'update'])->name('update-switch');
+    Route::delete('/delete', [DeviceController::class, 'destroy'])->name('delete-switch');
 
     // Aktionen für jeden Switch
     Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH'])->where('id', '[0-9]+');
@@ -141,12 +142,9 @@ Route::prefix('switch')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/action/sync-vlans', [DeviceService::class, 'syncVlansToAllDevices'])->name('VLAN Sync');
 });
 
+Route::get('/test', function() {
+    echo DellEMC::getSnmpData(Device::find(1));
+});
+
 // Login
 Auth::routes();
-
-
-Route::get('/export', function() {
-    $clients = Client::where('vlan_id', '520')->orWhere('vlan_id', '530');
-    $clients = $clients->where('ip_address', 'NOT LIKE', '192.168.%')->get();
-    dd($clients);
-});
