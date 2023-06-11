@@ -8,6 +8,7 @@
 
     interface DeviceInterface
     {
+        static function getSnmpData(Device $device): Array;
 
         static function API_GET_VERSIONS(Device $device): string;
 
@@ -36,6 +37,8 @@
         static function formatExtendedPortStatisticData(Array $portstats, Array $portdata): Array;
 
         static function formatPortVlanData(Array $vlanports): Array;
+
+        static function formatUplinkData(Array $ports): array;
     
         static function formatVlanData(Array $vlans): Array; 
 
