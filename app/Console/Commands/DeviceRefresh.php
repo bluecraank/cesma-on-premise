@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Devices\DellEMC;
 use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Http\Controllers\DeviceController;

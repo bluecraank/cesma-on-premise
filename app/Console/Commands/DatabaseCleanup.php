@@ -40,7 +40,7 @@ class DatabaseCleanup extends Command
         Mac::whereDate('created_at', '<=', now()->subWeek(1))->delete();
         Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
         DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
-        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(4))->delete();
+        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
 
