@@ -17,6 +17,7 @@ use App\Helper\CLog;
 use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
 use App\Http\Controllers\BackupController;
+use App\Models\Device;
 
 class ArubaOS implements DeviceInterface
 {
@@ -33,6 +34,11 @@ class ArubaOS implements DeviceInterface
         "vlanport" => 'vlans-ports',
         "mac-table" => 'mac-table',
     ];
+
+    static function getSnmpData(Device $device): array
+    {
+        return [];
+    }
 
     static function API_GET_VERSIONS($hostname): string
     {
@@ -245,7 +251,7 @@ class ArubaOS implements DeviceInterface
         return $data;
     }
 
-    static function formatUplinkData($ports)
+    static function formatUplinkData($ports): array
     {
         $uplinks = [];
         foreach ($ports as $port) {
