@@ -1,5 +1,5 @@
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Header.Vlans') }}</h1>
+    <h1 class="title is-pulled-left">{{ __('Vlans') }}</h1>
 
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role >= 1)
@@ -26,11 +26,10 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>{{ __('Location') }}</th>
                 <th>{{ __('Description') }}</th>
                 <th>{{ __('Vlan.Subnet') }}</th>
                 <th class="has-text-centered">Sync</th>
-                <th class="has-text-centered">Endgeräte-VLAN</th>
+                <th class="has-text-centered">Endgeräte</th>
 
                 <th style="width:150px;text-align:center">{{ __('Actions') }}</th>
             </tr>
@@ -58,9 +57,6 @@
                     </td>
                     <td>
                         {{ $vlan->name }}
-                    </td>
-                    <td>
-                        {{ $vlan->location?->name }}
                     </td>
                     <td>
                         {{ $vlan->description }}

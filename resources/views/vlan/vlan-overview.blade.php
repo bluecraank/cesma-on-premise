@@ -11,11 +11,11 @@
             </div>
         </div>
 
-        @include('modals.create.VlanAddModal')
+        @include('modals.create.CreateVlanModal')
 
         @include('modals.edit.VlanEditModal')
 
-        @include('modals.delete.VlanDeleteModal')
+        @include('modals.delete.DeleteVlanModal')
 
         @include('modals.VlanSyncModal')
     @endif
