@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateBuildingRequest extends FormRequest
+class UpdateSiteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,7 @@ class UpdateBuildingRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:100',
-            'id' => 'required|integer|exists:buildings,id',
+            'name' => 'required|max:100|unique:sites,name,' . $this->id,
         ];
     }
 }
