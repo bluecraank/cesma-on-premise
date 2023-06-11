@@ -17,10 +17,8 @@
                         <label class="label">Standort</label>
                         <div class="control">
                             <div class="select">
-                                <select name="location_id">
-                                    @foreach ($locations as $location)
-                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
-                                    @endforeach
+                                <select name="site_id" readonly>
+                                    <option value="{{ Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
                                 </select>
                             </div>
                     </div>

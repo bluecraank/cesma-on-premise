@@ -1,5 +1,5 @@
 <div class="modal modal-new-switch">
-    <form onsubmit="$(this).find('.button.is-success').addClass('is-loading');" action="/switch/create" method="post">
+    <form onsubmit="$(this).find('.button.is-success').addClass('is-loading');" action="{{  route('create-switch') }}" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
@@ -32,8 +32,9 @@
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select required name="type">
-                                <option value="aruba-os">ArubaOS</option>
-                                <option value="aruba-cx">ArubaCX</option>
+                                <option value="aruba-os">HP ArubaOS</option>
+                                <option value="aruba-cx">HP ArubaCX</option>
+                                <option value="dell-emc">Dell EMC OS10 Enterprise</option>
                             </select>
                         </div>
                     </div>
@@ -43,9 +44,9 @@
                         <div class="field">
                             <label class="label is-small">{{ __('Location') }}</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="location_id" required>
-                                    @foreach ($locations as $location)
-                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                <select class="switch-location" name="site_id" required>
+                                    @foreach ($sites as $site)
+                                        <option value="{{ $site->id }}">{{ $site->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -82,7 +83,7 @@
                     <div class="column is-6">
                         <div class="field is-fullwidth">
                             <label class="label is-small">Reihenfolge</label>
-                            <input class="input is-small is-fullwidth switch-numbering" name="location_number" type="number"
+                            <input class="input is-small is-fullwidth switch-numbering" name="location_description" type="number"
                                 placeholder="1" value="1" required>
                         </div>
                     </div>

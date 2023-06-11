@@ -1,5 +1,5 @@
 <div class="modal modal-edit-switch">
-    <form action="/switch/update" method="post">
+    <form action="{{  route('update-switch') }}" method="post">
         @csrf
         @method('PUT')
 
@@ -36,9 +36,9 @@
                         <div class="field">
                             <label class="label is-small">{{ __('Location') }}</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="location_id">
-                                    @foreach ($locations as $location)
-                                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                <select class="switch-location" name="site_id">
+                                    @foreach ($sites as $site)
+                                        <option value="{{ $site->id }}">{{ $site->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -75,7 +75,7 @@
                     <div class="column is-6">
                         <div class="field is-fullwidth">
                             <label class="label is-small">Reihenfolge</label>
-                            <input class="input is-small is-fullwidth switch-numbering" name="location_number" type="number"
+                            <input class="input is-small is-fullwidth switch-numbering" name="location_description" type="number"
                                 placeholder="1">
                         </div>
                     </div>

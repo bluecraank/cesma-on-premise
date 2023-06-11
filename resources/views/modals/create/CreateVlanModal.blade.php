@@ -1,5 +1,5 @@
 <div class="modal modal-add-vlan">
-    <form action="/vlan" method="post">
+    <form action="{{ route('vlans') }}" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
@@ -39,10 +39,8 @@
                 <div class="field">
                     <label class="label">{{ __('Location') }}</label>
                     <div class="select is-fullwidth">
-                        <select name="location_id">
-                            @foreach($locations as $location)
-                                <option value="{{ $location->id }}">{{ $location->name }}</option>
-                            @endforeach
+                        <select name="site_id" readonly>
+                            <option value="{{ Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
                         </select>
                     </div>
                 </div>
@@ -54,12 +52,6 @@
                             <i class="fa fa-up-down"></i>
                         </span>
                     </p>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="scan" class="vlan-scan">
-                        {{ __('Vlan.Scan') }}
-                    </label>
                 </div>
                 <div class="field">
                     <label class="checkbox">

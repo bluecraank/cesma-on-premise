@@ -1,5 +1,5 @@
 <div class="modal modal-edit-room">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="/room" method="post">
+    <form onsubmit="$('.submit').addClass('is-loading')" action="{{ route('rooms') }}" method="post">
         @csrf
         @method('PUT')
         <div class="modal-background"></div>

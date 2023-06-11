@@ -17,9 +17,9 @@
                     </p>
                 </div>
                 <div class="field">
-                    <label class="label">{{ __('Description') }}</label>
+                    <label class="label">{{ __('Description') }}*</label>
                     <p class="control has-icons-left">
-                        <input class="input" name="mac_desc" placeholder="MAC Beschreibung">
+                        <input class="input" name="mac_desc" required placeholder="MAC Beschreibung">
                         <span class="icon is-small is-left">
                             <i class="fa fa-info"></i>
                         </span>
@@ -43,7 +43,7 @@
                         <select name="mac_type">
                             <option value="">{{ __('Misc.Select.SelectText') }}</option>
                             @foreach($mac_types as $type)
-                                <option value="{{ $type }}">{{ $type->type }}</option>
+                                <option value="{{ $type->type }}">{{ $type->type }}</option>
                             @endforeach
                         </select>
                     </div>

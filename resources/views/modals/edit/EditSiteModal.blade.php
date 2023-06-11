@@ -1,5 +1,5 @@
 <div class="modal modal-edit-location">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="/location" method="post">
+    <form onsubmit="$('.submit').addClass('is-loading')" action="{{  route('sites') }}" method="post">
         @csrf
         @method('PUT')
         <div class="modal-background"></div>

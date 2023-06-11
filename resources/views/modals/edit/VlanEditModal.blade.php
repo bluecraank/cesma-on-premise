@@ -1,5 +1,5 @@
 <div class="modal modal-edit-vlan">
-    <form action="/vlan" method="post">
+    <form action="{{ route('vlans') }}" method="post">
         @csrf
         @method('PUT')
 
@@ -31,17 +31,11 @@
                 <div class="field">
                     <label class="label">{{ __('Vlan.Subnet') }}</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-ip_range" name="ip_range" placeholder="10.10.10.0/24">
+                        <input class="input vlan-ip_range" name="ip_range" placeholder="Subnet">
                         <span class="icon is-small is-left">
                             <i class="fa fa-up-down"></i>
                         </span>
                     </p>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="scan" class="vlan-scan">
-                        {{ __('Vlan.Scan') }}
-                    </label>
                 </div>
                 <div class="field">
                     <label class="checkbox">
