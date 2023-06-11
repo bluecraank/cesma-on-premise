@@ -8,7 +8,6 @@ use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Helper\CLog;
 use App\Models\Device;
-use App\Models\Location;
 use App\Models\Building;
 use App\Models\DeviceBackup;
 use App\Models\Room;
@@ -18,18 +17,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\Diff;
-
+use App\Models\Site;
 
 class DeviceController extends Controller
 {
     static $types = [
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
+        'dell-emc' => DellEMC::class,
     ];
 
     static $typenames = [
-        'aruba-os' => 'ArubaOS (old gen)',
-        'aruba-cx' => 'AOS-CX (new gen)',
+        'aruba-os' => 'HP ArubaOS',
+        'aruba-cx' => 'HP ArubaOS-CX',
+        'dell-emc' => 'Dell EMC OS10 Enterprise'
     ];
 
     /**
@@ -40,7 +41,7 @@ class DeviceController extends Controller
     function index()
     {
         $devices = Device::all()->sortBy('name');
-        $locations = Location::all()->keyBy('id');
+        $sites = Site::all()->keyBy('id');
         $buildings = Building::all()->keyBy('id');
         $rooms = Room::all()->keyBy('id');
 
@@ -49,7 +50,7 @@ class DeviceController extends Controller
 
         return view('switch.switch-overview', compact(
             'devices',
-            'locations',
+            'sites',
             'buildings',
             'rooms',
             'https',
@@ -72,16 +73,6 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:devices|max:100',
-            'hostname' => 'required|unique:devices|max:100',
-            'building_id' => 'required|integer|exists:buildings,id',
-            'location_id' => 'required|integer|exists:locations,id',
-            'room_id' => 'required|integer|exists:rooms,id',
-            'location_number' => 'required|integer',
-            'type' => 'required|string'
-        ])->validate();
-
         if (!in_array($request->input('type'), array_keys(self::$types))) {
             return redirect()->back()->withErrors('Device type not found');
         }
@@ -130,7 +121,13 @@ class DeviceController extends Controller
                 return $device->ports->where('id', $ports['device_port_id'])->first()->name;
             }, $ports->toArray());
 
+            // if key already exists, append new ports to existing ports
+            if (array_key_exists($name, $generated_uplinks)) {
+                $new_ports = array_merge(explode(",", $generated_uplinks[$name]), $new_ports);
+            }
+
             $generated_uplinks[$name] = implode(",", $new_ports);
+
         }
         $found_uplinks = $generated_uplinks;
 

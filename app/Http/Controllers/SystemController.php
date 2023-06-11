@@ -70,24 +70,6 @@ class SystemController extends Controller
         return redirect()->back()->with('success', __('Msg.UserRoleUpdated'))->withInput(['last_tab' => 'users']);
     }
 
-    public function storeTemplate(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:vlan_templates,name',
-            'vlans_selected' => 'required|array|min:1',
-        ])->validate();
-
-        $status = VlanService::createVlanTaggingTemplate($request->all());
-
-        if ($status) {
-            CLog::info("System", "Create vlan template {$request->name}");
-            return redirect()->back()->with('success', __('Msg.VlanTemplateCreated'))->withInput(['last_tab' => 'vorlagen']);
-        } else {
-            CLog::error("System", "Could not create vlan template {$request->name}");
-            return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'vorlagen']);
-        }
-    }
-
     public function updateTemplate(Request $request)
     {
         $validator = Validator::make($request->all(), [

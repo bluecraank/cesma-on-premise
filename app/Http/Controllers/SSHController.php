@@ -6,9 +6,11 @@ use App\Helper\CLog;
 use Illuminate\Http\Request;
 use App\Models\Device;
 use App\Models\Location;
+use App\Models\Site;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -18,10 +20,10 @@ class SSHController extends Controller
 {
     public function index()
     {
-        $devices = Device::all();
-        $locations = Location::all();
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('name');
+        $sites = Site::all();
 
-        return view('switch.switch-ssh-execute', compact('devices', 'locations'));
+        return view('switch.switch-ssh-execute', compact('devices', 'sites'));
     }
 
     public function encrypt_key_index()

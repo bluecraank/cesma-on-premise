@@ -6,16 +6,27 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Http\Requests\StoreRoomRequest;
+use App\Http\Requests\UpdateRoomRequest;
+use App\Models\Building;
+use App\Models\Site;
+use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
 {
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:100',
-            'building_id' => 'required|integer|exists:buildings,id',
-        ])->validate();
+    public function index() {
+        $site = Auth::user()->currentSite();
+        $rooms = $site->rooms;
+        $buildings = $site->buildings;
 
+        return view('room.index', [
+            'rooms' => $rooms,
+            'buildings' => $buildings
+        ]);
+    }
+
+    public function store(StoreRoomRequest $request)
+    {
         if (Room::create($request->except('_token', '_method'))) {
             CLog::info("Room", "Create room {$request->name}");
             return redirect()->back()->with('success', __('Msg.RoomCreated'));
@@ -25,14 +36,8 @@ class RoomController extends Controller
         return redirect()->back()->withErrors(['message' => 'Room could not be created']);
     }
 
-    public function update(Request $request)
+    public function update(UpdateRoomRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:100',
-            'id' => 'required|integer|exists:rooms,id',
-            'building_id' => 'required|integer|exists:buildings,id',
-        ])->validate();
-
         if (Room::find($request->id)->update($request->except(['_token', '_method']))) {
             CLog::info("Room", "Update room {$request->name}");
             return redirect()->back()->with('success', __('Msg.RoomUpdated'));

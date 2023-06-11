@@ -11,6 +11,8 @@ use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Http\Requests\StoreVlanRequest;
+use Illuminate\Support\Facades\Auth;
 
 class VlanController extends Controller
 {
@@ -21,12 +23,10 @@ class VlanController extends Controller
      */
     public function index()
     {
-        $vlans = Vlan::all()->sortBy('vid')->groupBy('location_id');
-        $locations = Location::all()->sortBy('id');
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('vid');
 
         return view('vlan.vlan-overview', compact(
             'vlans',
-            'locations'
         ));
     }
 
@@ -91,17 +91,8 @@ class VlanController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(StoreVlanRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'vid' => 'required|integer|unique:vlans|between:1,4096',
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'ip_range' => 'nullable|string',
-            'scan' => 'nullable|string',
-            'sync' => 'nullable|string',
-            'location_id' => 'required|integer|exists:locations,id'
-        ])->validate();
 
         if ($request->input('scan') == "on") {
             $scan = true;
@@ -173,7 +164,7 @@ class VlanController extends Controller
         $find = Vlan::findOrFail($vlan->vid);
         if ($find->delete()) {
             CLog::info("VLAN", "VLAN {$find->name} ({$find->vid}) deleted");
-            return redirect()->back()->with('success', __('Msg.VlanDeleted'));
+            return redirect()->back()->with('success', __('Msg.DeleteVland'));
         }
 
         CLog::error("VLAN", "Could not delete VLAN {$find->name} ({$find->vid})");

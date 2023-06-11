@@ -8,29 +8,29 @@ use App\Models\Building;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Models\Site;
+use Illuminate\Support\Facades\Auth;
 
 class BuildingController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreBuildingRequest  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function index() {
+        $site = Auth::user()->currentSite();
+        $buildings = $site->buildings;
+
+        return view('building.index', [
+            'buildings' => $buildings,
+        ]);
+    }
+
     public function store(StoreBuildingRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:100',
-            'location_id' => 'required|integer',
-        ])->validate();
-
-        if ($validator and Building::create($request->all())) {
-
+        $building = Building::create($request->except('_token', '_method'));
+        if ($building) {
             CLog::info("Building", "Create building {$request->name}");
             return redirect()->back()->with('success', __('Msg.BuildingCreated'));
         }
 
-        CLog::error("Building", "Could not create building {$request->name}");	
+        CLog::error("Building", "Could not create building {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Building could not be created']);
     }
 
@@ -43,13 +43,7 @@ class BuildingController extends Controller
      */
     public function update(UpdateBuildingRequest $request, Building $building)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:100',
-            'id' => 'required|integer|exists:buildings,id',
-            'location_id' => 'required|integer',
-        ])->validate();
-
-        if ($validator and $building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
+        if($building->whereId($request->input('id'))->update($request->except(['_token', '_method']))) {
 
             CLog::info("Building", "Update building {$request->name}");
             return redirect()->back()->with('success', __('Msg.BuildingUpdated'));
