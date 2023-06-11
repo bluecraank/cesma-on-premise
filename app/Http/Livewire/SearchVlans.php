@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Vlan;
 use App\Traits\WithLogin;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 
@@ -24,10 +25,11 @@ class SearchVlans extends Component
     {
         $searchTerm = '%' . $this->searchTerm . '%';
 
-        $vlans = Vlan::where('name', 'like', $searchTerm)
-        ->orWhere('vid', 'like', $searchTerm)
-        ->orWhere('description', 'like', $searchTerm)
-        ->paginate(20);
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($searchTerm) {
+            $query->where('name', 'like', $searchTerm)
+            ->orWhere('vid', 'like', $searchTerm)
+            ->orWhere('description', 'like', $searchTerm);
+        })->paginate(20);
 
         $vlans->sort(function ($a, $b) {
             return strnatcmp($a->vid, $b->vid);

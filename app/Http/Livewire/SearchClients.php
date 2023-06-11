@@ -8,8 +8,7 @@ use App\Models\MacType;
 use App\Models\MacVendor;
 use App\Models\Vlan;
 use App\Traits\WithLogin;
-
-
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -31,9 +30,9 @@ class SearchClients extends Component
 
     public function render()
     {
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
         $count_clients = Client::count();
-        $vlans = Vlan::all()->sortBy('vid')->keyBy('vid');
+        $vlans = Vlan::where('site_id', Auth::user())->get()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendor::all()->keyBy('mac_prefix');
         $types = MacType::all()->sortBy('type')->unique();
 

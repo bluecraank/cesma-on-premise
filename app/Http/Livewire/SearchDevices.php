@@ -8,8 +8,7 @@ use App\Models\Location;
 use App\Models\Building;
 use App\Services\DeviceService;
 use App\Traits\WithLogin;
-
-
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class SearchDevices extends Component
@@ -28,7 +27,10 @@ class SearchDevices extends Component
         $searchTerm = '%' . $this->searchTerm . '%';
         $https = config('app.https', 'http://');
 
-        $devices = Device::where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm)->get()->sortBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($searchTerm) {
+            $query->where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm);
+        })->get()->sortBy('id');
+        
         foreach ($devices as $device) {
             $device->online = DeviceService::isOnline($device->hostname);
         }
