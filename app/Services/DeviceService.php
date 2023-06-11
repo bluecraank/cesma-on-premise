@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Device;
 use App\Devices\ArubaOS;
 use App\Devices\ArubaCX;
+use App\Devices\DellEMC;
 use App\Models\Client;
 use App\Models\DeviceBackup;
 use App\Models\DeviceCustomUplink;
@@ -15,6 +16,7 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Location;
 use App\Models\Mac;
+use App\Models\SnmpMacData;
 use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\VlanService;
@@ -25,24 +27,26 @@ class DeviceService
     static $types = [
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
+        'dell-emc' => DellEMC::class,
     ];
 
     static function refreshDevice(Device $device)
     {
-        $api_data = self::$types[$device->type]::API_REQUEST_ALL_DATA($device);
+        $response = self::$types[$device->type]::API_REQUEST_ALL_DATA($device);
 
-        if (isset($api_data['success']) and $api_data['success']) {
-            self::storeApiData($api_data, $device);
+        if (isset($response['success']) and $response['success']) {
+            self::storeApiData($response, $device);
             return json_encode([
                 'success' => "true",
                 'message' => __('Msg.RefreshedDevice'),
             ]);
         }
 
+
         if (app()->runningInConsole()) {
             return json_encode([
                 'success' => "false",
-                'message' => $api_data['message'],
+                'message' => $response['message'],
             ]);
         }
 
@@ -54,9 +58,7 @@ class DeviceService
 
     static function storeApiData($data, $device)
     {
-        if (count($data['vlans']) != $device->vlans()->count()) {
-            $device->touch();
-        }
+        $device->touch();
 
         foreach ($data['vlans'] as $vid => $vname) {
             $device->vlans()->updateOrCreate(
@@ -126,7 +128,7 @@ class DeviceService
             if ($vlanport['vlan_id'] == "Trunk") {
                 $data['uplinks'][$vlanport['port_id']] = $vlanport['port_id'];
             } else {
-                $test = $device->vlanports()->updateOrCreate(
+                $vlanportUpdate = $device->vlanports()->updateOrCreate(
                     [
                         'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
                         'device_id' => $device->id,
@@ -218,7 +220,21 @@ class DeviceService
                     'port_id' => $mac['port'],
                     'vlan_id' => $mac['vlan'],
                 ]
-            );
+                );
+
+
+            if(isset($mac['ip'])) {
+                SnmpMacData::updateOrCreate(
+                    [
+                        'mac_address' => $mac['mac'],
+                    ],
+                    [
+                        'mac_address' => $mac['mac'],
+                        'ip_address' => $mac['ip'],
+                        'router' => $device->hostname,
+                    ]
+                );
+            }
         }
 
         $device->named = $data['informations']['name'] ?? NULL;
@@ -344,10 +360,10 @@ class DeviceService
 
     static function syncVlansToAllDevices(Request $request)
     {
-        $location_id = $request->input('location_id');
+        $site_id = $request->input('site_id');
 
-        $devices = Location::find($location_id)->devices()->get()->keyBy('id');
-        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('location_id', $location_id)->get()->keyBy('vid');
+        $devices = Location::find($site_id)->devices()->get()->keyBy('id');
+        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('site_id', $site_id)->get()->keyBy('vid');
 
         $results = [];
 
@@ -373,15 +389,15 @@ class DeviceService
 
         $elapsed = microtime(true) - $start;
 
-        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'create_vlans', 'rename_vlans', 'testmode', 'location_id'));
+        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'create_vlans', 'rename_vlans', 'testmode', 'site_id'));
     }
 
     static function syncVlansToDevice(Device $device, Request $request)
     {
         $devices = Device::all()->keyBy('id');
-        $location_id = $device->location_id;
+        $site_id = $device->site_id;
         $current_vlans = $device->vlans()->get()->keyBy('vlan_id')->toArray();
-        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('location_id', $device->location_id)->get()->keyBy('vid');
+        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('site_id', $device->site_id)->get()->keyBy('vid');
 
         $results = [];
 
@@ -397,7 +413,7 @@ class DeviceService
 
         $elapsed = microtime(true) - $start;
 
-        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'location_id'));
+        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'site_id'));
     }
 
     static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated)
