@@ -115,12 +115,12 @@ function deleteLocationModal(id, name) {
     modal.show()
 }
 
-function editBuildingModal(id, name, location_id) {
+function editBuildingModal(id, name, site_id) {
     let modal = $('.modal-edit-building');
     modal.find('.building-id').val(id);
     modal.find('.building-name').val(name);
     // Select option if building id matches
-    modal.find('.locations').val(location_id);
+    modal.find('.locations').val(site_id);
     modal.show()
 }
 
@@ -212,19 +212,19 @@ function restoreBackup(id, created_at, device, name) {
 }
 
 function sw_actions(ele, type, id) {
-    let uri = '/switch/' + id + '/action/create-backup';
+    let uri = '/device/' + id + '/action/create-backup';
     let cssclass = "fa-hdd";
     let reload = false;
 
     if (type == "refresh") {
-        uri = '/switch/' + id + '/action/refresh';
+        uri = '/device/' + id + '/action/refresh';
         cssclass = "fa-sync";
         reload = true
     } else if (type == "pubkeys") {
-        uri = '/switch/' + id + '/action/sync-pubkeys';
+        uri = '/device/' + id + '/action/sync-pubkeys';
         cssclass = "fa-key";
     } else if (type == "vlans") {
-        uri = '/switch/' + id + '/action/sync-vlans';
+        uri = '/device/' + id + '/action/sync-vlans';
         cssclass = "fa-ethernet";
     }
 

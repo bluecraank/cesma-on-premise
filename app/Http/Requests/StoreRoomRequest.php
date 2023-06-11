@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreLocationRequest extends FormRequest
+class StoreRoomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class StoreLocationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'building_id' => 'required|integer|exists:buildings,id',
+            'name' => 'required|max:100',
         ];
     }
 }
