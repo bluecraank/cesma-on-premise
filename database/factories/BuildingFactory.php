@@ -21,7 +21,7 @@ class BuildingFactory extends Factory
     {
         return [
             'name' => $this->faker()->name(),
-            'location_id' => $this->faker()->numberBetween(1, 3),
+            'site_id' => $this->faker()->numberBetween(1, 3),
         ];
     }
 
