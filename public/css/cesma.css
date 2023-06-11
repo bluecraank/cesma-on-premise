@@ -212,9 +212,6 @@ thead th:hover {
 
 .client-hostname {
   width: 60%;
-  /* overflow: hidden; */
-  /* text-overflow: ellipsis; */
-  /* white-space: nowrap; */
   display: inline-block;
   vertical-align: middle;
 }
@@ -232,22 +229,23 @@ thead th:hover {
   vertical-align: middle;
 }
 
-/* 
-.hostname-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-} */
-
-
 html, body {
-  font-size: 0.9em !important;
-  /* font-family: 'Nunito', sans-serif; */
-  /* font-family: 'Raleway', sans-serif; */
+  font-size: 0.95em !important;
   font-family: 'Titillium Web', sans-serif;
 
 }
 
 table thead tr th label {
   cursor: pointer;
+}
+
+.site-selection {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.site-selection select {
+  width: 100% !important;
+  height: 30px;
+  background-color: #6a7886 !important;
 }
