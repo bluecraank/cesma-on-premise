@@ -2,7 +2,7 @@
 
 <x-layouts.main>
     <div class="box">
-        <h1 class="title is-pulled-left">{{ __('Header.Backup') }}</h1>
+        <h1 class="title is-pulled-left">{{ __('Backups') }}</h1>
 
         <div class="is-pulled-right ml-4">
 
@@ -54,7 +54,7 @@
                             <div class="field has-addons is-justify-content-center">
                                 <div class="control">
                                     <a title="{{ __('Backup.View') }}" class="button is-success is-small"
-                                        href="/switch/{{ $device['id'] }}/backups">
+                                        href="{{  route('device-backups', $device->id) }}">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>

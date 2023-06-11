@@ -5,7 +5,7 @@
         <div class="is-pulled-right">
             <form method="POST" onsubmit="$('.submit').addClass('is-loading')">
                 @csrf 
-                <input type="hidden" value="{{ $location_id }}" name="location_id" checked>
+                <input type="hidden" value="{{ $site_id }}" name="site_id" checked>
                 <input type="hidden" value="{{ ($rename_vlans) ? 'on' : 'off' }}" name="overwrite-vlan-name">
                 <input type="hidden" value="{{ ($create_vlans) ? 'on' : 'off' }}" name="create-if-not-exists" checked>
                 <input type="hidden" value="off" name="test-mode" checked>

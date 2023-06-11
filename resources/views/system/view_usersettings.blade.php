@@ -2,7 +2,7 @@
 
 <x-layouts.main>
     <div class="box">
-        <h1 class="title is-pulled-left">{{ __('Header.Usersettings') }}</h1>
+        <h1 class="title is-pulled-left">{{ __('Usersettings') }}</h1>
 
         <div class="is-pulled-right ml-4">
         </div>

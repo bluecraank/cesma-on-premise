@@ -1,6 +1,6 @@
 @inject('DiffClass', 'App\Helper\Diff')
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Header.Log') }}</h1>
+    <h1 class="title is-pulled-left">{{ __('Log') }}</h1>
 
     <div class="is-pulled-right ml-4">
 
