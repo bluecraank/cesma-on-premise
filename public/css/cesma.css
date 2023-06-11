@@ -105,7 +105,8 @@ thead th:hover {
 
 .is-username-info {
     position: absolute;
-    bottom: 2.5em;
+    bottom: 2.5px;
+    font-size: 0.75em;
     left: 50%;
     transform: translate(-50%, -19%);
 }
@@ -240,12 +241,10 @@ table thead tr th label {
 }
 
 .site-selection {
-  position: absolute;
-  bottom: 0;
   width: 100%;
 }
 .site-selection select {
   width: 100% !important;
   height: 30px;
-  background-color: #6a7886 !important;
+  background-color: #b6bbc0 !important;
 }

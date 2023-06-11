@@ -8,6 +8,26 @@
             </div>
 
             <div class="menu-items">
+                <p class="menu-label">{{ __('Change site') }}</p>
+
+                <div class="site-selection">
+                    <form id="site-form" action="{{ route('change-site') }}" method="post">
+                    
+                        @method('PUT')
+                        @csrf
+                        <select onchange="event.preventDefault();document.getElementById('site-form').submit();" name="site_id">
+                            <option value="{{  Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
+                            @foreach (Auth::user()->availableSites() as $site)
+                                @if($site->id == Auth::user()->currentSite()->id)
+                                    @continue
+                                @endif
+                                
+                                <option value="{{ $site->id }}">{{ $site->name }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+
                 <p class="menu-label">{{ __('Action') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -113,23 +133,6 @@
                     CESMA {{ config('app.version') }}
                 </p>
 
-                <div class="site-selection">
-                    <form id="site-form" action="{{ route('change-site') }}" method="post">
-                    
-                        @method('PUT')
-                        @csrf
-                        <select onchange="event.preventDefault();document.getElementById('site-form').submit();" name="site_id">
-                            <option value="{{  Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
-                            @foreach (Auth::user()->availableSites() as $site)
-                                @if($site->id == Auth::user()->currentSite()->id)
-                                    @continue
-                                @endif
-                                
-                                <option value="{{ $site->id }}">{{ $site->name }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
             </div>
 
         </div>
