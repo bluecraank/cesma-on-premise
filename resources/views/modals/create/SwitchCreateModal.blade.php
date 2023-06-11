@@ -32,10 +32,13 @@
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select required name="type">
-                                <option value="aruba-os">HP ArubaOS</option>
+                                {{-- <option value="aruba-os">HP ArubaOS</option>
                                 <option value="aruba-cx">HP ArubaCX</option>
                                 <option value="dell-emc">Dell EMC OS10 Enterprise</option>
-                                <option value="dell-emc-powerswitch">Dell EMC PowerSwitch (N1548P ...)</option>
+                                <option value="dell-emc-powerswitch">Dell EMC PowerSwitch (N1548P ...)</option> --}}
+                                @foreach (config('app.types') as $key => $type)
+                                    <option value="{{ $key }}">{{ config('app.typenames')[$key] }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

@@ -25,7 +25,7 @@
         </div>
         <div class="column is-6">
             <div class="buttons is-pulled-right">
-                @if (Auth::user()->role >= 1 && $device->type != 'dell-emc')
+                @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
                     <button onclick="$('.modal-sync-vlans-specific').show();" class="button is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
                     </button>
@@ -223,10 +223,10 @@
         <div class="column is-12-mobile is-12-tablet is-9-desktop">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
-                    @if ($device->type == 'dell-emc')
+                    @if (config('app.read-only')[$device->type])
                         <span class="tag is-danger is-pulled-right">read-only</span>
                     @endif
-                    @if (Auth::user()->role >= 1 && $device->type != 'dell-emc')
+                    @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
                         <button onclick="saveEditedPorts(this);"
                             class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
                                 class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>

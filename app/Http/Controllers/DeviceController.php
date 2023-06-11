@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Devices\ArubaCX;
-use App\Devices\ArubaOS;
-use App\Devices\DellEMC;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Helper\CLog;
@@ -16,26 +13,11 @@ use App\Services\DeviceService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Validator;
 use App\Helper\Diff;
 use App\Models\Site;
 
 class DeviceController extends Controller
 {
-    static $types = [
-        'aruba-os' => ArubaOS::class,
-        'aruba-cx' => ArubaCX::class,
-        'dell-emc' => DellEMC::class,
-        'dell-emc-powerswitch' => DellEMC::class,
-    ];
-
-    static $typenames = [
-        'aruba-os' => 'HP ArubaOS',
-        'aruba-cx' => 'HP ArubaOS-CX',
-        'dell-emc' => 'Dell EMC OS10 Enterprise',
-        'dell-emc-powerswitch' => "Dell EMC PowerSwitch"
-    ];
-
     /**
      * Display a listing of the resource.
      *
@@ -76,7 +58,7 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request)
     {
-        if (!in_array($request->input('type'), array_keys(self::$types))) {
+        if (!in_array($request->input('type'), array_keys(config('app.types')))) {
             return redirect()->back()->withErrors('Device type not found');
         }
 
@@ -105,7 +87,7 @@ class DeviceController extends Controller
         });
 
         // Get name for firmware model
-        $device->type_name = self::$typenames[$device->type];
+        $device->type_name = config('app.typenames')[$device->type];
 
         // Get uplinks
         $found_uplinks = $device->uplinks->sort(function ($a, $b) {
@@ -230,11 +212,11 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
-        if (!in_array($device->type, array_keys(self::$types))) {
+        if (!in_array($device->type, array_keys(config('app.types')))) {
             return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
         }
 
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
         $backup = $class::createBackup($device);
 
         if ($backup) {
@@ -255,11 +237,11 @@ class DeviceController extends Controller
         $devices = Device::all()->keyBy('id');
 
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$types))) {
+            if (!in_array($device->type, array_keys(config('app.types')))) {
                 continue;
             }
 
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
             $class::createBackup($device);
         }
 
@@ -281,7 +263,7 @@ class DeviceController extends Controller
         }
 
         if ($device) {
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
 
             CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
 
@@ -300,7 +282,7 @@ class DeviceController extends Controller
 
         if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
-                $class = self::$types[$device->type];
+                $class = config('app.types')[$device->type];
 
                 CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
 
@@ -322,7 +304,7 @@ class DeviceController extends Controller
 
         if ($device and $backup) {
             $password_switch = $request->input('password-switch');
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
             $restore = $class::restoreBackup($device, $backup, $password_switch);
 
             if ($restore['success']) {

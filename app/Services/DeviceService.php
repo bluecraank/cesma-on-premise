@@ -24,16 +24,9 @@ use Illuminate\Http\Request;
 
 class DeviceService
 {
-    static $types = [
-        'aruba-os' => ArubaOS::class,
-        'aruba-cx' => ArubaCX::class,
-        'dell-emc' => DellEMC::class,
-        'dell-emc-powerswitch' => DellEMC::class,
-    ];
-
     static function refreshDevice(Device $device)
     {
-        $response = self::$types[$device->type]::API_REQUEST_ALL_DATA($device);
+        $response = config('app.types')[$device->type]::API_REQUEST_ALL_DATA($device);
 
         if (isset($response['success']) and $response['success']) {
             self::storeApiData($response, $device);
@@ -349,7 +342,7 @@ class DeviceService
             return false;
         }
 
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
 
         if (!$logininfo) {
             return false;
@@ -376,7 +369,7 @@ class DeviceService
         $start = microtime(true);
 
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$types))) {
+            if (!in_array($device->type, array_keys(config('app.types')))) {
                 continue;
             }
 
@@ -384,7 +377,7 @@ class DeviceService
 
             $results[$device->id] = [];
 
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
             $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode);
         }
 
@@ -409,7 +402,7 @@ class DeviceService
         $start = microtime(true);
 
         $results[$device->id] = [];
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
         $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode);
 
         $elapsed = microtime(true) - $start;
@@ -422,7 +415,7 @@ class DeviceService
 
         $device = Device::find($device_id);
 
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
 
         $login_info = $cookie;
 
@@ -460,7 +453,7 @@ class DeviceService
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
 
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
 
         $login_info = $class::API_LOGIN($device);
         if (!$login_info) {
@@ -476,7 +469,7 @@ class DeviceService
         if (!$device) {
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
         }
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
         list($cookie, $api_version) = explode(";", $cookie);
         $class::API_LOGOUT($device, $cookie, $api_version);
     }

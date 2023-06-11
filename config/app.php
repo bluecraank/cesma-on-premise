@@ -15,6 +15,27 @@ return [
     |
     */
 
+    'types' => [
+        'aruba-os' => ArubaOS::class,
+        'aruba-cx' => ArubaCX::class,
+        'dell-emc' => DellEMC::class,
+        'dell-emc-powerswitch' => DellEMC::class,
+    ],
+
+    'typenames' => [
+        'aruba-os' => 'HP ArubaOS',
+        'aruba-cx' => 'HP ArubaOS-CX',
+        'dell-emc' => 'Dell EMC OS10 Enterprise',
+        'dell-emc-powerswitch' => "Dell EMC PowerSwitch",
+    ],
+
+    'read-only' => [
+        'aruba-os' => false,
+        'aruba-cx' => false,
+        'dell-emc' => true,
+        'dell-emc-powerswitch' => true,
+    ],
+
     'name' => env('APP_NAME', 'Cesma'),
     'company' => env('APP_COMPANY', 'Default Company'),
     'version' => env('APP_VERSION', '1.0.0'),
