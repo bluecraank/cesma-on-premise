@@ -2,7 +2,7 @@
 
 <x-layouts.main>
     <div class="box tab-parent">
-        <h1 class="title is-pulled-left">{{ __('Header.System') }}</h1>
+        <h1 class="title is-pulled-left">{{ __('System') }}</h1>
         <div class="is-clearfix">
 
         </div>
@@ -188,17 +188,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($mac_types as $mac)
+                    @foreach ($mac_icons as $mac)
                         <tr>
-                            <td>{{ $mac->type }}</td>
-                            <td>{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}</td>
+                            <td>{{ $mac->mac_type_id }}</td>
+                            <td>{{ $mac->mac_icon ?? '' }}</td>
                             <td class="has-text-centered"><i
-                                    class="fas {{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}"></i></td>
+                                    class="fas {{ $mac->mac_icon ?? '' }}"></i></td>
                             <td class="has-text-centered">
                                 @if (Auth::user()->role >= 1)
-                                    <button class="button is-info is-small"
+                                    {{-- <button class="button is-info is-small"
                                         onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
-                                            class="fas fa-cog"></i></button>
+                                            class="fas fa-cog"></i></button> --}}
                                 @endif
                             </td>
                         </tr>
