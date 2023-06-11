@@ -12,8 +12,8 @@ class Device extends Model
         'hostname',
         'mac_address',
         'building_id',
-        'location_id',
-        'location_number',
+        'site_id',
+        'location_description',
         'room_id',
         'password',
         'serialnumber',
@@ -45,8 +45,8 @@ class Device extends Model
         return $this->hasMany(DeviceVlan::class);
     }
 
-    public function location() {
-        return $this->belongsTo(Location::class);
+    public function site() {
+        return $this->belongsTo(Site::class);
     }
 
     public function building() {
