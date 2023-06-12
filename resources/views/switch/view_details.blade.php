@@ -112,6 +112,46 @@
 
     <div class="columns ml-1 mr-3">
         <div class="column is-3">
+            @php
+                $startDate = Illuminate\Support\Carbon::now()->subMilliseconds($device->uptime);
+                $endDate = Illuminate\Support\Carbon::now();
+                $days = $startDate->diffInDays($endDate);
+                $hours = $startDate->copy()->addDays($days)->diffInHours($endDate);
+                $minutes = $startDate->copy()->addDays($days)->addHours($hours)->diffInMinutes($endDate);
+            @endphp
+            <div class="box">
+                <h2 class="subtitle">{{ __('Summary') }}</h2>
+                <table class="table is-striped is-narrow is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="has-text-right">{{ __('Value') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Uptime</td>
+                            <td class="has-text-right">{{ $days }} days, {{ $hours }} hours, {{ $minutes }} minutes</td>
+                        </tr>
+
+                        <tr>
+                            <td>Vlans synced</td>
+                            <td class="has-text-right">
+                                {{ $device->vlans()->count() }}/{{ App\Models\Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->count() }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Last backup</td>
+                            <td class="has-text-right">{{ $device->backups->last()->created_at ?? 'No data' }}</td>
+                        <tr>
+
+                        </tr>
+                            <td>{{ trans_choice('Clients', 2) }}</td>
+                            <td class="has-text-right">{{ $device->clients->count() }}</td>
+                    </tbody>
+                </table>
+            </div>
 
             <div class="box">
                 <h2 class="subtitle">{{ __('Uplinks found') }}</h2>
