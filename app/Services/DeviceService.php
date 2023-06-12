@@ -237,6 +237,7 @@ class DeviceService
         $device->hardware = $data['informations']['hardware'] ?? NULL;
         $device->mac_address = $data['informations']['mac'] ?? NULL;
         $device->firmware = $data['informations']['firmware'] ?? NULL;
+        $device->uptime = $data['informations']['uptime'] ?? NULL;
         $device->save();
     }
 
