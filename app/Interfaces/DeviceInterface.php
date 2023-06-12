@@ -46,6 +46,20 @@
         
         static function formatSystemData(Array $system): Array;
 
+        static function snmpFormatPortData(Array $ports, Array $stats): Array;
+
+        static function snmpFormatExtendedPortStatisticData(Array $portstats, Array $portdata): Array;
+
+        static function snmpFormatPortVlanData(Array $vlanports): Array;
+
+        static function snmpFormatUplinkData(Array $ports): array;
+    
+        static function snmpFormatVlanData(Array $vlans): Array; 
+
+        static function snmpFormatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): Array;
+        
+        static function snmpFormatSystemData(Array $system): Array;
+
         static function uploadPubkeys($device, $pubkeys): String;
 
         static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): Array;

@@ -9,6 +9,7 @@ use App\Models\DeviceBackup;
 use App\Models\Vlan;
 
 class DellEMCPowerSwitch implements DeviceInterface {
+    use \App\Traits\SNMP_Formatter;
 
     static $snmp_oids = [
         'hostname' => '.1.3.6.1.2.1.1.5.0',
@@ -29,19 +30,12 @@ class DellEMCPowerSwitch implements DeviceInterface {
         $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
-        // try {
-        //     $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
-        // } catch(\Exception $e) {
-            $snmpIpToMac = [];
-        // }
-
+        $snmpIpToMac = [];
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
         $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
         $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
         $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
         $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
-        // $snmp_data9 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
-        // $snmpIfNames0 = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToIf'], 5000000, 1);
         $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
         $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
         $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
@@ -77,131 +71,25 @@ class DellEMCPowerSwitch implements DeviceInterface {
                 $value = str_replace(["STRING: ","\""], "", $value);
                 $port_id = explode(" ", $value);
                 $combined_port = $port_id[1] . "/" . $port_id[3] . "/" . $port_id[5];
-
                 $allPorts[$ifIndex] = ['name' => $combined_port, 'type' => 'ethernet'];
             }
-
-            if(str_contains($value, 'ethernet') && str_contains($value, ':1')) {
-                $value = str_replace(["STRING: ","\"", "ethernet"], "", $value);
-                $portchannel = explode("/", $value);
-                $portchannel = explode(":", $portchannel[2])[0];
-                $allPorts[$ifIndex] = ['name' => $value, 'type' => 'port-channel'.$portchannel, 'tagged' => []];
-            }
-
-            // TODO: Rausfinden wie man genau port-channel berechnen kann
-
-            // if(str_contains($value, 'port-channel')) {
-            //     $value = str_replace(["STRING: ","\"", "port-channel"], "", $value);
-            //     $allPorts[$ifIndex] = ['name' => $value, 'type' => 'port-channel', 'tagged' => []];
-            // }
         }
 
-
-        foreach($snmpPortsAssignedToVlans as $key => $value) {
-            $vlan_id = explode(".", $key);
-            $vlan_id = $vlan_id[count($vlan_id) - 1];
-            $value = str_replace("Hex-STRING: ", "", $value);
-            $value = explode(" ", $value);
-            $i = 1;
-
-            $ports = [];
-            foreach($value as $port) {
-                $port = hexdec($port);
-                $port = sprintf( "%08d", decbin($port));
-                $ports[$i] = $port;
-                $i++;
-            }
-            $ports = implode("", $ports);
-            $ports = str_split($ports);
-            $allVlans[$vlan_id] = array_merge($allVlans[$vlan_id], ['ports' => $ports]);
-        }
-
-        foreach($snmpPortsAssignedToUntaggedVlan as $key => $value) {
-            $vlan_id = explode(".", $key);
-            $vlan_id = $vlan_id[count($vlan_id) - 1];
-            $value = str_replace("Hex-STRING: ", "", $value);
-            $value = explode(" ", $value);
-            $i = 1;
-
-            $ports = [];
-            foreach($value as $port) {
-                $port = hexdec($port);
-                $port = sprintf( "%08d", decbin($port));
-                $ports[$i] = $port;
-                $i++;
-            }
-            $ports = implode("", $ports);
-            $ports = str_split($ports);
-            $allVlans[$vlan_id] = array_merge($allVlans[$vlan_id], ['untagged_ports' => $ports]);
-        }
-
-        foreach($snmpIfNames as $key => $value) {
-            $key = explode(".", $key);
-            $ifIndex = $key[count($key) - 1];
-
-            $description = str_replace(["STRING: ","\""], "", $value);
-            if(isset($allPorts[$ifIndex])) {
-                $allPorts[$ifIndex] = array_merge($allPorts[$ifIndex], ['description' => $description]);
-            }
-
-            if(isset($allVlansByIndex[$ifIndex]))
-            {
-                $allVlans[$allVlansByIndex[$ifIndex]] = array_merge($allVlans[$allVlansByIndex[$ifIndex]], ['description' => $description]);
-            }
-        }
-
-        foreach($allVlans as $vlan_id => $value) {
-            $portsAssigned = $value['ports'];
-            foreach($portsAssigned as $key => $port) {
-                if($port == 1) {   
-                    if(isset($portExtendedIndex[$key+1]) && isset($allPorts[$portExtendedIndex[$key+1]])) {
-                        $allPorts[$portExtendedIndex[$key+1]]['tagged'][] = $vlan_id;
-                    }
-                }
-            }
-
-            $untaggedPortsAssigned = $value['untagged_ports'];
-            foreach($untaggedPortsAssigned as $key => $port) {
-                if($port == 1) {
-                    if(isset($portExtendedIndex[$key+1]) && isset($allPorts[$portExtendedIndex[$key+1]])) {
-                        $allPorts[$portExtendedIndex[$key+1]]['untagged'][] = $vlan_id;
-                    }
-                }
-            }
-        }
-
-        foreach($snmpIfHighSpeed as $key => $value) {
-            $key = explode(".", $key);
-            $ifIndex = $key[count($key) - 1];
-           $value = str_replace("Gauge32: ", "", $value);
-            if(isset($allPorts[$ifIndex])) {
-                $allPorts[$ifIndex] = array_merge($allPorts[$ifIndex], ['speed' => intval($value)]);
-            }
-        }
-
-        foreach($snmpIfOperStatus as $key => $value) {
-            $key = explode(".", $key);
-            $ifIndex = $key[count($key) - 1];
-            $value = str_replace("INTEGER: ", "", $value);
-            if($value == 1) {
-                $value = "up";
-            } else {
-                $value = "down";
-            }
-
-            if(isset($allPorts[$ifIndex])) {
-                $allPorts[$ifIndex] = array_merge($allPorts[$ifIndex], ['status' => $value]);
-            }
-        }
+        $allVlans = self::foreachAssignedUntaggedVlansToPort($snmpPortsAssignedToUntaggedVlan, $allVlans);
+        $allVlans = self::foreachAssignedVlansToPort($snmpPortsAssignedToVlans, $allVlans);
+        list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
+        $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
+        $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
+        $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
 
         $data = [
-            'ports' => self::formatPortData($allPorts, []),
-            'vlans' => self::formatVlanData($allVlans),
-            'macs' => self::formatMacTableData($snmpIpToMac, $allVlansByIndex, $device, "", ""),
-            'vlanports' => self::formatPortVlanData([$allPorts, $allVlans]),
-            'informations' => self::formatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
-            'statistics' => self::formatExtendedPortStatisticData([], $allPorts),
-            'uplinks' => self::formatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
+            'ports' => self::snmpFormatPortData($allPorts, []),
+            'vlans' => self::snmpFormatVlanData($allVlans),
+            'macs' => self::snmpFormatMacTableData($snmpIpToMac, $allVlansByIndex, $device, "", ""),
+            'vlanports' => self::snmpFormatPortVlanData([$allPorts, $allVlans]),
+            'informations' => self::snmpFormatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
+            'statistics' => self::snmpFormatExtendedPortStatisticData([], $allPorts),
+            'uplinks' => self::snmpFormatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
             'success' => true,
         ];
         
@@ -263,7 +151,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return [];
     }
 
-    static function formatPortData(Array $ports, Array $stats): array {
+    static function snmpFormatPortData(Array $ports, Array $stats): array {
         $return = [];
 
         if (empty($ports) or !is_array($ports) or !isset($ports)) {
@@ -284,12 +172,12 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return $return;
     }
 
-    static function formatExtendedPortStatisticData(Array $portstats, Array $portdata): array {
+    static function snmpFormatExtendedPortStatisticData(Array $portstats, Array $portdata): array {
         // Incompatible with DellEMC
         return [];
     }
 
-    static function formatPortVlanData(Array $vlanports): array {
+    static function snmpFormatPortVlanData(Array $vlanports): array {
         $return = [];
 
         if (empty($vlanports) or !is_array($vlanports) or !isset($vlanports)) {
@@ -334,12 +222,12 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return $return;
     }
 
-    static function formatUplinkData($data): array
+    static function snmpFormatUplinkData($data): array
     {
         $uplinks = [];
 
         foreach ($data['ports'] as $port) {
-            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans'])-10) {
+            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans'])-10 && count($data['vlans']) > 15) {
                 $uplinks[$port['name']] = $port['name'];
             }
         }
@@ -348,7 +236,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
     }
 
 
-    static function formatVlanData(Array $vlans): array {
+    static function snmpFormatVlanData(Array $vlans): array {
         $return = [];
 
         if (empty($vlans) or !is_array($vlans) or !isset($vlans)) {
@@ -362,7 +250,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return $return;
     }
 
-    static function formatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): array {
+    static function snmpFormatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): array {
         // Not supported by DellEMC
         $return = [];
 
@@ -391,7 +279,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return $return;
     }
     
-    static function formatSystemData(Array $system): array {
+    static function snmpFormatSystemData(Array $system): array {
         $return = [];
 
         if (empty($system) or !is_array($system) or !isset($system)) {
@@ -421,6 +309,46 @@ class DellEMCPowerSwitch implements DeviceInterface {
             'mac' => null,
             'uptime' => $uptime ?? 'unknown',
         ];
+
+        return $return;
+    }
+
+    static function formatPortData(Array $ports, Array $stats): array {
+        $return = [];
+        return $return;
+    }
+
+    static function formatExtendedPortStatisticData(Array $portstats, Array $portdata): array {
+        // Incompatible with DellEMC
+        return [];
+    }
+
+    static function formatPortVlanData(Array $vlanports): array {
+        $return = [];
+        return $return;
+    }
+
+    static function formatUplinkData($data): array
+    {
+        $uplinks = [];
+        return $uplinks;
+    }
+
+
+    static function formatVlanData(Array $vlans): array {
+        $return = [];
+        return $return;
+    }
+
+    static function formatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): array {
+        // Not supported by DellEMC
+        $return = [];
+
+        return $return;
+    }
+    
+    static function formatSystemData(Array $system): array {
+        $return = [];
 
         return $return;
     }
