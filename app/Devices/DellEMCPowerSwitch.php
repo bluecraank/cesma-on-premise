@@ -8,7 +8,7 @@ use App\Models\Device;
 use App\Models\DeviceBackup;
 use App\Models\Vlan;
 
-class DellEMC implements DeviceInterface {
+class DellEMCPowerSwitch implements DeviceInterface {
 
     static $snmp_oids = [
         'hostname' => '.1.3.6.1.2.1.1.5.0',
@@ -17,6 +17,7 @@ class DellEMC implements DeviceInterface {
         'if_index_to_port' => '.1.3.6.1.2.1.17.1.4.1.2',
         'ip_to_mac' => '1.3.6.1.2.1.4.22.1.2',
         'assigned_ports_to_vlan' => '.1.3.6.1.2.1.17.7.1.4.3.1.2',
+        'untagged_ports' => '.1.3.6.1.2.1.17.7.1.4.2.1.5.0',
         'ifOperStatus' => '.1.3.6.1.2.1.2.2.1.8',
         'ifHighSpeed' => '1.3.6.1.2.1.31.1.1.1.15',
         'sysDescr' => '.1.3.6.1.2.1.1.1.0',
@@ -28,13 +29,14 @@ class DellEMC implements DeviceInterface {
         $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
-        try {
-            $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
-        } catch(\Exception $e) {
+        // try {
+        //     $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+        // } catch(\Exception $e) {
             $snmpIpToMac = [];
-        }
+        // }
 
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
+        $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
         $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
         $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
         $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
@@ -62,19 +64,21 @@ class DellEMC implements DeviceInterface {
             $portExtendedIndex[$ifIndex] = $value;
         }
 
-        
         foreach($snmpIfIndexes as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
-            if((str_contains($value, 'vlan') || str_contains($value, 'VLAN') || str_contains($value, 'Vl')) && !str_contains($value, 'DEFAULT')) {
+            if(str_contains($value, 'Vl') && !str_contains($value, 'DEFAULT')) {
                 $value = str_replace(["STRING: ","\"", "vlan", "VLAN", "Vl"], "", $value);
                 $allVlans[$value]['id'] = $ifIndex;
                 $allVlansByIndex[$ifIndex] = $value;
             }
 
-            if(str_contains($value, 'ethernet') && !str_contains($value, ':1')) {
-                $value = str_replace(["STRING: ","\"", "ethernet"], "", $value);
-                $allPorts[$ifIndex] = ['name' => $value, 'type' => 'ethernet'];
+            if(str_contains($value, 'Unit: 1 Slot: 0')) {
+                $value = str_replace(["STRING: ","\""], "", $value);
+                $port_id = explode(" ", $value);
+                $combined_port = $port_id[1] . "/" . $port_id[3] . "/" . $port_id[5];
+
+                $allPorts[$ifIndex] = ['name' => $combined_port, 'type' => 'ethernet'];
             }
 
             if(str_contains($value, 'ethernet') && str_contains($value, ':1')) {
@@ -112,6 +116,25 @@ class DellEMC implements DeviceInterface {
             $allVlans[$vlan_id] = array_merge($allVlans[$vlan_id], ['ports' => $ports]);
         }
 
+        foreach($snmpPortsAssignedToUntaggedVlan as $key => $value) {
+            $vlan_id = explode(".", $key);
+            $vlan_id = $vlan_id[count($vlan_id) - 1];
+            $value = str_replace("Hex-STRING: ", "", $value);
+            $value = explode(" ", $value);
+            $i = 1;
+
+            $ports = [];
+            foreach($value as $port) {
+                $port = hexdec($port);
+                $port = sprintf( "%08d", decbin($port));
+                $ports[$i] = $port;
+                $i++;
+            }
+            $ports = implode("", $ports);
+            $ports = str_split($ports);
+            $allVlans[$vlan_id] = array_merge($allVlans[$vlan_id], ['untagged_ports' => $ports]);
+        }
+
         foreach($snmpIfNames as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
@@ -136,8 +159,16 @@ class DellEMC implements DeviceInterface {
                     }
                 }
             }
+
+            $untaggedPortsAssigned = $value['untagged_ports'];
+            foreach($untaggedPortsAssigned as $key => $port) {
+                if($port == 1) {
+                    if(isset($portExtendedIndex[$key+1]) && isset($allPorts[$portExtendedIndex[$key+1]])) {
+                        $allPorts[$portExtendedIndex[$key+1]]['untagged'][] = $vlan_id;
+                    }
+                }
+            }
         }
-        
 
         foreach($snmpIfHighSpeed as $key => $value) {
             $key = explode(".", $key);
@@ -173,7 +204,7 @@ class DellEMC implements DeviceInterface {
             'uplinks' => self::formatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
             'success' => true,
         ];
-
+        
         return $data;
     }
 
@@ -267,19 +298,37 @@ class DellEMC implements DeviceInterface {
 
         
         $i = 0;
+
+        $cache = [];
+
         foreach ($vlanports[0] as $key => $port) {
-            if(!isset($port['tagged'])) {
-                continue;
+                
+            if(isset($port['untagged'])) {
+                foreach($port['untagged'] as $vlan) {
+                    $return[$i] = [
+                        "port_id" => $port['name'],
+                        "vlan_id" => $vlan,
+                        "is_tagged" => false,
+                    ];
+                    $i++;
+                    $cache[$port['name']] = $vlan;
+                }
             }
 
-            foreach($port['tagged'] as $vlan) {
-                $return[$i] = [
-                    "port_id" => $port['name'],
-                    "vlan_id" => $vlan,
-                    "is_tagged" => true,
-                ];
-                $i++;
-            }            
+            if(isset($port['tagged'])) {
+                foreach($port['tagged'] as $vlan) {
+                    if(isset($cache[$port['name']]) && $cache[$port['name']] == $vlan) {
+                        continue;
+                    }
+
+                    $return[$i] = [
+                        "port_id" => $port['name'],
+                        "vlan_id" => $vlan,
+                        "is_tagged" => true,
+                    ];
+                    $i++;
+                }     
+            }
         }
 
         return $return;
@@ -307,10 +356,7 @@ class DellEMC implements DeviceInterface {
         }
 
         foreach ($vlans as $key => $vlan) {
-            if($vlan['description'] != "") 
-            {
-                $return[$key] = $vlan['description'];
-            }
+            $return[$key] = $vlan['description'] != "" ? $vlan['description'] : "VLAN " . $key;
         }
 
         return $return;
@@ -334,14 +380,12 @@ class DellEMC implements DeviceInterface {
 
             $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
 
-            if(isset($vlans[$vlan[10]])) {
-                $return[$formatted_mac] = [
-                    'port' => 0,
-                    'mac' => $formatted_mac,
-                    'vlan' => $vlans[$vlan[10]],
-                    'ip' => $formatted_ip,
-                ];
-            }
+            $return[$formatted_mac] = [
+                'port' => 0,
+                'mac' => $formatted_mac,
+                'vlan' => $vlans[$vlan[10]],
+                'ip' => $formatted_ip,
+            ];
         }
 
         return $return;
@@ -357,26 +401,16 @@ class DellEMC implements DeviceInterface {
         $hostname = str_replace("STRING: ", "", $system['hostname']);
         $hostname = str_replace("\"", "", $hostname);
 
-        if(str_contains($system['data'], "Dell Networking")) {
-            $sys_data = str_replace("STRING: ", "", $system['data']);
-            $sys_data = str_replace(["\"", "\r"], "", $sys_data);
-            $sys_data = explode(", ", $sys_data);
-            $model = $sys_data[0];
-            $version = $sys_data[1];
-        } else {
-            $sys_data = str_replace("STRING: ", "", $system['data']);
-            $sys_data = str_replace(["\"", "\r"], "", $sys_data);
-            $sys_data = explode("\n", $sys_data);
-            $model = str_replace("System Type: ", "", $sys_data[4]);
-            $version = str_replace("OS Version: ", "", $sys_data[3]);
-        }
+        $sys_data = str_replace("STRING: ", "", $system['data']);
+        $sys_data = str_replace(["\"", "\r"], "", $sys_data);
+        $sys_data = explode(", ", $sys_data);
+        $model = $sys_data[0];
+        $version = $sys_data[1];
 
-        dd($system['uptime']);
         $uptime = str_replace("Timeticks: (", "", $system['uptime']);
         $uptime = strstr($uptime, ")", true);
-        $uptime = ($uptime / 100) * 10000;
+        $uptime = ($uptime / 100) * 1000;
 
-        dd($uptime);
 
         $return = [
             'name' => $hostname,
@@ -385,7 +419,7 @@ class DellEMC implements DeviceInterface {
             'firmware' => $version,
             'hardware' => $system['hardware'] ?? 'unknown',
             'mac' => null,
-            'uptime' => $uptime ?? 0,
+            'uptime' => $uptime ?? 'unknown',
         ];
 
         return $return;
