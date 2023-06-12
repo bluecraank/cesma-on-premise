@@ -1,5 +1,9 @@
 <?php
 
+use App\Devices\ArubaCX;
+use App\Devices\ArubaOS;
+use App\Devices\DellEMC;
+use App\Devices\DellEMCPowerSwitch;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -19,7 +23,7 @@ return [
         'aruba-os' => ArubaOS::class,
         'aruba-cx' => ArubaCX::class,
         'dell-emc' => DellEMC::class,
-        'dell-emc-powerswitch' => DellEMC::class,
+        'dell-emc-powerswitch' => DellEMCPowerSwitch::class,
     ],
 
     'typenames' => [
