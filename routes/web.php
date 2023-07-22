@@ -2,6 +2,7 @@
 
 use App\Devices\ArubaCX;
 use App\Devices\DellEMC;
+use App\Devices\DellEMCPowerSwitch;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BuildingController;
@@ -143,7 +144,8 @@ Route::prefix('device')->middleware(['role.admin', 'auth:sanctum'])->group(funct
 });
 
 Route::get('/test', function() {
-    echo DellEMC::getSnmpData(Device::find(1));
+    $device = Device::whereId('4')->get()->first();
+    echo config('app.types')[$device->type]::getSnmpData($device);
 });
 
 // Login

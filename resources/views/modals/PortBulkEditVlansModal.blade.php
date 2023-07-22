@@ -1,5 +1,5 @@
 <div class="modal clickable-tags modal-vlan-bulk-edit">
-    <form onchange="checkVlanCount()" id="bulk-edit-ports" action="/switch/{{ $device->id }}/action/bulk-update-ports" method="post">
+    <form onchange="checkVlanCount()" id="bulk-edit-ports" action="/device/{{ $device->id }}/action/bulk-update-ports" method="post">
         @csrf
         <input type="hidden" class="ports" value='' name="ports">
         <div class="modal-background"></div>

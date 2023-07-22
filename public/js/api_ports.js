@@ -1,7 +1,7 @@
 function checkUpdate() {
     let id = window.device_id
     let time = window.timestamp
-    fetch('/switch/'+id+'/update-available?time='+time)
+    fetch('/device/'+id+'/update-available?time='+time)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.updated) {
@@ -138,7 +138,7 @@ function saveEditedPorts(element) {
 
     $(element).addClass('is-loading');
 
-    fetch('/switch/' + id + '/action/prepare-api', {
+    fetch('/device/' + id + '/action/prepare-api', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrf

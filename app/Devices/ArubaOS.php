@@ -52,16 +52,17 @@ class ArubaOS implements DeviceInterface
         'macToIf' => '.1.3.6.1.2.1.17.4.3.1.2'
     ];
 
-    static function getSnmpData(Device $device): array {    
+    static function getSnmpData(Device $device): array
+    {
         $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
         try {
             $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $snmpIpToMac = [];
         }
-        
+
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
         $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
         $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
@@ -71,18 +72,18 @@ class ArubaOS implements DeviceInterface
         $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
         $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
         $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
-        
+
         $ports = [];
         $allVlans = [];
         $allPorts = [];
         $portExtendedIndex = [];
         $allVlansByIndex = [];
-        if(is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes) || !is_array($snmpIpToMac) || !is_array($snmpPortsAssignedToVlans) || !is_array($snmpPortIndexToQBridgeIndex)) {
+        if (is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes) || !is_array($snmpIpToMac) || !is_array($snmpPortsAssignedToVlans) || !is_array($snmpPortIndexToQBridgeIndex)) {
             return ['message' => 'Failed to get data from device', 'success' => false];
         }
 
 
-        foreach($snmpPortIndexToQBridgeIndex as $key => $value) {
+        foreach ($snmpPortIndexToQBridgeIndex as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
             $value = str_replace("INTEGER: ", "", $value);
@@ -90,31 +91,31 @@ class ArubaOS implements DeviceInterface
         }
 
         $types = [];
-        foreach($snmpIfTypes as $key => $value) {
+        foreach ($snmpIfTypes as $key => $value) {
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
             $value = str_replace("INTEGER: ", "", $value);
             $types[$ifIndex] = $value;
         }
 
-        foreach($snmpIfIndexes as $key => $value) {
+        foreach ($snmpIfIndexes as $key => $value) {
 
             $key = explode(".", $key);
             $ifIndex = $key[count($key) - 1];
 
-            if(str_contains($value, 'vlan') || str_contains($value, 'VLAN') || str_contains($value, 'Vl') || str_contains($value, 'DEFAULT_VLAN')) {
-                if(str_contains($value, 'DEFAULT_VLAN')) {
+            if (str_contains($value, 'vlan') || str_contains($value, 'VLAN') || str_contains($value, 'Vl') || str_contains($value, 'DEFAULT_VLAN')) {
+                if (str_contains($value, 'DEFAULT_VLAN')) {
                     $value = "1";
                 } else {
-                    $value = str_replace(["STRING: ","\"", "vlan", "VLAN", "Vl"], "", $value);
+                    $value = str_replace(["STRING: ", "\"", "vlan", "VLAN", "Vl"], "", $value);
                 }
 
                 $allVlans[$value]['id'] = $ifIndex;
                 $allVlansByIndex[$ifIndex] = $value;
             }
 
-            if(isset($types[$ifIndex]) && $types[$ifIndex] == 6) {
-                $value = str_replace(["STRING: ","\"", "ethernet"], "", $value);
+            if (isset($types[$ifIndex]) && $types[$ifIndex] == 6) {
+                $value = str_replace(["STRING: ", "\"", "ethernet"], "", $value);
                 $allPorts[$ifIndex] = ['name' => $value, 'type' => 'ethernet'];
             }
         }
@@ -124,7 +125,7 @@ class ArubaOS implements DeviceInterface
         $allVlans = self::foreachAssignedVlansToPort($snmpPortsAssignedToVlans, $allVlans);
 
         list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
-        $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex); 
+        $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
         $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
 
         $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
@@ -140,7 +141,7 @@ class ArubaOS implements DeviceInterface
             'uplinks' => self::snmpFormatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
             'success' => true,
         ];
-        
+
         return $data;
     }
 
@@ -237,7 +238,7 @@ class ArubaOS implements DeviceInterface
         $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
 
         try {
-            if($plain) {
+            if ($plain) {
                 $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
                     'Content-Type' => 'application/json',
                     'Cookie' => "$cookie",
@@ -317,46 +318,19 @@ class ArubaOS implements DeviceInterface
         }
     }
 
-    static function API_REQUEST_ALL_DATA($device): array
+    static function GET_DEVICE_DATA($device): array
     {
         if (!$device) {
             return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
         }
 
-        // if (!$login_info = self::API_LOGIN($device)) {
-        //     return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed. See logfile for details"];
-        // }
-
-        // $data = [];
-
-        // list($cookie, $api_version) = explode(";", $login_info);
-
-        // foreach (self::$available_apis as $key => $api) {
-        //     $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version);
-
-        //     if ($api_data['success']) {
-        //         $data[$key] = $api_data['data'];
-        //     }
-        // }
-
-        // $data = [
-        //     'informations' => self::formatSystemData($data['status']),
-        //     'vlans' => self::formatVlanData($data['vlans']['vlan_element']),
-        //     'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
-        //     'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
-        //     'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']),
-        //     'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element']),
-        //     'uplinks' => self::formatUplinkData($data['ports']['port_element']),
-        //     'success' => true,
-        // ];
-
-        // self::API_LOGOUT($device->hostname, $cookie, $api_version);
         $data = self::getSnmpData($device);
 
         return $data;
     }
 
-    static function snmpFormatPortData(Array $ports, Array $stats): array {
+    static function snmpFormatPortData(array $ports, array $stats): array
+    {
         $return = [];
 
         if (empty($ports) or !is_array($ports) or !isset($ports)) {
@@ -377,27 +351,29 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function snmpFormatExtendedPortStatisticData(Array $portstats, Array $portdata): array {
+    static function snmpFormatExtendedPortStatisticData(array $portstats, array $portdata): array
+    {
         // Incompatible with DellEMC
         return [];
     }
 
-    static function snmpFormatPortVlanData(Array $vlanports): array {
+    static function snmpFormatPortVlanData(array $vlanports): array
+    {
         $return = [];
 
         if (empty($vlanports) or !is_array($vlanports) or !isset($vlanports)) {
             return $return;
         }
 
-        
+
         $i = 0;
 
         $cache = [];
 
         foreach ($vlanports[0] as $key => $port) {
-                
-            if(isset($port['untagged'])) {
-                foreach($port['untagged'] as $vlan) {
+
+            if (isset($port['untagged'])) {
+                foreach ($port['untagged'] as $vlan) {
                     $return[$i] = [
                         "port_id" => $port['name'],
                         "vlan_id" => $vlan,
@@ -408,9 +384,9 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
-            if(isset($port['tagged'])) {
-                foreach($port['tagged'] as $vlan) {
-                    if(isset($cache[$port['name']]) && $cache[$port['name']] == $vlan) {
+            if (isset($port['tagged'])) {
+                foreach ($port['tagged'] as $vlan) {
+                    if (isset($cache[$port['name']]) && $cache[$port['name']] == $vlan) {
                         continue;
                     }
 
@@ -420,7 +396,7 @@ class ArubaOS implements DeviceInterface
                         "is_tagged" => true,
                     ];
                     $i++;
-                }     
+                }
             }
         }
 
@@ -432,7 +408,7 @@ class ArubaOS implements DeviceInterface
         $uplinks = [];
 
         foreach ($data['ports'] as $port) {
-            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans'])-10) {
+            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans']) - 10) {
                 $uplinks[$port['name']] = $port['name'];
             }
         }
@@ -441,7 +417,8 @@ class ArubaOS implements DeviceInterface
     }
 
 
-    static function snmpFormatVlanData(Array $vlans): array {
+    static function snmpFormatVlanData(array $vlans): array
+    {
         $return = [];
 
         if (empty($vlans) or !is_array($vlans) or !isset($vlans)) {
@@ -449,8 +426,7 @@ class ArubaOS implements DeviceInterface
         }
 
         foreach ($vlans as $key => $vlan) {
-            if($vlan['description'] != "") 
-            {
+            if ($vlan['description'] != "") {
                 $return[$key] = $vlan['description'];
             }
         }
@@ -458,7 +434,8 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function snmpFormatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): array {
+    static function snmpFormatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
+    {
         // Not supported by DellEMC
         $return = [];
 
@@ -466,7 +443,7 @@ class ArubaOS implements DeviceInterface
             return $return;
         }
 
-        foreach($data as $ip => $mac) {
+        foreach ($data as $ip => $mac) {
             $exploded_ip = explode(".", $ip);
             $formatted_ip = array_slice($exploded_ip, -4, 4, true);
 
@@ -476,7 +453,7 @@ class ArubaOS implements DeviceInterface
 
             $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
 
-            if(isset($vlans[$vlan[10]])) {
+            if (isset($vlans[$vlan[10]])) {
                 $return[$formatted_mac] = [
                     'port' => 0,
                     'mac' => $formatted_mac,
@@ -488,15 +465,14 @@ class ArubaOS implements DeviceInterface
 
         return $return;
     }
-    
-    static function snmpFormatSystemData(Array $system): array {
+
+    static function snmpFormatSystemData(array $system): array
+    {
         $return = [];
 
         if (empty($system) or !is_array($system) or !isset($system)) {
             return [];
         }
-
-        // dd($system);
 
         $hostname = str_replace("STRING: ", "", $system['hostname']);
         $hostname = str_replace("\"", "", $hostname);
@@ -508,12 +484,9 @@ class ArubaOS implements DeviceInterface
         $model = $sys_data[0];
         $version = $sys_data[1];
 
-        // dd($system['uptime']);
         $uptime = str_replace("Timeticks: (", "", $system['uptime']);
         $uptime = strstr($uptime, ")", true);
         $uptime = ($uptime / 100) * 1000;
-
-        // dd($uptime);
 
         $return = [
             'name' => $hostname,
@@ -639,7 +612,7 @@ class ArubaOS implements DeviceInterface
             ];
         }
 
-        foreach($portdata as $port) {
+        foreach ($portdata as $port) {
             $return[$port['id']]['port_status'] = $port['is_port_up'];
         }
 
@@ -1038,12 +1011,12 @@ class ArubaOS implements DeviceInterface
         if (!$testmode) {
             $logdata = [
                 "summary" => [
-                    "created" => $i_vlan_created, 
+                    "created" => $i_vlan_created,
                     "renamed" => $i_vlan_chg_name
                 ],
                 "vlans" => $return
             ];
-    
+
             CLog::info("Sync", "VLANs synced on device " . $device->name, $device, json_encode($logdata));
 
             self::API_LOGOUT($device->hostname, $cookie, $api_version);

@@ -45,7 +45,7 @@
                                 @endif
                                 <div class="control">
                                     <a title="{{ __('Backup.Download') }}" class="button is-small is-success"
-                                        @php if($backup->status == 1) { echo 'href="/switch/backup/'.$backup->id.'/download"'; } else { echo 'disabled'; } @endphp
+                                        @php if($backup->status == 1) { echo 'href="/device/backup/'.$backup->id.'/download"'; } else { echo 'disabled'; } @endphp
                                         download="backup.txt">
                                         <i class="fa fa-download"></i>
                                     </a>

@@ -328,7 +328,7 @@ class DeviceController extends Controller
                     [
                         'success' => true,
                         'updated' => true,
-                        'message' => __('Msg.ViewOutdated') . ' <a style="text-decoration:underline" href="/switch/' . $device->id . '">' . __('Msg.ClickToRefresh') . '</a>'
+                        'message' => __('Msg.ViewOutdated') . ' <a style="text-decoration:underline" href="/device/' . $device->id . '">' . __('Msg.ClickToRefresh') . '</a>'
                     ],
                     200,
                     ['Content-Type' => 'application/json']

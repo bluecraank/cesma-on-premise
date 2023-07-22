@@ -6,6 +6,7 @@ use App\Interfaces\DeviceInterface;
 
 use App\Models\Device;
 use App\Models\DeviceBackup;
+use App\Models\DeviceVlan;
 use App\Models\Vlan;
 
 class DellEMCPowerSwitch implements DeviceInterface {
@@ -136,7 +137,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
         return [];
     }
 
-    static function API_REQUEST_ALL_DATA(Device $device): array {
+    static function GET_DEVICE_DATA(Device $device): array {
         // Incompatible with DellEMC
         return self::getSnmpData($device);
     }
@@ -158,7 +159,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
             return $return;
         }
 
-        foreach ($ports as $port) {
+        foreach ($ports as $ifIndex => $port) {
             $return[$port['name']] = [
                 'name' => $port['description'],
                 'id' => $port['name'],
@@ -166,6 +167,7 @@ class DellEMCPowerSwitch implements DeviceInterface {
                 'trunk_group' => $port['trunk_group'] ?? null,
                 'vlan_mode' => "native-untagged",
                 'speed' => $port['speed'] ?? null,
+                'snmp_if_index' => $ifIndex ?? null,
             ];
         }
 
@@ -359,7 +361,23 @@ class DellEMCPowerSwitch implements DeviceInterface {
     }
 
     static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): array {
-        // Incompatible with DellEMC
+        // dd(DeviceVlan::where('id', $vlan)->get()->pluck('name')->toArray(), $port->name);
+
+        $oid = self::$snmp_oids['untagged_ports'] . "." . ($port->snmp_if_index ?? '0');
+        
+        $ports = $device->ports()->get()->toArray();
+
+        
+        $portHexString = [];
+        foreach($ports as $key => $untaggedPort) {
+            if((isset($untaggedPort['untagged']) and $untaggedPort['untagged']['id'] == $vlan) || $port->id == $untaggedPort['id']) {
+                $portHexString[$key] = "1";
+            } else {
+                $portHexString[$key] = "0";
+            }
+        }
+
+        dd($portHexString);
         return [];   
     }
 

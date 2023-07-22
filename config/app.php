@@ -37,7 +37,15 @@ return [
         'aruba-os' => false,
         'aruba-cx' => false,
         'dell-emc' => true,
-        'dell-emc-powerswitch' => true,
+        'dell-emc-powerswitch' => false,
+    ],
+
+
+    'write_type' => [
+        'aruba-os' => 'api',
+        'aruba-cx' => 'api',
+        'dell-emc' => 'none',
+        'dell-emc-powerswitch' => 'snmp',
     ],
 
     'name' => env('APP_NAME', 'Cesma'),

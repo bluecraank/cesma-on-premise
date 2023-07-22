@@ -22,7 +22,7 @@ class BackupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $backups = DeviceBackup::all()->keyBy('id');
+        $backups = DeviceBackup::select('id', 'status', 'created_at', 'device_id')->get()->keyBy('id');
         $devices = Device::all()->keyBy('id');
 
 

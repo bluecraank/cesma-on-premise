@@ -26,7 +26,7 @@ class DeviceService
 {
     static function refreshDevice(Device $device)
     {
-        $response = config('app.types')[$device->type]::API_REQUEST_ALL_DATA($device);
+        $response = config('app.types')[$device->type]::GET_DEVICE_DATA($device);
 
         if (isset($response['success']) and $response['success']) {
             self::storeApiData($response, $device);
@@ -89,6 +89,7 @@ class DeviceService
                     'link' => $port['link'],
                     'speed' => $port['speed'] ?? 0,
                     'vlan_mode' => $port['vlan_mode'],
+                    'snmp_if_index' => $port['snmp_if_index'] ?? NULL,
                 ]
             );
             $existingPorts[$port['id']] = true;
@@ -449,6 +450,10 @@ class DeviceService
     {
 
         $device = Device::find($id);
+
+        if(config('app.write_type')[$device->type] == "snmp") {
+            return json_encode(['success' => 'true', 'hash' => Crypt::encrypt("SNMP_NO_LOGIN"), 'timestamp' => time()]);
+        }
 
         if (!$device) {
             return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);

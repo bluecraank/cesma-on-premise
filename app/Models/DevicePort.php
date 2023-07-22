@@ -12,7 +12,8 @@ class DevicePort extends Model
         'description',
         'link',
         'speed',
-        'vlan_mode'
+        'vlan_mode',
+        'snmp_if_index'
     ];
 
     protected $appends = [

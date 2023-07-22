@@ -1,5 +1,5 @@
 <div class="modal modal-sync-pubkeys">
-    <form action="/switch/action/sync-pubkeys" onsubmit="event.preventDefault(); switchSyncPubkeys();" id="form-sync-pubkeys"
+    <form action="/device/action/sync-pubkeys" onsubmit="event.preventDefault(); switchSyncPubkeys();" id="form-sync-pubkeys"
         method="post">
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">

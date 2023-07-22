@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="control">
                                     <a title="Herunterladen" class="button is-small is-primary"
-                                        @php if($num_status) { echo 'href="/switch/backup/'.$device->last_backup->id.'/download"'; } else { echo 'disabled'; } @endphp
+                                        @php if($num_status) { echo 'href="/device/backup/'.$device->last_backup->id.'/download"'; } else { echo 'disabled'; } @endphp
                                         download="backup.txt">
                                         <i class="fa fa-download"></i>
                                     </a>

@@ -26,7 +26,7 @@
         
         static function API_PATCH_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function API_REQUEST_ALL_DATA(Device $device): Array;
+        static function GET_DEVICE_DATA(Device $device): Array;
 
         static function createBackup(Device $device): bool;
 

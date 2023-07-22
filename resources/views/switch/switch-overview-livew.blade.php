@@ -65,7 +65,7 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @else
-                                <a title="{{ __('Show') }}" class="button is-success is-small" href="/switch/{{ $device->id }}">
+                                <a title="{{ __('Show') }}" class="button is-success is-small" href="/device/{{ $device->id }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @endif

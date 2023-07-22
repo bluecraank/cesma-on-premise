@@ -150,7 +150,7 @@ class DellEMC implements DeviceInterface {
         return [];
     }
 
-    static function API_REQUEST_ALL_DATA(Device $device): array {
+    static function GET_DEVICE_DATA(Device $device): array {
         // Incompatible with DellEMC
         return self::getSnmpData($device);
     }

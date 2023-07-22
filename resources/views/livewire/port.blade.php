@@ -11,7 +11,7 @@
         </td>
 
         <td class="has-text-centered is-vcentered">
-            <a class="dark-fix-color" href="/switch/{{ $device_id }}/ports/{{ $port->name }}">{{ $port->name }}</a>
+            <a class="dark-fix-color" href="/device/{{ $device_id }}/ports/{{ $port->name }}">{{ $port->name }}</a>
         </td>
 
         <td class="is-vcentered">

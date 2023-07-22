@@ -21,4 +21,8 @@ class DeviceVlan extends Model
     {
         return $this->hasMany(DeviceVlanPort::class);
     }
+
+    public function devicePorts() {
+        return $this->hasManyThrough(DevicePort::class, DeviceVlanPort::class, 'device_vlan_id', 'id', 'id', 'device_port_id'); 
+    }
 }

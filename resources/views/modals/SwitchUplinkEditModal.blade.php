@@ -1,5 +1,5 @@
 <div class="modal modal-edit-uplinks">
-    <form action="/switch/uplinks" method="post">
+    <form action="/device/uplinks" method="post">
         @csrf
         @method('PUT')
 

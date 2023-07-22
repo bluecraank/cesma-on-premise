@@ -68,7 +68,7 @@ async function execute(switches, command) {
         formData.append("id", value.id);
 
         fetch(
-            '/switch/' + value.id + '/ssh/execute',
+            '/device/' + value.id + '/ssh/execute',
             {
                 method: 'POST',
                 body: formData
@@ -235,7 +235,7 @@ function sw_actions(ele, type, id) {
 }
 
 function switchCreateBackup(ele) {
-    uri = '/switch/action/create-backup';
+    uri = '/device/action/create-backup';
     cssclass = "fa-hdd";
     let form = new FormData();
 
@@ -244,7 +244,7 @@ function switchCreateBackup(ele) {
 
 function switchSyncPubkeys() {
     let form = new FormData();
-    let uri = '/switch/action/sync-pubkeys';
+    let uri = '/device/action/sync-pubkeys';
     let cssclass = 'fa-key';
     let ele = $(".syncPubButton");
     fetcher(uri, form, ele, cssclass);
