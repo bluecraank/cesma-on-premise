@@ -37,7 +37,7 @@
 
         <td class="is-vcentered">
             <button class="is-80 button is-small is-outlined is-radiusless is-link mt-1"
-                onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
+                onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}', '{{  $port->untaggedVlan() }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
                 {{ $this->taggedVlans->count() ?? 0 }} VLANs
             </button>
 

@@ -72,7 +72,7 @@ function updatePortTaggedVlans(ele) {
     window.livewire.find(componentId).call('prepareTaggedVlans', rowId, componentId, vlans);
 }
 
-function updateTaggedModal(pid, vlans, port, id, typ) {
+function updateTaggedModal(pid, vlans, untaggedVlan, port, id, typ) {
     let vlansSplitted = vlans.split(',');
 
     let modal = $('.modal-vlan-tagging');
@@ -85,15 +85,19 @@ function updateTaggedModal(pid, vlans, port, id, typ) {
     $('.modal .is-submit').attr('data-component', idw);
     $('.modal .is-submit').attr('data-id', pid);
 
-    console.log(idw);
     if (typ == 'access') {
         modal.find('.typ-warning').removeClass('is-hidden');
     }
 
-    modal.find('.modal-card-body span.tag').removeClass('is-primary');
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-primary');
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-info');
 
     vlansSplitted.forEach(function (vlan) {
-        modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
+        if (untaggedVlan == vlan) {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-info');
+        } else {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
+        }
     });
 
     modal.show();
@@ -189,7 +193,7 @@ function saveEditedPorts(element) {
 }
 
 $(document).ready(function () {
-    $(".clickable-tags .modal-card-body span.tag").click(function () {
+    $(".clickable-tags .modal-card-body #clickable-vlans span.tag").click(function () {
         $(this).toggleClass('is-primary');
     });
 

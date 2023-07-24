@@ -21,12 +21,21 @@
                     ->keyBy('id')
                     ->toArray();
             @endphp
-            @foreach ($vlans as $key => $vlan)
-                <span title="{{ $vlan['name'] }}" class="is-clickable tag"
-                    data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
-            @endforeach
+            <div id="clickable-vlans">
+                @foreach ($vlans as $key => $vlan)
+                    <span title="{{ $vlan['name'] }}" class="is-clickable tag"
+                        data-id="{{ $key }}">{{ $vlan['vlan_id'] }}</span>
+                @endforeach
+            </div>
 
             <br><br>
+
+            <p>
+                <label class="label is-small">Legende</label>
+                <span class="tag is-info is-small">Allowed Untagged</span>
+                <span class="tag is-primary is-small">Tagged</span>
+                <span class="tag is-small">Nicht genutzt</span>
+            </p>
 
             <div class="notification is-warning typ-warning is-hidden">
                 Dieser Port ist zurzeit im Access-Mode.<br>
