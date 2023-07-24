@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-bullseye AS php-base
+FROM php:8.2-fpm-bookworm AS php-base
 
 LABEL maintainer "Nils Fischer"
 
@@ -57,7 +57,6 @@ EXPOSE 9000
 # Nginx
 EXPOSE 80
 EXPOSE 443
-
 
 
 FROM php-base
