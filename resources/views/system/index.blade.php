@@ -352,7 +352,6 @@
         @include('modals.create.MacTypeAddModal')
         @include('modals.create.MacTypeIconAddModal')
         @include('modals.delete.MacTypeDeleteModal')
-        @include('modals.combined.VlanTemplateModal')
         @include('modals.combined.SnmpRouterModal')
     @endif
 

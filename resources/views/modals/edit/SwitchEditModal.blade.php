@@ -83,7 +83,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-edit-switch').hide();return false;" type="button"
+                <button data-modal="edit-switch" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

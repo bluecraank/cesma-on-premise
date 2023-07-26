@@ -53,7 +53,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-primary sync-vlan-start" onclick="$(this).addClass('is-loading');$('.sync-vlan-info').removeClass('is-hidden');$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
-                <button onclick="$('.modal-sync-vlans').hide();return false;" type="button"
+                <button data-modal="sync-vlans" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 
                 <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>

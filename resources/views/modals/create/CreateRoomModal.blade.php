@@ -30,7 +30,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-add-room').hide();return false;" type="button"
+                <button data-modal="add-room" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

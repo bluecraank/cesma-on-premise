@@ -19,7 +19,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-submit is-danger">{{ __('Button.Delete') }}</button>
-                <button onclick="$('.modal-delete-switch').hide();return false;" type="button"
+                <button data-modal="delete-switch" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
