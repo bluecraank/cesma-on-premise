@@ -6,7 +6,7 @@
 
         <div class="is-pulled-right ml-4">
             @if (Auth::user()->role >= 1)
-                <button onclick="$('.modal-add-room').show();return false;" class="is-small button is-success"><i
+                <button data-modal="add-room" class="is-small button is-success"><i
                         class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
             @endif
         </div>

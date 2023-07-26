@@ -51,7 +51,7 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button onclick="$('.modal-new-key').show()" class="is-small button is-success"><i
+                    <button data-modal="new-key" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
             </div>
@@ -78,8 +78,8 @@
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role >= 2)
                                     <button
-                                        onclick="$('.modal-delete-key').show();
-                                        $('.modal-delete-key').find('input.desc').val('{{ $key->description }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
+                                        data-modal="delete-key"
+                                        onclick="$('.modal-delete-key').find('input.desc').val('{{ $key->description }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
                                         class="is-small button is-danger"><i class="fas fa-trash"></i></button>
                                 @endif
                             </td>
@@ -120,7 +120,8 @@
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role == 2)
                                     <button
-                                        onclick="$('.modal-edit-user').show();$('.modal-edit-user').find('select').val({{ $user->role }});$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
+                                        data-modal="edit-user"
+                                        onclick="$('.modal-edit-user').find('select').val({{ $user->role }});$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
                                         class="is-small button is-info"><i class="fas fa-cog"></i></button>
                                 @endif
                             </td>
@@ -135,7 +136,7 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button onclick="$('.modal-add-mac').show()" class="is-small button is-success"><i
+                    <button data-modal="add-mac" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
             </div>
@@ -163,7 +164,8 @@
                             <td class="has-text-centered">
                                 @if (Auth::user()->role >= 1)
                                     <button class="button is-small is-danger"
-                                        onclick="$('.modal-delete-mac').show();$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i
+                                        data-modal="delete-mac"
+                                        onclick="$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i
                                             class="fas fa-trash"></i></button>
                                 @endif
                             </td>
@@ -212,7 +214,7 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button onclick="$('.modal-add-router').show()" class="is-small button is-success"><i
+                    <button data-modal="add-router" class="is-small button is-success"><i
                             class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
                 @endif
             </div>

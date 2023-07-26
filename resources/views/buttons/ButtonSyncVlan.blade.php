@@ -1,4 +1,4 @@
-<button class="button is-info" onclick="$('.modal-sync-vlans').show();return false;">
+<button class="button is-info" data-modal="sync-vlans">
     <span class="icon is-small">
         <i class="fas fa-sync"></i>
       </span>

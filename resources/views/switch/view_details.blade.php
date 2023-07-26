@@ -26,7 +26,7 @@
         <div class="column is-6">
             <div class="buttons is-pulled-right">
                 @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
-                    <button onclick="$('.modal-sync-vlans-specific').show();" class="button is-small is-success">
+                    <button data-modal="sync-vlans-specific" class="button is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
                     </button>
                     <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})"

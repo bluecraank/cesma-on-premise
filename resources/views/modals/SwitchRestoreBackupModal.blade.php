@@ -31,7 +31,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-warning">{{ __('Backup.Restore') }}</button>
-                <button onclick="$('.modal-upload-backup').hide();return false;" type="button"
+                <button data-modal="upload-backup" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

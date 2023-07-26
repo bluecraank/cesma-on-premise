@@ -3,7 +3,7 @@
 
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role >= 1)
-            <button onclick="$('.modal-new-switch').show()" class="button is-small is-success"><i
+            <button data-modal="new-switch" class="button is-small is-success"><i
                     class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
         @endif
     </div>

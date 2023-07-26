@@ -64,8 +64,8 @@
                 @if (Auth::user()->role >= 1)
                     <button onclick="event.preventDefault();submitBulkEditPorts(this, '{{ $device->id }}');" disabled type="submit" class="button is-submit is-primary">{{ __('Button.Save') }}</button>
                 @endif
-                <button onclick="$('.modal-vlan-bulk-edit').hide();return false;" type="button"
-                    class="is-cancel button">{{ __('Button.Close') }}</button>
+                <button data-modal="vlan-bulk-edit" type="button"
+                    class="actionCloseModal is-cancel button">{{ __('Button.Close') }}</button>
                 <span class="is-info submit-wait is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>
         </div>

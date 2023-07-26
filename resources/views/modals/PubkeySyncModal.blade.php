@@ -20,8 +20,8 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-primary">{{ __('Button.Sync') }}</button>
-                <button onclick="$('.modal-sync-pubkeys').hide();return false;" type="button"
-                    class="button">{{ __('Button.Cancel') }}</button>
+                <button data-modal="sync-pubkeys" type="button"
+                    class="actionCloseModal button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>
