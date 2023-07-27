@@ -72,8 +72,6 @@ $("button").on('click', function() {
             }
         });
     }
-
-    console.log("Toggling modal " + modal + " - state " + $(this).is(':visible'))
 });
 
 $("button.action").on('click', function() {
@@ -87,7 +85,6 @@ $("button.action").on('click', function() {
         device_id: id
     }).then(response => {
         ele.find('i').removeClass();
-        console.log(response.data.success);
         if(response.data.success == "true") {
             if(action == "refresh") {
                 setTimeout(function() {

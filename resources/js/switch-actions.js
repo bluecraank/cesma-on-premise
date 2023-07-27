@@ -9,7 +9,6 @@ $("#actionCreateBackup").on('click', function(element) {
         _token: $("meta[name=csrf-token]").attr("content"),
     }).then(response => {
         ele.find('i').removeClass();
-        console.log(response.data.success);
         if(response.data.success == "true") {
             ele.removeClass('is-loading');
             $(ele).find('i').addClass('fas is-hidden-touch mr-1 fa-check');
@@ -31,7 +30,6 @@ $("#actionSyncPubkeys").on('click', function(element) {
         _token: $("meta[name=csrf-token]").attr("content"),
     }).then(response => {
         ele.find('i').removeClass();
-        console.log(response.data.success);
         if(response.data.success == "true") {
             ele.removeClass('is-loading');
             $(ele).parent().siblings('.modal-card-body').find('.notification-wrapper').html('<div class="notification is-success">Public keys successfully synced.</div>');
