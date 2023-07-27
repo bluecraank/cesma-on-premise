@@ -76,6 +76,33 @@ $("button").on('click', function() {
     console.log("Toggling modal " + modal + " - state " + $(this).is(':visible'))
 });
 
+$("button.action").on('click', function() {
+    let action = $(this).attr("data-action");
+    let id = $(this).attr("data-id");
+    let ele = $(this);
+
+    ele.addClass('is-loading');
+
+    axios.post('/device/' + id + '/action/' + action, {
+        device_id: id
+    }).then(response => {
+        ele.find('i').removeClass();
+        console.log(response.data.success);
+        if(response.data.success == "true") {
+            if(action == "refresh") {
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1100)
+            }
+            ele.removeClass('is-loading');
+            $(ele).find('i').addClass('fas is-hidden-touch mr-1 fa-check');
+        } else {
+            ele.removeClass('is-loading');
+            $(ele).find('i').addClass('fas is-hidden-touch mr-1 fa-exclamation-triangle');
+        }
+    });
+});
+
 // Show loading animation in submit button
 $(document).on('submit','form',function(){
     $(this).find('button[type=submit]').addClass('is-loading');

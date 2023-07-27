@@ -29,17 +29,17 @@
                     <button data-modal="sync-vlans-specific" class="button is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
                     </button>
-                    <button onclick="sw_actions(this, 'pubkeys', {{ $device->id }})"
-                        class="button is-small is-success">
+                    <button data-id="{{ $device->id }}" data-action="sync-pubkeys"
+                        class="button action is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-key"></i> Sync Pubkeys
                     </button>
-                    <button onclick="sw_actions(this, 'backups', {{ $device->id }})"
-                        class="button is-small is-success">
+                    <button data-id="{{ $device->id }}" data-action="backup"
+                        class="button action is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-hdd"></i> Backup
                     </button>
                 @endif
 
-                <button onclick="sw_actions(this, 'refresh', {{ $device->id }})" class="is-success button is-small">
+                <button data-id="{{ $device->id }}" data-action="refresh" class="is-success action button is-small">
                     <i class="is-hidden-touch mr-1 fas fa-sync"></i> Refresh
                 </button>
             </div>
