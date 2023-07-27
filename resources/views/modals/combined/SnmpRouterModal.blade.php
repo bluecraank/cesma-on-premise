@@ -1,5 +1,5 @@
 <div class="modal modal-add-router">
-    <form onsubmit="$('.modal-card-foot .submit').addClass('is-loading')" action="/router" method="post">
+    <form action="/router" method="post">
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
@@ -27,7 +27,7 @@
 </div>
 
 <div class="modal modal-edit-router">
-    <form onsubmit="$('.modal-card-foot .submit').addClass('is-loading')" action="/router" method="post">
+    <form action="/router" method="post">
         @method('PUT')
         <input class="input id" required type="hidden" name="id">
         <div class="modal-background"></div>
@@ -57,7 +57,7 @@
 </div>
 
 <div class="modal modal-delete-router">
-    <form onsubmit="$('.modal-card-foot .submit').addClass('is-loading')" action="/router" method="post">
+    <form action="/router" method="post">
         @method('DELETE')
         <input class="input id" required type="hidden" name="id">
         <div class="modal-background"></div>

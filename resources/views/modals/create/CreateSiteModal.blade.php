@@ -1,5 +1,5 @@
 <div class="modal modal-add-site">
-    <form onsubmit="$('.modal-card-foot .submit').addClass('is-loading')" action="{{  route('create-site') }}" method="post">
+    <form action="{{  route('create-site') }}" method="post">
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">

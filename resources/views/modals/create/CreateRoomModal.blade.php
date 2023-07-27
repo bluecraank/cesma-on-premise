@@ -1,5 +1,5 @@
 <div class="modal modal-add-room">
-    <form onsubmit="$('.modal-card-foot .submit').addClass('is-loading')" action="{{ route('rooms') }}" method="post">
+    <form action="{{ route('rooms') }}" method="post">
 
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">

@@ -9,19 +9,19 @@
                 <p class="modal-card-title">{{ __('Uplink.Edit') }}</p>
             </header>
             <section class="modal-card-body">
-                <input type="hidden" name="device_id" class="device-id input">
+                <input type="hidden" name="device_id" class="id input">
 
                 <div class="field">
                     <label class="label">Switch</label>
                     <div class="control">
-                        <input type="text" disabled name="name" class="device-name input"
+                        <input type="text" disabled name="name" class="name input"
                             placeholder="Switchname">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Uplinks</label>
                     <div class="control">
-                        <input type="text" name="uplinks" class="device-uplinks input"
+                        <input type="text" name="uplinks" class="uplinks input"
                             placeholder="49,50,51 or 49-51">
                     </div>
 

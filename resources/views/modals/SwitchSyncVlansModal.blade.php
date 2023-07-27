@@ -42,7 +42,7 @@
                  </div> 
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-primary sync-vlan-start" onclick="$(this).addClass('is-loading');$('.sync-vlan-info').removeClass('is-hidden');$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
+                <button onclick="$('.sync-vlan-info').show()" class="button submit is-primary sync-vlan-start">{{ __('Button.Sync') }}</button>
                 <button data-modal="vlans-specific" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 

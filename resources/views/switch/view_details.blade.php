@@ -277,23 +277,20 @@
                     @endif
 
                     @if (Auth::user()->role >= 1)
-                        <button
-                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
-                            class="@if(!config('app.read-only')[$device->type]) ml-2 is-hidden @endif is-save-button button is-small is-info is-pulled-right mr-2"><i
+                        <button data-modal="edit-uplinks" data-id="{{ $device->id }}"
+                            data-name="{{ $device->name }}" data-uplinks="{{ $custom_uplinks_comma_seperated }}"
+                            class="@if (!config('app.read-only')[$device->type]) ml-2 is-hidden @endif is-save-button button is-small is-info is-pulled-right mr-2"><i
                                 class="fas fa-up-down mr-2"></i> Uplinks</button>
                     @endif
 
                     @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
-                        <button onclick="saveEditedPorts(this);"
-                            class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
+                        <button class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
                                 class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
 
-                        <button onclick="cancelEditing(this);"
-                            class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i
+                        <button class="is-cancel-button button is-small is-link is-pulled-right is-hidden mr-2"><i
                                 class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
 
-                        <button onclick="enableEditing();"
-                            class="is-edit-button button is-small is-info is-pulled-right"><i
+                        <button class="is-edit-button button is-small is-info is-pulled-right"><i
                                 class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
                 </h2>
