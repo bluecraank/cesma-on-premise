@@ -47,7 +47,7 @@
                 <button disabled onclick="updatePortTaggedVlans(this)"
                     type="button" class="button is-submit is-primary">{{ __('Button.Change') }}</button>
             @endif
-            <button onclick="$('.modal-vlan-tagging').hide();return false;" type="button"
+            <button data-modal="vlan-tagging" type="button"
                 class="is-cancel button">{{ __('Button.Close') }}</button>
             <span class="is-info is-hidden">{{ __('Msg.SubmitWait') }}</span>
         </footer>

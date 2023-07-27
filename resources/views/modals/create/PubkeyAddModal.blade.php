@@ -22,7 +22,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Add') }}</button>
-                <button onclick="$('.modal-new-key').hide();return false;" type="button" class="button">{{ __('Button.Cancel') }}</button>
+                <button data-modal="new-key" type="button" class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
     </form>

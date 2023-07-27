@@ -52,7 +52,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-edit-vlan').hide();return false;" type="button"
+                <button data-modal="edit-vlan" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

@@ -20,7 +20,7 @@
             <footer class="modal-card-foot">
                 <button class="button submit is-danger">{{ __('Button.Delete') }}
                 </button>
-                <button onclick="$('.modal-delete-building').hide();return false;" type="button"
+                <button data-modal="delete-building" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

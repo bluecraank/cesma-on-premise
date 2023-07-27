@@ -18,7 +18,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-danger">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-edit-location').hide();return false;" type="button"
+                <button data-modal="edit-location" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

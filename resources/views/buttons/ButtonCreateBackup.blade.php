@@ -1,4 +1,4 @@
-<button class="button is-info" onclick="switchCreateBackup(this)">
+<button id="actionCreateBackup" class="button is-info">
     <span class="icon is-small">
         <i class="fas fa-hdd"></i>
       </span>

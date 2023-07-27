@@ -96,7 +96,7 @@
 
             <footer class="modal-card-foot">
                 <button class="button is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-new-switch').hide();return false;" type="button"
+                <button data-modal="new-switch" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

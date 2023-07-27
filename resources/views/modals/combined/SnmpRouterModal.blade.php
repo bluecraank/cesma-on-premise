@@ -19,7 +19,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-add-router').hide();return false;" type="button"
+                <button data-modal="add-router" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
@@ -49,7 +49,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-success">{{ __('Button.Save') }}</button>
-                <button onclick="$('.modal-edit-router').hide();return false;" type="button"
+                <button data-modal="edit-router" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
@@ -79,7 +79,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-danger">{{ __('Button.Delete') }}</button>
-                <button onclick="$('.modal-delete-router').hide();return false;" type="button"
+                <button data-modal="delete-router" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
