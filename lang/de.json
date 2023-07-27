@@ -48,7 +48,6 @@
     "Button.CreateBackup": "Backup erstellen",
     "Button.SyncVlans": "VLANs synchronisieren",
     "Button.SyncPubkeys": "Öffentliche Schlüssel synchronisieren",
-    "Button.Bulkedit": "Massenbearbeitung",
 
     "Modal.Key.Add": "Schlüssel hinzufügen",
     "Modal.Key.Add.Name": "Schlüsselname",

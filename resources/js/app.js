@@ -133,56 +133,14 @@ $(document).mouseup(function (e) {
     }
 });
 
-// Fetcher function
-async function fetcher(uri, form, ele, cssclass, timeout = false, callback = false) {
+$("#actionLogout").on('click', function(element) {
+    $("#logoutForm").submit();
+});
 
-    let token = $('meta[name="csrf-token"]').attr('content');
-    form.append('_token', token);
-
-    $(ele).addClass('is-loading');
-    await fetch(uri, {
-        method: 'POST',
-        body: form
-    }).then(response => response.json())
-        .then(data => {
-            if (data.success == "true") {
-                $(ele).addClass('is-success');
-                $(ele).find('i').addClass('fa-check');
-                $(ele).removeClass('is-loading');
-                $(ele).find('i').removeClass(cssclass);
-                $(ele).find('i').removeClass('fa-exclamation-triangle');
-                $(ele).removeClass('is-danger');
-                $.notify(data.message, {
-                    style: 'bulma-success',
-                    autoHideDelay: 8000
-                });
-
-                if (timeout) {
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1100)
-                }
-
-                if(callback) {
-                    callback(true);
-                }
-
-            } else {
-                $(ele).addClass('is-danger');
-                $(ele).find('i').addClass('fa-exclamation-triangle');
-                $(ele).find('i').removeClass(cssclass);
-                $(ele).removeClass('is-loading');
-                $(ele).removeClass('is-primary');
-                $.notify(data.message, {
-                    style: 'bulma-error',
-                    autoHideDelay: 8000
-                });
-
-                
-                if(callback) {
-                    callback(false);
-                }
-            }
-        }
-        );
-}
+$("#systemTabList li").on('click', function(element) {
+    let tab = $(this).attr("data-tab");
+    $(this).siblings().removeClass('is-active');
+    $(this).addClass('is-active');
+    $('.tabsbox').addClass('is-hidden');
+    $('.tab-parent').find("[data-id='"+tab+"']").removeClass('is-hidden');
+});

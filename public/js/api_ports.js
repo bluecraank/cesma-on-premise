@@ -17,37 +17,6 @@ function checkUpdate() {
 }
 var interval = setInterval(checkUpdate, 25000);
 
-function checkVlanCount() {
-    let vlans = $('#bulk-edit-ports').find('select').val();
-
-    if (vlans.length > 1 && $('#bulk-edit-ports').find('input[name="type"]:checked').val() == 'untagged') {
-        $('#bulk-edit-ports').find('.is-submit').prop('disabled', true);
-        $('#bulk-edit-ports').find('.is-untagged-message').removeClass('is-hidden');
-    } else {
-        $('#bulk-edit-ports').find('.is-submit').prop('disabled', false);
-        $('#bulk-edit-ports').find('.is-untagged-message').addClass('is-hidden');
-    }
-}
-
-function submitBulkEditPorts(ele, id) {
-    $(ele).addClass('is-loading');
-    $(ele).siblings('button').addClass('is-hidden');
-    $(ele).siblings('.submit-wait').removeClass('is-hidden');
-
-    let ports = [];
-    let y = 0;
-    let modal2 = $('.modal-vlan-bulk-edit');
-    modal2.find('.ports span.tag.is-primary').each(function () {
-        let vid = $(this).attr('data-id');
-        ports[y] = vid;
-        y++;
-    });
-
-    $('#bulk-edit-ports .ports').val(JSON.stringify(ports));
-
-    $('#bulk-edit-ports').submit();
-}
-
 function updatePortTaggedVlans(ele) {
     let modal = $('.modal-vlan-tagging');
     $(modal).hide();

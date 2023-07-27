@@ -108,13 +108,11 @@
                         </a>
                     </li>
                     <li>
-                        <a class="" href="{{ route('logout') }}"
-                            onclick="event.preventDefault();
-                        document.getElementById('logout-form').submit();">
+                        <a id="actionLogout" href="#">
                             <span class="icon"><i class="fas fa-power-off"></i></span>
                             <span>{{ __('Menu.Logout') }}</span>
                         </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
                     </li>

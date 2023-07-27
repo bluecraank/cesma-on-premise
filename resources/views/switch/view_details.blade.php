@@ -357,6 +357,5 @@
     </div>
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
-    @include('modals.PortBulkEditVlansModal')
     @include('modals.SwitchUplinkEditModal')
     </x-layouts>

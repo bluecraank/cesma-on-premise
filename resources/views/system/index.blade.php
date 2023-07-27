@@ -6,31 +6,27 @@
         <div class="is-clearfix">
 
         </div>
-        <div class="tabs is-fullwidth">
+        <div id="systemTabList" class="tabs is-fullwidth">
             <ul>
-                <li data-tab="users" class="is-active"
-                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='users']`).removeClass('is-hidden');">
+                <li data-tab="users" class="systemTab is-active">
                     <a>
                         <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
                         <span>Benutzer</span>
                     </a>
                 </li>
-                <li data-tab="pubkeys"
-                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='pubkeys']`).removeClass('is-hidden');">
+                <li data-tab="pubkeys" class="systemTab">
                     <a>
                         <span class="icon is-small"><i class="fa-solid fa-key"></i></span>
                         <span>Öffentliche Schlüssel</span>
                     </a>
                 </li>
-                <li data-tab="macs"
-                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='macs']`).removeClass('is-hidden');">
-                    <a>
+                <li data-tab="macs" class="systemTab">
+                     <a>
                         <span class="icon is-small"><i class="fa-solid fa-link"></i></span>
                         <span>Maczuordnungen</span>
                     </a>
                 </li>
-                <li data-tab="snmp"
-                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='snmp']`).removeClass('is-hidden');">
+                <li data-tab="snmp" class="systemTab">
                     <a>
                         <span class="icon is-small"><i class="fa-solid fa-globe"></i></span>
                         <span>SNMP</span>
