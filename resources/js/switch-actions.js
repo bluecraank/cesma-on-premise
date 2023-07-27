@@ -1,47 +1,43 @@
 import $ from "jquery";
 
 $("#actionCreateBackup").on('click', function(element) {
+    let ele = $(this);
+
+    ele.addClass('is-loading');
+
     axios.post('/device/action/create-backup', {
-        device_id: $(this).attr("data-device-id")
-    })
+        _token: $("meta[name=csrf-token]").attr("content"),
+    }).then(response => {
+        ele.find('i').removeClass();
+        console.log(response.data.success);
+        if(response.data.success == "true") {
+            ele.removeClass('is-loading');
+            $(ele).find('i').addClass('fas is-hidden-touch mr-1 fa-check');
+        } else {
+            ele.removeClass('is-loading');
+            $(ele).find('i').addClass('fas is-hidden-touch mr-1 fa-exclamation-triangle');
+        }
+    });
 });
 
-function sw_actions(ele, type, id) {
-    let uri = '/device/' + id + '/action/create-backup';
-    let cssclass = "fa-hdd";
-    let reload = false;
+$("#actionSyncPubkeys").on('click', function(element) {
+    element.preventDefault();
 
-    if (type == "refresh") {
-        uri = '/device/' + id + '/action/refresh';
-        cssclass = "fa-sync";
-        reload = true
-    } else if (type == "pubkeys") {
-        uri = '/device/' + id + '/action/sync-pubkeys';
-        cssclass = "fa-key";
-    } else if (type == "vlans") {
-        uri = '/device/' + id + '/action/sync-vlans';
-        cssclass = "fa-ethernet";
-    }
+    let ele = $(this);
 
-    let formData = new FormData();
-    formData.append('device_id', id);
+    ele.addClass('is-loading');
 
-    fetcher(uri, formData, ele, cssclass, reload);
-}
-
-function switchCreateBackup(ele) {
-    uri = '/device/action/create-backup';
-    cssclass = "fa-hdd";
-    let form = new FormData();
-
-    fetcher(uri, form, ele, cssclass);
-}
-
-function switchSyncPubkeys() {
-    let form = new FormData();
-    let uri = '/device/action/sync-pubkeys';
-    let cssclass = 'fa-key';
-    let ele = $(".syncPubButton");
-    fetcher(uri, form, ele, cssclass);
-    $(".modal-sync-pubkeys").hide();
-}
+    axios.post('/device/action/sync-pubkeys', {
+        _token: $("meta[name=csrf-token]").attr("content"),
+    }).then(response => {
+        ele.find('i').removeClass();
+        console.log(response.data.success);
+        if(response.data.success == "true") {
+            ele.removeClass('is-loading');
+            $(ele).parent().siblings('.modal-card-body').find('.notification-wrapper').html('<div class="notification is-success">Public keys successfully synced.</div>');
+        } else {
+            ele.removeClass('is-loading');
+            $(ele).parent().siblings('.modal-card-body').find('.notification-wrapper').html('<div class="notification is-danger">'+response.data.message+'</div>');
+        }
+    });
+});

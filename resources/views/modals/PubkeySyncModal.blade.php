@@ -1,6 +1,5 @@
 <div class="modal modal-sync-pubkeys">
-    <form action="/device/action/sync-pubkeys" onsubmit="event.preventDefault(); switchSyncPubkeys();"
-        id="form-sync-pubkeys" method="post">
+    <form id="form-sync-pubkeys" method="post">
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
             <header class="modal-card-head">
@@ -21,9 +20,12 @@
                         </ul>
                     </div>
                 </div>
+
+                <div class="notification-wrapper"></div>
             </section>
             <footer class="modal-card-foot">
-                <button @disabled(empty($keys_list)) class="button submit is-primary">{{ __('Button.Sync') }}</button>
+                <button id="actionSyncPubkeys" @disabled(empty($keys_list))
+                    class="button submit is-primary">{{ __('Button.Sync') }}</button>
                 <button data-modal="sync-pubkeys" type="button" class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>
