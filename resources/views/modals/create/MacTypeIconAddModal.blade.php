@@ -8,10 +8,10 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <input type="hidden" class="type" name="mac_type">
+                    <input type="hidden" class="mac_type" name="mac_type">
                     <label class="label">MAC Typ</label>
                     <p class="control has-icons-left">
-                        <input class="input type" required readonly="true">
+                        <input class="input mac_type" required readonly="true">
                         <span class="icon is-small is-left">
                             <i class="fa fa-a"></i>
                         </span>
@@ -30,7 +30,7 @@
                 <a href="https://fontawesome.com/icons?d=gallery" target="_blank">Zu den Font Awesome Icons</a>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">{{ __('Button.Save') }}</button>
+                <button class="button submit is-success">{{ __('Button.Save') }}</button>
                 <button data-modal="edit-icon" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

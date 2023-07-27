@@ -10,10 +10,10 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <input type="hidden" name="vid" class="vlan-id" value="">
+                    <input type="hidden" name="vid" class="id" value="">
                     <label class="label">Soll das VLAN wirklich gelöscht werden?</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-name" type="text" name="name" readonly="true">
+                        <input class="input name" type="text" name="name" readonly="true">
                         <span class="icon is-small is-left">
                             <i class="fa fa-a"></i>
                         </span>

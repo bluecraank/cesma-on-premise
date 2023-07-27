@@ -3,7 +3,7 @@
 <x-layouts.main>
     <div class="box">
         <div class="is-pulled-right">
-            <form method="POST" onsubmit="$('.submit').addClass('is-loading')">
+            <form method="POST" >
                 @csrf 
                 <input type="hidden" value="{{ $site_id }}" name="site_id" checked>
                 <input type="hidden" value="{{ ($rename_vlans) ? 'on' : 'off' }}" name="overwrite-vlan-name">

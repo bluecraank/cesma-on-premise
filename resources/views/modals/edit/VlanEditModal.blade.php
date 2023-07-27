@@ -10,10 +10,10 @@
             </header>
             <section class="modal-card-body">
                 <div class="field">
-                    <input type="hidden" class="vlan-id" name="vid">
+                    <input type="hidden" class="id" name="vid">
                     <label class="label">Name*</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-name" name="name" placeholder="Name des VLANs">
+                        <input class="input name" name="name" placeholder="Name des VLANs">
                         <span class="icon is-small is-left">
                             <i class="fa fa-a"></i>
                         </span>
@@ -22,7 +22,7 @@
                 <div class="field">
                     <label class="label">{{ __('Description') }}</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-desc" name="description" placeholder="VLAN Beschreibung">
+                        <input class="input description" name="description" placeholder="VLAN Beschreibung">
                         <span class="icon is-small is-left">
                             <i class="fa fa-info"></i>
                         </span>
@@ -31,7 +31,7 @@
                 <div class="field">
                     <label class="label">{{ __('Vlan.Subnet') }}</label>
                     <p class="control has-icons-left">
-                        <input class="input vlan-ip_range" name="ip_range" placeholder="Subnet">
+                        <input class="input ip_range" name="ip_range" placeholder="Subnet">
                         <span class="icon is-small is-left">
                             <i class="fa fa-up-down"></i>
                         </span>
@@ -39,13 +39,13 @@
                 </div>
                 <div class="field">
                     <label class="checkbox">
-                        <input type="checkbox" name="sync" class="vlan-sync">
+                        <input type="checkbox" name="sync" class="is_synced">
                         {{ __('Vlan.Sync') }}
                     </label>
                 </div>
                 <div class="field">
                     <label class="checkbox">
-                        <input type="checkbox" name="is_client_vlan" class="vlan-is_client_vlan">
+                        <input data-negate="true" type="checkbox" name="is_client_vlan" class="is_client_vlan">
                         {{ __('Vlan.IsClientVlan') }}
                     </label>
                 </div>

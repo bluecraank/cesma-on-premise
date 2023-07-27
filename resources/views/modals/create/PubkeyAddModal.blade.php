@@ -21,7 +21,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">{{ __('Button.Add') }}</button>
+                <button class="button submit is-success">{{ __('Button.Add') }}</button>
                 <button data-modal="new-key" type="button" class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

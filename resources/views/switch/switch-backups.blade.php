@@ -36,11 +36,11 @@
 
                                 @if (Auth::user()->role >= 1)
                                     <div class="control">
-                                        <button disabled title="{{ __('Backup.Restore') }}"
-                                            onclick="restoreBackup('{{ $backup->id }}', '{{ $backup->created_at }}', '{{ $device->id }}', '{{ $device->name }}')"
+                                        <button disabled title="{{ __('Backup.Restore') }}" data-modal="restore-backup"
+                                            data-id="{{ $backup->id }}" data-date="{{ $backup->created_at }}"
+                                            data-device_id="{{ $device->id }}" data-device_name="{{ $device->name }}"
                                             @php if($backup->status != 1) { echo 'disabled'; } @endphp
-                                            class="button is-warning is-small"><i
-                                                class="fas fa-upload"></i></button>
+                                            class="button is-warning is-small"><i class="fas fa-upload"></i></button>
                                     </div>
                                 @endif
                                 <div class="control">
@@ -52,8 +52,8 @@
                                 </div>
                                 @if (Auth::user()->role >= 1)
                                     <div class="control">
-                                        <button title="{{ __('Button.Delete') }}"
-                                            onclick="deleteBackupModal('{{ $backup->id }}', '{{ $backup->created_at }}')"
+                                        <button title="{{ __('Button.Delete') }}" data-modal="delete-backup"
+                                            data-id="{{ $backup->id }}" data-date="{{ $backup->created_at }}"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>
                                 @endif

@@ -28,7 +28,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">{{ __('Button.Save') }}</button>
+                <button class="button submit is-success">{{ __('Button.Save') }}</button>
                 <button data-modal="edit-user" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

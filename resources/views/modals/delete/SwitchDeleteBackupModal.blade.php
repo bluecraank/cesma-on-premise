@@ -11,19 +11,19 @@
                 <div class="field">
                     <label class="label">Backup-ID</label>
                     <div class="control">
-                        <input class="backup-id input" name="id" type="text" readonly="true" value="">
+                        <input class="id input" name="id" type="text" readonly="true" value="">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">{{ __('Backup.Created') }}</label>
                     <div class="control">
-                        <input class="input backup-date" type="text" disabled value="">
-                        <input class="input backup-date" name="date" type="hidden" value="">
+                        <input class="input date" type="text" disabled value="">
+                        <input class="input date" name="date" type="hidden" value="">
                     </div>
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-danger">{{ __('Button.Delete') }}</button>
+                <button class="button submit is-danger">{{ __('Button.Delete') }}</button>
                 <button data-modal="delete-backup" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

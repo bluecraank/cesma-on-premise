@@ -1,5 +1,5 @@
 <div class="modal modal-edit-room">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="{{ route('rooms') }}" method="post">
+    <form action="{{ route('rooms') }}" method="post">
         @csrf
         @method('PUT')
         <div class="modal-background"></div>
@@ -12,7 +12,7 @@
                 <div class="field">
                     <label class="label">{{ __('Room') }}</label>
                     <div class="select is-fullwidth">
-                        <select class="buildings" name="building_id" id="">
+                        <select class="buildings building_id" name="building_id" id="">
                             @foreach ($buildings as $building)
                                 <option value="{{ $building->id }}">{{ $building->name }}</option>
                             @endforeach
@@ -24,8 +24,8 @@
                 <div class="field">
                     <label class="label">{{ __('EditRoom') }}</label>
                     <div class="control">
-                        <input class="room-id" name="id" type="hidden" value="">
-                        <input class="input room-name" name="name" type="text" value="">
+                        <input class="id" name="id" type="hidden" value="">
+                        <input class="input name" name="name" type="text" value="">
                     </div>
                 </div>
             </section>

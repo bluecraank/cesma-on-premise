@@ -40,12 +40,17 @@
                                 @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button
-                                            onclick="editRoomModal('{{ $room->id }}', '{{ $room->name }}', '{{ $room->building_id }}')"
+                                            data-modal="edit-room"
+                                            data-id="{{ $room->id }}"
+                                            data-name="{{ $room->name }}"
+                                            data-building_id="{{ $room->building_id }}"
                                             class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                     </div>
                                     <div class="control">
                                         <button
-                                            onclick="deleteRoomModal('{{ $room->id }}', '{{ $room->name }}')"
+                                            data-modal="delete-room"
+                                            data-id="{{ $room->id }}"
+                                            data-name="{{ $room->name }}"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>
                                 @endif

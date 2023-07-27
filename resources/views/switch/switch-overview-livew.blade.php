@@ -60,15 +60,9 @@
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
-                                @if($device->created_at == $device->updated_at)
-                                <a title="{{ __('Show') }}" disabled class="button is-success is-small">
+                                <a title="{{ __('Show') }}" @disabled($device->created_at == $device->updated_at) @if($device->created_at != $device->updated_at) href="/device/{{ $device->id }}"  @endif class="button is-success is-small">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                @else
-                                <a title="{{ __('Show') }}" class="button is-success is-small" href="/device/{{ $device->id }}">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                @endif
                             </div>
                             <div class="control">
                                 <a title="{{ __('GUI_External') }}" class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
@@ -79,11 +73,21 @@
                             @if (Auth::user()->role >= 1)
                                 <div class="control">
                                     <button title="{{ __('Switch.Edit.Hint') }}"
-                                        onclick="editSwitchModal('{{ $device->id }}', '{{ $device->name }}', '{{ $device->hostname }}', '{{ $device->site_id }}', '{{ $device->building_id }}', '{{ $device->room_id }}', '{{ $device->location_description }}')"
+                                        data-modal="edit-switch"
+                                        data-id="{{ $device->id }}"
+                                        data-name="{{ $device->name }}"
+                                        data-hostname="{{ $device->hostname }}"
+                                        data-site_id="{{ $device->site_id }}"
+                                        data-building_id="{{ $device->building_id }}"
+                                        data-room_id="{{ $device->room_id }}"
+                                        data-location_description="{{ $device->location_description }}"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
                                 <div class="control">
-                                    <button title="{{ __('Button.Delete') }}" onclick="deleteSwitchModal('{{ $device->id }}', '{{ $device->name }}')"
+                                    <button title="{{ __('Button.Delete') }}"
+                                        data-modal="delete-switch"
+                                        data-id="{{ $device->id }}"
+                                        data-name="{{ $device->name }}"
                                         class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                 </div>
                             @endif

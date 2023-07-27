@@ -44,8 +44,8 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button data-modal="new-key" class="is-small button is-success"><i
-                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                    <button data-modal="new-key" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
+                        {{ __('Button.Create') }}</button>
                 @endif
             </div>
 
@@ -70,9 +70,9 @@
                             <td>{{ $out }}</td>
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role >= 2)
-                                    <button
-                                        data-modal="delete-key"
-                                        onclick="$('.modal-delete-key').find('input.desc').val('{{ $key->description }}');$('.modal-delete-key').find('input.id').val('{{ $key->id }}')"
+                                    <button data-modal="delete-key"
+                                        data-id="{{ $key->id }}"
+                                        data-description="{{ $key->description }}"
                                         class="is-small button is-danger"><i class="fas fa-trash"></i></button>
                                 @endif
                             </td>
@@ -112,9 +112,11 @@
                             <td>{{ $user->getRoleName() }}</td>
                             <td style="width:150px;" class="has-text-centered">
                                 @if (Auth::user()->role == 2)
-                                    <button
-                                        data-modal="edit-user"
-                                        onclick="$('.modal-edit-user').find('select').val({{ $user->role }});$('.modal-edit-user').find('input.name').val('{{ $user->name }}');$('.modal-edit-user').find('input.guid').val('{{ $user->guid }}');"
+                                    <button data-modal="edit-user"
+                                        data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}"
+                                        data-guid="{{ $user->guid }}"
+                                        data-role="{{ $user->role }}"
                                         class="is-small button is-info"><i class="fas fa-cog"></i></button>
                                 @endif
                             </td>
@@ -129,8 +131,8 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button data-modal="add-mac" class="is-small button is-success"><i
-                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                    <button data-modal="add-mac" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
+                        {{ __('Button.Create') }}</button>
                 @endif
             </div>
 
@@ -156,10 +158,9 @@
                             <td>{{ $mac->type }}</td>
                             <td class="has-text-centered">
                                 @if (Auth::user()->role >= 1)
-                                    <button class="button is-small is-danger"
-                                        data-modal="delete-mac"
-                                        onclick="$('.modal-delete-mac').find('.id').val('{{ $mac->id }}');$('.modal-delete-mac').find('.type').val('{{ $mac->type }}');$('.modal-delete-mac').find('.prefix').val('{{ $mac->mac_prefix }}')"><i
-                                            class="fas fa-trash"></i></button>
+                                    <button class="button is-small is-danger" data-modal="delete-mac"
+                                        data-id="{{ $mac->id }}" data-type="{{ $mac->type }}"
+                                        data-prefix="{{ $mac->mac_prefix }}"><i class="fas fa-trash"></i></button>
                                 @endif
                             </td>
                         </tr>
@@ -187,13 +188,12 @@
                         <tr>
                             <td>{{ $mac->mac_type }}</td>
                             <td>{{ $mac->mac_icon ?? '' }}</td>
-                            <td class="has-text-centered"><i
-                                    class="fas {{ $mac->mac_icon ?? '' }}"></i></td>
+                            <td class="has-text-centered"><i class="fas {{ $mac->mac_icon ?? '' }}"></i></td>
                             <td class="has-text-centered">
                                 @if (Auth::user()->role >= 1)
-                                    <button class="button is-info is-small"
-                                        onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->mac_type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_icon ?? '' }}')"><i
-                                            class="fas fa-cog"></i></button>
+                                    <button class="button is-info is-small" data-modal="edit-icon"
+                                        data-mac_type="{{ $mac->mac_type }}"
+                                        data-mac_icon="{{ $mac->mac_icon ?? '' }}"><i class="fas fa-cog"></i></button>
                                 @endif
                             </td>
                         </tr>
@@ -207,8 +207,8 @@
 
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
-                    <button data-modal="add-router" class="is-small button is-success"><i
-                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+                    <button data-modal="add-router" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
+                        {{ __('Button.Create') }}</button>
                 @endif
             </div>
 
@@ -240,14 +240,15 @@
                                     @if (Auth::user()->role >= 1)
                                         <div class="control">
                                             <button title="{{ __('Switch.Edit.Hint') }}"
-                                                class="button is-info is-small"
-                                                onclick='RouterModal("{{ $router->id }}", "{{ $router->ip }}", "{{ $router->desc }}", "modal-edit-router")'><i
-                                                    class="fa fa-gear"></i></button>
+                                                class="button is-info is-small" data-modal="edit-router"
+                                                data-id="{{ $router->id }}" data-ip="{{ $router->ip }}"
+                                                data-desc="{{ $router->desc }}"><i class="fa fa-gear"></i></button>
                                         </div>
                                         <div class="control">
                                             <button title="{{ __('Button.Delete') }}"
-                                                class="button is-danger is-small"
-                                                onclick='RouterModal("{{ $router->id }}", "{{ $router->ip }}", "{{ $router->desc }}", "modal-delete-router")'>
+                                                class="button is-danger is-small" data-modal="delete-router"
+                                                data-id="{{ $router->id }}" data-ip="{{ $router->ip }}"
+                                                data-desc="{{ $router->desc }}">
                                                 <i class="fa fa-trash-can"></i></button>
                                         </div>
                                     @endif
@@ -258,7 +259,8 @@
                 </tbody>
             </table>
 
-           <p>Um die Endgeräte besser zuordnen zu können, können hier Routing-Geräte definiert werden, die über SNMP abgefragt werden. Die Abfrage erfolgt über die Community "public"           </p>
+            <p>Um die Endgeräte besser zuordnen zu können, können hier Routing-Geräte definiert werden, die über SNMP
+                abgefragt werden. Die Abfrage erfolgt über die Community "public" </p>
         </div>
 
         <script>

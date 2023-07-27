@@ -1,5 +1,5 @@
 <div class="modal modal-delete-building">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="{{  route('delete-building') }}" method="post">
+    <form action="{{  route('delete-building') }}" method="post">
         @csrf
         @method('DELETE')
         <div class="modal-background"></div>
@@ -11,9 +11,9 @@
                 <div class="field">
                     <label class="label">{{ __('Delete.Building.Desc') }}</label>
                     <div class="control">
-                        <input class="building-id" name="id" type="hidden" value="">
-                        <input class="building-name" name="name" type="hidden" value="">
-                        <input class="input building-name" disabled type="text" value="">
+                        <input class="id" name="id" type="hidden" value="">
+                        <input class="name" name="name" type="hidden" value="">
+                        <input class="input name" disabled type="text" value="">
                     </div>
                 </div>
             </section>

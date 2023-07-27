@@ -3,8 +3,8 @@
 
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role >= 1)
-            <button data-modal="add-vlan" class="button is-success is-small"><i
-                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
+            <button data-modal="add-vlan" class="button is-success is-small"><i class="fas fa-plus mr-1"></i>
+                {{ __('Button.Create') }}</button>
         @endif
     </div>
 
@@ -66,10 +66,10 @@
                         {{ $vlan->ip_range }}
                     </td>
                     <td class="has-text-centered">
-                        <i class='fas {{ ($sync) ? 'fa-check' : 'fa-times' }}'></i>
+                        <i class='fas {{ $sync ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
-                    <td class="has-text-centered">   
-                         <i class='fas {{ ($clients) ? 'fa-check' : 'fa-times' }}'></i>
+                    <td class="has-text-centered">
+                        <i class='fas {{ $clients ? 'fa-check' : 'fa-times' }}'></i>
                     </td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
@@ -80,14 +80,19 @@
                             </div>
                             @if (Auth::user()->role >= 1)
                                 <div class="control">
-                                    <button
-                                        onclick="editVlanModal('{{ $vlan->vid }}', '{{ $vlan->name }}', '{{ $vlan->description }}', '{{ $vlan->ip_range }}', '{{ $vlan->is_scanned }}', '{{ $vlan->is_synced }}', '{{ $vlan->is_client_vlan }}')"
+                                    <button data-modal="edit-vlan" data-id="{{ $vlan->vid }}"
+                                        data-name="{{ $vlan->name }}" data-description="{{ $vlan->description }}"
+                                        data-ip_range="{{ $vlan->ip_range }}"
+                                        data-is_scanned="{{ $vlan->is_scanned }}"
+                                        data-is_synced="{{ $vlan->is_synced }}"
+                                        data-is_client_vlan="{{ $vlan->is_client_vlan ?? '0' }}"
                                         class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                 </div>
-                            <div class="control">
-                                <button onclick="deleteVlanModal('{{ $vlan->vid }}', '{{ $vlan->name }}')"
-                                    class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
-                            </div>
+                                <div class="control">
+                                    <button data-modal="delete-vlan" data-id="{{ $vlan->vid }}"
+                                        data-name="{{ $vlan->name }}" class="button is-danger is-small"><i
+                                            class="fa fa-trash-can"></i></button>
+                                </div>
                             @endif
                         </div>
                     </td>

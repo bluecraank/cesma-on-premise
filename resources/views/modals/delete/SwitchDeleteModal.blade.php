@@ -11,9 +11,9 @@
                 <div class="field">
                     <label class="label">{{ __('Switch.Delete.Desc') }}</label>
                     <div class="control">
-                        <input class="switch-id" name="id" type="hidden" value="">
-                        <input class="switch-name" name="name" type="hidden" value="">
-                        <input class="input switch-name" disabled type="text" value="">
+                        <input class="id" name="id" type="hidden" value="">
+                        <input class="name" name="name" type="hidden" value="">
+                        <input class="input name" disabled type="text" value="">
                     </div>
                 </div>
             </section>

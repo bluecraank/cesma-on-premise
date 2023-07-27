@@ -30,7 +30,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-danger">{{ __('Button.Delete') }}</button>
+                <button class="button submit is-danger">{{ __('Button.Delete') }}</button>
                 <button data-modal="delete-mac" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

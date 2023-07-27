@@ -40,7 +40,7 @@
 
                 <div class="field">
                     <div class="select is-fullwidth">
-                        <select name="mac_type">
+                        <select class="type" name="mac_type">
                             <option value="">{{ __('Misc.Select.SelectText') }}</option>
                             @foreach($mac_types as $type)
                                 <option value="{{ $type->type }}">{{ $type->type }}</option>
@@ -50,7 +50,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">{{ __('Button.Save') }}</button>
+                <button class="button submit is-success">{{ __('Button.Save') }}</button>
                 <button data-modal="add-mac" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

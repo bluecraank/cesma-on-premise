@@ -1,5 +1,5 @@
 <div class="modal modal-edit-building">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="{{ route('buildings') }}" method="post">
+    <form action="{{ route('buildings') }}" method="post">
         @csrf
         @method('PUT')
         <div class="modal-background"></div>
@@ -11,8 +11,8 @@
                 <div class="field">
                     <label class="label">Gebäudename</label>
                     <div class="control">
-                        <input class="building-id" name="id" type="hidden" value="">
-                        <input class="input building-name" name="name" type="text" value="">
+                        <input class="id" name="id" type="hidden" value="">
+                        <input class="input name" name="name" type="text" value="">
                     </div>
                 </div>
             </section>

@@ -1,5 +1,5 @@
-<div class="modal modal-delete-location">
-    <form onsubmit="$('.submit').addClass('is-loading')" action="{{  route('delete-site') }}" method="post">
+<div class="modal modal-delete-site">
+    <form action="{{  route('delete-site') }}" method="post">
         @csrf
         @method('DELETE')
         <div class="modal-background"></div>
@@ -11,16 +11,16 @@
                 <div class="field">
                     <label class="label">{{ __('Delete.Location.Desc') }}</label>
                     <div class="control">
-                        <input class="location-id" name="id" type="hidden" value="">
-                        <input class="location-name" name="name" type="hidden" value="">
-                        <input class="input location-name" disabled type="text" value="">
+                        <input class="id" name="id" type="hidden" value="">
+                        <input class="name" name="name" type="hidden" value="">
+                        <input class="input name" disabled type="text" value="">
                     </div>
                 </div>
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-danger">{{ __('Button.Delete') }}
                 </button>
-                <button data-modal="delete-location" type="button"
+                <button data-modal="delete-site" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>
         </div>

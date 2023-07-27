@@ -1,7 +1,7 @@
 <div class="modal modal-upload-backup">
     <form action="/device/backup/restore" method="post">
         <input class="id input" name="id" type="hidden" value="">
-        <input class="device-id input" name="device-id" type="hidden" value="">
+        <input class="device_id input" name="device-id" type="hidden" value="">
 
         @csrf
         <div class="modal-background"></div>
@@ -13,13 +13,13 @@
                 <div class="field">
                     <label class="label">Switch</label>
                     <div class="control">
-                        <input class="name input" required type="text" name="switch" disabled value="">
+                        <input class="name input device_name" required type="text" name="switch" disabled value="">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">{{ __('Backup.Created') }}</label>
                     <div class="control">
-                        <input class="input created" required type="text" name="date" disabled value="">
+                        <input class="input date" required type="text" name="date" disabled value="">
                     </div>
                 </div>
                 <div class="field">

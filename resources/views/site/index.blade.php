@@ -44,12 +44,16 @@
                                 @if (Auth::user()->role >= 1)
                                     <div class="control">
                                         <button
-                                            onclick="editLocationModal('{{ $site->id }}', '{{ $site->name }}')"
+                                            data-modal="edit-site"
+                                            data-id="{{ $site->id }}"
+                                            data-name="{{ $site->name }}"
                                             class="button is-info is-small"><i class="fa fa-gear"></i></button>
                                     </div>
                                     <div class="control">
                                         <button
-                                            onclick="deleteLocationModal('{{ $site->id }}', '{{ $site->name }}')"
+                                            data-modal="delete-site"
+                                            data-id="{{ $site->id }}"
+                                            data-name="{{ $site->name }}"
                                             class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
                                     </div>
                                 @endif

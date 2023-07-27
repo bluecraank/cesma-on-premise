@@ -102,14 +102,14 @@ function deleteSwitchModal(id, name) {
 }
 
 function editLocationModal(id, name) {
-    let modal = $('.modal-edit-location');
+    let modal = $('.modal-edit-site');
     modal.find('.location-id').val(id);
     modal.find('.location-name').val(name);
     modal.show()
 }
 
 function deleteLocationModal(id, name) {
-    let modal = $('.modal-delete-location');
+    let modal = $('.modal-delete-site');
     modal.find('.location-id').val(id);
     modal.find('.location-name').val(name);
     modal.show()
