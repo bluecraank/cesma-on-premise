@@ -46,7 +46,7 @@ class SearchClients extends Component
         $type = $this->cTYPE;
 
 
-        $clients = Client::where(function ($query) use($hostname, $ip, $mac, $vlan, $switch, $port, $status, $type) {
+        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($hostname, $ip, $mac, $vlan, $switch, $port, $status, $type) {
             if ($hostname) {
                 $query->where('hostname', 'like', '%' . $hostname . '%');
             }

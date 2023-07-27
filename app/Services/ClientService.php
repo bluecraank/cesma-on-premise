@@ -65,6 +65,8 @@ class ClientService {
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
         $custom_uplinks = DeviceCustomUplink::all()->keyBy('device_id')->toArray();
+
+        // TODO: Pluck VlanID führt dazu, dass verschiedene Standorte so nicht gehen. Clients dürfen nicht die VlanID als Attribut haben, sondern die ID des Vlans in aus der DB
         $vlans = Vlan::where('is_client_vlan', false)->pluck('vid')->toArray();
 
         $array_uplinks = [];
@@ -125,6 +127,7 @@ class ClientService {
                 'vlan_id' => $macs[$mac]['vlan_id'],
                 'ip_address' => $client['ip_address'],
                 'type' => self::getClientType($mac),
+                'site_id' => $devices[$macs[$mac]['device_id']]['site_id'],
             ]);
 
             if($DbClient->wasRecentlyCreated) {

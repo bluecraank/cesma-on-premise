@@ -10,6 +10,8 @@
     {
         static function getSnmpData(Device $device): Array;
 
+        static function getApiData(Device $device): Array;
+
         static function API_GET_VERSIONS(Device $device): string;
 
         static function API_LOGIN(Device $device): string;
@@ -26,7 +28,7 @@
         
         static function API_PATCH_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): Array;
 
-        static function GET_DEVICE_DATA(Device $device): Array;
+        static function GET_DEVICE_DATA(Device $device, String $type): Array;
 
         static function createBackup(Device $device): bool;
 

@@ -24,6 +24,8 @@
                         <input type="text" name="uplinks" class="device-uplinks input"
                             placeholder="49,50,51 or 49-51">
                     </div>
+
+                    <span>Es gilt die Portnummer (1/1/2 => 2, 1/1/10:1 => 10)</span>
                 </div>
             </section>
             <footer class="modal-card-foot">

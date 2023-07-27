@@ -23,6 +23,11 @@ class ArubaOS implements DeviceInterface
 {
     use \App\Traits\SNMP_Formatter;
 
+    static $fetch_from = [
+        'snmp' => true,
+        'api' => true,
+    ];
+
     static $api_auth = [
         "login" => "login-sessions",
         "logout" => "login-sessions",
@@ -141,6 +146,40 @@ class ArubaOS implements DeviceInterface
             'uplinks' => self::snmpFormatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
             'success' => true,
         ];
+
+        return $data;
+    }
+
+    static function getApiData(Device $device): array
+    {
+        if (!$login_info = self::API_LOGIN($device)) {
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed. See logfile for details"];
+        }
+
+        $data = [];
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        foreach (self::$available_apis as $key => $api) {
+            $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version);
+
+            if ($api_data['success']) {
+                $data[$key] = $api_data['data'];
+            }
+        }
+
+        $data = [
+            'informations' => self::formatSystemData($data['status']),
+            'vlans' => self::formatVlanData($data['vlans']['vlan_element']),
+            'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
+            'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
+            'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']),
+            'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element']),
+            'uplinks' => self::formatUplinkData($data['ports']['port_element']),
+            'success' => true,
+        ];
+
+        self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
         return $data;
     }
@@ -318,13 +357,15 @@ class ArubaOS implements DeviceInterface
         }
     }
 
-    static function GET_DEVICE_DATA($device): array
+    static function GET_DEVICE_DATA($device, $type = "snmp"): array
     {
-        if (!$device) {
-            return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
+        if (self::$fetch_from['api'] && $type == "api") {
+            $data = self::getApiData($device); 
         }
-
-        $data = self::getSnmpData($device);
+        
+        if (self::$fetch_from['snmp'] && $type == "snmp") {
+            $data = self::getSnmpData($device);
+        }
 
         return $data;
     }
@@ -353,7 +394,7 @@ class ArubaOS implements DeviceInterface
 
     static function snmpFormatExtendedPortStatisticData(array $portstats, array $portdata): array
     {
-        // Incompatible with DellEMC
+        // Not needed
         return [];
     }
 
@@ -495,7 +536,7 @@ class ArubaOS implements DeviceInterface
             'firmware' => $version,
             'hardware' => $system['hardware'] ?? 'unknown',
             'mac' => null,
-            'uptime' => $uptime ?? 0,
+            'uptime' => $uptime ?? NULL,
         ];
 
         return $return;

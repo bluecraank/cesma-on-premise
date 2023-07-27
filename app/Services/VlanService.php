@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Vlan;
 use App\Models\VlanTemplate;
 use App\Helper\CLog;
+use Illuminate\Support\Facades\Auth;
 
 class VlanService
 {
@@ -32,18 +33,23 @@ class VlanService
         ]);
     }
     
-    static function updateVlan($request, $scan, $sync, $is_client_vlan) {
-        // dd($request->all());
-        $vlan = Vlan::where('vid', $request['vid'])->first();
+    static function updateVlan($request, $sync, $is_client_vlan) {
+        $vlan = Vlan::where('vid', $request['vid'])->where('site_id', Auth::user()->currentSite()->id)->first();
         
-        $vlan->update([
+        if(!$vlan) {
+            CLog::error("VLAN", "VLAN {$request->input('name')} ({$request->input('vid')}) not found");
+            return false;
+        }
+
+        $updated = $vlan->update([
             'name' => $request['name'],
             'description' => $request['description'],
             'ip_range' => $request['ip_range'] ?? null,
-            'is_scanned' => $scan,
             'is_synced' => $sync,
             'is_client_vlan' => $is_client_vlan,
         ]);
+        
+        return $updated;
 
         CLog::info("VLAN", "VLAN {$request->input('name')} ({$vlan->vid}) updated");
 

@@ -36,13 +36,6 @@
                         <span>SNMP</span>
                     </a>
                 </li>
-                {{-- <li data-tab="vorlagen"
-                    onclick="$(this).siblings().removeClass('is-active');$(this).addClass('is-active');$('.tabsbox').addClass('is-hidden');$('.tab-parent').find(`[data-id='vorlagen']`).removeClass('is-hidden');">
-                    <a>
-                        <span class="icon is-small"><i class="fa-solid fa-list-check"></i></span>
-                        <span>VLAN-Vorlagen</span>
-                    </a>
-                </li> --}}
             </ul>
         </div>
 
@@ -192,15 +185,15 @@
                 <tbody>
                     @foreach ($mac_icons as $mac)
                         <tr>
-                            <td>{{ $mac->mac_type_id }}</td>
+                            <td>{{ $mac->mac_type }}</td>
                             <td>{{ $mac->mac_icon ?? '' }}</td>
                             <td class="has-text-centered"><i
                                     class="fas {{ $mac->mac_icon ?? '' }}"></i></td>
                             <td class="has-text-centered">
                                 @if (Auth::user()->role >= 1)
-                                    {{-- <button class="button is-info is-small"
-                                        onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_type_icon()->first()->mac_icon ?? '' }}')"><i
-                                            class="fas fa-cog"></i></button> --}}
+                                    <button class="button is-info is-small"
+                                        onclick="$('.modal-edit-icon').show();$('.modal-edit-icon').find('.type').val('{{ $mac->mac_type }}');$('.modal-edit-icon').find('.mac_icon').val('{{ $mac->mac_icon ?? '' }}')"><i
+                                            class="fas fa-cog"></i></button>
                                 @endif
                             </td>
                         </tr>
@@ -266,70 +259,6 @@
             </table>
 
            <p>Um die Endgeräte besser zuordnen zu können, können hier Routing-Geräte definiert werden, die über SNMP abgefragt werden. Die Abfrage erfolgt über die Community "public"           </p>
-        </div>
-
-        <div class="tabsbox is-hidden" data-id="vorlagen">
-            <h1 class="subtitle is-pulled-left">Vorlagen</h1>
-
-            <div class="is-pulled-right">
-                @if (Auth::user()->role >= 1)
-                    <button onclick="$('.modal-add-template').show()" class="is-small button is-success"><i
-                            class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
-                @endif
-            </div>
-
-            <div class="is-clearfix">
-
-            </div>
-
-            <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Tagged / Allowed</th>
-                        <th>Untagged / Native</th>
-                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    @foreach ($vlan_templates as $template)
-                        @php
-                            $vlan_ids = json_decode($template->vlans, true);
-                            $vlans_vids = [];
-                            foreach ($vlan_ids as $vlan_id) {
-                                $vlan = \App\Models\Vlan::find($vlan_id);
-                                $vlans_vids[] = $vlan->vid ?? '';
-                            }
-                        @endphp
-                        <tr>
-                            <td>{{ $template->name }}</td>
-                            <td>{{ implode(', ', $vlans_vids) }}</td>
-                            <td>{{ $template->untagged }}</td>
-                            <td class="has-text-centered">
-                                <div class="field has-addons is-justify-content-center">
-                                    @if (Auth::user()->role >= 1)
-                                        <div class="control">
-                                            <button title="{{ __('Switch.Edit.Hint') }}"
-                                                class="button is-info is-small"
-                                                onclick='VlanTemplateModal("{{ $template->id }}", "{{ $template->name }}", {!! json_encode($template->vlans) !!}, "modal-edit-template")'><i
-                                                    class="fa fa-gear"></i></button>
-                                        </div>
-                                        <div class="control">
-                                            <button title="{{ __('Button.Delete') }}"
-                                                class="button is-danger is-small"
-                                                onclick='VlanTemplateModal("{{ $template->id }}", "{{ $template->name }}", {!! json_encode($template->vlans) !!}, "modal-delete-template")'>
-                                                <i class="fa fa-trash-can"></i></button>
-                                        </div>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            
-            Erstelle Vorlagen um bei der VLAN-Zuordnung von Ports an einem Switch Zeit zu sparen.
         </div>
 
         <script>

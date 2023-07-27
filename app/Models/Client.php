@@ -13,6 +13,7 @@ class Client extends Model
         'id',
         'device_id',
         'vlan_id',
+        'site_id',
         'port_id',
         'mac_address',
         'ip_address',
