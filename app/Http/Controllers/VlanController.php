@@ -32,7 +32,7 @@ class VlanController extends Controller
 
     public function getPortsByVlan($id)
     {
-        $vlan = Vlan::where('vid', $id)->firstOrFail();
+        $vlan = Vlan::where('vid', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
         $vlans = [];
         $devices = Device::all()->sortBy('name')->keyBy('name');
         $ports = [];
@@ -131,12 +131,6 @@ class VlanController extends Controller
             return redirect()->back()->withErrors(['message' => 'IP range is not valid']);
         }
 
-        if ($request->input('scan') == "on") {
-            $scan = true;
-        } else {
-            $scan = false;
-        }
-
         if ($request->input('sync') == "on") {
             $sync = true;
         } else {
@@ -149,7 +143,12 @@ class VlanController extends Controller
             $is_client_vlan = true;
         }
 
-        VlanService::updateVlan($request, $scan, $sync, $is_client_vlan);
+        $result = VlanService::updateVlan($request, $sync, $is_client_vlan);
+
+        if(!$result) {
+            return redirect()->back()->with(['errors' => 'VLAN not updated']);
+        }
+
         return redirect()->back()->with('success', __('Msg.VlanUpdated'));
     }
 
@@ -161,7 +160,7 @@ class VlanController extends Controller
      */
     public function destroy(Request $vlan)
     {
-        $find = Vlan::findOrFail($vlan->vid);
+        $find = Vlan::where('vid', $vlan->vid)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
         if ($find->delete()) {
             CLog::info("VLAN", "VLAN {$find->name} ({$find->vid}) deleted");
             return redirect()->back()->with('success', __('Msg.DeleteVland'));

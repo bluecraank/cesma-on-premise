@@ -17,7 +17,7 @@ class DeviceRefresh extends Command
      *
      * @var string
      */
-    protected $signature = 'device:refresh {id}';
+    protected $signature = 'device:refresh {id} {type}';
 
     /**
      * The console command description.
@@ -43,11 +43,10 @@ class DeviceRefresh extends Command
             return;
         }
 
-        $refresh = DeviceService::refreshDevice($device);
+        $refresh = DeviceService::refreshDevice($device, $this->argument('type'));
         $refreshStatus = json_decode($refresh, true);
 
         if($refreshStatus['success'] == "false") {
-            // CLog::error("Automated task", "Failed to refresh device " . $device->name, $device, $refreshStatus['message']);
             Log::error("Failed to refresh device " . $device->name);
             return;
         }

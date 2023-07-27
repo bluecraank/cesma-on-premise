@@ -115,9 +115,12 @@ class Port extends Component
                 if($this->untaggedVlanUpdated) {
                     if($message['untagged']['success']) {
                         $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Untagged.Success', ['vlan' => $new_model->untagged->name, 'port' => $this->port->name]), 'portid' => $this->portId]);
+                        $this->somethingChanged = false;
+                        $this->fetchPort();
                     } else {
                         $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Untagged.Error', ['vlan' => $this->port->untaggedVlanName(), 'port' => $this->port->name]), 'portid' => $this->portId]);
                     }
+
 
                     CLog::info("SwitchPort", "Set untagged vlan for port " . $this->port->name . " to " . $vlans->where('id', $this->untaggedVlanId)->first()->name, $device, $diff_model);
                 }
@@ -135,6 +138,8 @@ class Port extends Component
 
                     if($success > 0) {
                         $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Tagged.Success', ['success' => $success, 'total' => $success+$error, 'port' => $this->port->name]), 'portid' => $this->portId]);
+                        $this->somethingChanged = false;
+                        $this->fetchPort();
                     } else {
                         $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Tagged.Error', ['port' => $this->port->id]), 'portid' => $this->portId]);
                     }
@@ -150,12 +155,17 @@ class Port extends Component
                     $this->port->description = $this->portDescription;
                     $this->port->save();
 
+                    $this->somethingChanged = false;
+                    $this->fetchPort();
+
                     $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
                     CLog::info("SwitchPort", "Updated description of port {$this->port->name}", $device, Diff::compare($old_model, $this->port->attributesToArray()));
                 } else {
                     $this->dispatchBrowserEvent('notify-error', ['message' => __('Msg.ApiPortNameSetError', ['port' => $this->port->name]), 'portid' => $this->portId]);
                 }
-                
+
+                $this->somethingChanged = false;
+                $this->portDescriptionUpdated = false;
             }
 
             if($closeSession) {

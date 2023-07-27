@@ -42,7 +42,12 @@ class MacTypeService
             'description' => $request->input('mac_desc'),
         ]);
 
-        CLog::info("MAC", "Create MacType {$mac_prefix} {$mac_type} {$request->input('mac_desc')}");
+        MacTypeIcon::firstOrCreate([
+            'mac_type' => $mac_type,
+            'mac_icon' => 'fa-question-circle'
+        ]);
+
+        CLog::info("MacTypes", "Create MacType {$mac_prefix} {$mac_type} {$request->input('mac_desc')}");
 
         return redirect()->back()->with('success', __('Msg.MacTypeAdded'))->withInput(['last_tab' => 'macs']);
     }
@@ -60,7 +65,7 @@ class MacTypeService
             return redirect()->back()->withErrors(['message' => 'MAC Type could not be deleted'])->withInput(['last_tab' => 'macs']);
         }
 
-        CLog::info("MAC", "Delete MacType {$mac_type->mac_prefix} {$mac_type->type} {$mac_type->description}");
+        CLog::info("MacTypes", "Delete MacType {$mac_type->mac_prefix} {$mac_type->type} {$mac_type->description}");
 
         return redirect()->back()->with('success', __('Msg.MacTypeDeleted'))->withInput(['last_tab' => 'macs']);
     }
@@ -72,15 +77,12 @@ class MacTypeService
             'mac_type' => 'required',
         ])->validate();
 
-        $icon = $request->input('mac_icon');
-        $mac_type = MacType::where('type', $request->mac_type)->firstOrFail();
-
         MacTypeIcon::updateOrCreate(
-            ['mac_type_id' => $mac_type->id],
-            ['mac_icon' => $icon]
+            ['mac_type' => $request->input('mac_type')],
+            ['mac_icon' => $request->input('mac_icon')]
         );
 
-        CLog::info("MAC", "Create MacTypeIcon {$mac_type->mac_prefix} {$mac_type->type} {$mac_type->description} {$icon}");
+        CLog::info("MacTypes", "Updated mac type icon", null, 'Icon '.$request->input('mac_icon').' for mac type '.$request->input('mac_type').' updated');
 
         return redirect()->back()->with('success', __('Msg.MacTypeIconAdded'))->withInput(['last_tab' => 'macs']);
 

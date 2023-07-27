@@ -71,6 +71,12 @@ class SSHController extends Controller
             if (config('app.ssh_private_key')) {
                 $private_key = Storage::disk('local')->get('ssh.key');
 
+                if(config('app.read-only')[$device->type]) {
+                    $return->status = 'xmark';
+                    $return->output = 'Dieser Switch ist read-only';
+                    return json_encode($return, true);
+                }
+
                 if($private_key === NULL) {
                     $return->status = 'xmark';
                     $return->output = 'Privatekey aktiviert, aber kein Schlüssel vorhanden';

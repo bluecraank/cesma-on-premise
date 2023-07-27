@@ -16,17 +16,19 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Location;
 use App\Models\Mac;
+use App\Models\Site;
 use App\Models\SnmpMacData;
 use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\VlanService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DeviceService
 {
-    static function refreshDevice(Device $device)
+    static function refreshDevice(Device $device, $type = "snmp")
     {
-        $response = config('app.types')[$device->type]::GET_DEVICE_DATA($device);
+        $response = config('app.types')[$device->type]::GET_DEVICE_DATA($device, $type);
 
         if (isset($response['success']) and $response['success']) {
             self::storeApiData($response, $device);
@@ -65,7 +67,6 @@ class DeviceService
                 ]
             );
 
-            // Store vlan in global vlans table
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
@@ -183,6 +184,7 @@ class DeviceService
 
         // Check if mac address is on uplink port
         $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
+        
         foreach ($data['macs'] as $mac) {
             // Do not store macs on uplinks because its not correct discovered
             if (in_array($mac['port'], $combined_uplinks)) {
@@ -238,7 +240,11 @@ class DeviceService
         $device->hardware = $data['informations']['hardware'] ?? NULL;
         $device->mac_address = $data['informations']['mac'] ?? NULL;
         $device->firmware = $data['informations']['firmware'] ?? NULL;
-        $device->uptime = $data['informations']['uptime'] ?? NULL;
+
+        if(isset($data['informations']['uptime']) && $data['informations']['uptime'] != "") {
+            $device->uptime = $data['informations']['uptime'];
+        }
+
         $device->save();
     }
 
@@ -356,9 +362,9 @@ class DeviceService
 
     static function syncVlansToAllDevices(Request $request)
     {
-        $site_id = $request->input('site_id');
+        $site_id = Auth::user()->currentSite()->id;
 
-        $devices = Location::find($site_id)->devices()->get()->keyBy('id');
+        $devices = Site::find($site_id)->devices()->get()->keyBy('id');
         $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('site_id', $site_id)->get()->keyBy('vid');
 
         $results = [];

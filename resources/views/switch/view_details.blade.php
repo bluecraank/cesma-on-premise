@@ -263,10 +263,16 @@
         <div class="column is-12-mobile is-12-tablet is-9-desktop">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
-                    @if (config('app.read-only')[$device->type])
-                        <span class="tag is-danger is-pulled-right">read-only</span>
+                    @if (Auth::user()->role >= 1 && config('app.read-only')[$device->type])
+                    <span class="tag is-danger is-pulled-right">read-only</span>
+                        <button
+                        onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
+                        class="is-save-button button is-small is-info is-pulled-right mr-2"><i
+                            class="fas fa-up-down mr-2"></i> Uplinks</button>
                     @endif
+
                     @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
+                    
                         <button onclick="saveEditedPorts(this);"
                             class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
                                 class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
@@ -274,13 +280,6 @@
                         <button onclick="cancelEditing(this);"
                             class="is-save-button button is-small is-link is-pulled-right is-hidden mr-2"><i
                                 class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
-
-                        <button
-                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
-                            class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i
-                                class="fas fa-up-down mr-2"></i> Uplinks</button>
-
-                        {{-- <button class="is-save-button button is-small is-info is-pulled-right is-hidden mr-2"><i class="fas fa-file-pen mr-2"></i> {{ __('Button.Bulkedit') }}</button> --}}
 
                         <button onclick="enableEditing();"
                             class="is-edit-button button is-small is-info is-pulled-right"><i

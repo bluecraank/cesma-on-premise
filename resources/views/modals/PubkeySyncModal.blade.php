@@ -11,6 +11,10 @@
                     <label class="label">{{ __('Switch.Pubkey.FollowingKeys') }}</label>
                     <div class="control">
                         <ul class="ml-5" style="list-style-type:circle">
+                            @empty($keys_list)
+                                <li>{{ __('Switch.Pubkey.NoKeys') }}</li>
+                            @endempty
+                            
                             @foreach ($keys_list as $key)
                                 <li>{{ $key }}</li>
                             @endforeach
@@ -19,7 +23,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-primary">{{ __('Button.Sync') }}</button>
+                <button @disabled(empty($keys_list)) class="button is-primary">{{ __('Button.Sync') }}</button>
                 <button onclick="$('.modal-sync-pubkeys').hide();return false;" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

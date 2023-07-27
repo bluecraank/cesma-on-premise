@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vlan extends Model
 {
+    protected $primaryKey = "id";
+
     protected $fillable = [
         'name',
         'vid',
@@ -14,7 +16,11 @@ class Vlan extends Model
         'ip_range',
         'is_client_vlan',
         'is_synced',
-        'is_scanned'
+    ];
+
+    protected $casts = [
+        'is_client_vlan' => 'boolean',
+        'is_synced' => 'boolean',
     ];
 
     public function site()
