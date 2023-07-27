@@ -64,7 +64,7 @@ newest firmware is required
 - See Client online / offline status
 - See Trunks
 - See Port statistics (tx,rx)
-- Manage Locations and buildings
+- Manage Site and buildings
 - Get VLANs from switch
 - Get Trunks from switch
 - Upload Pubkeys for SSH

@@ -30,27 +30,6 @@
                                     value="dark">Dark</option>
                             </select>
                         </div>
-                        <script>
-                            var themeSwitch = document.getElementById('themeSwitch');
-                            if(localStorage.getItem('theme')) {
-
-                                themeSwitch.value = (localStorage.getItem('theme'));
-                            }
-
-                            themeSwitch.addEventListener('change', function(event) {
-                                let theme = $(this).val();
-                                if (theme == 'dark') {
-                                    document.documentElement.setAttribute('data-theme', 'dark');
-                                    localStorage.setItem('theme', 'dark');
-                                    switchTheme('dark');
-
-                                } else {
-                                    document.documentElement.setAttribute('data-theme', 'light');
-                                    localStorage.setItem('theme', 'light');
-                                    switchTheme('light');
-                                }
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

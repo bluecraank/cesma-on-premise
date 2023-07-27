@@ -12,16 +12,18 @@
 
                 <div class="site-selection">
                     <form id="site-form" action="{{ route('change-site') }}" method="post">
-                    
+
                         @method('PUT')
                         @csrf
-                        <select onchange="event.preventDefault();document.getElementById('site-form').submit();" name="site_id">
-                            <option value="{{  Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
+                        <select onchange="event.preventDefault();document.getElementById('site-form').submit();"
+                            name="site_id">
+                            <option value="{{ Auth::user()->currentSite()->id }}">
+                                {{ Auth::user()->currentSite()->name }}</option>
                             @foreach (Auth::user()->availableSites() as $site)
-                                @if($site->id == Auth::user()->currentSite()->id)
+                                @if ($site->id == Auth::user()->currentSite()->id)
                                     @continue
                                 @endif
-                                
+
                                 <option value="{{ $site->id }}">{{ $site->name }}</option>
                             @endforeach
                         </select>
@@ -68,23 +70,19 @@
                     </li>
                 </ul>
 
-                <p class="menu-label">{{ __('User') }}</p>
+                <p class="menu-label">{{ __('Site') }}</p>
                 <ul class="menu-list">
                     <li>
-                        <a href="{{ route('user-settings') }}"
-                            class="{{ request()->is('user-settings') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-user-gear"></i></span>
-                            <span>{{ __('Menu.Usersettings') }}</span>
+                        <a href="{{ route('sites') }}" class="{{ request()->is('sites') ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-location-dot"></i></span>
+                            <span>{{ __('Menu.Site') }}</span>
                         </a>
                     </li>
-                </ul>
-
-                <p class="menu-label">{{ __('Locations') }}</p>
-                <ul class="menu-list">
                     <li>
                         <a href="{{ route('buildings') }}"
                             class="{{ request()->is('buildings') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa-solid fa-building"></i></span> <span>{{ __('Buildings') }}</span>
+                            <span class="icon"><i class="fa-solid fa-building"></i></span>
+                            <span>{{ __('Buildings') }}</span>
                         </a>
                     </li>
                     <li>
@@ -97,12 +95,6 @@
 
                 <p class="menu-label">{{ __('System') }}</p>
                 <ul class="menu-list">
-                    <li>
-                        <a href="{{ route('sites') }}" class="{{ request()->is('sites') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-location-dot"></i></span>
-                            <span>{{ __('Menu.Locations') }}</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="{{ route('system') }}"
                             class="{{ request()->is('system') ? 'has-text-primary' : '' }}">
@@ -125,6 +117,17 @@
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
+                    </li>
+                </ul>
+
+                <p class="menu-label">{{ __('User') }}</p>
+                <ul class="menu-list">
+                    <li>
+                        <a href="{{ route('user-settings') }}"
+                            class="{{ request()->is('user-settings') ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa fa-user-gear"></i></span>
+                            <span>{{ __('Menu.Usersettings') }}</span>
+                        </a>
                     </li>
                 </ul>
 

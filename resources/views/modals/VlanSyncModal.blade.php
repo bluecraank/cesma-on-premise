@@ -18,41 +18,43 @@
                         <div class="control">
                             <div class="select">
                                 <select name="site_id" readonly>
-                                    <option value="{{ Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
+                                    <option value="{{ Auth::user()->currentSite()->id }}">
+                                        {{ Auth::user()->currentSite()->name }}</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <br>
+
+                        <label class="label">{{ __('Options') }}</label>
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" name="overwrite-vlan-name">
+                                {{ __('Switch.Sync.OverwriteName') }}
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" name="create-if-not-exists">
+                                {{ __('Switch.Sync.CreateVlans') }}
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" name="test-mode" checked>
+                                {{ __('Switch.Sync.TestMode') }}
+                            </label>
+                        </div>
+
+                        <input type="hidden" value="on" name="show-results" checked>
+
                     </div>
-
-                    <br>
-
-                    <label class="label">{{ __('Options') }}</label>
-                    <div class="field">
-                        <label class="checkbox">
-                            <input type="checkbox" name="overwrite-vlan-name">
-                            {{ __('Switch.Sync.OverwriteName') }}
-                        </label>
-                    </div>
-
-                    <div class="field">
-                        <label class="checkbox">
-                            <input type="checkbox" name="create-if-not-exists">
-                            {{ __('Switch.Sync.CreateVlans') }}
-                        </label>
-                    </div>
-
-                    <div class="field">
-                        <label class="checkbox">
-                            <input type="checkbox" name="test-mode" checked>
-                            {{ __('Switch.Sync.TestMode') }}
-                        </label>
-                    </div>
-
-                    <input type="hidden" value="on" name="show-results" checked>
-
-                 </div> 
             </section>
             <footer class="modal-card-foot">
-                <button class="button submit is-primary sync-vlan-start" onclick="$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
+                <button class="button submit is-primary sync-vlan-start"
+                    onclick="$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
                 <button data-modal="sync-vlans" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 

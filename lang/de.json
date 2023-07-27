@@ -140,7 +140,7 @@
     "Menu.Logout": "Abmelden",
     "Menu.Usersettings": "Anpassen",
     "Menu.Backups": "Backups",
-    "Menu.Locations": "Standorte",
+    "Menu.Site": "Standorte",
     "Menu.Trunks": "Trunks",
     "Menu.Uplinks": "Uplinks",
     "Menu.Execute": "SSH ausführen",
@@ -166,7 +166,7 @@
     "Header.SSH": "Befehl ausführen",
 
     "Buildings": "Gebäude",
-    "Locations": "Standorte",
+    "Site": "Standorte",
     "Rooms": "Räume",
     "Location": "Standort",
     "Building": "Gebäude",

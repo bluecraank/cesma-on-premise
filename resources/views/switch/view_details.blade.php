@@ -116,8 +116,15 @@
                 $startDate = Illuminate\Support\Carbon::now()->subMilliseconds($device->uptime);
                 $endDate = Illuminate\Support\Carbon::now();
                 $days = $startDate->diffInDays($endDate);
-                $hours = $startDate->copy()->addDays($days)->diffInHours($endDate);
-                $minutes = $startDate->copy()->addDays($days)->addHours($hours)->diffInMinutes($endDate);
+                $hours = $startDate
+                    ->copy()
+                    ->addDays($days)
+                    ->diffInHours($endDate);
+                $minutes = $startDate
+                    ->copy()
+                    ->addDays($days)
+                    ->addHours($hours)
+                    ->diffInMinutes($endDate);
             @endphp
             <div class="box">
                 <h2 class="subtitle">{{ __('Summary') }}</h2>
@@ -131,7 +138,8 @@
                     <tbody>
                         <tr>
                             <td>Uptime</td>
-                            <td class="has-text-right">{{ $days }} days, {{ $hours }} hours, {{ $minutes }} minutes</td>
+                            <td class="has-text-right">{{ $days }} days, {{ $hours }} hours,
+                                {{ $minutes }} minutes</td>
                         </tr>
 
                         <tr>
@@ -147,8 +155,8 @@
                         <tr>
 
                         </tr>
-                            <td>{{ trans_choice('Clients', 2) }}</td>
-                            <td class="has-text-right">{{ $device->clients->count() }}</td>
+                        <td>{{ trans_choice('Clients', 2) }}</td>
+                        <td class="has-text-right">{{ $device->clients->count() }}</td>
                     </tbody>
                 </table>
             </div>
@@ -263,16 +271,19 @@
         <div class="column is-12-mobile is-12-tablet is-9-desktop">
             <div class="box">
                 <h2 class="subtitle">{{ __('Switch.Live.Portoverview') }}
-                    @if (Auth::user()->role >= 1 && config('app.read-only')[$device->type])
-                    <span class="tag is-danger is-pulled-right">read-only</span>
+
+                    @if (config('app.read-only')[$device->type])
+                        <span class="tag is-danger is-pulled-right">read-only</span>
+                    @endif
+
+                    @if (Auth::user()->role >= 1)
                         <button
-                        onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
-                        class="is-save-button button is-small is-info is-pulled-right mr-2"><i
-                            class="fas fa-up-down mr-2"></i> Uplinks</button>
+                            onclick="editUplinkModal('{{ $device->id }}', '{{ $device->name }}','{{ $custom_uplinks_comma_seperated }}')"
+                            class="@if(!config('app.read-only')[$device->type]) ml-2 is-hidden @endif is-save-button button is-small is-info is-pulled-right mr-2"><i
+                                class="fas fa-up-down mr-2"></i> Uplinks</button>
                     @endif
 
                     @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
-                    
                         <button onclick="saveEditedPorts(this);"
                             class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
                                 class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
