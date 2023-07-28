@@ -33,11 +33,11 @@
             </tr>
         </thead>
         <tbody>
-            @php
+            {{-- @php
                 $devices = $devices->sort(function ($a, $b) {
                     return strnatcmp($a['name'], $b['name']);
                 });
-            @endphp
+            @endphp --}}
 
             @if ($devices->count() == 0)
                 <tr>
@@ -95,5 +95,8 @@
                     </td>
                 </tr>
             @endforeach
-    </table>
+
+           
+        </table>
+        {{ $devices->links('pagination::default') }} 
 </div>

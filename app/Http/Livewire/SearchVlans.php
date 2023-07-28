@@ -15,6 +15,7 @@ class SearchVlans extends Component
     use WithPagination;
 
     public $searchTerm = "";
+    public $numberOfEntries = 25;
 
     public function mount()
     {
@@ -29,7 +30,7 @@ class SearchVlans extends Component
             $query->where('name', 'like', $searchTerm)
             ->orWhere('vid', 'like', $searchTerm)
             ->orWhere('description', 'like', $searchTerm);
-        })->paginate(20);
+        })->paginate($this->numberOfEntries);
 
         $vlans->sort(function ($a, $b) {
             return strnatcmp($a->vid, $b->vid);

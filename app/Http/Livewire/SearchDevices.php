@@ -16,6 +16,7 @@ class SearchDevices extends Component
     use WithLogin;
 
     public $searchTerm = "";
+    public $numberOfEntries = 25;
 
     public function mount()
     {
@@ -29,7 +30,7 @@ class SearchDevices extends Component
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($searchTerm) {
             $query->where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm);
-        })->get()->sortBy('id');
+        })->paginate($this->numberOfEntries);
         
         foreach ($devices as $device) {
             $device->online = DeviceService::isOnline($device->hostname);

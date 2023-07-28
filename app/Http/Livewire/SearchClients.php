@@ -18,6 +18,7 @@ class SearchClients extends Component
     use WithPagination;
 
     public $cHOSTNAME, $cIP, $cMAC, $cVLAN, $cSWITCH, $cPORT, $cSTATUS, $cTYPE;
+    public $numberOfEntries = 25;
 
     public function mount() {
         $this->checkLogin();
@@ -74,7 +75,7 @@ class SearchClients extends Component
             }
         });
 
-        $clients = $clients->paginate(50);
+        $clients = $clients->paginate($this->numberOfEntries);
 
         $count_result = count($clients);
 

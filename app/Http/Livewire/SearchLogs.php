@@ -14,6 +14,7 @@ class SearchLogs extends Component
     use WithPagination;
 
     public $topic = "";
+    public $numberOfEntries = 25;
 
     public function mount() {
         $this->checkLogin();
@@ -27,7 +28,7 @@ class SearchLogs extends Component
             $topic = '%'.$this->topic.'%';
         }
         return view('system.view_logs_livewire',[
-            'logs' => Log::where('category', 'LIKE', $topic)->latest()->paginate(100),
+            'logs' => Log::where('category', 'LIKE', $topic)->latest()->paginate($this->numberOfEntries),
             'topics' => Log::select('category')->distinct()->get(),
         ]);
     }
