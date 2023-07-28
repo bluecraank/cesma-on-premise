@@ -144,3 +144,37 @@ $("#systemTabList li").on('click', function(element) {
     $('.tabsbox').addClass('is-hidden');
     $('.tab-parent').find("[data-id='"+tab+"']").removeClass('is-hidden');
 });
+
+$("#clickable-vlans span.tag").on("click", function () {
+    $(this).toggleClass('is-primary');
+});
+
+$("#actionSetTaggedVlanModalData").on("click", function () {
+    let vlansSplitted = $(this).attr("data-tagged-vlans").split(',');
+
+    let modal = $('.modal-set-tagged-vlans');
+
+    modal.find('.typ-warning').addClass('is-hidden');
+
+    let idw = $('#' + pid).attr('wire:id');
+
+    $('.modal .is-submit').attr('data-component', idw);
+    $('.modal .is-submit').attr('data-id', pid);
+
+    if (typ == 'access') {
+        modal.find('.typ-warning').removeClass('is-hidden');
+    }
+
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-primary');
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-info');
+
+    vlansSplitted.forEach(function (vlan) {
+        if (untaggedVlan == vlan) {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-info');
+        } else {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
+        }
+    });
+
+    modal.show();
+});

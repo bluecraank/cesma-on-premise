@@ -1,17 +1,15 @@
-<div class="modal clickable-tags modal-vlan-tagging">
+<div class="modal clickable-tags modal-set-tagged-vlans">
     <div class="modal-background"></div>
 
     <div style="margin-top: 40px" class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Port <span class="port_id_title">A4</span> {{ __('edit') }}</p>
-            <span class="tag">NOT TAGGED</span>
-            <span class="tag is-primary">TAGGED</span>
+            <p class="modal-card-title">Tagged/Allowed VLANs setzen</p>
         </header>
         <section class="modal-card-body">
-            <input type="hidden" name="device_id" class="device_id" value="{{ $device->id }}">
+            <input type="hidden" name="device_id" class="id" value="{{ $device->id }}">
 
             <label class="label is-small">Ausgewählter Port</label>
-            <input type="text" class="input is-small port_id" name="port_id" readonly="true">
+            <input type="text" class="input is-small port" name="port_id" readonly="true">
             <br><br>
 
             <label class="label is-small">Verfügbare VLANs</label>

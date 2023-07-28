@@ -36,8 +36,14 @@
         </td>
 
         <td class="is-vcentered">
-            <button class="is-80 button is-small is-outlined is-radiusless is-link mt-1"
-                onclick="updateTaggedModal('{{ $port->id }}', '{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}', '{{  $port->untaggedVlan() }}', '{{ $port->name }}', '{{ $device_id }}', '{{ $port->vlan_mode }}')">
+            <button id="actionSetTaggedVlanModalData" class="is-80 button is-small is-outlined is-radiusless is-link mt-1"
+                data-modal="set-tagged-vlans"
+                data-port="{{ $port->id }}"
+                data-tagged-vlans="{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}"
+                data-current-untagged-vlan="{{  $port->untaggedVlan() }}"
+                data-port-name="{{ $port->name }}"
+                data-id="{{ $device->id }}"
+                data-mode="{{ $port->vlan_mode }}">
                 {{ $this->taggedVlans->count() ?? 0 }} VLANs
             </button>
 

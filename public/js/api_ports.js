@@ -18,7 +18,7 @@ function checkUpdate() {
 var interval = setInterval(checkUpdate, 25000);
 
 function updatePortTaggedVlans(ele) {
-    let modal = $('.modal-vlan-tagging');
+    let modal = $('.modal-set-tagged-vlans');
     $(modal).hide();
 
     let componentId = $(ele).attr('data-component');
@@ -44,7 +44,7 @@ function updatePortTaggedVlans(ele) {
 function updateTaggedModal(pid, vlans, untaggedVlan, port, id, typ) {
     let vlansSplitted = vlans.split(',');
 
-    let modal = $('.modal-vlan-tagging');
+    let modal = $('.modal-set-tagged-vlans');
     modal.find('.port_id').val(port);
     modal.find('.device_id').val(id);
     modal.find('.port_id_title').html(port);
@@ -73,10 +73,6 @@ function updateTaggedModal(pid, vlans, untaggedVlan, port, id, typ) {
 }
 
 $(document).ready(function () {
-    $(".clickable-tags .modal-card-body #clickable-vlans span.tag").click(function () {
-        $(this).toggleClass('is-primary');
-    });
-
     window.addEventListener('notify-success', message => {
         let port = message.detail.portid;
         $('#' + port).css('opacity', '1');
