@@ -68,8 +68,6 @@ $("button").on('click', function() {
 
     let modal = ".modal-" + $(this).attr("data-modal");
 
-    console.log(modal)
-
     $(modal).toggle();
 
     if($(this).is(':visible')) {    

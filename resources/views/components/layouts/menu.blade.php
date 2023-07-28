@@ -98,7 +98,7 @@
                     <li>
                         <a href="{{ route('system') }}"
                             class="{{ request()->is('system') ? 'has-text-primary' : '' }}">
-                            <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('System') }}</span>
+                            <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('Menu.System') }}</span>
                         </a>
                     </li>
                     <li>
@@ -106,15 +106,6 @@
                             <span class="icon"><i class="fas fa-clock-rotate-left"></i></span>
                             <span>{{ __('Menu.Log') }}</span>
                         </a>
-                    </li>
-                    <li>
-                        <a id="actionLogout" href="#">
-                            <span class="icon"><i class="fas fa-power-off"></i></span>
-                            <span>{{ __('Menu.Logout') }}</span>
-                        </a>
-                        <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
                     </li>
                 </ul>
 
@@ -126,6 +117,15 @@
                             <span class="icon"><i class="fa fa-user-gear"></i></span>
                             <span>{{ __('Menu.Usersettings') }}</span>
                         </a>
+                    </li>
+                    <li>
+                        <a id="actionLogout" href="#">
+                            <span class="icon"><i class="fas fa-power-off"></i></span>
+                            <span>{{ __('Menu.Logout') }}</span>
+                        </a>
+                        <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </li>
                 </ul>
 
