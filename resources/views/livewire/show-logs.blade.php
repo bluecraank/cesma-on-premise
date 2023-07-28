@@ -1,4 +1,6 @@
 @inject('DiffClass', 'App\Helper\Diff')
+@section('title', 'Logs')
+
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Log') }}</h1>
 

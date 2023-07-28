@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 use App\Models\Log;
 
 
-class SearchLogs extends Component
+class ShowLogs extends Component
 {
     use WithLogin;
     use WithPagination;
@@ -27,7 +27,7 @@ class SearchLogs extends Component
         } else {
             $topic = '%'.$this->topic.'%';
         }
-        return view('system.view_logs_livewire',[
+        return view('livewire.show-logs',[
             'logs' => Log::where('category', 'LIKE', $topic)->latest()->paginate($this->numberOfEntries),
             'topics' => Log::select('category')->distinct()->get(),
         ]);

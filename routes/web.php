@@ -19,6 +19,7 @@ use App\Http\Livewire\ShowBackups;
 use App\Http\Livewire\ShowBuildings;
 use App\Http\Livewire\ShowClients;
 use App\Http\Livewire\ShowDevices;
+use App\Http\Livewire\ShowLogs;
 use App\Http\Livewire\ShowRooms;
 use App\Http\Livewire\ShowSites;
 use App\Http\Livewire\ShowSwitchBackups;
@@ -52,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/clients', ShowClients::class)->name('clients');
     
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');
-    Route::get('/logs', [SystemController::class, 'index_logs'])->name('logs');
+    Route::get('/logs', ShowLogs::class)->name('logs');
 
     Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
 

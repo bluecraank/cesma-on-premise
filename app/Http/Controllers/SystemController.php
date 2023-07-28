@@ -42,10 +42,6 @@ class SystemController extends Controller
         return view('system.view_usersettings');
     }
 
-    public function index_logs() {
-        return view('system.view_logs');
-    }
-
     public function updateUserRole(Request $request)
     {
         $guid = $request->input('guid');
