@@ -42,7 +42,7 @@
                  </div> 
             </section>
             <footer class="modal-card-foot">
-                <button onclick="$('.sync-vlan-info').show()" class="button submit is-primary sync-vlan-start">{{ __('Button.Sync') }}</button>
+                <button data-prevent="false" onclick="$('.sync-vlan-info').show()" class="button submit is-primary">{{ __('Button.Sync') }}</button>
                 <button data-modal="vlans-specific" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 

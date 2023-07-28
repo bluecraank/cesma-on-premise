@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use App\Helper\Diff;
 use App\Models\Site;
+use Illuminate\Support\Facades\Auth;
 
 class DeviceController extends Controller
 {
@@ -234,7 +235,7 @@ class DeviceController extends Controller
 
     static function createBackupAllDevices()
     {
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
         foreach ($devices as $device) {
             if (!in_array($device->type, array_keys(config('app.types')))) {
@@ -278,7 +279,7 @@ class DeviceController extends Controller
     {
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
         if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
@@ -314,36 +315,6 @@ class DeviceController extends Controller
             }
 
             return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
-        }
-    }
-
-    public function hasUpdate(Device $device, Request $request)
-    {
-        // \DebugBar::disable();
-
-        if ($request->time < $device->updated_at) {
-            return response()
-                ->withHeaders(['Content-Type' => 'application/json'])
-                ->json(
-                    [
-                        'success' => true,
-                        'updated' => true,
-                        'message' => __('Msg.ViewOutdated') . ' <a style="text-decoration:underline" href="/device/' . $device->id . '">' . __('Msg.ClickToRefresh') . '</a>'
-                    ],
-                    200,
-                    ['Content-Type' => 'application/json']
-                );
-        } else {
-            return response()
-                ->json(
-                    [
-                        'success' => true,
-                        'updated' => false,
-                        'message' => ''
-                    ],
-                    200,
-                    ['Content-Type' => 'application/json']
-                );
         }
     }
 }

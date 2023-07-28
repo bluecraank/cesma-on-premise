@@ -18,7 +18,7 @@ class PublicKeyController extends Controller
         ])->validate();
 
         PublicKeyService::storePublicKey($request);
-        CLog::info("Pubkey", "Create pubkey {$request->description}", null, $request->key);
+        CLog::info("Pubkey", "Create pubkey {$request->description}", null, substr($request->key, 0, 20));
         return redirect()->back()->with('success', __('Msg.PubkeyCreated'))->withInput(['last_tab' => 'pubkeys']);
     }
 

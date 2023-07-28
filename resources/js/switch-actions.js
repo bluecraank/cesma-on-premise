@@ -129,3 +129,62 @@ $(".is-edit-button").on('click', function (element) {
     $('.is-cancel-button').removeClass('is-hidden');
     $('.is-edit-button').addClass('is-hidden');
 });
+
+$("#clickable-vlans span.tag").on("click", function () {
+    $(this).toggleClass('is-primary');
+});
+
+window.livewire.on('actionOpenTaggedVlansModal', rawData => {
+    let data = JSON.parse(rawData);
+
+    let modal = $('.modal-set-tagged-vlans');
+    
+    modal.find('.id').val(data.port_id);
+    modal.find('.name').val(data.port_name);
+
+    let vlansSplitted = data.tagged_vlans.split(',');
+    let untaggedVlan = data.current_untagged_vlan;
+    
+    let livewire_key = $('#' + data.port_id).attr('wire:id');
+
+    $('.modal .is-submit').attr('data-component', livewire_key);
+    $('.modal .is-submit').attr('data-id', data.port_id);
+
+    if (data.mode == 'access') {
+        modal.find('.typ-warning').removeClass('is-hidden');
+    } else {
+        modal.find('.typ-warning').addClass('is-hidden');
+    }
+
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-primary');
+    modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-info');
+
+    vlansSplitted.forEach(function (vlan) {
+        if (untaggedVlan == vlan) {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-info');
+        } else {
+            modal.find('.modal-card-body span.tag[data-id="' + vlan + '"]').addClass('is-primary');
+        }
+    });
+
+    modal.show();
+})
+
+$("#actionSetTaggedVlans").on("click", function () {
+    let modal = $('.modal-set-tagged-vlans');
+    $(modal).hide();
+
+    let componentId = $(this).attr('data-component');
+    let rowId = $(this).attr('data-id');
+
+    $('#' + rowId).css('opacity', '0.1');
+
+    let vlans = [];
+
+    modal.find('#clickable-vlans span.tag.is-primary').each(function () {
+        let vid = $(this).attr('data-id');
+        vlans.push(vid);
+    });
+
+    window.livewire.find(componentId).call('prepareTaggedVlans', rowId, vlans);
+});
