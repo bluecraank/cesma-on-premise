@@ -20,9 +20,10 @@ class ShowClients extends Component
     public $cHOSTNAME, $cIP, $cMAC, $cVLAN, $cSWITCH, $cPORT, $cSTATUS, $cTYPE;
     public $numberOfEntries = 25;
 
-    public function mount() {
+    public function mount()
+    {
         $this->checkLogin();
-    } 
+    }
 
     public function updatingSearch()
     {
@@ -47,7 +48,7 @@ class ShowClients extends Component
         $type = $this->cTYPE;
 
 
-        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($hostname, $ip, $mac, $vlan, $switch, $port, $status, $type) {
+        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($hostname, $ip, $mac, $vlan, $switch, $port, $status, $type) {
             if ($hostname) {
                 $query->where('hostname', 'like', '%' . $hostname . '%');
             }
@@ -76,6 +77,11 @@ class ShowClients extends Component
         });
 
         $clients = $clients->paginate($this->numberOfEntries);
+
+        // Sort clients by name in natural order
+        $clients->sort(function ($a, $b) {
+            return strnatcmp($a['hostname'], $b['hostname']);
+        });
 
         $count_result = count($clients);
 

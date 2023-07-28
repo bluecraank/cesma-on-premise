@@ -20,6 +20,11 @@ class ShowBuildings extends Component
         $buildings = Building::paginate($this->numberOfEntries);
         $buildings->sortBy('name');
 
+        // Sort buildings by name in natural order
+        $buildings->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+
         return view('livewire.show-buildings', [
             'buildings' => $buildings,
         ]);

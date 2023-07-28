@@ -20,6 +20,11 @@ class ShowSites extends Component
         $site = Site::where('id', Auth::user()->currentSite()->id)->firstOrFail();
         $sites = Site::paginate($this->numberOfEntries);
         $sites->sortBy('name');
+
+        // Sort sites by name in natural order
+        $sites->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
         
         return view('livewire.show-sites', [
             'site' => $site,

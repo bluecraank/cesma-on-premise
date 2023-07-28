@@ -234,12 +234,12 @@ class DeviceService
             }
         }
 
-        $device->named = $data['informations']['name'] ?? NULL;
-        $device->model = $data['informations']['model'] ?? NULL;
-        $device->serial = $data['informations']['serial'] ?? NULL;
-        $device->hardware = $data['informations']['hardware'] ?? NULL;
-        $device->mac_address = $data['informations']['mac'] ?? NULL;
-        $device->firmware = $data['informations']['firmware'] ?? NULL;
+        $device->named = $data['informations']['name'] ?? $device->named;
+        $device->model = $data['informations']['model'] ?? $device->model;
+        $device->serial = $data['informations']['serial'] ?? $device->serial;
+        $device->hardware = $data['informations']['hardware'] ?? $device->hardware;
+        $device->mac_address = $data['informations']['mac'] ?? $device->mac_address;
+        $device->firmware = $data['informations']['firmware'] ?? $device->firmware;
 
         if(isset($data['informations']['uptime']) && $data['informations']['uptime'] != "") {
             $device->uptime = $data['informations']['uptime'];

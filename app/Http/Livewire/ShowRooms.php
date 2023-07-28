@@ -21,6 +21,11 @@ class ShowRooms extends Component
         $rooms = Room::paginate($this->numberOfEntries);
         $rooms->sortBy('name');
 
+        // Sort rooms by name in natural order
+        $rooms->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+
         $buildings = Building::where('site_id', Auth::user()->currentSite()->id)->get();
 
         return view('livewire.show-rooms', [
