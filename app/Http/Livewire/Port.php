@@ -58,6 +58,7 @@ class Port extends Component
     public function fetchPort() {
         $this->untaggedVlanId = $this->vlanports->where('is_tagged', false)->first()->device_vlan_id ?? 0;
         $this->taggedVlans = $this->vlanports->where('is_tagged', true);
+        $this->taggedVlans = $this->taggedVlans->pluck('device_vlan_id')->toArray();
         $this->newTaggedVlans = [];
         $this->taggedVlansUpdated = false;
         $this->untaggedVlanUpdated = false;
@@ -79,7 +80,7 @@ class Port extends Component
         $this->somethingChanged = true;
     }
 
-    public function prepareTaggedVlans($portId, $componentId, $vlans) {
+    public function prepareTaggedVlans($portId, $vlans) {
         $this->newTaggedVlans = $vlans;
         $this->doNotDisable = true;
         $this->portId = $portId;

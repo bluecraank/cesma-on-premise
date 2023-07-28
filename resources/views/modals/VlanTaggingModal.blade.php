@@ -9,7 +9,7 @@
             <input type="hidden" name="device_id" class="id" value="{{ $device->id }}">
 
             <label class="label is-small">Ausgewählter Port</label>
-            <input type="text" class="input is-small port" name="port_id" readonly="true">
+            <input type="text" class="input is-small name" name="port_id" readonly="true">
             <br><br>
 
             <label class="label is-small">Verfügbare VLANs</label>
@@ -42,10 +42,10 @@
         </section>
         <footer class="modal-card-foot">
             @if (Auth::user()->role >= 1)
-                <button disabled onclick="updatePortTaggedVlans(this)"
+                <button disabled id="actionSetTaggedVlans"
                     type="button" class="button is-submit is-primary">{{ __('Button.Change') }}</button>
             @endif
-            <button data-modal="vlan-tagging" type="button"
+            <button data-modal="set-tagged-vlans" type="button"
                 class="is-cancel button">{{ __('Button.Close') }}</button>
             <span class="is-info is-hidden">{{ __('Msg.SubmitWait') }}</span>
         </footer>

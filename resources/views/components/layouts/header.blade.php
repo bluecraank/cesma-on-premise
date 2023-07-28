@@ -24,11 +24,7 @@
     @livewireScripts
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    @if (Route::is('show-device'))
-        <script src="/js/api_ports.js?{{ config('app.version') }}"></script>
-    @endif
-
+    
     @guest
         <title>@yield('title') | CESMA</title>
     @endguest

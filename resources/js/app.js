@@ -4,6 +4,26 @@ import './table-sorting';
 import './ssh';
 import "./switch-actions.js";
 
+$(document).ready(function () {
+    window.addEventListener('notify-success', message => {
+        let port = message.detail.portid;
+        $('#' + port).css('opacity', '1');
+        $.notify(message.detail.message, {
+            style: 'bulma-success',
+            autoHideDelay: 8000
+        });
+    });
+
+    window.addEventListener('notify-error', message => {
+        let port = message.detail.portid;
+        $('#' + port).css('opacity', '1');
+        $.notify(message.detail.message, {
+            style: 'bulma-error',
+            autoHideDelay: 8000
+        });
+    });
+});
+
 $("#themeSwitch").on("change", function () {
     let theme = $(this).val();
     if (theme == 'dark') {
@@ -37,11 +57,13 @@ $.fn.info = function () {
 // Listen on buttons, toggle modals and fill them with data
 $("button").on('click', function() {
 
-    if($(this).attr("data-modal") === null) {
+    if($(this).attr("data-modal") == null || $(this).attr("data-modal") == "" || !$(this).attr("data-modal")) {
         return false;
     }
 
     let modal = ".modal-" + $(this).attr("data-modal");
+
+    console.log(modal)
 
     $(modal).toggle();
 
@@ -149,20 +171,26 @@ $("#clickable-vlans span.tag").on("click", function () {
     $(this).toggleClass('is-primary');
 });
 
-$("#actionSetTaggedVlanModalData").on("click", function () {
-    let vlansSplitted = $(this).attr("data-tagged-vlans").split(',');
+window.livewire.on('actionOpenTaggedVlansModal', rawData => {
+    let data = JSON.parse(rawData);
 
     let modal = $('.modal-set-tagged-vlans');
+    
+    modal.find('.id').val(data.port_id);
+    modal.find('.name').val(data.port_name);
 
-    modal.find('.typ-warning').addClass('is-hidden');
+    let vlansSplitted = data.tagged_vlans.split(',');
+    let untaggedVlan = data.current_untagged_vlan;
+    
+    let livewire_key = $('#' + data.port_id).attr('wire:id');
 
-    let idw = $('#' + pid).attr('wire:id');
+    $('.modal .is-submit').attr('data-component', livewire_key);
+    $('.modal .is-submit').attr('data-id', data.port_id);
 
-    $('.modal .is-submit').attr('data-component', idw);
-    $('.modal .is-submit').attr('data-id', pid);
-
-    if (typ == 'access') {
+    if (data.mode == 'access') {
         modal.find('.typ-warning').removeClass('is-hidden');
+    } else {
+        modal.find('.typ-warning').addClass('is-hidden');
     }
 
     modal.find('.modal-card-body #clickable-vlans span.tag').removeClass('is-primary');
@@ -177,4 +205,23 @@ $("#actionSetTaggedVlanModalData").on("click", function () {
     });
 
     modal.show();
+})
+
+$("#actionSetTaggedVlans").on("click", function () {
+    let modal = $('.modal-set-tagged-vlans');
+    $(modal).hide();
+
+    let componentId = $(this).attr('data-component');
+    let rowId = $(this).attr('data-id');
+
+    $('#' + rowId).css('opacity', '0.1');
+
+    let vlans = [];
+
+    modal.find('#clickable-vlans span.tag.is-primary').each(function () {
+        let vid = $(this).attr('data-id');
+        vlans.push(vid);
+    });
+
+    window.livewire.find(componentId).call('prepareTaggedVlans', rowId, vlans);
 });

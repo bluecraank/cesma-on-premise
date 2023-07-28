@@ -36,15 +36,19 @@
         </td>
 
         <td class="is-vcentered">
-            <button id="actionSetTaggedVlanModalData" class="is-80 button is-small is-outlined is-radiusless is-link mt-1"
-                data-modal="set-tagged-vlans"
-                data-port="{{ $port->id }}"
-                data-tagged-vlans="{{ implode(',',$this->taggedVlans->pluck('device_vlan_id')->toArray()) }}"
-                data-current-untagged-vlan="{{  $port->untaggedVlan() }}"
-                data-port-name="{{ $port->name }}"
-                data-id="{{ $device->id }}"
-                data-mode="{{ $port->vlan_mode }}">
-                {{ $this->taggedVlans->count() ?? 0 }} VLANs
+            @php
+                $combinedData = [
+                    'port_id' => $port->id,
+                    'port_name' => $port->name,
+                    'device_id' => $device_id,
+                    'tagged_vlans' => implode(',',$this->taggedVlans),
+                    'current_untagged_vlan' => $port->untaggedVlan(),
+                    'mode' => $port->vlan_mode
+                ];
+                $combinedData = json_encode($combinedData);
+            @endphp
+            <button wire:click='$emit("actionOpenTaggedVlansModal", @json($combinedData))' class="is-80 button is-small is-outlined is-radiusless is-link mt-1">
+                {{ count($this->taggedVlans) ?? 0 }} VLANs
             </button>
 
             <span class="has-custom-text-warning is-size-4">{{ $this->taggedVlansUpdated ? '*' : '' }}</span>
