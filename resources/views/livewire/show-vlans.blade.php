@@ -23,6 +23,10 @@
         </div>
     </div>
 
+    <div class="is-pulled-right">
+        <button title="Export zu CSV" class="button is-small is-primary export-csv-button mr-2" data-table="table" data-file-name="{{ __('Vlans') }}"><i class="fa-solid fa-file-arrow-down"></i></button>
+    </div>
+
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
             <tr>
@@ -69,9 +73,11 @@
                     </td>
                     <td class="has-text-centered">
                         <i class='fas {{ $sync ? 'fa-check' : 'fa-times' }}'></i>
+                        <span class="is-hidden">{{ $sync ? 'Ja' : 'Nein' }}</span>
                     </td>
                     <td class="has-text-centered">
                         <i class='fas {{ $clients ? 'fa-check' : 'fa-times' }}'></i>
+                        <span class="is-hidden">{{ $clients ? 'Ja' : 'Nein' }}</span>
                     </td>
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">

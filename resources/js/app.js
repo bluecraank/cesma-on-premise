@@ -3,6 +3,7 @@ import './bootstrap';
 import './table-sorting';
 import './ssh';
 import "./switch-actions.js";
+import 'file-saver';
 
 $(document).ready(function () {
     window.addEventListener('notify-success', message => {
@@ -168,4 +169,40 @@ $("#systemTabList li").on('click', function(element) {
     $(this).addClass('is-active');
     $('.tabsbox').addClass('is-hidden');
     $('.tab-parent').find("[data-id='"+tab+"']").removeClass('is-hidden');
+});
+
+function exportCSV(table, name) {
+    let csv = [];
+    let rows = $(table).find("tr") 
+    rows.each(function(index, row) {
+        let cells = [];
+        if(table.hasClass("without-header")) {
+            cells = $(row).find("td");
+        } else {
+            cells = $(row).find("td, th");
+        }
+
+
+        let rowText = [];
+        cells.each(function(index, cell) {
+            let text = $(cell).text();
+            if(text == "") {
+                text = $(cell).find("span").text();
+            }
+            text = text.trim();
+            
+            rowText.push(text);
+        });
+
+        csv.push(rowText.join(';'));       
+    })
+
+    const csvFile = new Blob([csv.join('\n')], {type: "text/csv;charset=utf-8;"});
+    saveAs(csvFile, name+".csv");
+}
+
+$(".export-csv-button").on('click', function(element) {
+    let table = $(this).attr("data-table");
+    let name = $(this).attr("data-file-name");
+    exportCSV($("."+table), name);
 });

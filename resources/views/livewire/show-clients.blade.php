@@ -8,12 +8,13 @@
     </div>
 
     <div class="is-pulled-right">
+        <button title="Export zu CSV" class="button is-small is-primary export-csv-button mr-2" data-table="table" data-file-name="{{ trans_choice('Clients', 2) }}"><i class="fa-solid fa-file-arrow-down"></i></button>
     </div>
 
     <div class="is-clearfix"></div>
 
     <div class="table-container">
-        <table class="table is-narrow is-hoverable is-striped is-fullwidth ">
+        <table class="table without-header is-narrow is-hoverable is-striped is-fullwidth ">
             <thead>
                 <tr>
                     <th>

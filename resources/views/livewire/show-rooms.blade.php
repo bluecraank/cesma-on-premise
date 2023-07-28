@@ -11,7 +11,7 @@
     </div>
 
     <div class="is-pulled-right">
-
+        <button title="Export zu CSV" class="button is-small is-primary export-csv-button mr-2" data-table="table" data-file-name="{{ __('Rooms') }}"><i class="fa-solid fa-file-arrow-down"></i></button>
     </div>
 
     <table class="table is-narrow is-hoverable is-striped is-fullwidth">
