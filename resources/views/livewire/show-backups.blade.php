@@ -1,4 +1,4 @@
-@section('title', 'All Backups')
+@section('title', __('All Backups'))
 
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Backups') }}</h1>

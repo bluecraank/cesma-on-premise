@@ -116,6 +116,8 @@
 
     "RX": "Empfangen",
     "TX": "Gesendet",
+    "Change site": "Standort",
+    "All Backups": "Alle Backups",
 
     "Role.SuperAdmin": "Superadmin",
     "Role.Admin": "Administrator",
