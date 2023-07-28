@@ -13,15 +13,6 @@ use Illuminate\Support\Facades\Auth;
 
 class BuildingController extends Controller
 {
-    public function index() {
-        $site = Auth::user()->currentSite();
-        $buildings = $site->buildings;
-
-        return view('building.index', [
-            'buildings' => $buildings,
-        ]);
-    }
-
     public function store(StoreBuildingRequest $request)
     {
         $building = Building::create($request->except('_token', '_method'));

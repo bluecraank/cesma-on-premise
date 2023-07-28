@@ -6,44 +6,16 @@ use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Helper\CLog;
 use App\Models\Device;
-use App\Models\Building;
 use App\Models\DeviceBackup;
-use App\Models\Room;
 use App\Services\DeviceService;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use App\Helper\Diff;
-use App\Models\Site;
 use Illuminate\Support\Facades\Auth;
 
 class DeviceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    function index()
-    {
-        $devices = Device::all()->sortBy('name');
-        $sites = Site::all()->keyBy('id');
-        $buildings = Building::all()->keyBy('id');
-        $rooms = Room::all()->keyBy('id');
-
-        $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
-        $https = config('app.https');
-
-        return view('switch.switch-overview', compact(
-            'devices',
-            'sites',
-            'buildings',
-            'rooms',
-            'https',
-            'keys_list'
-        ));
-    }
-
     static function view_uplinks()
     {
         $devices = Device::all()->keyBy('id');

@@ -1,3 +1,5 @@
+@section('title', 'All VLANs')
+
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Vlans') }}</h1>
 
@@ -103,3 +105,20 @@
 
     {{ $vlans->links('pagination::default') }}
 </div>
+
+@if (Auth::user()->role >= 1)
+    <div class="box">
+        <div class="label is-small">Alle Switche</div>
+        <div class="buttons are-small">
+            @include('buttons.ButtonSyncVlan')
+        </div>
+    </div>
+
+    @include('modals.create.CreateVlanModal')
+
+    @include('modals.edit.VlanEditModal')
+
+    @include('modals.delete.DeleteVlanModal')
+
+    @include('modals.VlanSyncModal')
+@endif

@@ -6,12 +6,15 @@ use App\Http\Controllers\DeviceController;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\Building;
+use App\Models\Room;
+use App\Models\Site;
 use App\Services\DeviceService;
+use App\Services\PublicKeyService;
 use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class SearchDevices extends Component
+class ShowDevices extends Component
 {
     use WithLogin;
 
@@ -36,9 +39,18 @@ class SearchDevices extends Component
             $device->online = DeviceService::isOnline($device->hostname);
         }
 
-        return view('switch.switch-overview-livew', [
+        // Sort devices by name in natural order
+        $devices->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+
+        return view('livewire.show-devices', [
             'devices' => $devices,
-            'https' => $https
+            'https' => $https,
+            'sites' => Site::all(),
+            'buildings' => Building::all(),
+            'rooms' => Room::all(),
+            'keys_list' => PublicKeyService::getPubkeysDescriptionAsArray()
         ]);
     }
 }

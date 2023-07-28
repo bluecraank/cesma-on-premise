@@ -1,6 +1,6 @@
 @section('title', 'All Backups for ' . $device->name)
 
-<x-layouts.main>
+{{-- <x-layouts.main> --}}
     <div class="box">
         <h1 class="title is-pulled-left">{{ __('Backups') }} - {{ $device->name }}</h1>
 
@@ -62,10 +62,12 @@
                     </tr>
                 @endforeach
         </table>
+        
+        {{ $backups->links('pagination::default') }}
     </div>
 
     @if (Auth::user()->role >= 1)
         @include('modals.delete.SwitchDeleteBackupModal')
         @include('modals.SwitchRestoreBackupModal')
     @endif
-    </x-layouts>
+    {{-- </x-layouts> --}}

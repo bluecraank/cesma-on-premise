@@ -16,16 +16,6 @@ use Illuminate\Support\Facades\Log;
 
 class ClientController extends Controller
 {
-
-    public function index()
-    {
-
-        $clients = Client::all()->keyBy('mac_address');
-        $devices = Device::all()->keyBy('id');
-
-        return view('client.client-overview', compact('clients', 'devices'));
-    }
-
     static function checkOnlineStatus()
     {
         $clients = Client::all()->keyBy('id');

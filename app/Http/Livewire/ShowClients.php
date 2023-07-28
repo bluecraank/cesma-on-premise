@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class SearchClients extends Component
+class ShowClients extends Component
 {
     use WithLogin;
     use WithPagination;
@@ -79,7 +79,7 @@ class SearchClients extends Component
 
         $count_result = count($clients);
 
-        return view('client.client-overview-livew', [
+        return view('livewire.show-clients', [
             'devices' => $devices,
             'vlans' => $vlans,
             'count_clients' => $count_clients,

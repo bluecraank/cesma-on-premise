@@ -15,6 +15,14 @@ use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SiteController;
+use App\Http\Livewire\ShowBackups;
+use App\Http\Livewire\ShowBuildings;
+use App\Http\Livewire\ShowClients;
+use App\Http\Livewire\ShowDevices;
+use App\Http\Livewire\ShowRooms;
+use App\Http\Livewire\ShowSites;
+use App\Http\Livewire\ShowSwitchBackups;
+use App\Http\Livewire\ShowVlans;
 use App\Models\Device;
 use App\Services\DeviceService;
 use App\Services\MacTypeService;
@@ -38,27 +46,30 @@ use Illuminate\Support\Facades\Storage;
 
 // Basic routes allowed for all users
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/', [DeviceController::class, 'index'])->name('dashboard');
-    Route::get('/vlans', [VlanController::class, 'index'])->name('vlans');
+    Route::get('/', ShowDevices::class)->name('dashboard');
+    Route::get('/vlans', ShowVlans::class)->name('vlans');
     Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('vlanports')->where('id', '[0-9]+');
-    Route::get('/sites', [SiteController::class, 'index'])->name('sites');
-    Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
+    Route::get('/clients', ShowClients::class)->name('clients');
+    
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');
     Route::get('/logs', [SystemController::class, 'index_logs'])->name('logs');
-    Route::get('/clients', [ClientController::class, 'index'])->name('clients');
-    Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings');
-    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms');
-});
-Route::prefix('device')->middleware('auth:sanctum')->group(function () {
-    Route::get('/backups', [BackupController::class, 'index'])->name('backups');
-    Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
-    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
-    Route::get('/{device:id}/backups', [DeviceController::class, 'showBackups'])->name('device-backups')->where('id', '[0-9]+');
-    Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
-    Route::get('/{device:id}/update-available', [DeviceController::class, 'hasUpdate'])->where('id', '[0-9]+');
+
+    Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
+
+    Route::get('/sites', ShowSites::class)->name('sites');
+    Route::get('/buildings', ShowBuildings::class)->name('buildings');
+    Route::get('/rooms', ShowRooms::class)->name('rooms');
 });
 
-Route::get('/device/backup/{id}/download/', [BackupController::class, 'downloadBackup']);
+Route::prefix('device')->middleware('auth:sanctum')->group(function () {
+    Route::get('/backups', ShowBackups::class)->name('backups');
+    Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
+    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
+    Route::get('/{device:id}/backups', ShowSwitchBackups::class)->name('device-backups')->where('id', '[0-9]+');
+    Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
+});
+
+Route::get('/device/backup/{id}/download/', [BackupController::class, 'downloadBackup'])->name('download-backup');
 
 // Admin only routes
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
@@ -140,11 +151,6 @@ Route::prefix('device')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/action/create-backup', [DeviceController::class, 'createBackupAllDevices']);
     Route::post('/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
     Route::post('/action/sync-vlans', [DeviceService::class, 'syncVlansToAllDevices'])->name('VLAN Sync');
-});
-
-Route::get('/test', function() {
-    $device = Device::whereId('4')->get()->first();
-    echo config('app.types')[$device->type]::getSnmpData($device);
 });
 
 // Login

@@ -11,28 +11,10 @@ use App\Models\DeviceBackup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class BackupController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index() {
-        $backups = DeviceBackup::select('id', 'status', 'created_at', 'device_id')->get()->keyBy('id');
-        $devices = Device::all()->keyBy('id');
-
-
-        foreach ($devices as $device) {
-            $device->last_backup = $backups->where('device_id', $device->id)->last();
-        }
-
-        return view('switch.view_backups', compact('backups', 'devices'));
-    }
-
     static function store($success, $data, $restore, $device) {
 
         if ($success and $data and !is_array($data)) {

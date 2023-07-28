@@ -1,3 +1,5 @@
+@section('title', __('Switches'))
+
 <div class="box">
     <h1 class="title is-pulled-left">{{ __('Switches') }}</h1>
 
@@ -33,12 +35,6 @@
             </tr>
         </thead>
         <tbody>
-            {{-- @php
-                $devices = $devices->sort(function ($a, $b) {
-                    return strnatcmp($a['name'], $b['name']);
-                });
-            @endphp --}}
-
             @if ($devices->count() == 0)
                 <tr>
                     <td colspan="7" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
@@ -100,3 +96,24 @@
         </table>
         {{ $devices->links('pagination::default') }} 
 </div>
+
+@if (Auth::user()->role >= 1)
+    <div class="box">
+        <div class="label is-small">Alle Switche</div>
+        <div class="buttons are-small">
+            @include('buttons.ButtonCreateBackup')
+            @include('buttons.ButtonSyncPubkeys')
+            @include('buttons.ButtonSyncVlan')
+        </div>
+    </div>
+
+    @include('modals.create.SwitchCreateModal')
+
+    @include('modals.edit.SwitchEditModal')
+
+    @include('modals.delete.SwitchDeleteModal')
+
+    @include('modals.PubkeySyncModal')
+
+    @include('modals.VlanSyncModal')
+@endif

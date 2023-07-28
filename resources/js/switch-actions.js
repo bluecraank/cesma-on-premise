@@ -127,6 +127,7 @@ $(".is-edit-button").on('click', function (element) {
     $('.clickable-tags').find('.is-submit').prop('disabled', false);
 
     $('.is-cancel-button').removeClass('is-hidden');
+    $('.is-save-button').removeClass('is-hidden');
     $('.is-edit-button').addClass('is-hidden');
 });
 

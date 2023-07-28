@@ -15,7 +15,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="/css/multi-select.css?{{ config('app.version') }}">
-    <link rel="stylesheet" href="/css/cesma.css?{{ config('app.version') }}">
     
     <script src="/js/jquery.multi-select.js?{{ config('app.version') }}"></script>
     <script src="/js/multiselect.js?{{ config('app.version') }}"></script>

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 
-class SearchVlans extends Component
+class ShowVlans extends Component
 {
     use WithLogin;
     use WithPagination;
@@ -36,7 +36,7 @@ class SearchVlans extends Component
             return strnatcmp($a->vid, $b->vid);
         });
 
-        return view('vlan.vlan-overview-livew', [
+        return view('livewire.show-vlans', [
             'vlans' => $vlans,
         ]);
     }

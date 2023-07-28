@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Controllers\ClientController;
 use App\Models\Device;
 use App\Services\ClientService;
 use App\Services\DeviceService;
@@ -10,12 +9,11 @@ use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 use App\Helper\CLog;
-use Illuminate\Support\Facades\Auth;	
 use App\Models\DeviceVlan;
 use App\Models\DevicePort;
 use App\Helper\Diff;
 
-class Port extends Component
+class SwitchPort extends Component
 {
 
     use WithLogin;
@@ -71,7 +69,7 @@ class Port extends Component
 
     public function render()
     {
-        return view('livewire.port', ['port' => $this->port, 'readonly' => $this->readonly]);
+        return view('livewire.show-single-switch-port', ['port' => $this->port, 'readonly' => $this->readonly]);
     }
 
     public function prepareUntaggedVlan() {

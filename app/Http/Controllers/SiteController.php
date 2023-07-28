@@ -14,18 +14,6 @@ use Illuminate\Support\Facades\Cookie;
 
 class SiteController extends Controller
 {
-    public function index() {
-        $sites = Site::all();
-        $buildings = Building::all();
-        $rooms = Room::all();
-
-        return view('site.index', [
-            'sites' => $sites,
-            'buildings' => $buildings,
-            'rooms' => $rooms
-        ]);
-    }
-
     public function store(StoreSiteRequest $request)
     {
         $newSite = Site::create($request->except('_token', '_method'));

@@ -14,17 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
 {
-    public function index() {
-        $site = Auth::user()->currentSite();
-        $rooms = $site->rooms;
-        $buildings = $site->buildings;
-
-        return view('room.index', [
-            'rooms' => $rooms,
-            'buildings' => $buildings
-        ]);
-    }
-
     public function store(StoreRoomRequest $request)
     {
         if (Room::create($request->except('_token', '_method'))) {

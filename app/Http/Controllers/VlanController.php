@@ -16,20 +16,6 @@ use Illuminate\Support\Facades\Auth;
 
 class VlanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('vid');
-
-        return view('vlan.vlan-overview', compact(
-            'vlans',
-        ));
-    }
-
     public function getPortsByVlan($id)
     {
         $vlan = Vlan::where('vid', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
