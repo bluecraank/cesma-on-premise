@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Storage;
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/', ShowDevices::class)->name('dashboard');
     Route::get('/vlans', ShowVlans::class)->name('vlans');
-    Route::get('/vlans/{id}', [VlanController::class, 'getPortsByVlan'])->name('show-vlan')->where('id', '[0-9]+');
+    Route::get('/vlans/{id}', [VlanController::class, 'showVlanDetails'])->name('show-vlan')->where('id', '[0-9]+');
     Route::get('/clients', ShowClients::class)->name('clients');
     
     Route::get('/system', [SystemController::class, 'index_system'])->name('system');

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class VlanController extends Controller
 {
-    public function getPortsByVlan($id)
+    public function showVlanDetails($id)
     {
         $vlan = Vlan::where('id', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
         $vlans = [];
