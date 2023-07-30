@@ -1,14 +1,10 @@
 <?php
 
-use App\Devices\ArubaCX;
-use App\Devices\DellEMC;
-use App\Devices\DellEMCPowerSwitch;
 use App\Http\Controllers\VlanController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
 use App\Http\Controllers\BackupController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DevicePortStatController;
 use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\PublicKeyController;
@@ -24,7 +20,6 @@ use App\Http\Livewire\ShowRooms;
 use App\Http\Livewire\ShowSites;
 use App\Http\Livewire\ShowSwitchBackups;
 use App\Http\Livewire\ShowVlans;
-use App\Models\Device;
 use App\Services\DeviceService;
 use App\Services\MacTypeService;
 use Illuminate\Support\Facades\Route;
@@ -62,7 +57,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/rooms', ShowRooms::class)->name('rooms');
 });
 
-Route::prefix('device')->middleware('auth:sanctum')->group(function () {
+// /device routes
+Route::prefix('devices')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', ShowBackups::class)->name('backups');
     Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
     Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
@@ -70,6 +66,7 @@ Route::prefix('device')->middleware('auth:sanctum')->group(function () {
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
 });
 
+// Fix backup download... csrf expiring
 Route::get('/device/backup/{id}/download/', [BackupController::class, 'downloadBackup'])->name('download-backup');
 
 // Admin only routes
@@ -102,6 +99,8 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/pubkey/add', [PublicKeyController::class, 'store']);
     Route::delete('/pubkey/delete', [PublicKeyController::class, 'destroy']);
 
+    // Privatekey Route
+    // TODO: Remove this route in production, make it better
     Route::post('/privatekey/upload', function(Request $request) {
         $key = $request->input('key');
         return "<pre>".Crypt::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
@@ -124,7 +123,7 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::delete('/clients/type', [MacTypeService::class, 'delete']);   
 });
 
-Route::prefix('device')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
+Route::prefix('devices')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
     // Views
     Route::put('/uplinks', [DeviceService::class, 'storeCustomUplinks']);
 
@@ -139,8 +138,8 @@ Route::prefix('device')->middleware(['role.admin', 'auth:sanctum'])->group(funct
     Route::post('/{id}/action/prepare-api', [DeviceService::class, 'startApiSession'])->where('id', '[0-9]+');
 
     // Backup Aktionen
-    Route::post('/backup/restore', [DeviceController::class, 'restoreBackup']);
-    Route::delete('/backup/delete', [BackupController::class, 'destroy']);
+    Route::post('/backup/restore', [DeviceController::class, 'restoreBackup'])->name('restore-backup');
+    Route::delete('/backup/delete', [BackupController::class, 'destroy'])->name('delete-backup');
 
     // Switch Aktionen
     Route::post('/create', [DeviceController::class, 'store'])->name('create-switch');

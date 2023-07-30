@@ -1,5 +1,5 @@
 <div class="modal modal-upload-backup">
-    <form action="/device/backup/restore" method="post">
+    <form action="{{ route('restore-backup') }}" method="post">
         <input class="id input" name="id" type="hidden" value="">
         <input class="device_id input" name="device-id" type="hidden" value="">
 

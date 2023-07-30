@@ -63,7 +63,7 @@
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
-                                <a title="{{ __('Show') }}" @disabled($device->created_at == $device->updated_at) @if($device->created_at != $device->updated_at) href="/device/{{ $device->id }}"  @endif class="button is-success is-small">
+                                <a title="{{ __('Show') }}" @disabled($device->created_at == $device->updated_at) @if($device->created_at != $device->updated_at) href="{{ route('show-device', $device->id) }}"  @endif class="button is-success is-small">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>

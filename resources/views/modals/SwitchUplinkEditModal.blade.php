@@ -1,5 +1,5 @@
 <div class="modal modal-edit-uplinks">
-    <form action="/device/uplinks" method="post">
+    <form action="{{ route('uplinks') }}" method="post">
         @csrf
         @method('PUT')
 

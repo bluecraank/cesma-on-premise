@@ -28,7 +28,7 @@
                         </select>
                     </div>
                     <div class="select is-small is-pulled-right mr-3">
-                        <select onchange="location.href='/device/{{ $device->id }}/ports/'+$(this).val()+'?timespan={{ app('request')->input('timespan') }}'">
+                        <select onchange="location.href='/devices/{{ $device->id }}/ports/'+$(this).val()+'?timespan={{ app('request')->input('timespan') }}'">
                             @if ($port_id == null)
                                 <option value="" selected>Bitte wählen</option>
                             @endif
@@ -42,7 +42,7 @@
                         </select>
                     </div>
                     <div class="is-pulled-right mr-3">
-                        <a class="button is-small is-info" href="/device/{{ $device->id }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
+                        <a class="button is-small is-info" href="{{ route('show-device', $device->id) }}">{{ __('Button.Back', ["device" => $device->name]) }}</a>
                     </div>
                 </div>
 

@@ -1,5 +1,5 @@
 <div class="modal modal-delete-backup">
-    <form action="/device/backup/delete" method="post">
+    <form action="{{ route('delete-backup') }}" method="post">
         <input type="hidden" name="_method" value="delete" />
         @csrf
         <div class="modal-background"></div>

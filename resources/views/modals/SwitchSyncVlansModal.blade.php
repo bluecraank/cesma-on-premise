@@ -1,5 +1,5 @@
 <div class="modal modal-sync-vlans-specific">
-    <form action="/device/{{ $device->id }}/action/sync-vlans" id="form-sync-vlans" method="post">
+    <form action="/devices/{{ $device->id }}/action/sync-vlans" id="form-sync-vlans" method="post">
         @csrf
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">

@@ -1,5 +1,5 @@
 <div class="modal modal-delete-switch">
-    <form onsubmit="$('.modal-delete-switch .is-submit').addClass('is-loading')" action="/device/delete" method="post">
+    <form onsubmit="$('.modal-delete-switch .is-submit').addClass('is-loading')" action="{{ route('delete-switch') }}" method="post">
         <input type="hidden" name="_method" value="delete" />
         @csrf
         <div class="modal-background"></div>

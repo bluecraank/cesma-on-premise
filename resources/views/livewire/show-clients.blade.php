@@ -140,10 +140,10 @@
                         <td><a class="dark-fix-color"
                                 href="/vlans/{{ $client->vlan_id }}">{{ trim($client->vlan_id) }}</a></td>
                         <td><a class="dark-fix-color"
-                                href="/device/{{ $client->device_id }}">{{ trim($devices[$client->device_id]->name) }}</a>
+                                href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                         </td>
                         <td style="width:100px"><a class="dark-fix-color"
-                                href="/device/{{ $client->device_id }}/ports/{{ $client->port_id }}">{{ trim($client->port_id) }}</a>
+                                href="{{ route('port-details-specific', [$client->device_id, $client->port_id]) }}">{{ trim($client->port_id) }}</a>
                         </td>
                         <td class="has-text-centered">{{ trim($client->updated_at->format('d.m.Y H:i:s')) }}</td>
                     </tr>
