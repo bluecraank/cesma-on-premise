@@ -1,7 +1,7 @@
 @section('title', __('Rooms'))
 
 <div class="box">
-    <h1 class="title is-pulled-left">{{ __('Rooms') }}</h1>
+    <h1 class="title is-pulled-left">{{ __('Rooms') }} - {{ Auth::user()->currentSite()->name }}</h1>
 
     <div class="is-pulled-right ml-4">
         @if (Auth::user()->role >= 1)
