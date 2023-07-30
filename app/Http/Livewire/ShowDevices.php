@@ -42,12 +42,14 @@ class ShowDevices extends Component
             return strnatcmp($a['name'], $b['name']);
         });
 
+        $buildings = Building::where('site_id', Auth::user()->currentSite()->id)->get();
+
         return view('livewire.show-devices', [
             'devices' => $devices,
             'https' => $https,
             'sites' => Site::all(),
-            'buildings' => Building::all(),
-            'rooms' => Room::all(),
+            'buildings' => $buildings,
+            'rooms' => Room::whereIn('building_id', $buildings->pluck('id')->toArray())->get(),
             'keys_list' => PublicKeyService::getPubkeysDescriptionAsArray()
         ]);
     }

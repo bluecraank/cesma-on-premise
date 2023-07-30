@@ -44,10 +44,11 @@
                         <div class="field">
                             <label class="label is-small">{{ __('Location') }}</label>
                             <div class="select is-fullwidth is-small">
-                                <select class="switch-location" name="site_id" required>
-                                    @foreach ($sites as $site)
+                                <select disabled class="switch-location" name="site_id" required>
+                                    {{-- @foreach ($sites as $site)
                                         <option value="{{ $site->id }}">{{ $site->name }}</option>
-                                    @endforeach
+                                    @endforeach --}}
+                                    <option value="{{ Auth::user()->currentSite()->id }}">{{ Auth::user()->currentSite()->name }}</option>
                                 </select>
                             </div>
                         </div>

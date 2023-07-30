@@ -17,7 +17,7 @@ class ShowBuildings extends Component
 
     public function render()
     {
-        $buildings = Building::paginate($this->numberOfEntries);
+        $buildings = Building::where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries);
         $buildings->sortBy('name');
 
         // Sort buildings by name in natural order
