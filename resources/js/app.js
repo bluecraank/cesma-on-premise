@@ -5,26 +5,6 @@ import './ssh';
 import "./switch-actions.js";
 import 'file-saver';
 
-$(document).ready(function () {
-    window.addEventListener('notify-success', message => {
-        let port = message.detail.portid;
-        $('#' + port).css('opacity', '1');
-        $.notify(message.detail.message, {
-            style: 'bulma-success',
-            autoHideDelay: 8000
-        });
-    });
-
-    window.addEventListener('notify-error', message => {
-        let port = message.detail.portid;
-        $('#' + port).css('opacity', '1');
-        $.notify(message.detail.message, {
-            style: 'bulma-error',
-            autoHideDelay: 8000
-        });
-    });
-});
-
 $("#themeSwitch").on("change", function () {
     let theme = $(this).val();
     if (theme == 'dark') {
@@ -59,7 +39,7 @@ $.fn.info = function () {
 $("button").on('click', function() {
 
     // Form-Submit
-    if($(this).hasClass("no-prevent")) {
+    if($(this).hasClass("no-prevent") || $(this).hasClass("submit")) {
         return true;
     }
 

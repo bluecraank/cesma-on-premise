@@ -119,9 +119,9 @@
     "Change site": "Standort",
     "All Backups": "Alle Backups",
 
-    "Role.SuperAdmin": "Superadmin",
+    "Role.SuperAdmin": "Super-Admin",
     "Role.Admin": "Administrator",
-    "Role.User": "Benutzer",
+    "Role.User": "Read-only",
     "System.Addititional Pubkeys": "Öffentliche Schlüssel",
     "System.User": "Rollenverwaltung",
     "System.Desc": "Beschreibung",
@@ -245,6 +245,7 @@
     "Msg.RouterUpdated": "Router erfolgreich aktualisiert",
     "Msg.RouterDeleted": "Router erfolgreich gelöscht",
     "Msg.MacTypeAdded": "MAC-Typ erfolgreich hinzugefügt",
+    "Msg.MacTypeIconAdded": "MAC-Typen-Symbol erfolgreich hinzugefügt",
 
     "edit": "bearbeiten",
     

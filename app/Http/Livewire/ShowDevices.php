@@ -2,9 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Controllers\DeviceController;
 use App\Models\Device;
-use App\Models\Location;
 use App\Models\Building;
 use App\Models\Room;
 use App\Models\Site;

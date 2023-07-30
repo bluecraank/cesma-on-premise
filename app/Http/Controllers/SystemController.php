@@ -15,12 +15,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Models\Permission;
+use App\Models\Site;
 
 class SystemController extends Controller
 {
     public function index_system()
     {
         $users = User::all();
+        $permissions = Permission::all();
+        $sites = Site::all();
         $keys = PublicKey::all();
         $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
         $mac_prefixes = MacTypeService::getMacTypes();
@@ -34,7 +38,7 @@ class SystemController extends Controller
 
         config(['app.ssh_private_key' => 'false']);
 
-        return view('system.index', compact('users', 'keys', 'keys_list', 'mac_prefixes', 'mac_types', 'mac_vendors', 'mac_icons', 'vlans', 'vlan_templates', 'routers'));
+        return view('system.index', compact('sites', 'permissions', 'users', 'keys', 'keys_list', 'mac_prefixes', 'mac_types', 'mac_vendors', 'mac_icons', 'vlans', 'vlan_templates', 'routers'));
     }
 
     public function index_usersettings()

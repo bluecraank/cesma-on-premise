@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateVlanRequest;
 use App\Models\Device;
-use App\Models\DeviceVlanPort;
-use App\Models\Location;
 use App\Models\Vlan;
 use App\Services\VlanService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
 use App\Http\Requests\StoreVlanRequest;
 use Illuminate\Support\Facades\Auth;
@@ -18,15 +15,16 @@ class VlanController extends Controller
 {
     public function getPortsByVlan($id)
     {
-        $vlan = Vlan::where('vid', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
+        $vlan = Vlan::where('id', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
         $vlans = [];
-        $devices = Device::all()->sortBy('name')->keyBy('name');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('name')->keyBy('name');
         $ports = [];
         $count_untagged = 0;
         $count_tagged = 0;
         $count_online = 0;
         $has_vlan = 0;
 
+        $vlanports = [];
         $untagged = [];
         $tagged = [];
 
@@ -35,8 +33,8 @@ class VlanController extends Controller
             $untagged[$device->id] = [];
             $tagged[$device->id] = [];
 
-            if($device->vlans()->where('vlan_id', $id)->first()) {
-                $vlans[$device->id] = $device->vlans()->where('vlan_id', $id)->first()->id;
+            if($device->vlans()->where('vlan_id', $vlan->vid)->first()) {
+                $vlans[$device->id] = $device->vlans()->where('vlan_id', $vlan->vid)->first()->id;
 
                 $vlanports[$device->id] = $device->vlanports()->where('device_vlan_id', $vlans[$device->id])->get();
 

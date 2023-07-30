@@ -82,7 +82,7 @@
                     <td style="width:150px;">
                         <div class="field has-addons is-justify-content-center">
                             <div class="control">
-                                <a class="button is-success is-small" href="/vlans/{{ $vlan->vid }}">
+                                <a class="button is-success is-small" href="/vlans/{{ $vlan->id }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>

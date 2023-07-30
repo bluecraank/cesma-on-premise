@@ -950,11 +950,11 @@ class ArubaOS implements DeviceInterface
                                 $old->delete();
                             }
 
-                            // $return[] = ['success' => true, 'data' => ''];
+                            $return[] = ['success' => true, 'data' => ''];
 
                             Log::channel('database')->info(__('Log.Vlan.Tagged.Removed', ['vlan' => $vlans[$device_vlan_id]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name]);
                         } else {
-                            // $return[] = ['success' => false, 'data' => $result['data']];
+                            $return[] = ['success' => false, 'data' => $result['data']];
                         }
                     }
                 }

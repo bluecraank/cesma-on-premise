@@ -37,7 +37,7 @@ return [
         'aruba-os' => false,
         'aruba-cx' => false,
         'dell-emc' => true,
-        'dell-emc-powerswitch' => false,
+        'dell-emc-powerswitch' => true,
     ],
 
 

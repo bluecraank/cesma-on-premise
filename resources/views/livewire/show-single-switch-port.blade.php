@@ -84,6 +84,9 @@
 
         <td class="has-text-centered is-vcentered">
             <div style="height:100%;width: 100%;">
+                @if($port->getChildrenOfUplink())
+                    @php $port->speed = $port->getChildrenOfUplink()->first()->speed ?? 0 @endphp
+                @endif
                 @if ($port->speed == 0)
                     <div class="tag is-link" style="width: 100%;">{{ $port->speed }}</div>
                 @elseif ($port->speed == 10)

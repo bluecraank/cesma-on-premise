@@ -23,7 +23,7 @@
                 <li data-tab="macs" class="systemTab">
                      <a>
                         <span class="icon is-small"><i class="fa-solid fa-link"></i></span>
-                        <span>Maczuordnungen</span>
+                        <span>MAC-Adresszuordnungen</span>
                     </a>
                 </li>
                 <li data-tab="snmp" class="systemTab">

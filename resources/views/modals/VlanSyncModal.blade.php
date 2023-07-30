@@ -53,7 +53,7 @@
                     </div>
             </section>
             <footer class="modal-card-foot">
-                <button data-prevent="false" class="button submit no-prevent is-primary"
+                <button data-prevent="false" class="button submit is-primary"
                     onclick="$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
                 <button data-modal="sync-vlans" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>

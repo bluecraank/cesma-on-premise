@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/css/multi-select.css?{{ config('app.version') }}">
     
     <script src="/js/jquery.multi-select.js?{{ config('app.version') }}"></script>
+    <script src="/js/jquery.notify.min.js"></script>
     <script src="/js/multiselect.js?{{ config('app.version') }}"></script>
 
     @livewireStyles

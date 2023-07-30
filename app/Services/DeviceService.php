@@ -3,9 +3,6 @@
 namespace App\Services;
 
 use App\Models\Device;
-use App\Devices\ArubaOS;
-use App\Devices\ArubaCX;
-use App\Devices\DellEMC;
 use App\Models\Client;
 use App\Models\DeviceBackup;
 use App\Models\DeviceCustomUplink;
@@ -14,7 +11,6 @@ use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
-use App\Models\Location;
 use App\Models\Mac;
 use App\Models\Site;
 use App\Models\SnmpMacData;
@@ -38,14 +34,6 @@ class DeviceService
             ]);
         }
 
-
-        if (app()->runningInConsole()) {
-            return json_encode([
-                'success' => "false",
-                'message' => $response['message'],
-            ]);
-        }
-
         return json_encode([
             'success' => "false",
             'message' => __('Msg.FailedToRefreshDevice'),
@@ -55,8 +43,9 @@ class DeviceService
     static function storeApiData($data, $device)
     {
         $device->touch('last_seen');
-
-        foreach ($data['vlans'] as $vid => $vname) {
+        
+        $vlans = $data['vlans'];
+        foreach ($vlans as $vid => $vname) {
             $device->vlans()->updateOrCreate(
                 [
                     'vlan_id' => $vid,
@@ -67,10 +56,10 @@ class DeviceService
                 ]
             );
 
+            // Save as general vlan
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
-        $vlans = $data['vlans'];
         DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
             foreach ($vlans as $vid => $vname) {
                 $query->where('vlan_id', '!=', $vid);
@@ -104,7 +93,6 @@ class DeviceService
             DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
         }
 
-        // $deleteOldVlanPorts = DeviceVlanPort::where('device_id', $device->id)->where('is_tagged', true)->where('updated_at', '<', Carbon::now()->subMinutes(6)->toDateTimeString())->delete();
         $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
 
         $newVlanPorts = 0;
@@ -155,6 +143,7 @@ class DeviceService
 
             $id = $device->ports()->where('name', $statistic['id'])->first() ?? null;
             $id = $id->id ?? null;
+
             if ($id) {
                 DevicePortStat::create([
                     'device_port_id' => $id,
@@ -178,13 +167,14 @@ class DeviceService
         $custom_uplink_ports = [];
         $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
         $custom_uplinks = $device->custom_uplink()->first();
+
         if ($custom_uplinks) {
             $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
         }
 
-        // Check if mac address is on uplink port
         $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
         
+        // Check if mac address is on uplink port
         foreach ($data['macs'] as $mac) {
             // Do not store macs on uplinks because its not correct discovered
             if (in_array($mac['port'], $combined_uplinks)) {
@@ -234,6 +224,7 @@ class DeviceService
             }
         }
 
+        // Prevent overwriting device data with empty data
         $device->named = $data['informations']['name'] ?? $device->named;
         $device->model = $data['informations']['model'] ?? $device->model;
         $device->serial = $data['informations']['serial'] ?? $device->serial;

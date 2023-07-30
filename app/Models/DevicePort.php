@@ -34,7 +34,14 @@ class DevicePort extends Model
 
     public function deviceUplink()
     {
-        return $this->hasOne(DeviceUplink::class)->where('device_id', $this->device->id);
+        return $this->hasOne(DeviceUplink::class);
+    }
+
+    public function getChildrenOfUplink()
+    {
+        $uplink = DeviceUplink::where('device_id', $this->device_id)->where('name', $this->name)->first();
+        if(!$uplink) return null;
+        return DevicePort::where('id', $uplink->device_port_id)->get();
     }
 
     public function devicePortStats()

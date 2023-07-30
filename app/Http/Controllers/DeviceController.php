@@ -16,13 +16,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DeviceController extends Controller
 {
-    static function view_uplinks()
-    {
-        $devices = Device::all()->keyBy('id');
-
-        return view('switch.view_uplinks', compact('devices'));
-    }
-
     /**
      * Store a newly created resource in storage.
      *

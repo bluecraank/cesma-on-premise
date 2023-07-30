@@ -26,6 +26,16 @@
                         </select>
                     </div>
                 </div>
+                
+                <div class="field">
+                    <label class="label">{{ __('Sites') }}</label>
+                    @foreach ($sites as $site)
+                        <label class="checkbox mr-2 ml-2">
+                            <input class="site-permission" type="checkbox" name="sites[]" value="{{ $site->id }}">
+                            {{ $site->name }}
+                        </label>
+                    @endforeach
+                </div>
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-success">{{ __('Button.Save') }}</button>
