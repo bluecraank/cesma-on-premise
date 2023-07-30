@@ -138,7 +138,7 @@
                         <td>{{ $client->ip_address }}</td>
                         <td title="{{ $vendor }}">{{ trim($formatted_mac) }}</td>
                         <td><a class="dark-fix-color"
-                                href="/vlans/{{ $client->vlan_id }}">{{ trim($client->vlan_id) }}</a></td>
+                                href="{{ route('show-vlan', $vlans[$client->vlan_id]->id) }}">{{ trim($client->vlan_id) }}</a></td>
                         <td><a class="dark-fix-color"
                                 href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                         </td>

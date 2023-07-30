@@ -34,7 +34,7 @@ class ShowClients extends Component
     {
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
         $count_clients = Client::count();
-        $vlans = Vlan::where('site_id', Auth::user())->get()->sortBy('vid')->keyBy('vid');
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendor::all()->keyBy('mac_prefix');
         $types = MacType::all()->sortBy('type')->unique();
 
