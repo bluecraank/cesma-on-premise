@@ -7,6 +7,8 @@
 ## Working with
 - HP / ArubaOS like Aruba 2930F
 - HP / ArubaCX like Aruba 6100
+- DELL EMC (read-only)
+- DELL EMC PowerSwitch (read-only)
 
 ```
 "HP ProVision OS"
@@ -17,14 +19,11 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 ## Requirements
 - Enabled API on Aruba Switch with Password authentication
 - At least Firmware 16.10 for ArubaOS, 10.11 for ArubaCX
+- SNMP enabled
 
 ### PHP Modules
 
 ```php8.1 php8.1-gmp php8.1-yaml php8.1-curl php8.1-mysqli php8.1-ldap php8.1-bcmath php8.1-mbstring php8.1-dom```
-
-### FPING to ping Devices
-
-```sudo apt install fping```
 
 ### Database
 
@@ -32,13 +31,12 @@ ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 82
 
 
 ### SNMP
-Make sure, your cesma server can reach your routers with snmp / ping in order to get full client data
-Set your routers in file .env
+Make sure, your server can reach your routers with snmp / ping in order to get full client data
 
 ## Add device into cesma
-Make sure to set session timeout to one minute
-Make sure to enable rest-interface on switch
-newest firmware is required
+- Make sure to set session timeout to one minute
+- Make sure to enable rest-interface on aruba switch
+- newest firmware recommended
 
 ## Info about uplinks
 - You should set your uplinks to get high accurancy of client discovery
@@ -56,22 +54,16 @@ newest firmware is required
 
 ## Features
 - Execute Commands on selected switches, locations or every switch 
-- Manage VLANs
-- Manage Uplinks
+- Tag and untag vlans to port and uplinks
+- Manage Vlans
+- Manage Uplinks / Trunks
 - Backup running-config
 - Restore Backup (ArubaOS tested)
-- See Device location (Which device is on which port etc.)
-- See Client online / offline status
-- See Trunks
-- See Port statistics (tx,rx)
+- Client lookup (mac, ip, port)
+- Port statistics (tx,rx)
 - Manage Site and buildings
-- Get VLANs from switch
-- Get Trunks from switch
-- Upload Pubkeys for SSH
-- Set Untagged VLAN on Port
-- Set Tagged VLAN on Port
-- Set client categorys and give them an icon
-- Sync VLANs (Create and Sync Name)
+- Sync SSH Pubkeys across all Aruba Switches
+- Categorize clients into groups
 - Logging
 - API / SSH Connection settings
 - Build on PHP Version 8.1 with Laravel
