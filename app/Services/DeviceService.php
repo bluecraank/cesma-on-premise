@@ -13,10 +13,8 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\Site;
-use App\Models\SnmpMacData;
 use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
-use App\Services\VlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -43,223 +41,30 @@ class DeviceService
     static function storeApiData($data, $device)
     {
         $device->touch('last_seen');
-        
-        $vlans = $data['vlans'];
-        foreach ($vlans as $vid => $vname) {
-            $device->vlans()->updateOrCreate(
-                [
-                    'vlan_id' => $vid,
-                    'device_id' => $device->id
-                ],
-                [
-                    'name' => $vname,
-                ]
-            );
 
-            // Save as general vlan
-            VlanService::createIfNotExists($device, $vid, $vname);
-        }
+        // Update device system informations
+        UpdateDeviceData::updateDeviceSystemInfo($data['informations'], $device);
 
-        DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
-            foreach ($vlans as $vid => $vname) {
-                $query->where('vlan_id', '!=', $vid);
-            }
-        })->delete();
+        // Update device ports
+        UpdateDeviceData::updateDevicePorts($data['ports'], $device);
 
-        $existingPorts = $device->ports()->get('name')->keyBy('name')->toArray();
+        // Update device vlans
+        UpdateDeviceData::updateDeviceVlans($data['vlans'], $device);
 
-        foreach ($data['ports'] as $port) {
-            DevicePort::updateOrCreate(
-                [
-                    'name' => $port['id'],
-                    'device_id' => $device->id
-                ],
-                [
-                    'description' => $port['name'],
-                    'link' => $port['link'],
-                    'speed' => $port['speed'] ?? 0,
-                    'vlan_mode' => $port['vlan_mode'],
-                    'snmp_if_index' => $port['snmp_if_index'] ?? NULL,
-                ]
-            );
-            $existingPorts[$port['id']] = true;
-        }
+        // Update device vlan ports
+        $new_uplinks = UpdateDeviceData::updateVlanPorts($data['vlanports'], $device);
+        array_merge($data['uplinks'], $new_uplinks['uplinks']);
 
-        foreach($existingPorts as $port => $isExisting) {
-            if(is_bool($isExisting) and $isExisting) {
-                continue;
-            }
+        // Update device uplinks
+        $combined_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $device);
 
-            DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
-        }
+        // Update device port statistics
+        UpdateDeviceData::updateDevicePortStatistics($data['statistics'], $device);
 
-        $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
-
-        $newVlanPorts = 0;
-        foreach ($data['vlanports'] as $vlanport) {
-            if ($vlanport['vlan_id'] != "Trunk") {
-                $newVlanPorts++;
-            }
-        }
-
-        if ($currentVlanPorts != $newVlanPorts) {
-            DeviceVlanPort::where('device_id', $device->id)->delete();
-            $device->touch();
-        }
-
-        foreach ($data['vlanports'] as $vlanport) {
-            // CX Trunk Discovery
-            if ($vlanport['vlan_id'] == "Trunk") {
-                $data['uplinks'][$vlanport['port_id']] = $vlanport['port_id'];
-            } else {
-                $vlanportUpdate = $device->vlanports()->updateOrCreate(
-                    [
-                        'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
-                        'device_id' => $device->id,
-                        'device_vlan_id' => $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first()->id,
-                        'is_tagged' => $vlanport['is_tagged']
-                    ]
-                );
-            }
-        }
-
-        if (count($data['uplinks']) != $device->uplinks()->count()) {
-            $device->touch();
-            $device->uplinks()->delete();
-        }
-
-        foreach ($data['uplinks'] as $port => $uplink) {
-            DeviceUplink::updateOrCreate([
-                'name' => $uplink,
-                'device_id' => $device->id,
-                'device_port_id' => $device->ports()->where('name', $port)->first()->id,
-            ]);
-        }
-
-        foreach ($data['statistics'] as $statistic) {
-            if (!isset($statistic['id']) or !$statistic['id']) {
-                continue;
-            }
-
-            $id = $device->ports()->where('name', $statistic['id'])->first() ?? null;
-            $id = $id->id ?? null;
-
-            if ($id) {
-                DevicePortStat::create([
-                    'device_port_id' => $id,
-                    'port_speed' => $statistic['port_speed_mbps'] ?? 0,
-                    'port_status' => $statistic['port_status'] ?? false,
-                    'port_rx_bps' => $statistic['port_rx_bps'] ?? 0,
-                    'port_tx_bps' => $statistic['port_tx_bps'] ?? 0,
-                    'port_rx_pps' => $statistic['port_rx_pps'] ?? 0,
-                    'port_tx_pps' => $statistic['port_tx_pps'] ?? 0,
-                    'port_rx_bytes' => $statistic['port_rx_bytes'] ?? 0,
-                    'port_tx_bytes' => $statistic['port_tx_bytes'] ?? 0,
-                    'port_rx_packets' => $statistic['port_rx_packets'] ?? 0,
-                    'port_tx_packets' => $statistic['port_tx_packets'] ?? 0,
-                    'port_rx_errors' => $statistic['port_rx_errors'] ?? 0,
-                    'port_tx_errors' => $statistic['port_tx_errors'] ?? 0
-                ]);
-            }
-        }
-
-        // Get custom uplink ports
-        $custom_uplink_ports = [];
-        $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
-        $custom_uplinks = $device->custom_uplink()->first();
-
-        if ($custom_uplinks) {
-            $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
-        }
-
-        $combined_uplinks = array_merge($uplinks, $custom_uplink_ports);
-        
-        // Check if mac address is on uplink port
-        foreach ($data['macs'] as $mac) {
-            // Do not store macs on uplinks because its not correct discovered
-            if (in_array($mac['port'], $combined_uplinks)) {
-                // Store uplink mac address
-                Mac::updateOrCreate(
-                    [
-                        'mac_address' => $mac['mac'],
-                        'type' => 'uplink'
-                    ],
-                    [
-                        'device_id' => $device->id,
-                        'port_id' => $mac['port'],
-                        'vlan_id' => $mac['vlan'],
-                    ]
-                );
-
-                // Prevent storing same mac address twice
-                continue;
-            }
-
-            // Update mac address otherwise create new
-            // Update because if a mac address is moved to another port / switch it will be updated
-            Mac::updateOrCreate(
-                [
-                    'mac_address' => $mac['mac'],
-                    'type' => NULL
-                ],
-                [
-                    'device_id' => $device->id,
-                    'port_id' => $mac['port'],
-                    'vlan_id' => $mac['vlan'],
-                ]
-                );
-
-
-            if(isset($mac['ip'])) {
-                SnmpMacData::updateOrCreate(
-                    [
-                        'mac_address' => $mac['mac'],
-                    ],
-                    [
-                        'mac_address' => $mac['mac'],
-                        'ip_address' => $mac['ip'],
-                        'router' => $device->hostname,
-                    ]
-                );
-            }
-        }
-
-        // Prevent overwriting device data with empty data
-        $device->named = $data['informations']['name'] ?? $device->named;
-        $device->model = $data['informations']['model'] ?? $device->model;
-        $device->serial = $data['informations']['serial'] ?? $device->serial;
-        $device->hardware = $data['informations']['hardware'] ?? $device->hardware;
-        $device->mac_address = $data['informations']['mac'] ?? $device->mac_address;
-        $device->firmware = $data['informations']['firmware'] ?? $device->firmware;
-
-        if(isset($data['informations']['uptime']) && $data['informations']['uptime'] != "") {
-            $device->uptime = $data['informations']['uptime'];
-        }
+        // Update mac data
+        UpdateDeviceData::updateMacData($data['macs'], $combined_uplinks, $device);
 
         $device->save();
-    }
-
-    static function storeDevice($request)
-    {
-
-        // Get hostname from device else use ip
-        $hostname = $request->input('hostname');
-        if (filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
-        }
-        $request->merge(['hostname' => $hostname]);
-
-        // Encrypt password
-        $request->merge(['password' => Crypt::encrypt($request->password)]);
-
-        // Create device
-        $device = Device::create($request->except('_token'));
-
-        if ($device) {
-            return $device;
-        }
-
-        return false;
     }
 
     static function deleteDeviceData(Device $device)

@@ -86,6 +86,8 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/rooms', [RoomController::class, 'store']);
     Route::put('/rooms', [RoomController::class, 'update']);
     Route::delete('/rooms', [RoomController::class, 'destroy']);
+    // Why not just ::resource?
+
 
     Route::post('/vlans', [VlanController::class, 'store']);
     Route::put('/vlans', [VlanController::class, 'update']);

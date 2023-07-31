@@ -28,7 +28,20 @@ class DeviceController extends Controller
             return redirect()->back()->withErrors('Device type not found');
         }
 
-        if (DeviceService::storeDevice($request)) {
+        // Get hostname from device else use ip
+        $hostname = $request->input('hostname');
+        if (filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
+        }
+        $request->merge(['hostname' => $hostname]);
+
+        // Encrypt password
+        $request->merge(['password' => Crypt::encrypt($request->password)]);
+
+        // Create device
+        $device = Device::create($request->except('_token'));
+
+        if ($device) {
             CLog::info("Switch", "Switch {$request->input('name')} created");
             return redirect()->back()->with('success', __('Msg.SwitchCreated'));
         }
