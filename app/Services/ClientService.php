@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\ClientProviders\Baramundi;
 use App\ClientProviders\SNMP_Routers;
-use App\Http\Controllers\ClientController;
 use App\Models\MacType;
 use App\Models\MacTypeIcon;
 use App\Models\Client;
@@ -12,12 +11,10 @@ use App\Models\Device;
 use App\Models\DeviceCustomUplink;
 use App\Models\DeviceUplink;
 use App\Models\Mac;
-use App\Models\MacVendor;
 use App\Models\Vlan;
 use App\Models\Router;
 use App\Models\SnmpMacData;
 use Illuminate\Support\Facades\Log;
-use App\Helper\CLog;
 
 class ClientService {
 
@@ -31,12 +28,10 @@ class ClientService {
 
         // Baramundi API
         $start = microtime(true);
-        if (!empty(config('app.baramundi_api_url'))) {
+        if (!empty(config('app.baramundi_api_url')) && config('app.enable_baramundi')) {
             $queriedAtLeastOneProvider = true;
             Baramundi::queryClientData();
             Log::debug("[Clients] Baramundi queried in " . number_format((microtime(true) - $start), 2) . " seconds");
-        } else {
-            Log::info("[Clients] Baramundi API not set. Skipping.");	
         }
 
         // SNMP Routers
@@ -45,8 +40,6 @@ class ClientService {
             $queriedAtLeastOneProvider = true;
             SNMP_Routers::queryClientData();
             Log::debug("[Clients] Routers queried in " . number_format((microtime(true) - $start), 2) . " seconds");
-        } else {
-            Log::info("[Clients] No Routers set. Skipping.");
         }
 
         return $queriedAtLeastOneProvider;

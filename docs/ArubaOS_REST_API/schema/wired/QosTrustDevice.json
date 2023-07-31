@@ -1,9 +1,0 @@
-{
-    "$schema":"http://json-schema.org/draft-04/schema#", 
-    "description":"Qos Trust Devices", 
-    "title": "QosTrustDevice", 
-    "enum":
-    [
-        "QTD_ARUBA_AP"
-    ]
-}

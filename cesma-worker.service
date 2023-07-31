@@ -8,8 +8,8 @@ Type=simple
 Restart=always
 RestartSec=1
 User=root
-WorkingDirectory=/home/nils/cesma_laravel
-ExecStart=/usr/bin/php /home/nils/cesma_laravel/artisan schedule:work
+WorkingDirectory=/var/www/cesma
+ExecStart=/usr/bin/php /var/www/cesma/artisan schedule:work
 
 [Install]
 WantedBy=multi-user.target
