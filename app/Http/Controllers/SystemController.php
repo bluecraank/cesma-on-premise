@@ -65,6 +65,12 @@ class SystemController extends Controller
                     $nodes[] = [
                         'id' => $topo->local_device,
                         'label' => $name . "(".$topo->local_device.")",
+                        'shape' => 'box',
+                        'margin' => 10,
+                        'color' => [
+                            'background' => '#ffffff',
+                            'border' => '#000',
+                        ]
                     ];
                 }
             }
@@ -75,20 +81,18 @@ class SystemController extends Controller
                     $nodes[] = [
                         'id' => $topo->remote_device,
                         'label' => $name2 . "(".$topo->remote_device.")",
+                        'shape' => 'box',
+                        'margin' => 10,
+                        'color' => [
+                            'background' => '#ffffff',
+                            'border' => '#ffffff',
+                        ]
                     ];
                 }
             }
 
             $already_added[$topo->local_device] = true;
             $already_added[$topo->remote_device] = true;
-
-            if ($topo->local_port > $topo->remote_port) {
-                $less = $topo->remote_port;
-                $more = $topo->local_port;
-            } else {
-                $less = $topo->local_port;
-                $more = $topo->remote_port;
-            }
 
             if($topo->local_device == 0 || $topo->remote_device == 0 || $topo->local_port == 0 || $topo->remote_port == 0) {
                 continue;
@@ -111,6 +115,7 @@ class SystemController extends Controller
                 'to' => $higherDevice,
                 'from_device' => $lowerPort,
                 'to_device' => $higherPort,
+                'length' => 200,
             ], $edges) === false) {
                 
                 $edges[] = [
@@ -118,6 +123,7 @@ class SystemController extends Controller
                     'to' => $higherDevice,
                     'from_device' => $lowerPort,
                     'to_device' => $higherPort,
+                    'length' => 200,
                 ];
             }
         }
