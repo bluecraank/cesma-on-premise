@@ -15,8 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Models\Device;
 use App\Models\Permission;
 use App\Models\Site;
+use App\Models\Topology;
 
 class SystemController extends Controller
 {
@@ -46,6 +48,83 @@ class SystemController extends Controller
         return view('system.view_usersettings');
     }
 
+    public function index_topology()
+    {
+        $topology = Topology::all();
+        $devices = Device::all();
+
+        $nodes = [];
+        $already_added = [];
+        $edges = [];
+
+        foreach ($topology as $topo) {
+            $name = $name2 = null;
+            if (!isset($already_added[$topo->local_device])) {
+                $name = $devices->where('id', $topo->local_device)->first()?->named;
+                if ($name) {
+                    $nodes[] = [
+                        'id' => $topo->local_device,
+                        'label' => $name . "(".$topo->local_device.")",
+                    ];
+                }
+            }
+
+            if (!isset($already_added[$topo->remote_device])) {
+                $name2 = $devices->where('id', $topo->remote_device)->first()?->named;
+                if ($name2) {
+                    $nodes[] = [
+                        'id' => $topo->remote_device,
+                        'label' => $name2 . "(".$topo->remote_device.")",
+                    ];
+                }
+            }
+
+            $already_added[$topo->local_device] = true;
+            $already_added[$topo->remote_device] = true;
+
+            if ($topo->local_port > $topo->remote_port) {
+                $less = $topo->remote_port;
+                $more = $topo->local_port;
+            } else {
+                $less = $topo->local_port;
+                $more = $topo->remote_port;
+            }
+
+            if($topo->local_device == 0 || $topo->remote_device == 0 || $topo->local_port == 0 || $topo->remote_port == 0) {
+                continue;
+            }
+
+            if($topo->local_device > $topo->remote_device) {
+                $lowerDevice = $topo->local_device;
+                $higherDevice = $topo->remote_device;
+                $lowerPort = $topo->local_port;
+                $higherPort = $topo->remote_port;
+            } else {
+                $lowerDevice = $topo->remote_device;
+                $higherDevice = $topo->local_device;
+                $lowerPort = $topo->remote_port;
+                $higherPort = $topo->local_port;
+            }
+
+            if (array_search([
+                'from' => $lowerDevice,
+                'to' => $higherDevice,
+                'from_device' => $lowerPort,
+                'to_device' => $higherPort,
+            ], $edges) === false) {
+                
+                $edges[] = [
+                    'from' => $lowerDevice,
+                    'to' => $higherDevice,
+                    'from_device' => $lowerPort,
+                    'to_device' => $higherPort,
+                ];
+            }
+        }
+
+        return view('switch.view_topology', compact('nodes', 'edges'));
+    }
+
     public function updateUserRole(Request $request)
     {
         $guid = $request->input('guid');
@@ -54,7 +133,7 @@ class SystemController extends Controller
         if ($guid == Auth::user()->guid) {
             return redirect()->back()->withErrors(['message' => __('Msg.Error.UserRoleUpdate')])->withInput(['last_tab' => 'users']);
         }
-        
+
         $user = User::where('guid', $guid)->firstOrFail();
         if (!$user) {
             return redirect()->back()->withErrors(['message' => __('User.NotFound')])->withInput(['last_tab' => 'users']);

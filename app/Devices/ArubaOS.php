@@ -378,7 +378,7 @@ class ArubaOS implements DeviceInterface
             return $return;
         }
 
-        foreach ($ports as $port) {
+        foreach ($ports as $ifIndex => $port) {
             $return[$port['name']] = [
                 'name' => $port['description'],
                 'id' => $port['name'],
@@ -386,6 +386,7 @@ class ArubaOS implements DeviceInterface
                 'trunk_group' => $port['trunk_group'] ?? null,
                 'vlan_mode' => "native-untagged",
                 'speed' => $port['speed'] ?? null,
+                'snmp_if_index' => $ifIndex,
             ];
         }
 

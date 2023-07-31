@@ -87,7 +87,7 @@ $("button.action").on('click', function() {
 
     ele.addClass('is-loading');
 
-    axios.post('/device/' + id + '/action/' + action, {
+    axios.post('/devices/' + id + '/action/' + action, {
         device_id: id
     }).then(response => {
         ele.find('i').removeClass();

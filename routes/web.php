@@ -55,6 +55,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/sites', ShowSites::class)->name('sites');
     Route::get('/buildings', ShowBuildings::class)->name('buildings');
     Route::get('/rooms', ShowRooms::class)->name('rooms');
+
+    Route::get('/topology', [SystemController::class, 'index_topology'])->name('topology');
 });
 
 // /device routes
@@ -67,7 +69,7 @@ Route::prefix('devices')->middleware('auth:sanctum')->group(function () {
 });
 
 // Fix backup download... csrf expiring
-Route::get('/device/backup/{id}/download/', [BackupController::class, 'downloadBackup'])->name('download-backup');
+Route::get('/devices/backup/{id}/download/', [BackupController::class, 'downloadBackup'])->name('download-backup');
 
 // Admin only routes
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {

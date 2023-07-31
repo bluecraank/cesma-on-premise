@@ -27,7 +27,7 @@ $(".is-save-button").on('click', function () {
 
     $(element).addClass('is-loading');
 
-    fetch('/device/' + id + '/action/prepare-api', {
+    fetch('/devices/' + id + '/action/prepare-api', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': csrf

@@ -17,6 +17,8 @@ class UpdateDeviceData
         
         // Update/Create ports
         foreach ($ports as $port) {
+
+            $snmp_if_index = $port['snmp_if_index'] ?? (isset($existingPorts[$port['name']]) ? $existingPorts[$port['name']]['snmp_if_index'] : null);
             DevicePort::updateOrCreate(
                 [
                     'name' => $port['id'],
@@ -27,7 +29,7 @@ class UpdateDeviceData
                     'link' => $port['link'],
                     'speed' => $port['speed'] ?? 0,
                     'vlan_mode' => $port['vlan_mode'],
-                    'snmp_if_index' => $port['snmp_if_index'] ?? NULL,
+                    'snmp_if_index' => $snmp_if_index,
                 ]
             );
             $existingPorts[$port['id']] = true;
@@ -218,15 +220,15 @@ class UpdateDeviceData
 
     static function updateDeviceSystemInfo($system, $device) {
         // Prevent overwriting device data with empty data
-        $device->named = $data['informations']['name'] ?? $device->named;
-        $device->model = $data['informations']['model'] ?? $device->model;
-        $device->serial = $data['informations']['serial'] ?? $device->serial;
-        $device->hardware = $data['informations']['hardware'] ?? $device->hardware;
-        $device->mac_address = $data['informations']['mac'] ?? $device->mac_address;
-        $device->firmware = $data['informations']['firmware'] ?? $device->firmware;
+        $device->named = $system['name'] ?? $device->named;
+        $device->model = $system['model'] ?? $device->model;
+        $device->serial = $system['serial'] ?? $device->serial;
+        $device->hardware = $system['hardware'] ?? $device->hardware;
+        $device->mac_address = $system['mac'] ?? $device->mac_address;
+        $device->firmware = $system['firmware'] ?? $device->firmware;
 
-        if(isset($data['informations']['uptime']) && $data['informations']['uptime'] != "") {
-            $device->uptime = $data['informations']['uptime'];
+        if(isset($system['uptime']) && $system['uptime'] != "") {
+            $device->uptime = $system['uptime'];
         }
     }
 

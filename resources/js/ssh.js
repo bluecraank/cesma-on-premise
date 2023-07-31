@@ -70,7 +70,7 @@ async function execute(switches, command) {
         formData.append("id", value.id);
 
         fetch(
-            '/device/' + value.id + '/ssh/execute',
+            '/devices/' + value.id + '/ssh/execute',
             {
                 method: 'POST',
                 body: formData

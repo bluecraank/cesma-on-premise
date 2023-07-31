@@ -5,7 +5,7 @@ $("#actionCreateBackup").on('click', function (element) {
 
     ele.addClass('is-loading');
 
-    axios.post('/device/action/create-backup', {
+    axios.post('/devices/action/create-backup', {
         _token: $("meta[name=csrf-token]").attr("content"),
     }).then(response => {
         ele.find('i').removeClass();
@@ -26,7 +26,7 @@ $("#actionSyncPubkeys").on('click', function (element) {
 
     ele.addClass('is-loading');
 
-    axios.post('/device/action/sync-pubkeys', {
+    axios.post('/devices/action/sync-pubkeys', {
         _token: $("meta[name=csrf-token]").attr("content"),
     }).then(response => {
         ele.find('i').removeClass();
