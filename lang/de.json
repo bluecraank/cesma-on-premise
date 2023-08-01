@@ -83,6 +83,7 @@
     "Switch.Live.NoTrunksFound": "Keine Uplinks vorhanden.",
     "Switch.SSH.Output": "Ausgabe",
     "Switch.SSH.Command": "Kommando",
+    "Switch.Sync.TaggedVlans": "VLANs auf Uplinks taggen",
     "Switch.SSH.SelectSwitch": "Switch auswählen",
     "Switch.SSH.ByLocation": "Nach Standort",
     "Switch.SSH.AllSwitches": "Alle Switches",

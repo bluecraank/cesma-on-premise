@@ -36,6 +36,13 @@
 
                         <div class="field">
                             <label class="checkbox">
+                                <input type="checkbox" name="tag-vlan-to-uplink">
+                                {{ __('Switch.Sync.TaggedVlans') }}
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">
                                 <input type="checkbox" name="create-if-not-exists">
                                 {{ __('Switch.Sync.CreateVlans') }}
                             </label>

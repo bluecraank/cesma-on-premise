@@ -32,6 +32,14 @@
 
                     <div class="field">
                         <label class="checkbox">
+                            <input type="checkbox" name="tag-vlan-to-uplink">
+                            {{ __('Switch.Sync.TaggedVlans') }}
+                        </label>
+                    </div>
+
+
+                    <div class="field">
+                        <label class="checkbox">
                             <input type="checkbox" name="test-mode" checked>
                             {{ __('Switch.Sync.TestMode') }}
                         </label>
@@ -43,7 +51,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button data-prevent="false" onclick="$('.sync-vlan-info').show()" class="button submit is-primary">{{ __('Button.Sync') }}</button>
-                <button data-modal="vlans-specific" type="button"
+                <button data-modal="sync-vlans-specific" type="button"
                     class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
 
                 <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>

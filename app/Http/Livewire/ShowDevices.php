@@ -32,7 +32,7 @@ class ShowDevices extends Component
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($searchTerm) {
             $query->where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm);
-        })->paginate($this->numberOfEntries);
+        })->paginate($this->numberOfEntries, ['*'], 'devices');
         
         foreach ($devices as $device) {
             $device->online = DeviceService::isOnline($device->hostname);

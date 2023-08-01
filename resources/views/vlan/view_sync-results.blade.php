@@ -18,7 +18,7 @@
         @foreach ($results as $key => $result)
             <article class="message">
                 <div class="message-header">
-                    <p>{{ $devices[$key]->name }}
+                    <p><i class="fa fa-bars-progress mr-2"></i> {{ $devices[$key]->name }}
                     </p>
                 </div>
                 <div class="message-body">

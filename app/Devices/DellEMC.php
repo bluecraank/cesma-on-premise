@@ -174,15 +174,16 @@ class DellEMC implements DeviceInterface
 
     static function GET_DEVICE_DATA(Device $device, $type = "snmp"): array
     {
+
         if (self::$fetch_from['snmp'] && $type == "snmp") {
-            $data = self::getSnmpData($device);
+            return self::getSnmpData($device);
         }
 
         if (self::$fetch_from['api'] && $type == "api") {
-            $data = self::getApiData($device);
+            return self::getApiData($device);
         }
 
-        return $data;
+        return ['message' => 'Failed to get data from device', 'success' => false];
     }
 
     static function createBackup(Device $device): bool

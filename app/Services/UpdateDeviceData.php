@@ -239,7 +239,7 @@ class UpdateDeviceData
                 ],
                 [
                     'title' => 'Uplink detected',
-                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($client) . ' clients. Maybe an uplink?',
+                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($client) . ' clients. Add this port as  uplink?',
                     'data' => json_encode([
                         'device_id' => $device->id,
                         'port' => $port,
@@ -262,7 +262,7 @@ class UpdateDeviceData
                 ],
                 [
                     'title' => 'Uplink detected',
-                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($vlanport) . ' vlans. Maybe an uplink?',
+                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($vlanport) . ' vlans. Add this port as  uplink?',
                     'data' => json_encode([
                         'device_id' => $device->id,
                         'port' => $port,
@@ -289,23 +289,31 @@ class UpdateDeviceData
         $topology = array_unique($topology, SORT_REGULAR);
 
         foreach($topology as $port_combination) {
-            $local_port = str_replace("1/1/", "", $port_combination['local_port']);
+            $local_port = str_replace(["ethernet","1/1/"], "", $port_combination['local_port']);
             $remote_port = str_replace(["ethernet","1/1/"], "", $port_combination['remote_port']);
+
             if($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
-                $uplink = DevicePort::where('id', $local_port)->first();   
+                $uplink = DevicePort::where('name', $local_port)->first();  
+                if(!$uplink) {
+                    $uplink = DevicePort::where('name', "1/1/".$local_port)->first();
+                } 
             } elseif($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
-                $uplink = DevicePort::where('id', $remote_port)->first();
+                $uplink = DevicePort::where('name', $remote_port)->first();
+                if(!$uplink) {
+                    $uplink = DevicePort::where('name', "1/1/".$remote_port)->first();
+                }
             } else {
                 continue;
             }
 
+            // dd($uplink);
             // echo "Uplink detected on port " . $uplink->name . " on " . $device->hostname . "\n";
             Notification::updateOrCreate([
                 'unique-identifier' => 'uplink-' . $device->id . '-' . $uplink->name
             ],
             [
                 'title' => 'Uplink detected',
-                'message' => 'Port ' . $uplink->name . ' on ' . $device->hostname . ' has a topology entry. Maybe an uplink?',
+                'message' => 'Port ' . $uplink->name . ' on ' . $device->hostname . ' has a topology entry. Add this port as  uplink?',
                 'data' => json_encode([
                     'device_id' => $device->id,
                     'port' => $uplink->name,

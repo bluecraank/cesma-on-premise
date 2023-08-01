@@ -207,13 +207,14 @@ class DeviceService
 
         $create_vlans = ($request->input('create-if-not-exists') == "on") ? true : false;
         $rename_vlans = ($request->input('overwrite-vlan-name') == "on") ? true : false;
+        $tag_to_uplink = ($request->input('tag-vlan-to-uplink') == "on") ? true : false;
         $testmode = ($request->input('test-mode') == "on") ? true : false;
 
         $start = microtime(true);
 
         $results[$device->id] = [];
         $class = config('app.types')[$device->type];
-        $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode);
+        $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink ,$testmode);
 
         $elapsed = microtime(true) - $start;
 

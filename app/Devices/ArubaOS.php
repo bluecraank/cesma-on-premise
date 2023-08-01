@@ -18,6 +18,7 @@ use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
 use App\Http\Controllers\BackupController;
 use App\Models\Device;
+use App\Models\DevicePort;
 
 class ArubaOS implements DeviceInterface
 {
@@ -964,13 +965,14 @@ class ArubaOS implements DeviceInterface
             if ($need_login) {
                 proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
                 self::API_LOGOUT($device->hostname, $cookie, $api_version);
+                self::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $login_info);
             }
 
             return $return;
         }
     }
 
-    static function syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode): array
+    static function syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink, $testmode): array
     {
 
         $start = microtime(true);
@@ -1048,6 +1050,19 @@ class ArubaOS implements DeviceInterface
 
                 $return[$vlan['vid']]['changed'] = ($response['success']) ? true : false;
             }
+        }
+
+        if($tag_to_uplink) {
+            $uplinks = $device->uplinks()->pluck('device_port_id')->toArray();
+            $tagged_vlans = $device->vlanports()->get()->groupBy('device_vlan_id')->toArray();
+            $new_vlans = $device->vlans()->get()->pluck('device_vlan_id')->toArray();
+            foreach($uplinks as $uplink) {
+                $port = DevicePort::where('id', $uplink)->first();
+                if($port) {
+                    self::setTaggedVlansToPort($new_vlans, $port, $device, $current_vlans, false, $login_info);
+                }
+            }
+            dd($uplinks);
         }
 
         if (!$testmode) {
