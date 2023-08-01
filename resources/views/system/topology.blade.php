@@ -1,3 +1,5 @@
+@section('title', 'Topology')
+
 <x-layouts.main>
 
   <div class="box">
@@ -6,7 +8,7 @@
     <div class="is-pulled-right ml-4">
 
     </div>
-        <div style="height:1000px;" id="topology_map"></div>
+        <div id="topology_map"></div>
 
     </div>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
@@ -23,7 +25,17 @@
           nodes: nodes,
           edges: edges
         };
-        var options = {};
+        var options = {
+          width: '100%',
+          height: '600px',
+          layout: {
+
+            randomSeed: 280,
+          },
+          physics: {
+            enabled: false
+          }
+        };
         var network = new vis.Network(container, data, options);
       </script>
     </x-layouts>

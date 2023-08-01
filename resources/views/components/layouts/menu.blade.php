@@ -68,6 +68,13 @@
                             <span>{{ __('Menu.Clients') }}</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('topology') }}"
+                            class="{{ request()->is('topology') ? 'has-text-primary' : '' }}">
+                            <span class="icon"><i class="fa-solid fa-circle-nodes"></i></span>
+                            <span>{{ __('Menu.Topology') }}</span>
+                        </a>
+                    </li>
                 </ul>
 
                 <p class="menu-label">{{ __('Site') }}</p>

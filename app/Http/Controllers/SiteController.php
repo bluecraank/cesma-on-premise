@@ -59,7 +59,6 @@ class SiteController extends Controller
         sleep(1);
 
         $url = url()->previous();
-        dd($url);
         $url = explode('/', $url)[3];
 
         // check if web route exists

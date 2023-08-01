@@ -136,6 +136,7 @@
     "System.IgnoreVlans": "VLANs ignorieren in der Endgeräteübersicht",
 
     "Menu.Clients": "Endgeräte",
+    "Menu.Topology": "Topologie",
     "Menu.Vlans": "VLANs",
     "Menu.Switches": "Switche",
     "Menu.System": "Einstellungen",

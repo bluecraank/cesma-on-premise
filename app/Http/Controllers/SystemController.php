@@ -57,8 +57,11 @@ class SystemController extends Controller
         $already_added = [];
         $edges = [];
 
+        // Create nodes and edges for topology view
         foreach ($topology as $topo) {
             $name = $name2 = null;
+
+            // Add note for local device if not already added
             if (!isset($already_added[$topo->local_device])) {
                 $name = $devices->where('id', $topo->local_device)->first()?->named;
                 if ($name) {
@@ -75,6 +78,7 @@ class SystemController extends Controller
                 }
             }
 
+            // Add note for remote device if not already added
             if (!isset($already_added[$topo->remote_device])) {
                 $name2 = $devices->where('id', $topo->remote_device)->first()?->named;
                 if ($name2) {
@@ -98,6 +102,7 @@ class SystemController extends Controller
                 continue;
             }
 
+            // Switch ports to prevent duplicate edges
             if($topo->local_device > $topo->remote_device) {
                 $lowerDevice = $topo->local_device;
                 $higherDevice = $topo->remote_device;
@@ -110,12 +115,12 @@ class SystemController extends Controller
                 $higherPort = $topo->local_port;
             }
 
+            // Skip if edge already exists
             if (array_search([
                 'from' => $lowerDevice,
                 'to' => $higherDevice,
                 'from_device' => $lowerPort,
                 'to_device' => $higherPort,
-                'length' => 200,
             ], $edges) === false) {
                 
                 $edges[] = [
@@ -123,12 +128,25 @@ class SystemController extends Controller
                     'to' => $higherDevice,
                     'from_device' => $lowerPort,
                     'to_device' => $higherPort,
-                    'length' => 200,
                 ];
             }
         }
 
-        return view('switch.view_topology', compact('nodes', 'edges'));
+        $options = [
+            'length' => 200,
+            'smooth' => [
+                'enabled' => false,
+            ],
+
+        ];
+
+        $new_edges = [];
+        foreach($edges as $edge) {
+            $new_edges[] = array_merge($edge, $options);
+        }
+
+        $edges = $new_edges;
+        return view('system.topology', compact('nodes', 'edges'));
     }
 
     public function updateUserRole(Request $request)
