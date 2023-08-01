@@ -2,16 +2,17 @@
 
 namespace App\Services;
 
+use App\Helper\CLog;
 use App\Models\Device;
 use App\Models\Client;
 use App\Models\DeviceBackup;
-use App\Models\DeviceCustomUplink;
 use App\Models\DevicePort;
 use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
+use App\Models\Notification;
 use App\Models\Site;
 use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
@@ -53,16 +54,19 @@ class DeviceService
 
         // Update device vlan ports
         $new_uplinks = UpdateDeviceData::updateVlanPorts($data['vlanports'], $device);
-        array_merge($data['uplinks'], $new_uplinks['uplinks']);
+        $uplinks = array_merge($data['uplinks'], $new_uplinks['uplinks']);
 
         // Update device uplinks
-        $combined_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $device);
+        $combined_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
 
         // Update device port statistics
         UpdateDeviceData::updateDevicePortStatistics($data['statistics'], $device);
 
         // Update mac data
         UpdateDeviceData::updateMacData($data['macs'], $combined_uplinks, $device);
+
+        // Check for uplinks
+        UpdateDeviceData::checkForUplinks($device);
 
         $device->save();
     }
@@ -72,7 +76,6 @@ class DeviceService
         $ports = $device->ports()->get();
         DeviceBackup::where('device_id', $device->id)->delete();
         DeviceUplink::where('device_id', $device->id)->delete();
-        DeviceCustomUplink::where('device_id', $device->id)->delete();
         DeviceVlanPort::where('device_id', $device->id)->delete();
         DevicePortStat::where(function ($query) use ($ports) {
             foreach ($ports as $port) {
@@ -99,42 +102,45 @@ class DeviceService
         return false;
     }
 
-    static function storeCustomUplinks(Request $request)
+    static function storeUplink(Request $request)
     {
-        if ($request->has('uplinks') and $request->device_id != '') {
-
-            if (preg_match("/[^A-Za-z0-9\,\-]/", $request->uplinks)) {
-                return back()->withErrors(['error' => 'Format error (allowed: 1-10 or 1,2,3,4,5)']);
+        // Update/Create uplinks via notification
+        if ($request->has("id") && $request->has("a")) {
+            $notification = Notification::find($request->id);
+            
+            if (!$notification) {
+                return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
             }
 
-            // Wenn eine Range angegeben wurde (z.B 49-52)
-            if (str_contains($request->uplinks, "-")) {
-                $explode_range = preg_split('@-@', $request->uplinks, -1, PREG_SPLIT_NO_EMPTY);
-                $uplinks = range($explode_range[0], $explode_range[1]);
+            $data = json_decode($notification->data, true);
 
-                // Sonst einfach kommasepariert (z.B 49,50,51,52)
+            if($request["a"] == "yes") {
+                DeviceUplink::updateOrCreate([
+                    'name' => $data['port'],
+                    'device_id' => $data['device_id'],
+                    'device_port_id' => DevicePort::where('device_id', $data['device_id'])->where('name', $data['port'])->first()->id,
+                ]);
+
+                CLog::info("Device", "Added Port ".$data['port']." as uplink for device {$data['device_id']}");
+
+                $notification->update([
+                    'status' => 'accepted',
+                ]);
+
+                return redirect()->back()->with('success', __('Msg.UplinkUpdated'));
             } else {
-                $explode_range = preg_split('@,@', $request->uplinks, -1, PREG_SPLIT_NO_EMPTY);
-                $uplinks = $explode_range;
+                $notification->update([
+                    'status' => 'declined',
+                ]);
+
+                CLog::info("Device", "Declined Port ".$data['port']." as uplink for device {$data['device_id']}");
+
+                return redirect()->back()->with('success', __('Msg.UplinkDeclined'));
             }
 
-            $uplinks = str_replace(' ', '', $uplinks);
-
-            $uplinks = json_encode($uplinks);
-
-            DeviceCustomUplink::updateOrCreate(
-                [
-                    'device_id' => $request->device_id
-                ],
-                [
-                    'uplinks' => $uplinks
-                ]
-            );
-
-            return back()->with('success', __('Msg.UplinkUpdated'));
         }
 
-        return back()->with('error', __('Msg.UplinkNotUpdated'));
+        return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
     }
 
     static function updatePortDescription($logininfo, $port, $device_id, $newDescription)
@@ -253,7 +259,7 @@ class DeviceService
 
         $device = Device::find($id);
 
-        if(config('app.write_type')[$device->type] == "snmp") {
+        if (config('app.write_type')[$device->type] == "snmp") {
             return json_encode(['success' => 'true', 'hash' => Crypt::encrypt("SNMP_NO_LOGIN"), 'timestamp' => time()]);
         }
 

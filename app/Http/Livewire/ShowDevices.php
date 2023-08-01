@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Device;
 use App\Models\Building;
+use App\Models\Notification;
 use App\Models\Room;
 use App\Models\Site;
 use App\Services\DeviceService;
@@ -50,7 +51,8 @@ class ShowDevices extends Component
             'sites' => Site::all(),
             'buildings' => $buildings,
             'rooms' => Room::whereIn('building_id', $buildings->pluck('id')->toArray())->get(),
-            'keys_list' => PublicKeyService::getPubkeysDescriptionAsArray()
+            'keys_list' => PublicKeyService::getPubkeysDescriptionAsArray(),
+            'notifications' => Notification::latest()->take(10)->get(),
         ]);
     }
 }

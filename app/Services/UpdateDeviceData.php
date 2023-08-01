@@ -8,6 +8,7 @@ use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
+use App\Models\Notification;
 use App\Models\SnmpMacData;
 
 class UpdateDeviceData
@@ -108,32 +109,25 @@ class UpdateDeviceData
         return $return;
     }
 
-    static function updateDeviceUplinks($uplinks, $device) {
+    static function updateDeviceUplinks($uplinks, $new_uplinks, $device) {
         // If uplinks not match, delete all and update time
-        if (count($uplinks) != $device->uplinks()->count()) {
-            $device->touch();
-            $device->uplinks()->delete();
-        }
+        // if (count($uplinks) != $device->uplinks()->count()) {
+        //     $device->touch();
+        //     $device->uplinks()->delete();
+        // }
 
         // Update/Create uplinks
-        foreach ($uplinks as $port => $uplink) {
-            DeviceUplink::updateOrCreate([
-                'name' => $uplink,
-                'device_id' => $device->id,
-                'device_port_id' => $device->ports()->where('name', $port)->first()->id,
-            ]);
-        }
+        // foreach ($uplinks as $port => $uplink) {
+        //     DeviceUplink::updateOrCreate([
+        //         'name' => $uplink,
+        //         'device_id' => $device->id,
+        //         'device_port_id' => $device->ports()->where('name', $port)->first()->id,
+        //     ]);
+        // }
 
-        // Get custom uplink ports
-        $custom_uplink_ports = [];
         $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
-        $custom_uplinks = $device->custom_uplink()->first();
 
-        if ($custom_uplinks) {
-            $custom_uplink_ports = json_decode($custom_uplinks->uplinks, true);
-        }
-
-        return array_merge($uplinks, $custom_uplink_ports);
+        return $uplinks;
     }
 
     static function updateDevicePortStatistics($statistics, $device) {
@@ -232,33 +226,93 @@ class UpdateDeviceData
         }
     }
 
-    static function storeApiData($data, $device)
-    {
-        $device->touch('last_seen');
+    static function checkForUplinks($device) {
+        $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
 
-        // Update device system informations
-        self::updateDeviceSystemInfo($data['informations'], $device);
+        // Client based uplink detection
+        $clients = $device->clients()->get()->groupBy('port_id')->toArray();
+        foreach ($clients as $port => $client) {
+            if (count($client) > 10 && !isset($currentUplinks[$port])) {
+                // echo "Uplink detected on port " . $port . " on " . $device->hostname . "\n";
+                Notification::updateOrCreate([
+                    'unique-identifier' => 'uplink-' . $device->id . '-' . $port
+                ],
+                [
+                    'title' => 'Uplink detected',
+                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($client) . ' clients. Maybe an uplink?',
+                    'data' => json_encode([
+                        'device_id' => $device->id,
+                        'port' => $port,
+                        'clients' => count($client)
+                    ]),
+                    'type' => 'uplink'
+                ]);
+            }
+        }
 
-        // Update device ports
-        self::updateDevicePorts($data['ports'], $device);
+        // Vlan based uplink detection
+        $vlanports = $device->vlanports()->get()->groupBy('device_port_id')->toArray();
+        $vlans = $device->vlans()->get()->toArray();
+        foreach ($vlanports as $portId => $vlanport) {
+            $port = DevicePort::where('id', $portId)->first()->name;
+            if (count($vlanport) > (count($vlans)*0.8) && !isset($currentUplinks[$port])) {
+                // echo "Uplink detected on port " . $port . " on " . $device->hostname . "\n";
+                Notification::updateOrCreate([
+                    'unique-identifier' => 'uplink-' . $device->id . '-' . $port
+                ],
+                [
+                    'title' => 'Uplink detected',
+                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($vlanport) . ' vlans. Maybe an uplink?',
+                    'data' => json_encode([
+                        'device_id' => $device->id,
+                        'port' => $port,
+                        'vlans' => count($vlanport)
+                    ]),
+                    'type' => 'uplink'
+                ]);
+            }
+        }
 
-        // Update device vlans
-        self::updateDeviceVlans($data['vlans'], $device);
+        // Topology based uplink detection
+        $topology = $device->topology()->get(['local_port', 'remote_port', 'local_device', 'remote_device'])->toArray();
+        foreach($topology as $index => $port_combination) {
+            if($port_combination['local_port'] > $port_combination['remote_port']) {
+                $temp = $port_combination['local_port'];
+                $temp2 = $port_combination['local_device'];
+                $topology[$index]['local_port'] = $port_combination['remote_port'];
+                $topology[$index]['local_device'] = $port_combination['remote_device'];
+                $topology[$index]['remote_port'] = $temp;
+                $topology[$index]['remote_device'] = $temp2;
+            }
+        }
 
-        // Update device vlan ports
-        $new_uplinks = self::updateVlanPorts($data['vlanports'], $device);
-        array_merge($data['uplinks'], $new_uplinks['uplinks']);
+        $topology = array_unique($topology, SORT_REGULAR);
 
-        // Update device uplinks
-        $combined_uplinks = self::updateDeviceUplinks($data['uplinks'], $device);
+        foreach($topology as $port_combination) {
+            $local_port = str_replace("1/1/", "", $port_combination['local_port']);
+            $remote_port = str_replace(["ethernet","1/1/"], "", $port_combination['remote_port']);
+            if($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
+                $uplink = DevicePort::where('id', $local_port)->first();   
+            } elseif($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
+                $uplink = DevicePort::where('id', $remote_port)->first();
+            } else {
+                continue;
+            }
 
-        // Update device port statistics
-        self::updateDevicePortStatistics($data['statistics'], $device);
-
-        // Update mac data
-        self::updateMacData($data['macs'], $combined_uplinks, $device);
-
-        $device->save();
+            // echo "Uplink detected on port " . $uplink->name . " on " . $device->hostname . "\n";
+            Notification::updateOrCreate([
+                'unique-identifier' => 'uplink-' . $device->id . '-' . $uplink->name
+            ],
+            [
+                'title' => 'Uplink detected',
+                'message' => 'Port ' . $uplink->name . ' on ' . $device->hostname . ' has a topology entry. Maybe an uplink?',
+                'data' => json_encode([
+                    'device_id' => $device->id,
+                    'port' => $uplink->name,
+                ]),
+                'type' => 'uplink'
+            ]);
+        }
     }
 
 }

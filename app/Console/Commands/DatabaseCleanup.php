@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\DeviceBackup;
-use App\Models\DeviceCustomUplink;
 use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\Log;
@@ -12,7 +11,6 @@ use App\Models\Mac;
 use App\Models\Vlan;
 use App\Models\SnmpMacData;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log as FacadesLog;
 
 class DatabaseCleanup extends Command
 {
@@ -58,18 +56,6 @@ class DatabaseCleanup extends Command
         foreach ($uplinks as $uplink) {
             foreach ($uplink as $key => $value) {
                 Client::where('port_id', $value['name'])->where('device_id', $value['device_id'])->delete();
-            }
-        }
-        
-        $custom_uplinks = DeviceCustomUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
-
-        foreach ($custom_uplinks as $dev_id => $device) {
-            foreach ($device as $key => $value) {
-                $uplinks = json_decode($value['uplinks'], true);
-
-                foreach ($uplinks as $uplink) {
-                    Client::where('port_id', $uplink)->where('device_id', $dev_id)->delete();
-                }
             }
         }
 

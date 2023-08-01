@@ -162,7 +162,7 @@
             </div>
 
             <div class="box">
-                <h2 class="subtitle">{{ __('Uplinks found') }}</h2>
+                <h2 class="subtitle">{{ __('Uplinks') }}</h2>
                 <table class="table is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
@@ -187,34 +187,6 @@
                 </table>
             </div>
 
-            <div class="box">
-                <h2 class="subtitle">{{ __('Custom Uplinks') }}</h2>
-                <table class="table is-striped is-narrow is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>{{ __('Description') }}</th>
-                            <th class="has-text-right">Port</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (isset($custom_uplinks_array))
-
-                            @foreach ($custom_uplinks_array as $port)
-                                <tr>
-                                    <td>{{ $device->ports->where('name', $port)->first()->description ?? $port }}</td>
-                                    <td class="has-text-right">{{ $port }}</td>
-                                </tr>
-                            @endforeach
-                        @endif
-
-                        @if (empty($custom_uplinks_array))
-                            <tr>
-                                <td colspan="2">{{ __('Switch.Live.NoTrunksFound') }}</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
             <div class="box">
                 <h2 class="subtitle">VLANs</h2>
                 <table class="table is-striped is-narrow is-fullwidth">
@@ -274,13 +246,6 @@
 
                     @if (config('app.read-only')[$device->type])
                         <span class="tag is-danger is-pulled-right">read-only</span>
-                    @endif
-
-                    @if (Auth::user()->role >= 1)
-                        <button data-modal="edit-uplinks" data-id="{{ $device->id }}"
-                            data-name="{{ $device->name }}" data-uplinks="{{ $custom_uplinks_comma_seperated }}"
-                            class="@if (!config('app.read-only')[$device->type]) ml-2 is-hidden @endif is-save-button button is-small is-info is-pulled-right mr-2"><i
-                                class="fas fa-up-down mr-2"></i> Uplinks</button>
                     @endif
 
                     @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
@@ -354,5 +319,4 @@
     </div>
     @include('modals.VlanTaggingModal')
     @include('modals.SwitchSyncVlansModal')
-    @include('modals.SwitchUplinkEditModal')
     </x-layouts>

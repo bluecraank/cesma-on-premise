@@ -58,7 +58,7 @@ class DeviceController extends Controller
      */
     public function show($device_id)
     {
-        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->where('id', $device_id)->firstOrFail();
+        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients')->where('id', $device_id)->firstOrFail();
         
         // Sort ports
         $device->ports = $device->ports->sort(function ($a, $b) {
@@ -95,12 +95,6 @@ class DeviceController extends Controller
         }
         $found_uplinks = $generated_uplinks;
 
-        // Get custom uplinks
-        $custom_uplinks = $device->custom_uplink?->uplinks ?? '[]';
-        $custom_uplinks_comma_seperated = implode(', ', json_decode($custom_uplinks, true));
-        $custom_uplinks_array = json_decode($custom_uplinks) ?? [];
-
-
         // Sort vlans 
         $device->vlans = $device->vlans->sort(function ($a, $b) {
             return strnatcmp($a->vlan_id, $b->vlan_id);
@@ -109,7 +103,7 @@ class DeviceController extends Controller
         // Get online status
         $is_online = DeviceService::isOnline($device->hostname);
 
-        return view('switch.view_details', compact('device', 'is_online', 'found_uplinks', 'custom_uplinks_comma_seperated', 'custom_uplinks_array'));
+        return view('switch.view_details', compact('device', 'is_online', 'found_uplinks'));
     }
 
     public function showBackups(Device $device)

@@ -17,66 +17,88 @@ $(document).ready(function () {
         });
     });
 
-$(".is-save-button").on('click', function () {
-    let id = window.device_id;
-    let element = this;
-    let csrf = $('meta[name="csrf-token"]').attr('content');
-    var data = new FormData();
-    data.append('hash', window.apicookie);
-    data.append('timestamp', window.apicookie_timestamp);
+    $(".is-save-button").on('click', function () {
+        let id = window.device_id;
+        let element = this;
+        let csrf = $('meta[name="csrf-token"]').attr('content');
+        var data = new FormData();
+        data.append('hash', window.apicookie);
+        data.append('timestamp', window.apicookie_timestamp);
 
-    $(element).addClass('is-loading');
+        $(element).addClass('is-loading');
 
-    fetch('/devices/' + id + '/action/prepare-api', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': csrf
-        },
-        body: data
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.success == "true") {
-                window.apicookie_timestamp = data.timestamp;
-                window.apicookie = data.hash;
+        fetch('/devices/' + id + '/action/prepare-api', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrf
+            },
+            body: data
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.success == "true") {
+                    window.apicookie_timestamp = data.timestamp;
+                    window.apicookie = data.hash;
 
 
-                let rows = $('#portoverview').find('tr.changed');
+                    let rows = $('#portoverview').find('tr.changed');
 
-                if (rows.length == 0) {
-                    $.notify(window.msgnothingchanged, {
-                        style: 'bulma-info',
+                    if (rows.length == 0) {
+                        $.notify(window.msgnothingchanged, {
+                            style: 'bulma-info',
+                            autoHideDelay: 8000
+                        });
+                        $(element).removeClass('is-loading');
+                        return;
+                    }
+
+                    rows.each(function (index, value) {
+                        let com_id = $(this).attr('wire:id');
+                        let cookie = window.apicookie;
+                        if (index != rows.length - 1) {
+                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, false);
+                        } else {
+                            window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, true).then(() => {
+                                $(element).removeClass('is-loading');
+                            });
+                            window.apicookie = null;
+                            window.apicookie_timestamp = null;
+                        }
+                    });
+
+                    window.apicookie_timestamp = Date.now();
+                } else {
+                    $(element).removeClass('is-loading');
+                    $.notify(data.message, {
+                        style: 'bulma-error',
                         autoHideDelay: 8000
                     });
-                    $(element).removeClass('is-loading');
-                    return;
                 }
-
-                rows.each(function (index, value) {
-                    let com_id = $(this).attr('wire:id');
-                    let cookie = window.apicookie;
-                    if (index != rows.length - 1) {
-                        window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, false);
-                    } else {
-                        window.livewire.find(com_id).call('sendPortVlanUpdate', cookie, true).then(() => {
-                            $(element).removeClass('is-loading');
-                        });
-                        window.apicookie = null;
-                        window.apicookie_timestamp = null;
-                    }
+            });
+    });
+    $(".is-notification-uplink-button").click(function () {
+        let id = $(this).attr("data-id");
+        let csrf = $('meta[name="csrf-token"]').attr('content');
+        axios.put('/devices/uplinks', {
+            notification: id,
+            _token: csrf,
+            type: "notification"
+        }).then(response => {
+            if (response.data.success) {
+                $.notify(response.data.message, {
+                    style: 'bulma-success',
+                    autoHideDelay: 8000
                 });
-
-                window.apicookie_timestamp = Date.now();
             } else {
-                $(element).removeClass('is-loading');
-                $.notify(data.message, {
+                $.notify(response.data.message, {
                     style: 'bulma-error',
                     autoHideDelay: 8000
                 });
             }
         });
+    });
 });
-});
+
 
 
 $(document).ready(function () {

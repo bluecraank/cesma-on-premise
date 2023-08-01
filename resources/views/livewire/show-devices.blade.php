@@ -104,6 +104,32 @@
         {{ $devices->links('pagination::default') }} 
 </div>
 
+<div class="box">
+    <div class="label is-small">Meldungen</div>
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Meldung</th>
+                {{-- <th>Daten</th> --}}
+                <th>Gemeldet</th>
+                <th>{{ __('Actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($notifications as $notification)
+                <tr>
+                    <td style="padding: 5px">{{ $notification->title }}</td>
+                    <td style="padding: 5px">{{ $notification->message }}</td>
+                    {{-- <td style="padding: 5px">{{ $notification->data }}</td> --}}
+                    <td style="padding: 5px">{{ $notification->created_at->diffForHumans() }}</td>
+                    <td>@if(Auth::user()->role >= 1 && $notification->type == "uplink" && $notification->status == "waiting")<form method="POST" action="{{ route('set-uplink') }}">@method('PUT')@csrf<input type="hidden" value="{{ $notification->id }}" name="id"><button type="submit" value="yes" name="a" class="button no-prevent is-info is-small">Accept</button><button type="submit" name="a" value="no" class="ml-2 button no-prevent is-warning is-small">Ablehnen</button></form>@else {{ $notification->status }}@endif</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
 @if (Auth::user()->role >= 1)
     <div class="box">
         <div class="label is-small">Alle Switche</div>

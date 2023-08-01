@@ -13,10 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('device_custom_uplinks', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
-            $table->json('uplinks');
+            $table->string("title");
+            $table->string("message");
+            $table->string("data");
+            $table->string("type");
+            $table->string("status")->default("waiting");
+            $table->string("unique-identifier")->unique();
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('device_custom_uplinks');
+        Schema::dropIfExists('notifications');
     }
 };

@@ -85,32 +85,17 @@ class Device extends Model
         return $this->hasMany(DeviceVlanPort::class);
     }
 
-    public function portsOnline() {
-        return $this->ports()->where('link', true)->get();
-    }
-
-    public function vlanPortsUntagged() {
-        return $this->vlanports()->where('is_tagged', '0')->get()->keyBy('device_port_id');
-    }
-
-    public function vlanPortsTagged() {
-
-        return $this->vlanports()->where('is_tagged', '1')->get()->groupBy('device_port_id');
-    }
-
-    public function uplinksGroupedKeyByNameArray() {
-        return $this->uplinks()->get()->groupBy('name')->toArray();
-    }
-
     public function getPortById($id) {
         return $this->ports()->where('id', $id)->first()->name;
     }
 
-    public function custom_uplink() {
-        return $this->hasOne(DeviceCustomUplink::class);
-    }
-
     public function clients() {
         return $this->hasMany(Client::class);
+    }
+
+    public function topology() {
+        return Topology::whereNot('local_device', 0)->whereNot('remote_device', 0)->where(function($query) {
+            $query->where('local_device', $this->id)->orWhere('remote_device', $this->id);
+        });    
     }
 }

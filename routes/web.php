@@ -6,7 +6,6 @@ use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\SSHController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\DevicePortStatController;
-use App\Http\Controllers\DeviceUplinkController;
 use App\Http\Controllers\PublicKeyController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
@@ -62,7 +61,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // /device routes
 Route::prefix('devices')->middleware('auth:sanctum')->group(function () {
     Route::get('/backups', ShowBackups::class)->name('backups');
-    Route::get('/uplinks', [DeviceUplinkController::class, 'index'])->name('uplinks');
     Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
     Route::get('/{device:id}/backups', ShowSwitchBackups::class)->name('device-backups')->where('id', '[0-9]+');
     Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
@@ -129,7 +127,7 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
 
 Route::prefix('devices')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
     // Views
-    Route::put('/uplinks', [DeviceService::class, 'storeCustomUplinks']);
+    Route::put('/uplinks', [DeviceService::class, 'storeUplink'])->name('set-uplink');
 
     // Aktionen für bestimmten device
     Route::post('/{device:id}/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');

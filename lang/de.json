@@ -80,8 +80,7 @@
     "Switch.Live.VlanSummary": "VLANS",
     "Switch.Live.Serialnumber": "Seriennummer",
     "Switch.Live.Portname": "Beschreibung",
-    "Switch.Live.NoTrunksFound": "Keine Uplinks gefunden",
-    "Switch.Live.NoCustomUplinks": "Keine benutzerdefinierten Uplinks",
+    "Switch.Live.NoTrunksFound": "Keine Uplinks vorhanden.",
     "Switch.SSH.Output": "Ausgabe",
     "Switch.SSH.Command": "Kommando",
     "Switch.SSH.SelectSwitch": "Switch auswählen",
@@ -110,7 +109,6 @@
     "Hint.NewlyCreated": "Abfrage wird durchgeführt",
     "Portstats.for": "Informationen & Statistiken",
     "Setup.Privatekey.SSH": "Privatekey für SSH hochladen",
-    "Uplinks found": "Gefundene Uplinks",
     "Custom Uplinks": "Benutzerdefinierte Uplinks",
     "Switch.Pubkey.NoKeys": "Es sind keine öffentlichen Schlüssel vorhanden.",
 
@@ -248,6 +246,7 @@
     "Msg.RouterDeleted": "Router erfolgreich gelöscht",
     "Msg.MacTypeAdded": "MAC-Typ erfolgreich hinzugefügt",
     "Msg.MacTypeIconAdded": "MAC-Typen-Symbol erfolgreich hinzugefügt",
+    "Msg.UplinkDeclined": "Uplink nicht hinzugefügt",
 
     "edit": "bearbeiten",
     

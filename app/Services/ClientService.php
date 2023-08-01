@@ -8,7 +8,6 @@ use App\Models\MacType;
 use App\Models\MacTypeIcon;
 use App\Models\Client;
 use App\Models\Device;
-use App\Models\DeviceCustomUplink;
 use App\Models\DeviceUplink;
 use App\Models\Mac;
 use App\Models\Vlan;
@@ -57,15 +56,9 @@ class ClientService {
         $endpoints = SnmpMacData::all();
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
-        $custom_uplinks = DeviceCustomUplink::all()->keyBy('device_id')->toArray();
 
         // TODO: Pluck VlanID führt dazu, dass verschiedene Standorte so nicht gehen. Clients dürfen nicht die VlanID als Attribut haben, sondern die ID des Vlans in aus der DB
         $vlans = Vlan::where('is_client_vlan', false)->pluck('vid')->toArray();
-
-        $array_uplinks = [];
-        foreach($custom_uplinks as $dev_id => $custom_uplink) {
-            $array_uplinks[$dev_id] = json_decode($custom_uplink['uplinks'], true);
-        }
 
         foreach($uplinks as $dev_id => $uplink) {
             foreach($uplink as $each_uplink) {
