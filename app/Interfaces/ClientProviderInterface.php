@@ -2,7 +2,7 @@
 
     namespace App\Interfaces;
     
-    interface IClientProvider
+    interface ClientProviderInterface
     {
      
         /**

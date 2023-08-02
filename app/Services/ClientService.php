@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\ClientProviders\Baramundi;
-use App\ClientProviders\SNMP_Routers;
 use App\Models\MacType;
 use App\Models\MacTypeIcon;
 use App\Models\Client;
@@ -11,40 +9,10 @@ use App\Models\Device;
 use App\Models\DeviceUplink;
 use App\Models\Mac;
 use App\Models\Vlan;
-use App\Models\Router;
 use App\Models\SnmpMacData;
 use Illuminate\Support\Facades\Log;
 
 class ClientService {
-
-    /*
-    * Query client data from all providers
-    * @return bool
-    */
-    static function getClientDataFromProviders()
-    {
-        $queriedAtLeastOneProvider = false;
-
-        // Baramundi API
-        $start = microtime(true);
-        if (!empty(config('app.baramundi_api_url')) && config('app.enable_baramundi')) {
-            $queriedAtLeastOneProvider = true;
-            Baramundi::queryClientData();
-            Log::debug("[Clients] Baramundi queried in " . number_format((microtime(true) - $start), 2) . " seconds");
-        }
-
-        // SNMP Routers
-        $start = microtime(true);
-        if(Router::all()->count() > 0) {
-            $queriedAtLeastOneProvider = true;
-            SNMP_Routers::queryClientData();
-            Log::debug("[Clients] Routers queried in " . number_format((microtime(true) - $start), 2) . " seconds");
-        }
-
-        return $queriedAtLeastOneProvider;
-    }
-
-
     /*
     * Get all clients from all providers
     * @return array

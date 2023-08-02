@@ -2,17 +2,17 @@
 
 namespace App\ClientProviders;
 
-use App\Interfaces\IClientProvider;
-use App\Models\Router;
+use App\Interfaces\ClientProviderInterface;
+use App\Models\Router as RouterModel;
 use Illuminate\Support\Facades\Log;
 use App\Models\SnmpMacData;
 
-class SNMP_Routers implements IClientProvider
+class Router implements ClientProviderInterface
 {
     static function queryClientData(): Array {
         $ip_to_mac = [];
         
-        $routers = Router::all()->pluck('ip')->toArray();
+        $routers = RouterModel::all()->pluck('ip')->toArray();
 
         foreach($routers as $router) {
                 try {
@@ -20,9 +20,9 @@ class SNMP_Routers implements IClientProvider
                     
                     foreach($snmp_data as $ip => $mac) {
                         if(count($snmp_data) > 1) {
-                            Router::where('ip', $router)->update(['check' => true]);
+                            RouterModel::where('ip', $router)->update(['check' => true]);
                         } else {
-                            Router::where('ip', $router)->update(['check' => false]);
+                            RouterModel::where('ip', $router)->update(['check' => false]);
                             continue;
                         }
 
@@ -39,7 +39,7 @@ class SNMP_Routers implements IClientProvider
                         ];
                     }
                 } catch(\Exception $e) {
-                    Router::where('ip', $router)->update(['check' => false]);
+                    RouterModel::where('ip', $router)->update(['check' => false]);
                     
                     Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
                 }
