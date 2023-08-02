@@ -57,16 +57,16 @@ class DeviceService
         $uplinks = array_merge($data['uplinks'], $new_uplinks['uplinks']);
 
         // Update device uplinks
-        $combined_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
+        $found_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
 
         // Update device port statistics
         UpdateDeviceData::updateDevicePortStatistics($data['statistics'], $device);
 
         // Update mac data
-        UpdateDeviceData::updateMacData($data['macs'], $combined_uplinks, $device);
+        UpdateDeviceData::updateMacData($data['macs'], $found_uplinks, $device);
 
         // Check for uplinks
-        UpdateDeviceData::checkForUplinks($device);
+        UpdateDeviceData::checkForUplinks($device, $found_uplinks);
 
         $device->save();
     }

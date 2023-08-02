@@ -171,10 +171,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($found_uplinks as $trunk => $ports_in_trunk)
+                        @foreach ($found_uplinks as $trunk => $ports)
+                            @php
+                                $ports = json_decode($ports[0]['ports'], true);
+                            @endphp
                             <tr>
                                 <td>{{ $trunk }}</td>
-                                <td class="has-text-right">{{ $ports_in_trunk }}</td>
+                                <td class="has-text-right">{{ implode(", ", ($ports != "") ? $ports : [$trunk]) }}</td>
                             </tr>
                         @endforeach
 

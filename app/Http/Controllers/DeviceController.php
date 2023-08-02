@@ -71,29 +71,7 @@ class DeviceController extends Controller
         // Get uplinks
         $found_uplinks = $device->uplinks->sort(function ($a, $b) {
             return strnatcmp($a->name, $b->name);
-        })->groupBy('name');
-
-        // Get port names for uplinks
-        $generated_uplinks = [];
-        foreach($found_uplinks as $key => $ports) {
-            $name = $device->ports->where('name', $key)->first()->description;
-            if ($name == '') {
-                $name = $key;
-            }
-
-            $new_ports = array_map(function ($ports) use ($device) {
-                return $device->ports->where('id', $ports['device_port_id'])->first()->name;
-            }, $ports->toArray());
-
-            // if key already exists, append new ports to existing ports
-            if (array_key_exists($name, $generated_uplinks)) {
-                $new_ports = array_merge(explode(",", $generated_uplinks[$name]), $new_ports);
-            }
-
-            $generated_uplinks[$name] = implode(",", $new_ports);
-
-        }
-        $found_uplinks = $generated_uplinks;
+        })->groupBy('name')->toArray();
 
         // Sort vlans 
         $device->vlans = $device->vlans->sort(function ($a, $b) {

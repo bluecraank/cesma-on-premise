@@ -26,8 +26,9 @@
                         <thead>
                             <tr>
                                 <th>VLAN</th>
-                                <th>Created</th>
-                                <th>Renamed</th>
+                                <th>Muss erstellt werden</th>
+                                <th>Muss umbenannt werden</th>
+                                <th>Muss auf Uplinks getagged werden</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,8 +40,9 @@
                             @foreach ($result as $vid => $msg)
                             <tr>
                                 <td>{{ $vid }} ({{ $msg['name'] }})</td>
-                                <td class="{{ (isset($msg['created'])) ? ($msg['created']) ? "has-text-success" : "has-text-danger" : "" }}">{{ (isset($msg['created'])) ? ($msg['created']) ? "Successfully created" : "Error creating vlan" : "" }}</td>
-                                <td class="{{ (isset($msg['changed'])) ? ($msg['changed']) ? "has-text-success" : "has-text-danger" : "" }}">{{ (isset($msg['changed'])) ? ($msg['changed']) ? $msg['old'] . " => " . $msg['name'] : "Error renaming vlan" : "" }}</td>
+                                <td class="{{ (isset($msg['created'])) ? ($msg['created']) ? "has-text-success" : "has-text-danger" : "" }}">{{ (isset($msg['created'])) ? ($msg['created']) ? "Erstellt" : "Fehlgeschlagen" : "" }}</td>
+                                <td class="{{ (isset($msg['changed'])) ? ($msg['changed']) ? "has-text-success" : "has-text-danger" : "" }}">{{ (isset($msg['changed'])) ? ($msg['changed']) ? $msg['old'] . " => " . $msg['name'] : "Fehlgeschlagen" : "" }}</td>
+                                <td class="{{ (isset($msg['uplinks'])) ? ($msg['uplinks']) ? "has-text-success" : "has-text-danger" : "" }}">{{ (isset($msg['uplinks'])) ? ($msg['uplinks']) ? implode(", ", $msg['uplinks']) : "Fehlgeschlagen" : "" }}</td>
                             </tr>
                             @endforeach
                         </tbody>
