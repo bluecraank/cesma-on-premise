@@ -22,7 +22,9 @@ use App\Models\DevicePort;
 
 class ArubaOS implements DeviceInterface
 {
-    use \App\Traits\SNMP_Formatter;
+    use \App\Traits\DefaultSnmpMethods;
+    use \App\Traits\DefaultApiMethods;
+    use \App\Traits\DefaultDevice;
 
     static $fetch_from = [
         'snmp' => true,
@@ -43,21 +45,6 @@ class ArubaOS implements DeviceInterface
         "mac-table" => 'mac-table',
     ];
 
-    static $snmp_oids = [
-        'hostname' => '.1.3.6.1.2.1.1.5.0',
-        'if_name' => '.1.3.6.1.2.1.31.1.1.1.18',
-        'if_index' => '.1.3.6.1.2.1.2.2.1.2',
-        'if_index_to_port' => '.1.3.6.1.2.1.17.1.4.1.2',
-        'ip_to_mac' => '1.3.6.1.2.1.4.22.1.2',
-        'assigned_ports_to_vlan' => '.1.3.6.1.2.1.17.7.1.4.3.1.2',
-        'untagged_ports' => '.1.3.6.1.2.1.17.7.1.4.2.1.5.0',
-        'ifOperStatus' => '.1.3.6.1.2.1.2.2.1.8',
-        'ifHighSpeed' => '1.3.6.1.2.1.31.1.1.1.15',
-        'sysDescr' => '.1.3.6.1.2.1.1.1.0',
-        'macToPort' => '.1.3.6.1.2.1.17.4.3.1.1',
-        'macToIf' => '.1.3.6.1.2.1.17.4.3.1.2'
-    ];
-
     static function getSnmpData(Device $device): array
     {
         $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
@@ -74,12 +61,11 @@ class ArubaOS implements DeviceInterface
         $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
         $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
         $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
-        $snmpIfTypes = snmp2_real_walk($device->hostname, 'public', '.1.3.6.1.2.1.2.2.1.3', 5000000, 1);
+        $snmpIfTypes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_types'], 5000000, 1);
         $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
-        $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
+        $snmpSysUptime = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysUptime'], 5000000, 1);
         $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
 
-        $ports = [];
         $allVlans = [];
         $allPorts = [];
         $portExtendedIndex = [];
@@ -153,8 +139,11 @@ class ArubaOS implements DeviceInterface
 
     static function getApiData(Device $device): array
     {
+        if (!$device) {
+            return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
+        }
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed. See logfile for details"];
+            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed"];
         }
 
         $data = [];
@@ -171,12 +160,12 @@ class ArubaOS implements DeviceInterface
 
         $data = [
             'informations' => self::formatSystemData($data['status']),
-            'vlans' => self::formatVlanData($data['vlans']['vlan_element']),
-            'ports' => self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']),
-            'vlanports' => self::formatPortVlanData($data['vlanport']['vlan_port_element']),
-            'statistics' => self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']),
-            'macs' => self::formatMacTableData($data['mac-table']['mac_table_entry_element']),
-            'uplinks' => self::formatUplinkData($data['ports']['port_element']),
+            'vlans' => (isset($data['vlans'])) ? self::formatVlanData($data['vlans']['vlan_element']) : [],
+            'ports' => (isset($data['ports'])) ? self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']) : [],
+            'vlanports' => (isset($data['vlanport'])) ? self::formatPortVlanData($data['vlanport']['vlan_port_element']) : [],
+            'statistics' => (isset($data['portstats'])) ? self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']) : [],
+            'macs' => (isset($data['mac-table'])) ? self::formatMacTableData($data['mac-table']['mac_table_entry_element']) : [],
+            'uplinks' => (isset($data['ports'])) ? self::formatUplinkData($data['ports']['port_element']) : [],
             'success' => true,
         ];
 
@@ -192,7 +181,6 @@ class ArubaOS implements DeviceInterface
 
         try {
             $versions = Http::withoutVerifying()->get($url);
-
             if ($versions->successful()) {
                 $versionsFound = $versions->json()['version_element'];
                 return $versionsFound[array_key_last($versionsFound)]['version'];
@@ -211,7 +199,7 @@ class ArubaOS implements DeviceInterface
 
         $api_username = config('app.api_username');
 
-        $api_password =  Crypt::decrypt($device->password);
+        $api_password = Crypt::decrypt($device->password);
 
         try {
             $response = Http::connectTimeout(3)->withoutVerifying()->withHeaders([
@@ -229,8 +217,8 @@ class ArubaOS implements DeviceInterface
             }
         } catch (\Exception $e) {
             Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $e->getMessage());
-            return "";
         }
+
         return "";
     }
 
@@ -252,152 +240,6 @@ class ArubaOS implements DeviceInterface
         }
 
         return true;
-    }
-
-    static function API_PUT_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->put($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_GET_DATA($hostname, $cookie, $api, $version, $plain = false): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            if ($plain) {
-                $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Cookie' => "$cookie",
-                ])->get($api_url);
-            } else {
-                $response = Http::withoutVerifying()->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Cookie' => "$cookie",
-                ])->get($api_url);
-            }
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_PATCH_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->patch($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_DELETE_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-                'Cookie' => "$cookie",
-            ])->delete($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => $response->json()];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_POST_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->post($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function GET_DEVICE_DATA($device, $type = "snmp"): array
-    {
-        if (self::$fetch_from['api'] && $type == "api") {
-            $data = self::getApiData($device); 
-        }
-        
-        if (self::$fetch_from['snmp'] && $type == "snmp") {
-            $data = self::getSnmpData($device);
-        }
-
-        return $data;
-    }
-
-    static function snmpFormatPortData(array $ports, array $stats): array
-    {
-        $return = [];
-
-        if (empty($ports) or !is_array($ports) or !isset($ports)) {
-            return $return;
-        }
-
-        foreach ($ports as $ifIndex => $port) {
-            $return[$port['name']] = [
-                'name' => $port['description'],
-                'id' => $port['name'],
-                'link' => $port['status'] == "up" ? true : false,
-                'trunk_group' => $port['trunk_group'] ?? null,
-                'vlan_mode' => "native-untagged",
-                'speed' => $port['speed'] ?? null,
-                'snmp_if_index' => $ifIndex,
-            ];
-        }
-
-        return $return;
-    }
-
-    static function snmpFormatExtendedPortStatisticData(array $portstats, array $portdata): array
-    {
-        // Not needed
-        return [];
     }
 
     static function snmpFormatPortVlanData(array $vlanports): array
@@ -446,69 +288,6 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function snmpFormatUplinkData($data): array
-    {
-        $uplinks = [];
-
-        foreach ($data['ports'] as $port) {
-            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans']) - 10) {
-                $uplinks[$port['name']] = $port['name'];
-            }
-        }
-
-        return $uplinks;
-    }
-
-
-    static function snmpFormatVlanData(array $vlans): array
-    {
-        $return = [];
-
-        if (empty($vlans) or !is_array($vlans) or !isset($vlans)) {
-            return $return;
-        }
-
-        foreach ($vlans as $key => $vlan) {
-            if ($vlan['description'] != "") {
-                $return[$key] = $vlan['description'];
-            }
-        }
-
-        return $return;
-    }
-
-    static function snmpFormatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
-    {
-        // Not supported by DellEMC
-        $return = [];
-
-        if (empty($data) or !is_array($data) or !isset($data)) {
-            return $return;
-        }
-
-        foreach ($data as $ip => $mac) {
-            $exploded_ip = explode(".", $ip);
-            $formatted_ip = array_slice($exploded_ip, -4, 4, true);
-
-            $vlan = array_slice($exploded_ip, -5, 1, true);
-
-            $formatted_ip = implode(".", $formatted_ip);
-
-            $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
-
-            if (isset($vlans[$vlan[10]])) {
-                $return[$formatted_mac] = [
-                    'port' => 0,
-                    'mac' => $formatted_mac,
-                    'vlan' => $vlans[$vlan[10]],
-                    'ip' => $formatted_ip,
-                ];
-            }
-        }
-
-        return $return;
-    }
-
     static function snmpFormatSystemData(array $system): array
     {
         $return = [];
@@ -534,9 +313,9 @@ class ArubaOS implements DeviceInterface
         $return = [
             'name' => $hostname,
             'model' => $model,
-            'serial' => $system['serial_number'] ?? 'unknown',
+            'serial' => $system['serial_number'] ?? null,
             'firmware' => $version,
-            'hardware' => $system['hardware'] ?? 'unknown',
+            'hardware' => $system['hardware'] ?? null,
             'mac' => null,
             'uptime' => $uptime ?? NULL,
         ];
@@ -754,7 +533,7 @@ class ArubaOS implements DeviceInterface
 
         while (true) {
             sleep(4);
-            $status = self::API_GET_DATA($device->hostname, $cookie, '/system/config/cfg_restore/payload/status', $api_version);
+            $status = self::API_GET_DATA($device->hostname, $cookie, '/system/config/cfg_restore/payload/status', $api_version, false);
             $data = $status['data'];
 
             if (isset($data['status']) and $data['status'] == "CRS_SUCCESS") {
@@ -1054,15 +833,21 @@ class ArubaOS implements DeviceInterface
 
         if($tag_to_uplink) {
             $uplinks = $device->uplinks()->pluck('device_port_id')->toArray();
-            $tagged_vlans = $device->vlanports()->get()->groupBy('device_vlan_id')->toArray();
             $new_vlans = $device->vlans()->get()->pluck('device_vlan_id')->toArray();
             foreach($uplinks as $uplink) {
                 $port = DevicePort::where('id', $uplink)->first();
-                if($port) {
-                    self::setTaggedVlansToPort($new_vlans, $port, $device, $current_vlans, false, $login_info);
+                if(!$testmode) {
+                    $response = self::setTaggedVlansToPort($new_vlans, $port, $device, $current_vlans, false, $login_info);
+                } else {
+                    $response = ['success' => true];
+                }
+
+                if ($response['success']) {
+                    $return[$vlan->vid]['uplinks'][] = $port->name;
+                } else {
+                    $return[$vlan->vid]['failed_uplinks'][] = $port->name;
                 }
             }
-            dd($uplinks);
         }
 
         if (!$testmode) {
@@ -1082,7 +867,7 @@ class ArubaOS implements DeviceInterface
         return $return;
     }
 
-    static function setPortName($port, $name, $device, $logininfo)
+    static function setPortName($port, $name, $device, $logininfo): bool
     {
         list($cookie, $api_version) = explode(";", $logininfo);
 

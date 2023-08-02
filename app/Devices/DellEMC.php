@@ -5,30 +5,17 @@ namespace App\Devices;
 use App\Interfaces\DeviceInterface;
 
 use App\Models\Device;
-use App\Models\DeviceBackup;
-use App\Models\Vlan;
 
 class DellEMC implements DeviceInterface
 {
-    use \App\Traits\SNMP_Formatter;
+    use \App\Traits\DefaultSnmpMethods;
+    use \App\Traits\DefaultApiMethods;
+    use \App\Traits\DefaultDevice;
+
 
     static $fetch_from = [
         'snmp' => true,
         'api' => false,
-    ];
-
-    static $snmp_oids = [
-        'hostname' => '.1.3.6.1.2.1.1.5.0',
-        'if_name' => '.1.3.6.1.2.1.31.1.1.1.18',
-        'if_index' => '.1.3.6.1.2.1.2.2.1.2',
-        'if_index_to_port' => '.1.3.6.1.2.1.17.1.4.1.2',
-        'ip_to_mac' => '1.3.6.1.2.1.4.22.1.2',
-        'assigned_ports_to_vlan' => '.1.3.6.1.2.1.17.7.1.4.3.1.2',
-        'ifOperStatus' => '.1.3.6.1.2.1.2.2.1.8',
-        'ifHighSpeed' => '1.3.6.1.2.1.31.1.1.1.15',
-        'sysDescr' => '.1.3.6.1.2.1.1.1.0',
-        'macToPort' => '.1.3.6.1.2.1.17.4.3.1.1',
-        'macToIf' => '.1.3.6.1.2.1.17.4.3.1.2'
     ];
 
     static function getSnmpData(Device $device): array
@@ -47,10 +34,9 @@ class DellEMC implements DeviceInterface
         $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
         $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
         $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
-        $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
+        $snmpSysUptime = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysUptime'], 5000000, 1);
         $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
 
-        $ports = [];
         $allVlans = [];
         $allPorts = [];
         $portExtendedIndex = [];
@@ -59,7 +45,6 @@ class DellEMC implements DeviceInterface
         if (is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes) || !is_array($snmpIpToMac) || !is_array($snmpPortsAssignedToVlans) || !is_array($snmpPortIndexToQBridgeIndex)) {
             return ['message' => 'Failed to get data from device', 'success' => false];
         }
-
 
         foreach ($snmpPortIndexToQBridgeIndex as $key => $value) {
             $key = explode(".", $key);
@@ -88,17 +73,9 @@ class DellEMC implements DeviceInterface
                 $portchannel = explode(":", $portchannel[2])[0];
                 $allPorts[$ifIndex] = ['name' => $value, 'type' => 'port-channel' . $portchannel, 'tagged' => []];
             }
-
-            // TODO: Rausfinden wie man genau port-channel berechnen kann
-
-            // if(str_contains($value, 'port-channel')) {
-            //     $value = str_replace(["STRING: ","\"", "port-channel"], "", $value);
-            //     $allPorts[$ifIndex] = ['name' => $value, 'type' => 'port-channel', 'tagged' => []];
-            // }
         }
-
-        // $allVlans = self::foreachAssignedUntaggedVlansToPort($snmpPortsAssignedToUntaggedVlan, $allVlans);
         $allVlans = self::foreachAssignedVlansToPort($snmpPortsAssignedToVlans, $allVlans);
+        
         list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
         $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
         $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
@@ -116,86 +93,6 @@ class DellEMC implements DeviceInterface
         ];
 
         return $data;
-    }
-
-    static function getApiData(Device $device): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function API_GET_VERSIONS(Device $device): string
-    {
-        // Incompatible with DellEMC
-        return "";
-    }
-
-    static function API_LOGIN(Device $device): string
-    {
-        // Incompatible with DellEMC
-        return "";
-    }
-
-    static function API_LOGOUT(String $hostname, String $cookie, String $api_version): bool
-    {
-        // Incompatible with DellEMC
-        return false;
-    }
-
-    static function API_PUT_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function API_GET_DATA(String $hostname, String $cookie, String $api, String $api_version, Bool $plain): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function API_POST_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function API_DELETE_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function API_PATCH_DATA(String $hostname, String $cookie, String $api, String $api_version, String $data): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function GET_DEVICE_DATA(Device $device, $type = "snmp"): array
-    {
-
-        if (self::$fetch_from['snmp'] && $type == "snmp") {
-            return self::getSnmpData($device);
-        }
-
-        if (self::$fetch_from['api'] && $type == "api") {
-            return self::getApiData($device);
-        }
-
-        return ['message' => 'Failed to get data from device', 'success' => false];
-    }
-
-    static function createBackup(Device $device): bool
-    {
-        // Incompatible with Dell EMC
-        return false;
-    }
-
-    static function restoreBackup(Device $device, DeviceBackup $backup, String $password): array
-    {
-        // Incompatible with DellEMC
-        return [];
     }
 
     static function snmpFormatPortData(array $ports, array $stats): array
@@ -221,12 +118,6 @@ class DellEMC implements DeviceInterface
         return $return;
     }
 
-    static function snmpFormatExtendedPortStatisticData(array $portstats, array $portdata): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
     static function snmpFormatPortVlanData(array $vlanports): array
     {
         $return = [];
@@ -249,69 +140,6 @@ class DellEMC implements DeviceInterface
                     "is_tagged" => true,
                 ];
                 $i++;
-            }
-        }
-
-        return $return;
-    }
-
-    static function snmpFormatUplinkData($data): array
-    {
-        $uplinks = [];
-
-        foreach ($data['ports'] as $port) {
-            if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans']) - 10 && count($data['vlans']) > 15) {
-                $uplinks[$port['name']] = $port['name'];
-            }
-        }
-
-        return $uplinks;
-    }
-
-
-    static function snmpFormatVlanData(array $vlans): array
-    {
-        $return = [];
-
-        if (empty($vlans) or !is_array($vlans) or !isset($vlans)) {
-            return $return;
-        }
-
-        foreach ($vlans as $key => $vlan) {
-            if ($vlan['description'] != "") {
-                $return[$key] = $vlan['description'];
-            }
-        }
-
-        return $return;
-    }
-
-    static function snmpFormatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
-    {
-        // Not supported by DellEMC
-        $return = [];
-
-        if (empty($data) or !is_array($data) or !isset($data)) {
-            return $return;
-        }
-
-        foreach ($data as $ip => $mac) {
-            $exploded_ip = explode(".", $ip);
-            $formatted_ip = array_slice($exploded_ip, -4, 4, true);
-
-            $vlan = array_slice($exploded_ip, -5, 1, true);
-
-            $formatted_ip = implode(".", $formatted_ip);
-
-            $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
-
-            if (isset($vlans[$vlan[10]])) {
-                $return[$formatted_mac] = [
-                    'port' => 0,
-                    'mac' => $formatted_mac,
-                    'vlan' => $vlans[$vlan[10]],
-                    'ip' => $formatted_ip,
-                ];
             }
         }
 
@@ -350,84 +178,13 @@ class DellEMC implements DeviceInterface
         $return = [
             'name' => $hostname,
             'model' => $model,
-            'serial' => $system['serial_number'] ?? 'unknown',
+            'serial' => $system['serial_number'] ?? null,
             'firmware' => $version,
-            'hardware' => $system['hardware'] ?? 'unknown',
+            'hardware' => $system['hardware'] ?? null,
             'mac' => null,
-            'uptime' => $uptime ?? 0,
+            'uptime' => $uptime ?? null,
         ];
 
         return $return;
-    }
-
-    static function formatPortData(array $ports, array $stats): array
-    {
-        $return = [];
-        return $return;
-    }
-
-    static function formatExtendedPortStatisticData(array $portstats, array $portdata): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function formatPortVlanData(array $vlanports): array
-    {
-        $return = [];
-
-        return $return;
-    }
-
-    static function formatUplinkData($data): array
-    {
-        $uplinks = [];
-
-        return $uplinks;
-    }
-
-
-    static function formatVlanData(array $vlans): array
-    {
-        $return = [];
-        return $return;
-    }
-
-    static function formatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
-    {
-        // Not supported by DellEMC
-        $return = [];
-        return $return;
-    }
-
-    static function formatSystemData(array $system): array
-    {
-        $return = [];
-
-        return $return;
-    }
-
-    static function uploadPubkeys($device, $pubkeys): string
-    {
-        // Incompatible with DellEMC
-        return "";
-    }
-
-    static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login, $login_info): array
-    {
-        // Incompatible with DellEMC
-        return [];
-    }
-
-    static function syncVlans($vlans, array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name,  Bool $test_mode): array
-    {
-        // Incompatible with DellEMC
-        return [];
     }
 }

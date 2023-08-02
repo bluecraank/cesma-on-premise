@@ -69,4 +69,6 @@
         static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login, $login_info): Array;
 
         static function syncVlans(Vlan $vlans, Array $vlans_of_switch, Device $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks, Bool $test_mode): Array;
+
+        static function setPortName(String $port, String $name, Device $device, String $logininfo): bool;
     }
