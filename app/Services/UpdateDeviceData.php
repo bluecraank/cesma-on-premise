@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Models\DevicePort;
 use App\Models\DevicePortStat;
-use App\Models\DeviceUplink;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
-use App\Models\Notification;
 use App\Models\SnmpMacData;
+use App\Http\Controllers\NotificationController as Notification;
 
 class UpdateDeviceData
 {
@@ -110,22 +109,21 @@ class UpdateDeviceData
     }
 
     static function updateDeviceUplinks($uplinks, $new_uplinks, $device) {
-        // If uplinks not match, delete all and update time
-        // if (count($uplinks) != $device->uplinks()->count()) {
-        //     $device->touch();
-        //     $device->uplinks()->delete();
-        // }
 
-        // Update/Create uplinks
-        // foreach ($uplinks as $port => $uplink) {
-        //     DeviceUplink::updateOrCreate([
-        //         'name' => $uplink,
-        //         'device_id' => $device->id,
-        //         'device_port_id' => $device->ports()->where('name', $port)->first()->id,
-        //     ]);
-        // }
+        $current_uplinks = $device->uplinks()->get()->keyBy('name');
+        foreach($uplinks as $port => $trunk_group) {
+            if(isset($current_uplinks[$trunk_group])) {
+                if(is_array($current_uplinks[$trunk_group]->ports))
+                    $ports = $current_uplinks[$trunk_group]->ports;
+                elseif(!empty($current_uplinks[$trunk_group]->ports))
+                    $ports = json_decode($current_uplinks[$trunk_group]->ports, true);
+                else
+                    $ports = [];
 
-        $uplinks = $device->uplinks()->get()->pluck('name')->toArray();
+                $current_uplinks[$trunk_group]->ports = array_merge($ports, [$port]);
+                $current_uplinks[$trunk_group]->save();
+            }
+        }
 
         return $uplinks;
     }
@@ -226,27 +224,29 @@ class UpdateDeviceData
         }
     }
 
-    static function checkForUplinks($device) {
+    static function checkForUplinks($device, $found_uplinks) {
         $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
+
+        // 
+        foreach($found_uplinks as $uplink) {
+            if(str_contains($uplink, "Trk") || str_contains($uplink, "trk") || str_contains($uplink, "Trunk") || str_contains($uplink, "trunk")) {
+                Notification::new($uplink, $device, [
+                    'trunk' => $uplink,
+                    'port' => $uplink,
+                    'device_id' => $device->id,
+                ], 'uplink', 'trunk');
+            }
+        }
 
         // Client based uplink detection
         $clients = $device->clients()->get()->groupBy('port_id')->toArray();
         foreach ($clients as $port => $client) {
             if (count($client) > 10 && !isset($currentUplinks[$port])) {
-                // echo "Uplink detected on port " . $port . " on " . $device->hostname . "\n";
-                Notification::updateOrCreate([
-                    'unique-identifier' => 'uplink-' . $device->id . '-' . $port
-                ],
-                [
-                    'title' => 'Uplink detected',
-                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($client) . ' clients. Add this port as  uplink?',
-                    'data' => json_encode([
-                        'device_id' => $device->id,
-                        'port' => $port,
-                        'clients' => count($client)
-                    ]),
-                    'type' => 'uplink'
-                ]);
+                Notification::new($port, $device, [
+                    'clients' => count($client),
+                    'port' => $port,
+                    'device_id' => $device->id,
+                ], 'uplink', 'clients');
             }
         }
 
@@ -256,20 +256,11 @@ class UpdateDeviceData
         foreach ($vlanports as $portId => $vlanport) {
             $port = DevicePort::where('id', $portId)->first()->name;
             if (count($vlanport) > (count($vlans)*0.8) && !isset($currentUplinks[$port])) {
-                // echo "Uplink detected on port " . $port . " on " . $device->hostname . "\n";
-                Notification::updateOrCreate([
-                    'unique-identifier' => 'uplink-' . $device->id . '-' . $port
-                ],
-                [
-                    'title' => 'Uplink detected',
-                    'message' => 'Port ' . $port . ' on ' . $device->hostname . ' has ' . count($vlanport) . ' vlans. Add this port as  uplink?',
-                    'data' => json_encode([
-                        'device_id' => $device->id,
-                        'port' => $port,
-                        'vlans' => count($vlanport)
-                    ]),
-                    'type' => 'uplink'
-                ]);
+                Notification::new($port, $device, [
+                    'vlans' => count($vlanport),
+                    'port' => $port,
+                    'device_id' => $device->id,
+                ], 'uplink', 'vlans');
             }
         }
 
@@ -306,21 +297,14 @@ class UpdateDeviceData
                 continue;
             }
 
-            // dd($uplink);
-            // echo "Uplink detected on port " . $uplink->name . " on " . $device->hostname . "\n";
-            Notification::updateOrCreate([
-                'unique-identifier' => 'uplink-' . $device->id . '-' . $uplink->name
-            ],
-            [
-                'title' => 'Uplink detected',
-                'message' => 'Port ' . $uplink->name . ' on ' . $device->hostname . ' has a topology entry. Add this port as  uplink?',
-                'data' => json_encode([
-                    'device_id' => $device->id,
-                    'port' => $uplink->name,
-                ]),
-                'type' => 'uplink'
-            ]);
+            Notification::new($uplink->name, $device, [
+                'topology' => "Entry in topology detected",
+                'port' => $uplink->name,
+                'device_id' => $device->id,
+            ], 'uplink', 'topology');
         }
+
+
     }
 
 }

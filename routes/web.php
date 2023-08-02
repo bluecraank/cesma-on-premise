@@ -136,7 +136,6 @@ Route::prefix('devices')->middleware(['role.admin', 'auth:sanctum'])->group(func
     Route::post('/{device:id}/action/backup', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
     Route::post('/{id}/action/update-untagged-ports', [DeviceController::class, 'setUntaggedVlanToPort'])->where('id', '[0-9]+');
     Route::post('/{id}/action/update-tagged-ports', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
-    Route::post('/{id}/action/update-port-name', [DeviceController::class, 'setPortName'])->where('id', '[0-9]+');
     Route::post('/{id}/action/prepare-api', [DeviceService::class, 'startApiSession'])->where('id', '[0-9]+');
 
     // Backup Aktionen
