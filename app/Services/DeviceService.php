@@ -76,6 +76,7 @@ class DeviceService
         $ports = $device->ports()->get();
         DeviceBackup::where('device_id', $device->id)->delete();
         DeviceUplink::where('device_id', $device->id)->delete();
+        Notification::where('unique-identifier', 'LIKE', '%-'.$device->id.'-%')->delete();
         DeviceVlanPort::where('device_id', $device->id)->delete();
         DevicePortStat::where(function ($query) use ($ports) {
             foreach ($ports as $port) {
@@ -113,12 +114,13 @@ class DeviceService
             }
 
             $data = json_decode($notification->data, true);
-
-            if($request["a"] == "yes") {
+            $port = DevicePort::where('device_id', $data['device_id'])->where('name', $data['port'])->first();
+            
+            if($request["a"] == "yes" && $port) {
                 DeviceUplink::updateOrCreate([
                     'name' => $data['port'],
                     'device_id' => $data['device_id'],
-                    'device_port_id' => DevicePort::where('device_id', $data['device_id'])->where('name', $data['port'])->first()->id,
+                    'device_port_id' => $port->id,
                 ]);
 
                 CLog::info("Device", "Added Port ".$data['port']." as uplink for device {$data['device_id']}");
@@ -218,7 +220,7 @@ class DeviceService
 
         $elapsed = microtime(true) - $start;
 
-        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'site_id'));
+        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'tag_to_uplink', 'site_id'));
     }
 
     static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated)

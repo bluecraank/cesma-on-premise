@@ -42,7 +42,9 @@ class ResolveTopology extends Command
         $mac_data = [];
         foreach($dev_macs as $device) {
             $snmp = [];
+            // LLDP SNMP
             $snmp = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.4.1.1', 5000000, 1);
+            // LLDP Local Port to IfIndex
             $ifIndexes = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.3.7.1.3', 5000000, 1);
 
             $ifIndexesKey = [];
@@ -113,7 +115,7 @@ class ResolveTopology extends Command
             
         }
         
-        foreach($mac_data as $devId => $data) {
+        foreach($mac_data as $data) {
             foreach($data as $knoten) {
                 if(str_contains($knoten['remote_port'], " ") || empty($knoten['remote_port'])) {
                     $remote_port = $knoten['remote_port_2'];

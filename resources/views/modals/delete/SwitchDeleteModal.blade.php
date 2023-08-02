@@ -18,7 +18,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-submit is-danger">{{ __('Button.Delete') }}</button>
+                <button class="button no-prevent is-submit is-danger">{{ __('Button.Delete') }}</button>
                 <button data-modal="delete-switch" type="button"
                     class="button">{{ __('Button.Cancel') }}</button>
             </footer>

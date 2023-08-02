@@ -7,7 +7,8 @@
                 @csrf 
                 <input type="hidden" value="{{ $site_id }}" name="site_id" checked>
                 <input type="hidden" value="{{ ($rename_vlans) ? 'on' : 'off' }}" name="overwrite-vlan-name">
-                <input type="hidden" value="{{ ($create_vlans) ? 'on' : 'off' }}" name="create-if-not-exists" checked>
+                <input type="hidden" value="{{ ($create_vlans) ? 'on' : 'off' }}" name="create-if-not-exists">
+                <input type="hidden" value="{{ ($tag_to_uplink) ? 'on' : 'off' }}" name="tag-vlan-to-uplink">
                 <input type="hidden" value="off" name="test-mode" checked>
                 <button class="button submit is-primary">{{ __('Sync.Start') }}</button>
             </form>

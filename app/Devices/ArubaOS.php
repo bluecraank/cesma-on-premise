@@ -704,8 +704,6 @@ class ArubaOS implements DeviceInterface
                     } else {
                         Log::channel('database')->error(__('Log.Vlan.Tagged.NotUpdated', ['vlan' => $vlans[$vlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port " . $port->name . " | Device " . $device->hostname]);
                         $return[] = ['success' => false, 'data' => $result['data']];
-
-                        Log::channel('database')->error("Error adding tagged vlan " . $vlans[$vlan]['name'] . " to port " . $port->name . ": " . $result['data'], ['extra' => Auth::user()->name, 'context' => "Port " . $port->name . " | Device " . $device->hostname]);
                     }
                 }
             }
@@ -771,10 +769,6 @@ class ArubaOS implements DeviceInterface
             }
         }
 
-        if ($i_not_found == 0 && $i_chg_name == 0) {
-            return [];
-        }
-
         if (!$testmode && !$login_info = self::API_LOGIN($device)) {
             return $return;
         }
@@ -782,7 +776,8 @@ class ArubaOS implements DeviceInterface
         if (!$testmode) {
             list($cookie, $api_version) = explode(";", $login_info);
         }
-
+        
+        
         if ($create_vlans) {
             foreach ($not_found as $key => $vlan) {
                 $return[$vlan->vid]['name'] = $vlan->name;
@@ -831,19 +826,29 @@ class ArubaOS implements DeviceInterface
             }
         }
 
-        if($tag_to_uplink) {
-            $uplinks = $device->uplinks()->pluck('device_port_id')->toArray();
-            $new_vlans = $device->vlans()->get()->pluck('device_vlan_id')->toArray();
+        if($tag_to_uplink) { 
+            $i_tagged_to_uplink = 0;
+            $uplinks = $device->uplinks()->get()->toArray();
+            $new_vlans = $device->vlans()->get()->keyBy('id');
+            $tag_vlans = $new_vlans->pluck('id')->toArray();
             foreach($uplinks as $uplink) {
-                $port = DevicePort::where('id', $uplink)->first();
+                $port = DevicePort::where('id', $uplink['device_port_id'])->first();
+                $vlanports = DeviceVlanPort::where('device_port_id', $port->id)->where('is_tagged', true)->get()->keyBy('device_vlan_id')->toArray();
+                foreach($syncable_vlans as $vlan) {
+                    $return[$vlan->vid]['name'] = $vlan->name;
+                    if(!array_key_exists($vlan->vid, $vlanports)) {
+                        $return[$vlan->vid]['uplinks'][] = $port->name;
+                    }
+                }
+                
                 if(!$testmode) {
-                    $response = self::setTaggedVlansToPort($new_vlans, $port, $device, $current_vlans, false, $login_info);
+                    $response = self::setTaggedVlansToPort($tag_vlans, $port, $device, $new_vlans, false, $login_info);
                 } else {
                     $response = ['success' => true];
                 }
 
-                if ($response['success']) {
-                    $return[$vlan->vid]['uplinks'][] = $port->name;
+                if($response['success']) {
+                    $i_tagged_to_uplink++;
                 } else {
                     $return[$vlan->vid]['failed_uplinks'][] = $port->name;
                 }
@@ -854,7 +859,8 @@ class ArubaOS implements DeviceInterface
             $logdata = [
                 "summary" => [
                     "created" => $i_vlan_created,
-                    "renamed" => $i_vlan_chg_name
+                    "renamed" => $i_vlan_chg_name,
+                    "tagged_uplinks" => $i_tagged_to_uplink,
                 ],
                 "vlans" => $return
             ];
