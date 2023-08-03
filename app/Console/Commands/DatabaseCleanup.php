@@ -11,6 +11,7 @@ use App\Models\Mac;
 use App\Models\Vlan;
 use App\Models\SnmpMacData;
 use Illuminate\Console\Command;
+use Notification;
 
 class DatabaseCleanup extends Command
 {
@@ -41,7 +42,8 @@ class DatabaseCleanup extends Command
         DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
-
+        Notification::whereDate('created_at', '<=', now()->subWeek(8))->delete();
+        
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
 
         Client::where(function($query) use ($vlans_ignore) {
@@ -50,14 +52,6 @@ class DatabaseCleanup extends Command
                 $query->orWhere('vlan_id', $vlan['vid']);
             }
         })->delete();
-        
-        $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
-
-        foreach ($uplinks as $uplink) {
-            foreach ($uplink as $key => $value) {
-                Client::where('port_id', $value['name'])->where('device_id', $value['device_id'])->delete();
-            }
-        }
 
         \Illuminate\Support\Facades\Log::info('[System] Database cleaned up');
     }
