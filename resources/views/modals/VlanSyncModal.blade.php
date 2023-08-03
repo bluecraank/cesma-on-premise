@@ -16,7 +16,7 @@
                     <div class="field">
                         <label class="label">Standort</label>
                         <div class="control">
-                            <div class="select">
+                            <div class="select is-fullwidth">
                                 <select name="site_id" readonly>
                                     <option value="{{ Auth::user()->currentSite()->id }}">
                                         {{ Auth::user()->currentSite()->name }}</option>
@@ -31,6 +31,7 @@
                             <label class="checkbox">
                                 <input type="checkbox" name="overwrite-vlan-name">
                                 {{ __('Switch.Sync.OverwriteName') }}
+                                <span class="help">Nur Aruba-Switche</span>
                             </label>
                         </div>
 
@@ -39,12 +40,14 @@
                                 <input type="checkbox" name="tag-vlan-to-uplink">
                                 {{ __('Switch.Sync.TaggedVlans') }}
                             </label>
+                            <span class="help">Nur ArubaOS</span>
                         </div>
 
                         <div class="field">
                             <label class="checkbox">
                                 <input type="checkbox" name="create-if-not-exists">
                                 {{ __('Switch.Sync.CreateVlans') }}
+                                <span class="help">Nur Aruba-Switche</span>
                             </label>
                         </div>
 

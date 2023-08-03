@@ -6,7 +6,8 @@
                 <p class="modal-card-title">{{ __('Switch.Pubkey.Title') }}</p>
             </header>
             <section class="modal-card-body">
-                <div class="field">
+                <p class="mb-3">Hier können die hinterlegten öffentlichen SSH-Schlüssel mit Aruba-Switchen synchronisiert werden.</p>
+                <div class="field mr-2">
                     <label class="label">{{ __('Switch.Pubkey.FollowingKeys') }}</label>
                     <div class="control">
                         <ul class="ml-5" style="list-style-type:circle">
