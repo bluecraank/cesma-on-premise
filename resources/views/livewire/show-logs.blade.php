@@ -35,50 +35,32 @@
         }
     </style>
 
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@1.4/dist/css/pretty-print-json.dark-mode.css>
-<script src="https://cdn.jsdelivr.net/npm/pretty-print-json@1.4/dist/pretty-print-json.min.js"></script>
-
-<div class="modal is-changes-modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Changes made on <span class="topic"></span> at <span class="date"></span></p>
-        <button class="delete" aria-label="close" onclick="$('.is-changes-modal').removeClass('is-active')"></button>
-      </header>
-      <section class="modal-card-body">
-        <pre class="changes p-0 is-size-6" style="background:none;"></pre>
-      </section>
-      {{-- <footer class="modal-card-foot"> --}}
-      {{-- </footer> --}}
-    </div>
-  </div>
-
     <table class="table is-narrow is-fullwidth">
         <thead>
             <tr>
-                <th>Level</th>
-                <th>{{ __('Log.User') }}</th>
-                <th>{{ __('Log.Action') }}</th>
-                <th>Category</th>
-                <th style="width:250px;">Additional info</th>
+                <th>Zustand</th>
                 <th>Switch</th>
-                <th style="width:200px;" class="has-text-centered">Timestamp</th>
+                <th>{{ __('Log.Action') }}</th>
+                <th style="width:250px;">Informationen</th>
+                <th>{{ __('Log.User') }}</th>
+                <th>Kategorie</th>
+                <th style="width:200px;" class="has-text-centered">Zeitpunkt</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($logs as $log)
                 <tr>
                     <td><span class="log-{{ strtolower($log->level) }}">{{ strtoupper($log->level) }}</span></td>
-                    <td>{{ $log->user ?? "No User" }}</td>
-                    <td style="width:450px;">{{ $log->description }}</td>
-                    <td>
-                        {{ $log->category }}
-                    </td>
-                    <td style="width:250px;">
-                        {{ $DiffClass::visualize($log->additional_info, $log) }}
-                    </td>
                     <td>
                         {{ $log->device_name }}
+                    </td>
+                    <td style="width:450px;">{{ $log->description }}</td>
+                    <td style="width:250px;">
+                        {{ $log->additional_info }}
+                    </td>
+                    <td>{{ $log->user ?? "No User" }}</td>
+                    <td>
+                        {{ $log->category }}
                     </td>
                     <td class="has-text-centered">{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
 

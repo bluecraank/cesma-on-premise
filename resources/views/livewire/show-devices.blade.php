@@ -54,8 +54,15 @@
                     @else
                         <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="{{ route('show-device', $device->id) }}">{{ $device->name }}</href></td>
                     @endif
+                    
+                    @php
+                        $mac_chunks = str_split($device->mac_address ?? '', 2);
+
+                        $mac_address = strtoupper(implode(':', $mac_chunks));
+                    @endphp
+
                     <td>{{ $device->modelOrUnknown() }}</td>
-                    <td>{{ $device->mac_address }}</td>
+                    <td>{{ $mac_address }}</td>
                     <td>{{ $device->firmwareOrUnknown() }}</td>
                     <td>{{ $device->building()->first()->name }}</td>
                     <td>{{ $device->room()->first()->name }}</td>

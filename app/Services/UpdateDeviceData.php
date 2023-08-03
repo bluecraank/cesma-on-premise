@@ -36,13 +36,13 @@ class UpdateDeviceData
         }
 
         // Delete ports that are not in the list
-        foreach($existingPorts as $port => $isExisting) {
-            if(is_bool($isExisting) and $isExisting) {
-                continue;
-            }
+        // foreach($existingPorts as $port => $isExisting) {
+        //     if(is_bool($isExisting) and $isExisting) {
+        //         continue;
+        //     }
 
-            DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
-        }
+        //     DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
+        // }
     }
 
     static function updateDeviceVlans($vlans, $device) {
@@ -121,6 +121,7 @@ class UpdateDeviceData
                     $ports = [];
 
                 $current_uplinks[$trunk_group]->ports = array_merge($ports, [$port]);
+                $current_uplinks[$trunk_group]->ports = array_unique($current_uplinks[$trunk_group]->ports);
                 $current_uplinks[$trunk_group]->save();
             }
         }

@@ -173,7 +173,7 @@
                     <tbody>
                         @foreach ($found_uplinks as $trunk => $ports)
                             @php
-                                $ports = json_decode($ports[0]['ports'], true);
+                                $ports = $ports[0]['ports'];
                             @endphp
                             <tr>
                                 <td>{{ $trunk }}</td>
@@ -285,8 +285,10 @@
 
                         <tbody class="live-body">
                             @foreach ($device->ports as $port)
-                                @if(!str_contains($port->deviceUplink?->name, "Trk") && !str_contains($port->deviceUplink?->name, "Trunk"))
+                                {{-- @if(!str_contains($port->deviceUplink?->name, "Trk") && !str_contains($port->deviceUplink?->name, "Trunk")) --}}
+                                @if(!$port->isMemberOfTrunk())
                                     @livewire('switch-port', ['clients' => $device->clients->where('port_id', $port->name), 'device_id' => $device->id, 'vlans' => $device->vlans, 'vlanports' => $device->vlanports->where('device_port_id', $port->id), 'port' => $port, 'cc' => $cc])
+                                {{-- @endif --}}
                                 @endif
                             @endforeach
                         </tbody>
