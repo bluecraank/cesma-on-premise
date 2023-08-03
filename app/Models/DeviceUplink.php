@@ -12,6 +12,9 @@ class DeviceUplink extends Model
         'name'
     ];
 
+    protected $casts = [
+        'ports' => 'array'
+    ];
 
     public function device()
     {

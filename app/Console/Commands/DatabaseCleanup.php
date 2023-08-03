@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Client;
 use App\Models\DeviceBackup;
 use App\Models\DevicePortStat;
-use App\Models\DeviceUplink;
 use App\Models\Log;
 use App\Models\Mac;
 use App\Models\Vlan;

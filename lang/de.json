@@ -287,6 +287,8 @@
     "Switch.Port.Untagged.Error": "VLAN :vlan konnte nicht auf Port :port ohne Tag eingerichtet werden",
     "Switch.Port.Tagged.Success": ":success von :total VLANs erfolgreich auf Port :port mit Tag eingerichtet",
     "Switch.Port.Tagged.Error": "Die gewünschten VLANs konnten nicht auf Port :port mit Tag eingerichtet werden",
+    "Switch.Port.Tagged.Removed.Success": ":success von :total erfolgreich von Port :port entfernt",
+    "Switch.Port.Tagged.Removed.Error": "Die gewünschten VLANs konnten nicht von Port :port entfernt werden",
     
     "Vlan.Subnet": "IP-Bereich",
     "Vlan.Scan": "NMAP-Scan",

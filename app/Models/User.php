@@ -13,6 +13,10 @@ class User extends Authenticatable implements LdapAuthenticatable
 {
     use Notifiable, AuthenticatesWithLdap;
 
+    protected $fillable = [
+        'role'
+    ];
+
     public function getRoleName() {
         switch ($this->role) {
             case 0:
