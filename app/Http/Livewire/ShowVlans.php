@@ -30,12 +30,13 @@ class ShowVlans extends Component
             $query->where('name', 'like', $searchTerm)
             ->orWhere('vid', 'like', $searchTerm)
             ->orWhere('description', 'like', $searchTerm);
-        })->paginate($this->numberOfEntries);
+        })->orderBy('vid')->paginate($this->numberOfEntries);
 
         $vlans->sort(function ($a, $b) {
             return strnatcmp($a->vid, $b->vid);
         });
 
+        
         return view('livewire.show-vlans', [
             'vlans' => $vlans,
         ]);

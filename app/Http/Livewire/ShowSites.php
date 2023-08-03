@@ -18,7 +18,7 @@ class ShowSites extends Component
     public function render()
     {
         $site = Site::where('id', Auth::user()->currentSite()->id)->firstOrFail();
-        $sites = Site::paginate($this->numberOfEntries);
+        $sites = Site::orderBy('vid')->paginate($this->numberOfEntries);
         $sites->sortBy('name');
 
         // Sort sites by name in natural order

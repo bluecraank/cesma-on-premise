@@ -9,9 +9,7 @@ use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 use App\Helper\CLog;
-use App\Models\DeviceVlan;
 use App\Models\DevicePort;
-use App\Helper\Diff;
 
 class SwitchPort extends Component
 {
@@ -95,9 +93,6 @@ class SwitchPort extends Component
     public function sendPortVlanUpdate($cookie, $closeSession) {
 
         $device = Device::where('id', $this->device_id)->first();
-        
-        // Cache model to compare later
-        $old_model = $this->port->attributesToArray();
 
         $raw_cookie = Crypt::decrypt($cookie);
 
@@ -105,49 +100,48 @@ class SwitchPort extends Component
             
             if($this->untaggedVlanUpdated || $this->taggedVlansUpdated) {
                 $message = DeviceService::updatePortVlans($raw_cookie, $this->port, $this->device_id, $this->untaggedVlanId, $this->newTaggedVlans, $this->untaggedVlanUpdated, $this->taggedVlansUpdated);
-                $vlans = DeviceVlan::where('device_id', $this->device_id);
-
-                // Get new model to compare
                 $new_model = DevicePort::where('id', $this->port->id)->first();
-                $diff_model = Diff::compare($old_model, $new_model->attributesToArray());
 
+                // Untagged Vlan changes
                 if($this->untaggedVlanUpdated) {
                     if($message['untagged']['success']) {
                         $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Untagged.Success', ['vlan' => $new_model->untagged->name, 'port' => $this->port->name]), 'portid' => $this->portId]);
                         $this->somethingChanged = false;
                         $this->fetchPort();
+                        CLog::info("SwitchPort", __('Switch.Port.Untagged.Success', ['vlan' => $new_model->untagged->name, 'port' => $this->port->name]), $device, ($this->port->untaggedVlanName() ?? 'Keins') . " => " .$new_model->untagged->name );
                     } else {
                         $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Untagged.Error', ['vlan' => $this->port->untaggedVlanName(), 'port' => $this->port->name]), 'portid' => $this->portId]);
+                        CLog::error("SwitchPort", __('Switch.Port.Untagged.Error', ['vlan' => $this->port->untaggedVlanName(), 'port' => $this->port->name]), $device, ($this->port->untaggedVlanName() ?? 'Keins') . " => " .$new_model->untagged->name );
                     }
-
-
-                    CLog::info("SwitchPort", "Set untagged vlan for port " . $this->port->name . " to " . $vlans->where('id', $this->untaggedVlanId)->first()->name, $device, $diff_model);
                 }
 
+                // Tagged Vlan changes
                 if($this->taggedVlansUpdated) {
-                    $success = $error = 0;
-                    
-                    foreach($message['tagged'] as $vlan) {
-                        if($vlan['success']) {
-                            $success++;
-                        } else {
-                            $error++;
-                        }
-                    }
-
-                    if($success > 0) {
-                        $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Tagged.Success', ['success' => $success, 'total' => $success+$error, 'port' => $this->port->name]), 'portid' => $this->portId]);
+                    // If vlans were removed from port
+                    if(isset($message['tagged']['removed']) && count($message['tagged']['removed']) == $message['tagged']['count_remove']) {
+                        $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Tagged.Removed.Success', ['success' => count($message['tagged']['removed']), 'total' => $message['tagged']['count_remove'], 'port' => $this->port->name]), 'portid' => $this->portId]);
                         $this->somethingChanged = false;
                         $this->fetchPort();
-                    } else {
-                        $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Tagged.Error', ['port' => $this->port->id]), 'portid' => $this->portId]);
+                        CLog::info("SwitchPort", __('Switch.Port.Tagged.Removed.Success', ['success' => count($message['tagged']['removed']), 'total' => $message['tagged']['count_remove'], 'port' => $this->port->name]), $device, implode(", ", array_keys($message['tagged']['removed'])));
+                    } elseif(isset($message['tagged']['removed'])) {
+                        $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Tagged.Removed.Error', ['port' => $this->port->name]), 'portid' => $this->portId]);
+                        CLog::error("SwitchPort", __('Switch.Port.Tagged.Removed.Error', ['port' => $this->port->name]), $device, implode(", ", array_keys($message['tagged']['removed'])));
                     }
 
-                    $tagged_vlans = $vlans->whereIn('id', $this->newTaggedVlans)->get()->pluck('name')->toArray();
-                    CLog::info("SwitchPort", "Set tagged vlans for port " . $this->port->name . " to " . implode(", ", $tagged_vlans), $device, $diff_model);
+                    // If vlans were added to port
+                    if(isset($message['tagged']['added']) && count($message['tagged']['added']) == $message['tagged']['count_add']) {
+                        $this->dispatchBrowserEvent('notify-success', ['message' => __('Switch.Port.Tagged.Success', ['success' => count($message['tagged']['added']), 'total' => $message['tagged']['count_add'], 'port' => $this->port->name]), 'portid' => $this->portId]);
+                        $this->somethingChanged = false;
+                        $this->fetchPort();
+                        CLog::info("SwitchPort", __('Switch.Port.Tagged.Success', ['success' => count($message['tagged']['added']), 'total' => $message['tagged']['count_add'], 'port' => $this->port->name]), $device, implode(", ", array_keys($message['tagged']['added'])));
+                    } elseif(isset($message['tagged']['added'])) {
+                        $this->dispatchBrowserEvent('notify-error', ['message' => __('Switch.Port.Tagged.Error', ['port' => $this->port->name]), 'portid' => $this->portId]);
+                        CLog::error("SwitchPort", __('Switch.Port.Tagged.Error', ['port' => $this->port->name]), $device, implode(", ", array_keys($message['tagged']['added'])));
+                    }
                 }
             }
  
+            // Port description changes
             if($this->portDescriptionUpdated) { 
                 $currentDescription = $this->port->description;
                 if(DeviceService::updatePortDescription($raw_cookie, $this->port, $this->device_id, $this->portDescription)) {   
@@ -158,13 +152,13 @@ class SwitchPort extends Component
                     $this->fetchPort();
 
                     $this->dispatchBrowserEvent('notify-success', ['message' => __('Msg.ApiPortNameSet', ['port' => $this->port->name]), 'portid' => $this->portId]);
-                    CLog::info("SwitchPort", "Updated description of port {$this->port->name}", $device, Diff::compare($old_model, $this->port->attributesToArray()));
+                    CLog::info("SwitchPort", __('Msg.ApiPortNameSet', ['port' => $this->port->name]), $device, $currentDescription . " => " . $this->port->description);
                 } else {
                     $this->dispatchBrowserEvent('notify-error', ['message' => __('Msg.ApiPortNameSetError', ['port' => $this->port->name]), 'portid' => $this->portId]);
                 }
 
-                $this->somethingChanged = false;
                 $this->portDescriptionUpdated = false;
+                $this->somethingChanged = false;
             }
 
             if($closeSession) {
