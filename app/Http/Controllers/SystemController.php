@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
 use App\Models\Device;
+use App\Models\DevicePort;
 use App\Models\Permission;
 use App\Models\Site;
 use App\Models\Topology;
@@ -119,41 +120,79 @@ class SystemController extends Controller
             if (array_search([
                 'from' => $lowerDevice,
                 'to' => $higherDevice,
-                'from_device' => $lowerPort,
-                'to_device' => $higherPort,
+                'from_port' => $lowerPort,
+                'to_port' => $higherPort,
             ], $edges) === false) {
                 
                 $edges[] = [
                     'from' => $lowerDevice,
                     'to' => $higherDevice,
-                    'from_device' => $lowerPort,
-                    'to_device' => $higherPort,
+                    'from_port' => $lowerPort,
+                    'to_port' => $higherPort,
                 ];
             }
         }
 
         $options = [
-            'length' => 200,
             'smooth' => [
                 'enabled' => false,
             ],
-
         ];
 
+        
         $new_edges = [];
         foreach($edges as $edge) {
-            $new_edges[] = array_merge($edge, $options);
+            $from_port = str_replace(["ethernet"], "", $edge['from_port']);
+            $to_port = str_replace(["ethernet"], "", $edge['to_port']);
+            $devices = Device::whereIn('id', [$edge['from'], $edge['to']])->get()->keyBy('id')->toArray();
+            
+            if($devices[$edge['from']]['type'] == 'aruba-cx') {
+                $from_port = str_replace(["1/1/"], "", $edge['from_port']);
+            }
+            
+            if($devices[$edge['to']]['type'] == 'aruba-cx') {
+                $to_port = str_replace(["1/1/"], "", $edge['to_port']);
+            }
+            
+            $get_from_device_port = DevicePort::where('device_id', $edge['from'])->where('name', $from_port)->first();
+            $get_to_device_port = DevicePort::where('device_id', $edge['to'])->where('name', $to_port)->first();
+            
+            if($get_from_device_port->speed == 100) {
+                $speed_color = "#f0ad4e";
+            } elseif($get_from_device_port->speed == 1000) {
+                $speed_color = "#5cb85c";
+            } elseif($get_from_device_port->speed == 10000) {
+                $speed_color = "#3a743a";
+            } else {
+                $speed_color = "#d9534f";
+            }
+            
+            $temp = array_merge($edge, $options);
+            $new_edges[] = array_merge($temp, [
+                'color' => [
+                    'color' => $speed_color,
+                ],
+                'label' => $from_port . " - " . $to_port,
+                'chosen' => [
+                    'label' => true,
+                ],
+                'font' => [
+                    'align' => 'middle',
+                ],
+            ]);
         }
-
+        
+        $keys = array_column($new_edges, 'from');
+        array_multisort($keys, SORT_ASC, $new_edges);
         $edges = $new_edges;
         return view('system.topology', compact('nodes', 'edges'));
     }
-
+    
     public function updateUserRole(Request $request)
     {
         $guid = $request->input('guid');
-
-
+        
+        
         if ($guid == Auth::user()->guid) {
             return redirect()->back()->withErrors(['message' => __('Msg.Error.UserRoleUpdate')])->withInput(['last_tab' => 'users']);
         }
