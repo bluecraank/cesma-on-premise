@@ -9,7 +9,13 @@
 
     </div>
         <div id="topology_map"></div>
+        <div>
+          <span class="tag is-danger">10 Mbit/s</span>
+          <span class="tag is-warning">100 Mbit/s</span>
+          <span class="tag is-success">1000 Mbit/s</span>
+          <span style="background-color: #3a743a" class="tag is-success">10000 Mbit/s</span>
 
+        </div>
     </div>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script type="text/javascript">
@@ -29,11 +35,12 @@
           width: '100%',
           height: '600px',
           layout: {
-
-            randomSeed: 280,
+            randomSeed: 203,
           },
-          physics: {
-            enabled: false
+          'physics': {
+            'barnesHut': {
+              'springLength': 300,
+            }
           }
         };
         var network = new vis.Network(container, data, options);
