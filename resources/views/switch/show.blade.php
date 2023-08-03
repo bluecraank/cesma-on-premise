@@ -26,20 +26,20 @@
         <div class="column is-6">
             <div class="buttons is-pulled-right">
                 @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
-                    <button data-modal="sync-vlans-specific" class="button is-small is-success">
+                    <button @if($is_online) data-modal="sync-vlans-specific" @else disabled @endif class="button is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-ethernet"></i> Sync Vlans
                     </button>
-                    <button data-id="{{ $device->id }}" data-action="sync-pubkeys"
+                    <button @if($enoughPubkeysToSync >= 2 && $isOnline) data-id="{{ $device->id }}" data-action="sync-pubkeys" @else disabled @endif
                         class="button action is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-key"></i> Sync Pubkeys
                     </button>
-                    <button data-id="{{ $device->id }}" data-action="backup"
+                    <button @if($is_online) data-id="{{ $device->id }}" data-action="backup" @else disabled @endif
                         class="button action is-small is-success">
                         <i class="is-hidden-touch mr-1 fas fa-hdd"></i> Backup
                     </button>
                 @endif
 
-                <button data-id="{{ $device->id }}" data-action="refresh" class="is-success action button is-small">
+                <button @if($is_online) data-id="{{ $device->id }}" data-action="refresh" @else disabled @endif class="is-success action button is-small">
                     <i class="is-hidden-touch mr-1 fas fa-sync"></i> Refresh
                 </button>
             </div>
@@ -252,13 +252,13 @@
                     @endif
 
                     @if (Auth::user()->role >= 1 && !config('app.read-only')[$device->type])
-                        <button class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
+                        <button @if(!$is_online) disabled @endif class="is-save-button button is-small is-success is-pulled-right is-hidden"><i
                                 class="fas fa-save mr-2"></i> {{ __('Button.Save') }}</button>
 
-                        <button class="is-cancel-button button is-small is-link is-pulled-right is-hidden mr-2"><i
+                        <button @if(!$is_online) disabled @endif class="is-cancel-button button is-small is-link is-pulled-right is-hidden mr-2"><i
                                 class="fas fa-xmark mr-2"></i> {{ __('Button.Cancel') }}</button>
 
-                        <button class="is-edit-button button is-small is-info is-pulled-right"><i
+                        <button @if(!$is_online) disabled @endif class="is-edit-button button is-small is-info is-pulled-right"><i
                                 class="fas fa-edit mr-2"></i> {{ __('Button.Edit') }}</button>
                     @endif
                 </h2>

@@ -81,7 +81,9 @@ class DeviceController extends Controller
         // Get online status
         $is_online = DeviceService::isOnline($device->hostname);
 
-        return view('switch.view_details', compact('device', 'is_online', 'found_uplinks'));
+        $enoughPubkeysToSync = count(PublicKeyService::getPublicKeysAsArray());
+
+        return view('switch.show', compact('device', 'is_online', 'found_uplinks', 'enoughPubkeysToSync'));
     }
 
     public function showBackups(Device $device)

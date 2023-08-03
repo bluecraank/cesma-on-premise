@@ -97,7 +97,38 @@ $(document).ready(function () {
             }
         });
     });
+    $("button.action").on('click', function() {
+        let action = $(this).attr("data-action");
+        let id = $(this).attr("data-id");
+        let ele = $(this);
+    
+        ele.addClass('is-loading');
+    
+        axios.post('/devices/' + id + '/action/' + action, {
+            device_id: id
+        }).then(response => {
+            if(response.data.success == "true") {
+                $.notify(response.data.message, {
+                    style: 'bulma-success',
+                    autoHideDelay: 8000
+                });
+                if(action == "refresh") {
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1100)
+                }
+                ele.removeClass('is-loading');
+            } else {
+                ele.removeClass('is-loading');
+                $.notify(response.data.message, {
+                    style: 'bulma-error',
+                    autoHideDelay: 8000
+                });
+            }
+        });
+    });
 });
+
 
 
 
