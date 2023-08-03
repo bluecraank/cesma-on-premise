@@ -207,7 +207,16 @@ class SystemController extends Controller
             return redirect()->back()->withErrors(['message' => __('Msg.SomethingWentWrong')])->withInput(['last_tab' => 'users']);
         }
 
-        CLog::info("System", "Update role of user {$user->name} to {$user->role}");
+        Permission::where('guid', $guid)->delete();
+        foreach ($request['sites'] as $site) {
+            Permission::create([
+                'site_id' => $site,
+                'guid' => $guid,
+                'role' => $request['role'],
+            ]);
+        }
+
+        CLog::info("System", "Updated user {$user->name} to {$user->role}");
 
         return redirect()->back()->with('success', __('Msg.UserRoleUpdated'))->withInput(['last_tab' => 'users']);
     }

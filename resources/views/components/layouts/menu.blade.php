@@ -9,7 +9,7 @@
 
             <div class="menu-items">
                 <p class="menu-label">{{ __('Change site') }}</p>
-
+                
                 <div class="site-selection">
                     <form id="site-form" action="{{ route('change-site') }}" method="post">
 
@@ -19,17 +19,18 @@
                             name="site_id">
                             <option value="{{ Auth::user()->currentSite()->id }}">
                                 {{ Auth::user()->currentSite()->name }}</option>
-                            @foreach (Auth::user()->availableSites() as $site)
+                                @foreach (Auth::user()->availableSites() as $site)
                                 @if ($site->id == Auth::user()->currentSite()->id)
-                                    @continue
+                                @continue
                                 @endif
-
+                                
                                 <option value="{{ $site->id }}">{{ $site->name }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                    
+                @if(Auth::user()->role == 2)
                 <p class="menu-label">{{ __('Action') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -40,6 +41,7 @@
                         </a>
                     </li>
                 </ul>
+                @endif
                 <p class="menu-label">{{ __('Management') }}</p>
                 <ul class="menu-list">
                     <li>
@@ -102,12 +104,14 @@
 
                 <p class="menu-label">{{ __('System') }}</p>
                 <ul class="menu-list">
+                    @if(Auth::user()->role >= 1)
                     <li>
                         <a href="{{ route('system') }}"
                             class="{{ request()->is('system') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('Menu.System') }}</span>
                         </a>
                     </li>
+                    @endif
                     <li>
                         <a href="{{ route('logs') }}" class="{{ request()->is('logs') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fas fa-clock-rotate-left"></i></span>

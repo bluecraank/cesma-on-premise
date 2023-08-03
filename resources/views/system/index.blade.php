@@ -94,7 +94,7 @@
             <table class="table is-narrow is-hoverable is-striped is-fullwidth">
                 <thead>
                     <tr>
-                        <th>{{ __('Role.User') }}</th>
+                        <th>{{ __('User') }}</th>
                         <th>GUID</th>
                         <th>{{ __('Role') }}</th>
                         <th class="has-text-centered">{{ __('Actions') }}</th>
@@ -113,6 +113,7 @@
                                         data-name="{{ $user->name }}"
                                         data-guid="{{ $user->guid }}"
                                         data-role="{{ $user->role }}"
+                                        data-sites=@json($user->allowed_sites)
                                         class="is-small button is-info"><i class="fas fa-cog"></i></button>
                                 @endif
                             </td>

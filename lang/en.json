@@ -130,7 +130,7 @@
     "Switch.SSH.Command": "Command",
     "Switch.SSH.SelectSwitch": "Select Switch",
     "Switch.SSH.ByLocation": "By Location",
-    "Switch.SSH.AllSwitches": "All Switches",
+    "Text.AllSwitches": "All Switches",
     "Switch.SSH.FastCmd": "Fast Command",
     "Role": "Role",
     "Clients": "Clients",

@@ -13,7 +13,7 @@
                             <label class="label">{{ __('Switch.SSH.SelectSwitch') }}</label>
                             <div class="select is-fullwidth is-small">
                                 <select name="execute-specify-switch" id="">
-                                    <option value="every-switch">{{ __('Switch.SSH.AllSwitches') }} - {{  Auth::user()->currentSite()->name }}</option>
+                                    <option value="every-switch">{{ __('Text.AllSwitches') }} - {{  Auth::user()->currentSite()->name }}</option>
                                     <option selected value="specific-switch">{{ __('Switch.SSH.SelectSwitch') }} - {{  Auth::user()->currentSite()->name }}
                                     </option>
                                 </select>

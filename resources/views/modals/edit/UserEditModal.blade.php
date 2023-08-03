@@ -27,6 +27,7 @@
                     </div>
                 </div>
                 
+                <span class="help">Super-Admins haben auf jeden Standort Zugriff!</span>
                 <div class="field">
                     <label class="label">{{ __('Sites') }}</label>
                     @foreach ($sites as $site)

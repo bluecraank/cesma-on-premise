@@ -10,13 +10,12 @@
 
                 <h1 style="display:block;margin-bottom: 30px;font-family: 'Kdam Thmor Pro', sans-serif;letter-spacing: -4px;font-size:80px" class="has-text-centered"><i style="font-size:62px" class="fa fa-terminal"></i>cesma</h2>
                     <h1 class="title">{{ __('Login') }}</h1>
-                    <h2 class="subtitle">{{ config('app.company') }}</h2>
+                    <h2 class="subtitle">Microsoft Active Directory</h2>
 
-
-                    @error('email')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                    @error('username')
+                    <div class="notification is-danger">
+                        <strong>{{ __($message) }}</strong>
+                    </div>
                     @enderror
 
                     <div class="field">

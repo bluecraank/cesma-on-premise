@@ -46,15 +46,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/vlans/{id}', [VlanController::class, 'showVlanDetails'])->name('show-vlan')->where('id', '[0-9]+');
     Route::get('/clients', ShowClients::class)->name('clients');
     
-    Route::get('/system', [SystemController::class, 'index_system'])->name('system');
     Route::get('/logs', ShowLogs::class)->name('logs');
-
+    
     Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
-
+    
     Route::get('/sites', ShowSites::class)->name('sites');
     Route::get('/buildings', ShowBuildings::class)->name('buildings');
     Route::get('/rooms', ShowRooms::class)->name('rooms');
-
+    
     Route::get('/topology', [SystemController::class, 'index_topology'])->name('topology');
 });
 
@@ -73,7 +72,7 @@ Route::get('/devices/backup/{id}/download/', [BackupController::class, 'download
 Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     // Allgemeine Aktionen
     Route::get('/execute', [SSHController::class, 'index'])->name('perform-ssh');
-
+    
     Route::post('/sites', [SiteController::class, 'store'])->name('create-site');
     Route::put('/sites', [SiteController::class, 'update'])->name('update-site');
     Route::delete('/sites', [SiteController::class, 'destroy'])->name('delete-site');
@@ -82,13 +81,14 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/buildings', [BuildingController::class, 'store'])->name('create-building');
     Route::put('/buildings', [BuildingController::class, 'update'])->name('update-building');
     Route::delete('/buildings', [BuildingController::class, 'destroy'])->name('delete-building');
-
+    
     Route::post('/rooms', [RoomController::class, 'store']);
     Route::put('/rooms', [RoomController::class, 'update']);
     Route::delete('/rooms', [RoomController::class, 'destroy']);
     // Why not just ::resource?
-
-
+    
+    Route::get('/system', [SystemController::class, 'index_system'])->name('system');
+    
     Route::post('/vlans', [VlanController::class, 'store']);
     Route::put('/vlans', [VlanController::class, 'update']);
     Route::delete('/vlans', [VlanController::class, 'destroy']);    

@@ -31,7 +31,12 @@ class User extends Authenticatable implements LdapAuthenticatable
     }
 
     public function availableSites() {
-        $sites = Site::all();
+        $sites = Permission::where('guid', $this->guid)->get()->pluck('site_id')->toArray();
+        $sites = Site::whereIn('id', $sites)->get();
+
+        if($this->role == 2)
+            return Site::all();
+
         return $sites;
     }
 
@@ -41,18 +46,28 @@ class User extends Authenticatable implements LdapAuthenticatable
 
         if($cookie) {
             $site = Site::where('id', $cookie)->first();
-
-            if(!$site)
-                $site = Site::first();
-            
         } else {
             $site = Site::first();
         }
+        
+        $permission = Permission::where('guid', $this->guid)->where('site_id', $site->id)->first();
+        
+        if(!$permission && $this->role != 2) {
+            $default_allowed_site = Permission::where('guid', $this->guid)->first()?->site_id;
+            $site = Site::where('id', $default_allowed_site)->first() ?? Site::first();
+        }
 
-        if(!$site)
-            exit('No site found');
+
+        // Abort if user does not have permission to access this site
+        if(!$site && $this->role != 2)
+            abort(403);
         
 
         return $site;
+    }
+
+    public function getAllowedSitesAttribute() {
+        $permissions = Permission::where('guid', $this->guid)->get()->pluck('site_id')->toArray();
+        return json_encode($permissions);
     }
 }

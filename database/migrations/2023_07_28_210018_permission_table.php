@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
             $table->integer('site_id');
             $table->string('guid');
             $table->string('role');

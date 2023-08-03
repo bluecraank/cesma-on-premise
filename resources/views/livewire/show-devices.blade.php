@@ -111,11 +111,11 @@
         {{ $devices->links('pagination::default') }} 
 </div>
 
-@livewire('show-notifications')
 
 @if (Auth::user()->role >= 1)
+    @livewire('show-notifications')
     <div class="box">
-        <div class="label is-small">Alle Switche</div>
+        <div class="label is-small">{{ __('Text.AllSwitches') }}</div>
         <div class="buttons are-small">
             @include('buttons.ButtonCreateBackup')
             @include('buttons.ButtonSyncPubkeys')
