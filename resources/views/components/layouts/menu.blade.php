@@ -101,17 +101,16 @@
                         </a>
                     </li>
                 </ul>
-
+                
+                @if(Auth::user()->role == 2)
                 <p class="menu-label">{{ __('System') }}</p>
                 <ul class="menu-list">
-                    @if(Auth::user()->role >= 1)
                     <li>
                         <a href="{{ route('system') }}"
                             class="{{ request()->is('system') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fa fa-gear"></i></span> <span>{{ __('Menu.System') }}</span>
                         </a>
                     </li>
-                    @endif
                     <li>
                         <a href="{{ route('logs') }}" class="{{ request()->is('logs') ? 'has-text-primary' : '' }}">
                             <span class="icon"><i class="fas fa-clock-rotate-left"></i></span>
@@ -119,6 +118,7 @@
                         </a>
                     </li>
                 </ul>
+                @endif
 
                 <p class="menu-label">{{ __('User') }}</p>
                 <ul class="menu-list">

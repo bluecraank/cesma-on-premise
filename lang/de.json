@@ -221,7 +221,7 @@
     "Msg.ThemeUpdated": "Theme erfolgreich aktualisiert",
     "Msg.PubkeyDeleted": "Öffentlicher Schlüssel erfolgreich gelöscht",
     "Msg.PubkeyCreated": "Öffentlicher Schlüssel erfolgreich erstellt",
-    "Msg.UserRoleUpdated": "Rolle erfolgreich aktualisiert",
+    "Msg.UserRoleUpdated": "Benutzer erfolgreich aktualisiert",
     "Msg.Error.UserRoleUpdate": "Du kannst deine eigene Rolle nicht ändern",
     "Msg.MacTypeCreated": "MAC-Typenzuordnung erfolgreich erstellt",
     "Msg.MacTypeDeleted": "MAC-Typenzuordnung erfolgreich gelöscht",

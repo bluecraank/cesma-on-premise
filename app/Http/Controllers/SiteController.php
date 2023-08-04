@@ -31,13 +31,13 @@ class SiteController extends Controller
     public function update(UpdateSiteRequest $request)
     {
         $site = Site::find($request->id);
-
+        $temp = $site->name;
         if ($site->update($request->except(['_token', '_method']))) {
-            CLog::info("Site", "Update site {$request->name}");
+            CLog::info("Site", "Standort " . $temp ." umbenannt", null, "{$temp} => {$request->name}");
             return redirect()->back()->with('success', __('Msg.SiteUpdated'));
         }
 
-        CLog::error("Site", "Could not update site {$request->name}");
+        CLog::error("Site", "Standort {$temp} konnte nicht umbenannt werden", null, "{$temp} -> {$request->name}");
         return redirect()->back()->withErrors(['message' => 'Site could not be updated']);
     }
 
@@ -45,12 +45,13 @@ class SiteController extends Controller
     {
         $site = Site::find($request->id);
 
+        $temp = $site->name;
         if ($site->delete()) {
-            CLog::info("Site", "Delete site {$request->name}");
+            CLog::info("Site", "Standort {$temp} gelöscht", null, "");
             return redirect()->back()->with('success', __('Msg.SiteDeleted'));
         }
 
-        CLog::error("Site", "Could not delete site {$request->name}");
+        CLog::error("Site", "Standort {$temp} konnte nicht gelöscht werden", null, "");
         return redirect()->back()->withErrors(['message' => 'Site could not be deleted']);  
     }
 

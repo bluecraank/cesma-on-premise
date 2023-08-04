@@ -5,6 +5,11 @@ import './ssh';
 import "./switch-actions.js";
 import 'file-saver';
 
+// Custom notification banner timeout
+setTimeout(function () {
+    $(".notification.status").slideUp(250);
+}, 6000)
+
 $("#themeSwitch").on("change", function () {
     let theme = $(this).val();
     if (theme == 'dark') {
