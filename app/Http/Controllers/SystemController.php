@@ -181,11 +181,17 @@ class SystemController extends Controller
                 ],
             ]);
         }
+
+        if(count($new_edges) == 0) {
+            $message = __('Msg.NoTopologyData');
+        } else {
+            $message = null;
+        }
         
         $keys = array_column($new_edges, 'from');
         array_multisort($keys, SORT_ASC, $new_edges);
         $edges = $new_edges;
-        return view('system.topology', compact('nodes', 'edges'));
+        return view('system.topology', compact('nodes', 'edges', 'message'));
     }
     
     public function updateUserRole(Request $request)
@@ -208,12 +214,14 @@ class SystemController extends Controller
         }
 
         Permission::where('guid', $guid)->delete();
-        foreach ($request['sites'] as $site) {
-            Permission::create([
-                'site_id' => $site,
-                'guid' => $guid,
-                'role' => $request['role'],
-            ]);
+        if($request->has('sites')) {
+            foreach ($request['sites'] as $site) {
+                Permission::create([
+                    'site_id' => $site,
+                    'guid' => $guid,
+                    'role' => $request['role'],
+                ]);
+            }
         }
 
         CLog::info("System", "Updated user {$user->name} to {$user->role}");

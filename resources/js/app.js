@@ -75,6 +75,17 @@ $("button").on('click', function() {
                 } else if (element.is("input")) {
                     element.val(data_value);
                 }
+                                   
+                $(modal).find(".site-permission").prop("checked", false);
+
+                if(data_key == "sites") {
+                    let data = JSON.parse(data_value);
+                    $.each(data, function(key, value) {
+                        console.log(value);
+                        $(modal).find(".checkbox input[value="+value+"]").prop("checked", true);
+                    });
+                }
+                
             }
         });
     }

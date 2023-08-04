@@ -203,6 +203,7 @@
     "Backup.Restore.Title": "Backup wiederherstellen",
     "Backup.NotAvailable": "Read-only switch",
 
+    "Msg.NoTopologyData": "Keine Daten vorhanden",
     "Msg.SwitchCreated": "Switch erfolgreich erstellt",
     "Msg.SwitchUpdated": "Switch erfolgreich aktualisiert",
     "Msg.SwitchDeleted": "Switch erfolgreich gelöscht",

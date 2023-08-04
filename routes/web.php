@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/buildings', ShowBuildings::class)->name('buildings');
     Route::get('/rooms', ShowRooms::class)->name('rooms');
     
+    Route::put('/sites/change', [SiteController::class, 'changeSite'])->name('change-site');
     Route::get('/topology', [SystemController::class, 'index_topology'])->name('topology');
 });
 
@@ -76,7 +77,6 @@ Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
     Route::post('/sites', [SiteController::class, 'store'])->name('create-site');
     Route::put('/sites', [SiteController::class, 'update'])->name('update-site');
     Route::delete('/sites', [SiteController::class, 'destroy'])->name('delete-site');
-    Route::put('/sites/change', [SiteController::class, 'changeSite'])->name('change-site');
 
     Route::post('/buildings', [BuildingController::class, 'store'])->name('create-building');
     Route::put('/buildings', [BuildingController::class, 'update'])->name('update-building');

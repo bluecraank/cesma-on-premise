@@ -27,9 +27,9 @@
                     </div>
                 </div>
                 
-                <span class="help">Super-Admins haben auf jeden Standort Zugriff!</span>
                 <div class="field">
-                    <label class="label">{{ __('Sites') }}</label>
+                    <label class="label m-0 p-0">{{ __('Sites') }}</label>
+                    <span class="help m-0 p-0 mb-3">Super-Admins haben Vollzugriff.</span>
                     @foreach ($sites as $site)
                         <label class="checkbox mr-2 ml-2">
                             <input class="site-permission" type="checkbox" name="sites[]" value="{{ $site->id }}">

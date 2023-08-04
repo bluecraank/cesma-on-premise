@@ -8,7 +8,11 @@
     <div class="is-pulled-right ml-4">
 
     </div>
-        <div id="topology_map"></div>
+        @if($message)
+          <div style="width:100%;height:600px;display:flex;align-items:center;justify-content:center;"><b class="is-size-4">{{ $message }}</b></div>
+        @else
+          <div id="topology_map"></div>
+        @endif
         <div>
           <span class="tag is-danger">10 Mbit/s</span>
           <span class="tag is-warning">100 Mbit/s</span>

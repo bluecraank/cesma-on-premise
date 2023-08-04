@@ -54,7 +54,7 @@ class User extends Authenticatable implements LdapAuthenticatable
         
         if(!$permission && $this->role != 2) {
             $default_allowed_site = Permission::where('guid', $this->guid)->first()?->site_id;
-            $site = Site::where('id', $default_allowed_site)->first() ?? Site::first();
+            $site = Site::where('id', $default_allowed_site)->first() ?? null;
         }
 
 
