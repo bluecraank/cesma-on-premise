@@ -14,7 +14,7 @@ class UpdateDeviceData
 {
     static function updateDevicePorts($ports, $device) {
         $existingPorts = $device->ports()->get('name')->keyBy('name')->toArray();
-        
+
         // Update/Create ports
         foreach ($ports as $port) {
 
@@ -32,6 +32,15 @@ class UpdateDeviceData
                     'snmp_if_index' => $snmp_if_index,
                 ]
             );
+
+            if(isset($existingPorts[$port['name']]) && $existingPorts[$port['name']]['link'] != $port['link']) {
+                // Notification::new($port['name'], $device, [
+                //     'port' => $port['name'],
+                //     'device_id' => $device->id,
+                // ], 'port', 'link');
+                DevicePort::where('name', $port['id'])->first()->touch('last_admin_status');
+            }
+
             $existingPorts[$port['id']] = true;
         }
 
@@ -60,11 +69,11 @@ class UpdateDeviceData
 
             // Save as global vlan
             VlanService::createIfNotExists($device, $vid, $vname);
-        } 
+        }
 
         // Delete vlans that are not in the list
         DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
-            foreach ($vlans as $vid => $vname) {
+            foreach ($vlans as $vid => $unused) {
                 $query->where('vlan_id', '!=', $vid);
             }
         })->delete();
@@ -228,7 +237,7 @@ class UpdateDeviceData
     static function checkForUplinks($device, $found_uplinks) {
         $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
 
-        // 
+        //
         foreach($found_uplinks as $uplink) {
             if(str_contains($uplink, "Trk") || str_contains($uplink, "trk") || str_contains($uplink, "Trunk") || str_contains($uplink, "trunk")) {
                 Notification::new($uplink, $device, [
@@ -285,10 +294,10 @@ class UpdateDeviceData
             $remote_port = str_replace(["ethernet","1/1/"], "", $port_combination['remote_port']);
 
             if($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
-                $uplink = DevicePort::where('name', $local_port)->first();  
+                $uplink = DevicePort::where('name', $local_port)->first();
                 if(!$uplink) {
                     $uplink = DevicePort::where('name', "1/1/".$local_port)->first();
-                } 
+                }
             } elseif($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
                 $uplink = DevicePort::where('name', $remote_port)->first();
                 if(!$uplink) {

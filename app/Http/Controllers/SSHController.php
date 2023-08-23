@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helper\CLog;
+use App\Helper\Utilities;
 use Illuminate\Http\Request;
 use App\Models\Device;
-use App\Models\Site;
 use phpseclib3\File\ANSI;
 use phpseclib3\Net\SSH2;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -16,14 +15,6 @@ use phpseclib3\Crypt\PublicKeyLoader;
 
 class SSHController extends Controller
 {
-    public function index()
-    {
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('name');
-        $sites = Site::all();
-
-        return view('switch.switch-ssh-execute', compact('devices', 'sites'));
-    }
-
     public function encrypt_key_index()
     {
         return view('ssh.encrypt');
@@ -54,8 +45,8 @@ class SSHController extends Controller
         $device = Device::find($request->input('id'));
 
         if(!$device) {
-            return json_encode(['status' => 'xmark', 'output' => 'Switch nicht gefunden'], true);
-        }	
+            return json_encode(['status' => 'xmark', 'output' => __('Device not found')], true);
+        }
 
         $command = $request->input('command');
 
@@ -64,20 +55,20 @@ class SSHController extends Controller
         $return->output = '';
         $return->id = $device->id;
 
-        if (SSHController::checkCommand($command)) {
+        if (Utilities::CheckSSHCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
                 $private_key = Storage::disk('local')->get('ssh.key');
 
                 if(config('app.read-only')[$device->type]) {
                     $return->status = 'xmark';
-                    $return->output = 'Dieser Switch ist read-only';
+                    $return->output = __('This device is read-only');
                     return json_encode($return, true);
                 }
 
                 if($private_key === NULL) {
                     $return->status = 'xmark';
-                    $return->output = 'Privatekey aktiviert, aber kein Schlüssel vorhanden';
+                    $return->output = __('Use private key enabled, but no key found');
                     return json_encode($return, true);
                 }
 
@@ -85,7 +76,7 @@ class SSHController extends Controller
 
                 if ($decrypt === NULL) {
                     $return->status = 'xmark';
-                    $return->output = 'Entschlüsselung des Schlüssels fehlgeschlagen';
+                    $return->output = __('Private key decryption failed');
                     return json_encode($return, true);
                 }
 
@@ -99,12 +90,12 @@ class SSHController extends Controller
             try {
                 if (!$ssh->login(config('app.ssh_username'), $key)) {
                     $return->status = 'xmark';
-                    $return->output = 'SSH Login Failed';
+                    $return->output = __('Login with private key failed');
                     return json_encode($return, true);
                 }
             } catch (\Exception $e) {
                 $return->status = 'xmark';
-                $return->output = 'Connection Failed';
+                $return->output = __('No connection to device');
                 return json_encode($return, true);
             }
 
@@ -151,16 +142,6 @@ class SSHController extends Controller
                     $output = $newoutput;
                 }
 
-                // if ($device->type == "aruba-os") {
-
-                // } else {
-                //     $oldoutput = $output;
-                //     $output = strstr($output, json_decode($device->system_data, true)['name'] . "#");
-                //     if ($output == false) {
-                //         $output = $oldoutput;
-                //     }
-                // }
-
                 if (SSHController::substr_count_array($output, array("Invalid", "not found", "Incomplete")) != 0) {
                     $return->status = 'xmark';
                     $return->output = $output;
@@ -177,7 +158,6 @@ class SSHController extends Controller
             $return->status = 'xmark';
             $return->output = 'Connection Failed';
 
-            CLog::error("SSH", "SSH Connection failed", $device, "Nothing executed");
             return json_encode($return, true);
         }
 
@@ -193,18 +173,5 @@ class SSHController extends Controller
         $count = 0;
         foreach ($needle as $substring) $count += substr_count(strtolower($haystack), strtolower($substring));
         return $count;
-    }
-
-    static function checkCommand($command)
-    {
-
-        $blacklisted = array('sh ru', 'aaa', 'no ip', 'no rest-interface', 'no ip ssh');
-        foreach ($blacklisted as $blacklistedCommand) {
-            if (str_contains($command, $blacklistedCommand)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

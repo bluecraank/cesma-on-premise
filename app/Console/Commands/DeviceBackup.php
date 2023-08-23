@@ -33,9 +33,9 @@ class DeviceBackup extends Command
     {
 
         $device = Device::find($this->argument('id'));
-        
+
         if(!$device) {
-            Log::error(__('DeviceNotFound'));
+            Log::error(__('Device not found'));
             return;
         }
 

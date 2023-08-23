@@ -9,7 +9,6 @@ use App\Mail\SendBackupStatus;
 use App\Models\Device;
 use App\Models\DeviceBackup;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 
@@ -31,25 +30,6 @@ class BackupController extends Controller
             'restore_data' => $resDataEncrypted,
             'status' => ($success) ? 1 : 0,
         ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Backup  $backup
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request) {
-        $find = DeviceBackup::find($request->input('id'));
-        $device = Device::where('id', $find->device_id)->first();
-
-        if ($find->delete()) {
-            CLog::info("Backup", 'Backup for device ' . $device->name . ' has been deleted', $device, "ID: " . $device->id);
-            return redirect()->back()->with('success', __('Msg.BackupCreated'));
-        }
-
-        CLog::error("Backup", 'Backup for device ' . $device->name . ' could not be deleted', $device, "ID: " . $device->id);
-        return redirect()->back()->withErrors(['message' => 'Backup could not be deleted']);
     }
 
     static function backupAll() {
@@ -76,15 +56,21 @@ class BackupController extends Controller
         echo "Backups finished in " . number_format(microtime(true) - $time, 2) . " seconds\n";
     }
 
-    static function downloadBackup($id) {
-        $backup = DeviceBackup::find($id);
-        $device = Device::find($backup->device_id);
-        $filename = $device->name . '_' . $backup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
-        $data = Crypt::decrypt($backup->data);
+    static function downloadBackup(Device $device, DeviceBackup $devicebackup) {
+
+        if(!$devicebackup || !$device) {
+            return abort(404);
+        }
+
+        $filename = $device->name . '_' . $devicebackup->created_at->format('Y-m-d_H-i-s') . '_BACKUP.txt';
+        $data = Crypt::decrypt($devicebackup->data);
 
         if ($data == NULL) {
             $data = "Decrypting error (Wrong encryption key?)";
         }
+
+        CLog::info("Backup", __('Backup :id downloaded', ['id' => $devicebackup->id]), null, __('Device: :name, Backup created: :date', ['name' => $devicebackup->device->name, 'date' => $devicebackup->created_at]));
+
 
         return response($data, 200)->header('Content-Type', 'text/plain')->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }

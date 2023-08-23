@@ -11,6 +11,7 @@ class Router extends Model
     protected $fillable = [
         'ip',
         'desc',
-        'check'
+        'check',
+        'entries'
     ];
 }

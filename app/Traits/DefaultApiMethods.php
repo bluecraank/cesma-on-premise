@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Http;
                 $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                     'Cookie' => "$cookie",
                 ])->put($api_url);
-    
+
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
@@ -47,7 +47,7 @@ use Illuminate\Support\Facades\Http;
         static function API_GET_DATA($hostname, $cookie, $api, $version, $plain = false): array
         {
             $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-    
+
             try {
                 if ($plain) {
                     $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
@@ -60,7 +60,7 @@ use Illuminate\Support\Facades\Http;
                         'Cookie' => "$cookie",
                     ])->get($api_url);
                 }
-    
+
                 if ($response->successful()) {
                     return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
                 } else {
@@ -70,16 +70,16 @@ use Illuminate\Support\Facades\Http;
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }
-    
+
         static function API_PATCH_DATA($hostname, $cookie, $api, $version, $data): array
         {
             $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-    
+
             try {
                 $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                     'Cookie' => "$cookie",
                 ])->patch($api_url);
-    
+
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
@@ -93,13 +93,13 @@ use Illuminate\Support\Facades\Http;
         static function API_DELETE_DATA($hostname, $cookie, $api, $version, $data): array
         {
             $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-    
+
             try {
                 $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                     'Content-Type' => 'application/json',
                     'Cookie' => "$cookie",
                 ])->delete($api_url);
-    
+
                 if ($response->successful()) {
                     return ['success' => true, 'data' => $response->json()];
                 } else {
@@ -113,12 +113,12 @@ use Illuminate\Support\Facades\Http;
         static function API_POST_DATA($hostname, $cookie, $api, $version, $data): array
         {
             $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-    
+
             try {
                 $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
                     'Cookie' => "$cookie",
                 ])->post($api_url);
-    
+
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
@@ -133,7 +133,7 @@ use Illuminate\Support\Facades\Http;
         {
             return false;
         }
-    
+
         static function restoreBackup($device, $backup, String $password): array
         {
             return [];
@@ -143,64 +143,64 @@ use Illuminate\Support\Facades\Http;
         {
             return [];
         }
-    
+
         static function formatExtendedPortStatisticData(array $portstats, array $portdata): array
         {
             return [];
         }
-    
+
         static function formatPortVlanData(array $vlanports): array
         {
             return [];
         }
-    
+
         static function formatUplinkData($data): array
         {
             $uplinks = [];
-    
+
             return $uplinks;
         }
-    
-    
+
+
         static function formatVlanData(array $vlans): array
         {
             return [];
         }
-    
+
         static function formatMacTableData(array $data, array $vlans, $device, String $cookie, String $api_version): array
         {
             // Not supported by DellEMC
             return [];
         }
-    
+
         static function formatSystemData(array $system): array
         {
             $return = [];
-    
+
             return $return;
         }
-    
+
         static function uploadPubkeys($device, $pubkeys): string
         {
             return "";
         }
-    
-        static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): array
-        {
-            return [];
-        }
-    
-        static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login, $login_info): array
-        {
-            return [];
-        }
-    
-        static function syncVlans($vlans, array $vlans_of_switch, $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks,  Bool $test_mode): array
+
+        static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): bool
         {
             return [];
         }
 
-        static function setPortName(String $port, String $name, Device $device, String $logininfo): bool
+        static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login, $login_info): array
+        {
+            return [];
+        }
+
+        static function syncVlans($vlans, $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks,  Bool $test_mode): array
+        {
+            return [];
+        }
+
+        static function setPortDescription(String $port, String $name, Device $device, String $logininfo): bool
         {
             return false;
         }

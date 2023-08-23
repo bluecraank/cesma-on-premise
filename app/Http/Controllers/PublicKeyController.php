@@ -18,8 +18,8 @@ class PublicKeyController extends Controller
         ])->validate();
 
         PublicKeyService::storePublicKey($request);
-        CLog::info("Pubkey", "Create pubkey {$request->description}", null, substr($request->key, 0, 20));
-        return redirect()->back()->with('success', __('Msg.PubkeyCreated'))->withInput(['last_tab' => 'pubkeys']);
+        CLog::info("Pubkey", "SSH public key {$request->description} added", null, substr($request->key, 0, 30));
+        return redirect()->back()->with('success', __('SSH public key created'));
     }
 
     public function destroy(Request $key)
@@ -28,11 +28,10 @@ class PublicKeyController extends Controller
 
         if ($key) {
             $key->delete();
-            CLog::info("Pubkey", "Delete pubkey {$key->description}");
-            return redirect()->back()->with('success', __('Msg.PubkeyDeleted'))->withInput(['last_tab' => 'pubkeys']);
+            CLog::info("Pubkey", "SSH public key {$key->description} deleted");
+            return redirect()->back()->with('success', __('Successfully deleted ssh public key :name', ['name' => $key->description]));
         } else {
-            CLog::error("Pubkey", "Could not delete pubkey {$key->description}");
-            return redirect()->back()->with('message', 'Key not found!')->withInput(['last_tab' => 'pubkeys']);
+            return redirect()->back()->with('message', 'SSH public key not found');
         }
     }
 }

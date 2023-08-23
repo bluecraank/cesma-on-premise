@@ -13,29 +13,36 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\Notification;
-use App\Models\Site;
-use App\Models\Vlan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DeviceService
 {
     static function refreshDevice(Device $device, $type = "snmp")
     {
-        $response = config('app.types')[$device->type]::GET_DEVICE_DATA($device, $type);
+        $class = config('app.types')[$device->type];
+        $response = $class::GET_DEVICE_DATA($device, $type);
 
         if (isset($response['success']) and $response['success']) {
             self::storeApiData($response, $device);
             return json_encode([
                 'success' => "true",
-                'message' => __('Msg.RefreshedDevice'),
+                'message' => __('Successfully refreshed device'),
             ]);
+        } else {
+            $response = $class::GET_DEVICE_DATA($device, "api");
+            if (isset($response['success']) and $response['success']) {
+                self::storeApiData($response, $device);
+                return json_encode([
+                    'success' => "true",
+                    'message' => __('Successfully refreshed device'),
+                ]);
+            }
         }
 
         return json_encode([
             'success' => "false",
-            'message' => __('Msg.FailedToRefreshDevice'),
+            'message' => __('Device could not be refreshed'),
         ]);
     }
 
@@ -71,36 +78,21 @@ class DeviceService
         $device->save();
     }
 
-    static function deleteDeviceData(Device $device)
+    static function deleteDeviceData($id, $ports)
     {
-        $ports = $device->ports()->get();
-        DeviceBackup::where('device_id', $device->id)->delete();
-        DeviceUplink::where('device_id', $device->id)->delete();
-        Notification::where('unique-identifier', 'LIKE', '%-'.$device->id.'-%')->delete();
-        DeviceVlanPort::where('device_id', $device->id)->delete();
+        DeviceBackup::where('device_id', $id)->delete();
+        DeviceUplink::where('device_id', $id)->delete();
+        Notification::where('unique-identifier', 'LIKE', '%-'.$id.'-%')->delete();
+        DeviceVlanPort::where('device_id', $id)->delete();
         DevicePortStat::where(function ($query) use ($ports) {
             foreach ($ports as $port) {
-                $query->orWhere('device_port_id', $port->id);
+                $query->orWhere('device_port_id', $port);
             }
         })->delete();
-        DevicePort::where('device_id', $device->id)->delete();
-        DeviceVlan::where('device_id', $device->id)->delete();
-        Client::where('device_id', $device->id)->delete();
-        Mac::where('device_id', $device->id)->delete();
-    }
-
-    static function isOnline($hostname)
-    {
-        try {
-            if ($fp = fsockopen($hostname, 22, $errCode, $errStr, 0.2)) {
-                fclose($fp);
-                return true;
-            }
-            fclose($fp);
-        } catch (\Exception $e) {
-        }
-
-        return false;
+        DevicePort::where('device_id', $id)->delete();
+        DeviceVlan::where('device_id', $id)->delete();
+        Client::where('device_id', $id)->delete();
+        Mac::where('device_id', $id)->delete();
     }
 
     static function storeUplink(Request $request)
@@ -108,14 +100,14 @@ class DeviceService
         // Update/Create uplinks via notification
         if ($request->has("id") && $request->has("a")) {
             $notification = Notification::find($request->id);
-            
+
             if (!$notification) {
                 return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
             }
 
             $data = json_decode($notification->data, true);
             $port = DevicePort::where('device_id', $data['device_id'])->where('name', $data['port'])->first();
-            
+
             if($request["a"] == "yes" && $port) {
                 DeviceUplink::updateOrCreate([
                     'name' => $data['port'],
@@ -145,7 +137,7 @@ class DeviceService
         return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
     }
 
-    static function updatePortDescription($logininfo, $port, $device_id, $newDescription)
+    static function updatePortDescription(String $cookie, DevicePort $port, $device_id, $newDescription)
     {
 
         $device = Device::find($device_id);
@@ -154,137 +146,66 @@ class DeviceService
             return false;
         }
 
+        // dd($cookie, $port, $device_id, $newDescription, $device);
+
         $class = config('app.types')[$device->type];
 
-        if (!$logininfo) {
+        if (!$cookie) {
             return false;
         }
 
-        return $class::setPortName($port->name, $newDescription, $device, $logininfo);
+        return $class::setPortDescription($port, $newDescription, $device, $cookie);
     }
 
-
-    static function syncVlansToAllDevices(Request $request)
+    static function updatePortUntaggedVlan(String $cookie, DevicePort $port, $device_id, $untaggedVlan)
     {
-        $site_id = Auth::user()->currentSite()->id;
-
-        $devices = Site::find($site_id)->devices()->get()->keyBy('id');
-        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('site_id', $site_id)->get()->keyBy('vid');
-
-        $results = [];
-
-        $create_vlans = ($request->input('create-if-not-exists') == "on") ? true : false;
-        $rename_vlans = ($request->input('overwrite-vlan-name') == "on") ? true : false;
-
-        $testmode = ($request->input('test-mode') == "on") ? true : false;
-
-        $start = microtime(true);
-
-        foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(config('app.types')))) {
-                continue;
-            }
-
-            $current_vlans = $device->vlans()->get()->keyBy('vlan_id')->toArray();
-
-            $results[$device->id] = [];
-
-            $class = config('app.types')[$device->type];
-            $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode);
-        }
-
-        $elapsed = microtime(true) - $start;
-
-        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'create_vlans', 'rename_vlans', 'testmode', 'site_id'));
-    }
-
-    static function syncVlansToDevice(Device $device, Request $request)
-    {
-        $devices = Device::all()->keyBy('id');
-        $site_id = $device->site_id;
-        $current_vlans = $device->vlans()->get()->keyBy('vlan_id')->toArray();
-        $syncable_vlans = Vlan::where('is_synced', '!=', '0')->where('site_id', $device->site_id)->get()->keyBy('vid');
-
-        $results = [];
-
-        $create_vlans = ($request->input('create-if-not-exists') == "on") ? true : false;
-        $rename_vlans = ($request->input('overwrite-vlan-name') == "on") ? true : false;
-        $tag_to_uplink = ($request->input('tag-vlan-to-uplink') == "on") ? true : false;
-        $testmode = ($request->input('test-mode') == "on") ? true : false;
-
-        $start = microtime(true);
-
-        $results[$device->id] = [];
-        $class = config('app.types')[$device->type];
-        $results[$device->id] = $class::syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink ,$testmode);
-
-        $elapsed = microtime(true) - $start;
-
-        return view('vlan.view_sync-results', compact('devices', 'results', 'elapsed', 'testmode', 'create_vlans', 'rename_vlans', 'tag_to_uplink', 'site_id'));
-    }
-
-    static function updatePortVlans(String $cookie, DevicePort $port, $device_id, $untaggedVlan, $taggedVlans, $untaggedIsUpdated, $taggedIsUpdated)
-    {
-
         $device = Device::find($device_id);
 
-        $class = config('app.types')[$device->type];
+        if (!$device) {
+            return false;
+        }
 
-        $login_info = $cookie;
+        // dd($cookie, $port, $device_id, $untaggedVlan, $device);
+
+        $class = config('app.types')[$device->type];
 
         $vlans = $device->vlans()->get()->keyBy('id')->toArray();
 
-        if (!$login_info) {
+        if (!$cookie) {
             return false;
         }
 
-        $return = [];
-        if ($untaggedIsUpdated) {
-            $success_untagged = $class::setUntaggedVlanToPort($untaggedVlan, $port, $device, $vlans, false, $login_info);
-            $return['untagged'] = $success_untagged;
-        }
-
-        if ($taggedIsUpdated) {
-            $success_tagged = $class::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $login_info);
-            $return['tagged'] = $success_tagged;
-        }
-
-        list($cookie, $api_version) = explode(";", $login_info);
-        $class::API_LOGOUT($device, $cookie, $api_version);
-
-        return $return;
+        return $class::setUntaggedVlanToPort($untaggedVlan, $port, $device, $vlans, false, $cookie);
     }
 
-    // Prevent mass login on switch api, use global cookie instead
-    // Execute way faster
-    public function startApiSession($id, Request $request)
+    static function updatePortTaggedVlans(String $cookie, DevicePort $port, $device_id, $taggedVlans)
     {
-
-        $device = Device::find($id);
-
-        if (config('app.write_type')[$device->type] == "snmp") {
-            return json_encode(['success' => 'true', 'hash' => Crypt::encrypt("SNMP_NO_LOGIN"), 'timestamp' => time()]);
-        }
+        $device = Device::find($device_id);
 
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+            return false;
         }
+
+        // dd($cookie, $port, $device_id, $taggedVlans, $device);
 
         $class = config('app.types')[$device->type];
 
-        $login_info = $class::API_LOGIN($device);
-        if (!$login_info) {
-            return json_encode(['success' => 'false', 'message' => 'Failed login']);
+        $vlans = $device->vlans()->get()->keyBy('id')->toArray();
+
+        if (!$cookie) {
+            return false;
         }
 
-        return json_encode(['success' => 'true', 'hash' => Crypt::encrypt($login_info), 'timestamp' => time()]);
+        $result = $class::setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, false, $cookie);
+
+        return $result;
     }
 
     static function closeApiSession($cookie, $id)
     {
         $device = Device::find($id);
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+            return json_encode(['success' => 'false', 'message' => 'Device not found']);
         }
         $class = config('app.types')[$device->type];
         list($cookie, $api_version) = explode(";", $cookie);

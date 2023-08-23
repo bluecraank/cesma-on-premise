@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
 use App\Http\Requests\StoreSiteRequest;
-use App\Http\Requests\UpdateSiteRequest;
-use App\Models\Building;
 use App\Models\Site;
 use Illuminate\Support\Facades\Cookie;
 
@@ -19,8 +15,8 @@ class SiteController extends Controller
         $newSite = Site::create($request->except('_token', '_method'));
 
         if ($newSite) {
-            CLog::info("Site", "Create site {$request->name}");
-            return redirect()->back()->with('success', __('Msg.SiteCreated'));
+            CLog::info("Site", "Site created", null, $request->name);
+            return redirect()->back()->with('success', __('Site ":name" successfully created', ['name' => $request->name]));
         }
 
         CLog::error("Site", "Could not create site {$request->name}");
@@ -28,42 +24,19 @@ class SiteController extends Controller
 
     }
 
-    public function update(UpdateSiteRequest $request)
-    {
-        $site = Site::find($request->id);
-        $temp = $site->name;
-        if ($site->update($request->except(['_token', '_method']))) {
-            CLog::info("Site", "Standort " . $temp ." umbenannt", null, "{$temp} => {$request->name}");
-            return redirect()->back()->with('success', __('Msg.SiteUpdated'));
-        }
-
-        CLog::error("Site", "Standort {$temp} konnte nicht umbenannt werden", null, "{$temp} -> {$request->name}");
-        return redirect()->back()->withErrors(['message' => 'Site could not be updated']);
-    }
-
-    public function destroy(Request $request)
-    {
-        $site = Site::find($request->id);
-
-        $temp = $site->name;
-        if ($site->delete()) {
-            CLog::info("Site", "Standort {$temp} gelöscht", null, "");
-            return redirect()->back()->with('success', __('Msg.SiteDeleted'));
-        }
-
-        CLog::error("Site", "Standort {$temp} konnte nicht gelöscht werden", null, "");
-        return redirect()->back()->withErrors(['message' => 'Site could not be deleted']);  
-    }
-
     public function changeSite(Request $request) {
-        Cookie::queue(cookie('currentSite', $request->site_id, $minute = 525600));
-        sleep(1);
+        if($request->has('site_id') && Site::where('id', $request->site_id)->exists()) {
+            Cookie::queue(cookie('currentSite', $request->site_id, $minute = 525600));
+            sleep(1);
 
-        $url = url()->previous();
-        $url = explode('/', $url)[3];
+            $url = url()->previous();
+            $url = explode('/', $url)[3];
 
-        // check if web route exists
+            // check if web route exists
 
-        return redirect('/' . $url);
+            return redirect()->route($url);
+        }
+
+        return redirect()->back();
     }
 }

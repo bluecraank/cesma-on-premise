@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
@@ -55,30 +56,14 @@ class Device extends Model
 
     public function building() {
         return $this->belongsTo(Building::class);
-    } 
+    }
 
     public function room() {
         return $this->belongsTo(Room::class);
     }
-    
+
     public function backups() {
         return $this->hasMany(DeviceBackup::class);
-    }
-
-    public function firmwareOrUnknown() {
-        return $this->firmware ?? 'Unknown';
-    }
-
-    public function hardwareOrUnknown() {
-        return $this->hardware ?? 'Unknown';
-    }
-
-    public function serialOrUnknown() {
-        return $this->serial ?? 'Unknown';
-    }
-
-    public function modelOrUnknown() {
-        return $this->model ?? 'Unknown';
     }
 
     public function vlanports() {
@@ -96,6 +81,19 @@ class Device extends Model
     public function topology() {
         return Topology::whereNot('local_device', 0)->whereNot('remote_device', 0)->where(function($query) {
             $query->where('local_device', $this->id)->orWhere('remote_device', $this->id);
-        });    
+        });
+    }
+
+    public function active() {
+        try {
+            if ($fp = fsockopen($this->hostname, 22, $errCode, $errStr, 0.2)) {
+                fclose($fp);
+                return true;
+            }
+            fclose($fp);
+        } catch (\Exception $e) {
+        }
+
+        return false;
     }
 }

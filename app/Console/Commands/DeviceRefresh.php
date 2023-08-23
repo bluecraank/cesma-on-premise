@@ -33,12 +33,9 @@ class DeviceRefresh extends Command
      */
     public function handle()
     {
-        $start = microtime(true);
-
         $device = Device::find($this->argument('id'));
-        
+
         if(!$device) {
-            // CLog::error("Automated task", "Failed to refresh device, device not found", $device);
             Log::error("Failed to refresh device, device not found");
             return;
         }
@@ -48,8 +45,10 @@ class DeviceRefresh extends Command
 
         if($refreshStatus['success'] == "false") {
             Log::error("Failed to refresh device " . $device->name);
+            Command::error("Failed to refresh device " . $device->name);
             return;
         }
+
         Log::info("Successfully refreshed device " . $device->name);
     }
 }

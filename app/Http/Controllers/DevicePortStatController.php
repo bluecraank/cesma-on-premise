@@ -11,7 +11,7 @@ class DevicePortStatController extends Controller
     public function index(Device $device, $port_id = null)
     {
         $timespan = request()->get('timespan', 180);
-        if($timespan == "" || $timespan == null || $timespan < 15) { 
+        if($timespan == "" || $timespan == null || $timespan < 15) {
             $timespan = 180;
         }
 
@@ -23,12 +23,12 @@ class DevicePortStatController extends Controller
             abort(404, "Port $port_id not found.");
         }
 
-        $port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>', 
+        $port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>',
         Carbon::now()->subMinutes($timespan)->toDateTimeString())->get();
 
         $last_stat = $port_stats->last();
 
-        $all_port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>', 
+        $all_port_stats = DevicePortStat::where('device_port_id', $current_port->id)->where('created_at', '>',
         Carbon::now()->subMinutes($timespan)->toDateTimeString())->get();
         $avg_utilization_rx = number_format($all_port_stats->avg('port_rx_bps')*8/1024/1024 / ($port_stats[0]->port_speed ?? 1000) * 100, 2);
         $avg_utilization_tx = number_format($all_port_stats->avg('port_tx_bps')*8/1024/1024 / ($port_stats[0]->port_speed ?? 1000) * 100, 2);
@@ -46,13 +46,13 @@ class DevicePortStatController extends Controller
         $dataset = $this->getBpsData($port_stats);
         $dataset3 = $this->getBytesData($port_stats);
         $dataset2 = $this->getPacketsData($port_stats);
-        
+
         // Fixed undefined array index
         $utilization_rx = (isset($port_stats[0]) && $port_stats[0]->port_rx_bps) != 0 ? number_format(($port_stats[0]->port_rx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $utilization_tx = (isset($port_stats[0]) && $port_stats[0]->port_tx_bps) != 0 ? number_format(($port_stats[0]->port_tx_bps*8/1024/1024) / $port_stats[0]->port_speed * 100, 2) : 0;
         $speed = (isset($port_stats[0])) ? $port_stats[0]->port_speed / 10 : 0;
 
-        return view('switch.view_portstats', compact('vlans', 'device', 'dataset', 'port_stats', 'last_stat', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3', 'avg_utilization_rx', 'avg_utilization_tx'));
+        return view('device.port.show', compact('vlans', 'device', 'dataset', 'port_stats', 'last_stat', 'current_port', 'ports', 'port_id', 'utilization_rx', 'utilization_tx', 'speed', 'dataset2', 'dataset3', 'avg_utilization_rx', 'avg_utilization_tx'));
     }
 
     public function getPacketsData($ports) {
@@ -104,7 +104,7 @@ class DevicePortStatController extends Controller
 
         $dataset = json_encode($dataset);
 
-        return $dataset;      
+        return $dataset;
     }
 
     public function getBpsData($ports) {
@@ -130,6 +130,6 @@ class DevicePortStatController extends Controller
 
         $dataset = json_encode($dataset);
 
-        return $dataset;       
+        return $dataset;
     }
 }

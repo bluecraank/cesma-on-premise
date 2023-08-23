@@ -37,13 +37,6 @@ class RefreshDevices extends Command
             proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' snmp > /dev/null &', [], $pipes);
         }
 
-        sleep(5);
-
-        // API refresh
-        foreach($devices as $device) {
-            proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' api > /dev/null &', [], $pipes);
-        }
-
-        Log::info('[Switch] Refreshing '.count($devices).' devices...');
+        Log::info('[Devices - SNMP] Refreshing '.count($devices).' devices...');
     }
 }

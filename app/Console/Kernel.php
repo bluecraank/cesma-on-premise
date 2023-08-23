@@ -9,63 +9,60 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {
-        // API abfragen
-        $schedule->command('device:refresh-all')
-        ->everyFiveMinutes()
-        ->runInBackground();
-        
+        // API refresh
+        $schedule->command('device:refresh-all-api')
+            ->everyFiveMinutes()
+            ->runInBackground();
+
+        // SNMP refresh every minute cause it's fast
+        $schedule->command('device:refresh-all')->everyMinute();
+
+        // Get clients from providers
         $schedule->command('clients:query-providers')
-        ->everyMinute();
+            ->everyMinute();
 
+        // Update clients
         $schedule->command('clients:update')
-        ->everyFiveMinutes()
-        ->runInBackground();
+            ->everyMinute()
+            ->runInBackground();
 
+        // Resolve dns hostnames of clients
         $schedule->command('clients:dns-lookup')
-        ->everyFiveMinutes()
-        ->runInBackground();
+            ->everyFiveMinutes()
+            ->runInBackground();
 
+        // Resolve mac vendors of clients
         $schedule->command('clients:resolve-mac-vendors')
-        ->daily()
-        ->at('05:00')
-        ->runInBackground();
-        
-        // Backups erstellen
+            ->daily()
+            ->at('05:00')
+            ->runInBackground();
+
+        // Create backups of every device
         $schedule->command('device:backup-all')
-        ->dailyAt('10:30')
-        ->runInBackground();
+            ->dailyAt('10:30')
+            ->runInBackground();
 
+        // Clean up database
         $schedule->command('database:cleanup')
-        ->dailyAt('04:00');
+            ->dailyAt('04:00');
 
-        // Backups per Mail versenden
+        // Sent backup status weekly
         $schedule->command('backup:mail')
-        ->weekly()
-        ->sundays()
-        ->at('22:00');
-     }
+            ->weekly()
+            ->sundays()
+            ->at('22:00');
+    }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
-    protected function commands()
+    protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
-
-    protected function shortSchedule(\Spatie\ShortSchedule\ShortSchedule $shortSchedule)
-{
-    // this artisan command will run every second
-    $shortSchedule->command('check:job-queue')->everySecond()->withoutOverlapping();
-}
 }

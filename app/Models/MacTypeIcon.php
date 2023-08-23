@@ -10,4 +10,9 @@ class MacTypeIcon extends Model
         'mac_type',
         'mac_icon',
     ];
+
+    public function prefixes()
+    {
+        return $this->hasMany(MacType::class, 'type', 'mac_type');
+    }
 }
