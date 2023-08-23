@@ -41,7 +41,7 @@
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
                     <button data-modal="new-key" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
-                        {{ __('Button.Create') }}</button>
+                        {{ __('Create') }}</button>
                 @endif
             </div>
 
@@ -64,7 +64,7 @@
                         <tr>
                             <td>{{ $key->description }}</td>
                             <td>{{ $out }}</td>
-                            <td style="width:150px;" class="has-text-centered">
+                            <td class="is-actions-cell has-text-centered">
                                 @if (Auth::user()->role >= 2)
                                     <button data-modal="delete-key"
                                         data-id="{{ $key->id }}"
@@ -106,7 +106,7 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ substr($user->guid, 0, 20) }}...</td>
                             <td>{{ $user->getRoleName() }}</td>
-                            <td style="width:150px;" class="has-text-centered">
+                            <td class="is-actions-cell has-text-centered">
                                 @if (Auth::user()->role == 2)
                                     <button data-modal="edit-user"
                                         data-id="{{ $user->id }}"
@@ -129,7 +129,7 @@
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
                     <button data-modal="add-mac" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
-                        {{ __('Button.Create') }}</button>
+                        {{ __('Create') }}</button>
                 @endif
             </div>
 
@@ -143,7 +143,7 @@
                         <th>Vendor</th>
                         <th>{{ __('System.Desc') }}</th>
                         <th>{{ __('Type') }}</th>
-                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                        <th class="is-actions-cell has-text-centered">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,7 +177,7 @@
                         <th>MAC {{ __('Type') }}</th>
                         <th>Font Awesome Icon</th>
                         <th class="has-text-centered">{{ __('Preview') }}</th>
-                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                        <th class="is-actions-cell has-text-centered">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -205,7 +205,7 @@
             <div class="is-pulled-right">
                 @if (Auth::user()->role >= 1)
                     <button data-modal="add-router" class="is-small button is-success"><i class="fas fa-plus mr-1"></i>
-                        {{ __('Button.Create') }}</button>
+                        {{ __('Create') }}</button>
                 @endif
             </div>
 
@@ -220,7 +220,7 @@
                         <th>Hostname/IP</th>
                         <th>Beschreibung</th>
                         <th>Status</th>
-                        <th style="width:150px;" class="has-text-centered">{{ __('Actions') }}</th>
+                        <th class="is-actions-cell has-text-centered">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -242,7 +242,7 @@
                                                 data-desc="{{ $router->desc }}"><i class="fa fa-gear"></i></button>
                                         </div>
                                         <div class="control">
-                                            <button title="{{ __('Button.Delete') }}"
+                                            <button title="{{ __('Delete') }}"
                                                 class="button is-danger is-small" data-modal="delete-router"
                                                 data-id="{{ $router->id }}" data-ip="{{ $router->ip }}"
                                                 data-desc="{{ $router->desc }}">

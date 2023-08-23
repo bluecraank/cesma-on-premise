@@ -6,7 +6,7 @@
                 <th>Titel</th>
                 <th>Meldung</th>
                 <th>Gemeldet</th>
-                <th>{{ __('Actions') }}</th>
+                <th class="has-text-centered">{{ __('Actions') }}</th>
             </tr>
         </thead>
         <tbody>

@@ -1,31 +1,34 @@
 <?php
 
-use App\Http\Controllers\VlanController;
-use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\BuildingController;
-use App\Http\Controllers\SSHController;
 use App\Http\Controllers\BackupController;
-use App\Http\Controllers\DevicePortStatController;
+use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\MacTypeController;
 use App\Http\Controllers\PublicKeyController;
-use App\Http\Controllers\SystemController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SiteController;
-use App\Http\Livewire\ShowBackups;
-use App\Http\Livewire\ShowBuildings;
-use App\Http\Livewire\ShowClients;
-use App\Http\Livewire\ShowDevices;
-use App\Http\Livewire\ShowLogs;
-use App\Http\Livewire\ShowRooms;
-use App\Http\Livewire\ShowSites;
-use App\Http\Livewire\ShowSwitchBackups;
-use App\Http\Livewire\ShowVlans;
+use App\Http\Controllers\SSHController;
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\VlanController;
+use App\Livewire\DeviceExecuteSSH;
+use App\Livewire\ShowBackups;
+use App\Livewire\ShowBuildings;
+use App\Livewire\ShowClients;
+use App\Livewire\ShowDeviceBackups;
+use App\Livewire\ShowDevices;
+use App\Livewire\ShowLogs;
+use App\Livewire\ShowRooms;
+use App\Livewire\ShowSites;
+use App\Livewire\ShowUsers;
+use App\Livewire\ShowVlans;
+use App\Livewire\SyncVlans;
+use App\Models\Device;
+use App\Models\DeviceBackup;
 use App\Services\DeviceService;
-use App\Services\MacTypeService;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Route;
+use Tabuna\Breadcrumbs\Breadcrumbs;
+use Tabuna\Breadcrumbs\Trail;
 
 
 /*
@@ -34,125 +37,190 @@ use Illuminate\Support\Facades\Storage;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
 |
 */
 
-// Basic routes allowed for all users
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/', ShowDevices::class)->name('dashboard');
-    Route::get('/vlans', ShowVlans::class)->name('vlans');
-    Route::get('/vlans/{id}', [VlanController::class, 'showVlanDetails'])->name('show-vlan')->where('id', '[0-9]+');
-    Route::get('/clients', ShowClients::class)->name('clients');
-    
-    
-    Route::get('/user-settings', [SystemController::class, 'index_usersettings'])->name('user-settings');
-    
-    Route::get('/sites', ShowSites::class)->name('sites');
-    Route::get('/buildings', ShowBuildings::class)->name('buildings');
-    Route::get('/rooms', ShowRooms::class)->name('rooms');
-    
-    Route::put('/sites/change', [SiteController::class, 'changeSite'])->name('change-site');
-    Route::get('/topology', [SystemController::class, 'index_topology'])->name('topology');
+// Main Routes
+Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
+    Route::get('/', function () {
+        return view('dashboard');
+    })->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Dashboard'), route('dashboard'));
+    })->name('dashboard');
+
+    Route::get('ssh', DeviceExecuteSSH::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Execute SSH'), route('ssh'));
+    })->name('ssh');
+
+    Route::get('settings/users', ShowUsers::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Users'), route('users'));
+    })->name('users');
+
+    Route::get('logs', ShowLogs::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Logs'), route('logs'));
+    })->name('logs');
+
+    Route::get('topology', [SystemController::class, 'index_topology'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Topology'), route('topology'));
+    })->name('topology');
+
+    Route::get('clients', ShowClients::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Clients'), route('clients'));
+    })->name('clients');
+
+    Route::get('/sites', ShowSites::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Sites'), route('sites'));
+    })->name('sites');
+
+    Route::get('/rooms', ShowRooms::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Rooms'), route('rooms'));
+    })->name('rooms');
+
 });
 
-// /device routes
-Route::prefix('devices')->middleware('auth:sanctum')->group(function () {
-    Route::get('/backups', ShowBackups::class)->name('backups');
-    Route::get('/{device:id}', [DeviceController::class, 'show'])->name('show-device')->where('id', '[0-9]+');
-    Route::get('/{device:id}/backups', ShowSwitchBackups::class)->name('device-backups')->where('id', '[0-9]+');
-    Route::get('/{device:id}/ports/{port}', [DevicePortStatController::class, 'index'])->name('port-details-specific')->where('id', '[0-9]+');
+Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/', ShowDevices::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Devices'), route('devices'));
+    })->name('devices');
+
+    Route::post('/{device}/execute', [SSHController::class, 'performSSH'])->name('perform-ssh');
+    Route::post('/{device}/backup', [DeviceController::class, 'createBackup'])->name('create-backup');
+    Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
+    Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
+
+    Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Backups'), route('backups'));
+    })->name('backups');
+
+
+    Route::get('/{device}/backups/{devicebackup}', [BackupController::class, 'downloadBackup'])->name('download-backup');
+
+    Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Backups'), route('backups'));
+    })->name('backups');
+
+
+    Route::get('/backups/{backup}', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Backups'), route('backups'));
+    })->name('show-backup');
+
+
+    Route::get('/{device}', [DeviceController::class, 'show'])->breadcrumbs(function (Trail $trail, Device $device) {
+        $trail->parent('devices')
+        ->push($device->name, route('show-device', $device->id));
+    })->name('show-device');
+
+    Route::get('/{device}/backups', ShowDeviceBackups::class)->breadcrumbs(function (Trail $trail, Device $device) {
+        $trail->parent('devices')
+        ->push($device->name, route('show-device', $device->id))
+        ->push(__('Backups'), route('show-device-backups', $device->id));
+    })->name('show-device-backups');
+
+
+    Route::get('/{device}/ports/{port}', [DeviceController::class, 'showPort'])->breadcrumbs(function (Trail $trail, Device $device, $port) {
+        $trail->parent('show-device', $device->id)
+        ->push(__('Port'), route('show-port', $port));
+    })->name('show-port');
+
 });
 
-// Fix backup download... csrf expiring
-Route::get('/devices/backup/{id}/download/', [BackupController::class, 'downloadBackup'])->name('download-backup');
+Route::prefix('vlans')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', ShowVlans::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Vlans'), route('vlans'));
+    })->name('vlans');
 
-// Admin only routes
-Route::middleware(['role.admin', 'auth:sanctum'])->group(function () {
-    // Allgemeine Aktionen
-    Route::get('/logs', ShowLogs::class)->name('logs');
-    Route::get('/execute', [SSHController::class, 'index'])->name('perform-ssh');
-    
-    Route::post('/sites', [SiteController::class, 'store'])->name('create-site');
-    Route::put('/sites', [SiteController::class, 'update'])->name('update-site');
-    Route::delete('/sites', [SiteController::class, 'destroy'])->name('delete-site');
-    
-    Route::post('/buildings', [BuildingController::class, 'store'])->name('create-building');
-    Route::put('/buildings', [BuildingController::class, 'update'])->name('update-building');
-    Route::delete('/buildings', [BuildingController::class, 'destroy'])->name('delete-building');
-    
-    Route::post('/rooms', [RoomController::class, 'store']);
-    Route::put('/rooms', [RoomController::class, 'update']);
-    Route::delete('/rooms', [RoomController::class, 'destroy']);
-    // Why not just ::resource?
-    
-    Route::get('/system', [SystemController::class, 'index_system'])->name('system');
-    
-    Route::post('/vlans', [VlanController::class, 'store']);
-    Route::put('/vlans', [VlanController::class, 'update']);
-    Route::delete('/vlans', [VlanController::class, 'destroy']);    
+    Route::get('/sync', SyncVlans::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Sync vlans'), route('sync-vlans'));
+    })->name('sync-vlans');
 
-    Route::post('/router', [SystemController::class, 'storeRouter']);
-    Route::put('/router', [SystemController::class, 'updateRouter']);
-    Route::delete('/router', [SystemController::class, 'deleteRouter']);
+    Route::get('/{id}', function () {
+        return view('dashboard');
+    })->breadcrumbs(function (Trail $trail) {
+        $trail->parent('vlans')
+        ->push(__('Vlan'), route('show-vlan', 1));
+    })->name('show-vlan');
 
-    // Pubkey Aktionen
-    Route::post('/pubkey/add', [PublicKeyController::class, 'store']);
-    Route::delete('/pubkey/delete', [PublicKeyController::class, 'destroy']);
 
-    // Privatekey Route
-    // TODO: Remove this route in production, make it better
-    Route::post('/privatekey/upload', function(Request $request) {
-        $key = $request->input('key');
-        return "<pre>".Crypt::encrypt($key)."</pre><br><b>Please create new file 'ssh.key' in storage/app/ and paste this encrypted key into it.</b>";
-    });
-    
-    Route::get('/privatekey', function() {
-        if(!Storage::disk('local')->get('ssh.key')) {
-            return view('ssh.encrypt');
-        } else {
-            return response('SSH Key already exists', 400);
-        }
-    });
-
-    // User Aktionen
-    Route::put('/user/role', [SystemController::class, 'updateUserRole']);
-
-    // MacType Aktionen
-    Route::post('/clients/type', [MacTypeService::class, 'store']);
-    Route::post('/clients/type/icon', [MacTypeService::class, 'storeIcon']);
-    Route::delete('/clients/type', [MacTypeService::class, 'delete']);   
+    Route::post('/', [VlanController::class, 'store'])->name('create-vlan');
 });
 
-Route::prefix('devices')->middleware(['role.admin', 'auth:sanctum'])->group(function () {
-    // Views
-    Route::put('/uplinks', [DeviceService::class, 'storeUplink'])->name('set-uplink');
+Route::prefix('sites')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', ShowSites::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Sites'), route('sites'));
+    })->name('sites');
 
-    // Aktionen für bestimmten device
-    Route::post('/{device:id}/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysToSwitch'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/action/refresh', [DeviceService::class, 'refreshDevice'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/action/sync-vlans', [DeviceService::class, 'syncVlansToDevice'])->where('id', '[0-9]+');
-    Route::post('/{device:id}/action/backup', [DeviceController::class, 'createBackup'])->where('id', '[0-9]+');
-    Route::post('/{id}/action/update-untagged-ports', [DeviceController::class, 'setUntaggedVlanToPort'])->where('id', '[0-9]+');
-    Route::post('/{id}/action/update-tagged-ports', [DeviceController::class, 'setTaggedVlanToPort'])->where('id', '[0-9]+');
-    Route::post('/{id}/action/prepare-api', [DeviceService::class, 'startApiSession'])->where('id', '[0-9]+');
+    Route::get('/{id}', function () {
+        return view('dashboard');
+    })->breadcrumbs(function (Trail $trail) {
+        $trail->parent('sites')
+        ->push(__('Site'), route('show-site', 1));
+    })->name('show-site');
 
-    // Backup Aktionen
-    Route::post('/backup/restore', [DeviceController::class, 'restoreBackup'])->name('restore-backup');
-    Route::delete('/backup/delete', [BackupController::class, 'destroy'])->name('delete-backup');
-
-    // Switch Aktionen
-    Route::post('/create', [DeviceController::class, 'store'])->name('create-switch');
-    Route::put('/update', [DeviceController::class, 'update'])->name('update-switch');
-    Route::delete('/delete', [DeviceController::class, 'destroy'])->name('delete-switch');
-
-    // Aktionen für jeden Switch
-    Route::post('/{id}/ssh/execute', [SSHController::class, 'performSSH'])->where('id', '[0-9]+');
-    Route::post('/action/create-backup', [DeviceController::class, 'createBackupAllDevices']);
-    Route::post('/action/sync-pubkeys', [DeviceController::class, 'uploadPubkeysAllDevices']);
-    Route::post('/action/sync-vlans', [DeviceService::class, 'syncVlansToAllDevices'])->name('VLAN Sync');
+    Route::put('/', [SiteController::class, 'changeSite'])->name('change-site');
+    Route::post('/', [SiteController::class, 'store'])->name('create-site');
 });
 
-// Login
+Route::prefix('settings/snmp-gateways')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [SystemController::class, 'index_snmp'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('SNMP Gateways'), route('snmp'));
+    })->name('snmp');
+
+    Route::post('/', [SystemController::class, 'createGateway'])->name('create-gateway');
+    Route::delete('/', [SystemController::class, 'deleteGateway'])->name('delete-gateway');
+});
+
+Route::prefix('settings/publickeys')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [SystemController::class, 'index_publickeys'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('SSH Publickeys'), route('publickeys'));
+    })->name('publickeys');
+
+    Route::post('/', [PublicKeyController::class, 'store'])->name('create-public-key');
+    Route::delete('/', [PublicKeyController::class, 'destroy'])->name('delete-public-key');
+});
+
+
+Route::prefix('settings/mac-types')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [SystemController::class, 'index_mac_type'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('MAC Prefix Icons'), route('mac-types'));
+    })->name('mac-types');
+
+    Route::post('/', [MacTypeController::class, 'store'])->name('create-mac-type');
+    Route::put('/icon', [MacTypeController::class, 'update'])->name('update-mac-type-icon');
+    Route::delete('/', [MacTypeController::class, 'destroy'])->name('delete-mac-type');
+});
+
+
+Route::prefix('buildings')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', ShowBuildings::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Buildings'), route('buildings'));
+    })->name('buildings');
+
+    Route::get('/{id}', function () {
+        return view('dashboard');
+    })->breadcrumbs(function (Trail $trail) {
+        $trail->parent('buildings')
+            ->push(__('Building'), route('show-building', 1));
+    })->name('show-building');
+
+    Route::post('/', [BuildingController::class, 'store'])->name('create-building');
+});
+
+Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', ShowRooms::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Rooms'), route('rooms'));
+    })->name('rooms');
+
+    Route::get('/{id}', function () {
+        return view('dashboard');
+    })->breadcrumbs(function (Trail $trail) {
+        $trail->parent('rooms')
+            ->push(__('Room'), route('show-room', 1));
+    })->name('show-room');
+
+    Route::post('/', [RoomController::class, 'store'])->name('create-room');
+});
+
 Auth::routes();

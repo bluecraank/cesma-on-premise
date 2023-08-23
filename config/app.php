@@ -1,10 +1,7 @@
 <?php
 
-use App\Devices\ArubaCX;
-use App\Devices\ArubaOS;
-use App\Devices\DellEMC;
-use App\Devices\DellEMCPowerSwitch;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
 
 return [
 
@@ -19,56 +16,8 @@ return [
     |
     */
 
-    'types' => [
-        'aruba-os' => ArubaOS::class,
-        'aruba-cx' => ArubaCX::class,
-        'dell-emc' => DellEMC::class,
-        'dell-emc-powerswitch' => DellEMCPowerSwitch::class,
-    ],
+    'name' => env('APP_NAME', 'Laravel'),
 
-    'typenames' => [
-        'aruba-os' => 'HP ArubaOS',
-        'aruba-cx' => 'HP ArubaOS-CX',
-        'dell-emc' => 'Dell EMC OS10 Enterprise',
-        'dell-emc-powerswitch' => "Dell EMC PowerSwitch",
-    ],
-
-    'read-only' => [
-        'aruba-os' => false,
-        'aruba-cx' => false,
-        'dell-emc' => true,
-        'dell-emc-powerswitch' => true,
-    ],
-
-
-    'write_type' => [
-        'aruba-os' => 'api',
-        'aruba-cx' => 'api',
-        'dell-emc' => 'none',
-        'dell-emc-powerswitch' => 'snmp',
-    ],
-
-    'name' => env('APP_NAME', 'Cesma'),
-    'company' => env('APP_COMPANY', 'Default Company'),
-    'version' => env('APP_VERSION', '1.0.0'),
-
-    'api_username' => env('API_USERNAME', 'admin'),
-    'ssh_private_key' => env('SSH_PRIVATEKEY', 'false'),
-    'ssh_username' => env('SSH_USERNAME', 'false'),
-
-    'https' => (env('API_HTTPS') == "true") ? "https://" : "http://",
-
-    'encryption' => env('APP_ENCRYPTION', 'false'),
-
-    'enable_baramundi' => (env('ENABLE_BARAMUNDI') == "true") ? true : false,
-    'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
-    'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
-    'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
-
-    'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
-
-    'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),
-    'ldap_user_group' => env('LDAP_USER_GROUP'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -93,7 +42,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', true),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -121,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'Europe/Berlin',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -134,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'de',
+    'locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -206,35 +155,7 @@ return [
     |
     */
 
-    'providers' => [
-        Barryvdh\Debugbar\ServiceProvider::class,
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        /*
-         * Laravel Framework Service Providers...
-         */
-        Illuminate\Auth\AuthServiceProvider::class,
-        Illuminate\Broadcasting\BroadcastServiceProvider::class,
-        Illuminate\Bus\BusServiceProvider::class,
-        Illuminate\Cache\CacheServiceProvider::class,
-        Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
-        Illuminate\Cookie\CookieServiceProvider::class,
-        Illuminate\Database\DatabaseServiceProvider::class,
-        Illuminate\Encryption\EncryptionServiceProvider::class,
-        Illuminate\Filesystem\FilesystemServiceProvider::class,
-        Illuminate\Foundation\Providers\FoundationServiceProvider::class,
-        Illuminate\Hashing\HashServiceProvider::class,
-        Illuminate\Mail\MailServiceProvider::class,
-        Illuminate\Notifications\NotificationServiceProvider::class,
-        Illuminate\Pagination\PaginationServiceProvider::class,
-        Illuminate\Pipeline\PipelineServiceProvider::class,
-        Illuminate\Queue\QueueServiceProvider::class,
-        Illuminate\Redis\RedisServiceProvider::class,
-        Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
-        Illuminate\Session\SessionServiceProvider::class,
-        Illuminate\Translation\TranslationServiceProvider::class,
-        Illuminate\Validation\ValidationServiceProvider::class,
-        Illuminate\View\ViewServiceProvider::class,
-
+    'providers' => ServiceProvider::defaultProviders()->merge([
         /*
          * Package Service Providers...
          */
@@ -247,7 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-    ],
+    ])->toArray(),
 
     /*
     |--------------------------------------------------------------------------
@@ -261,7 +182,62 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
+        // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Device Types
+    |--------------------------------------------------------------------------
+    |
+    | This array of device types will be used to determine the device type
+    */
+    'types' => [
+        'aruba-os' => \App\Devices\ArubaOS::class,
+        'aruba-cx' => \App\Devices\ArubaCX::class,
+        'dell-emc' => \App\Devices\DellEMC::class,
+        'dell-emc-powerswitch' => \App\Devices\DellEMCPowerSwitch::class,
+    ],
+
+    'typenames' => [
+        'aruba-os' => 'HP ArubaOS',
+        'aruba-cx' => 'HP ArubaOS-CX',
+        'dell-emc' => 'Dell EMC OS10 Enterprise',
+        'dell-emc-powerswitch' => "Dell EMC PowerSwitch",
+    ],
+
+    'read-only' => [
+        'aruba-os' => false,
+        'aruba-cx' => false,
+        'dell-emc' => true,
+        'dell-emc-powerswitch' => true,
+    ],
+
+
+    'write_type' => [
+        'aruba-os' => 'api',
+        'aruba-cx' => 'api',
+        'dell-emc' => 'none',
+        'dell-emc-powerswitch' => 'snmp',
+    ],
+
+
+    'api_username' => env('API_USERNAME', 'admin'),
+    'ssh_private_key' => env('SSH_PRIVATEKEY', 'false'),
+    'ssh_username' => env('SSH_USERNAME', 'false'),
+
+    'https' => (env('API_HTTPS') == "true") ? "https://" : "http://",
+
+    'encryption' => env('APP_ENCRYPTION', 'false'),
+
+    'enable_baramundi' => (env('ENABLE_BARAMUNDI') == "true") ? true : false,
+    'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
+    'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
+    'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
+
+    'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
+
+    'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),
+    'ldap_user_group' => env('LDAP_USER_GROUP'),
 ];

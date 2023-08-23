@@ -17,7 +17,7 @@
             <button data-modal="confirmation-command" type="button"
                 name="executeSwitchCommand" class="button is-danger">Ausführen</button>
             <button data-modal="confirmation-command" type="button"
-                class="button">{{ __('Button.Cancel') }}</button>
+                class="button">{{ __('Cancel') }}</button>
         </footer>
     </div>
 </div>

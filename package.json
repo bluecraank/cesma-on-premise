@@ -1,20 +1,28 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
     },
     "devDependencies": {
+        "@mdi/font": "^7.2.96",
+        "@popperjs/core": "^2.11.6",
         "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.6.0",
-        "lodash": "^4.17.19",
-        "postcss": "^8.1.14",
-        "vite": "^3.0.0"
+        "bootstrap": "^5.2.3",
+        "bulma": "^0.9.0",
+        "bulma-checkbox": "^1.1.1",
+        "bulma-radio": "^1.1.1",
+        "bulma-responsive-tables": "^1.2.5",
+        "bulma-switch-control": "^1.1.1",
+        "bulma-upload-control": "^1.2.0",
+        "laravel-vite-plugin": "^0.7.5",
+        "sass": "^1.56.1",
+        "vite": "^4.0.0"
     },
     "dependencies": {
-        "file-saver": "^2.0.5",
+        "bulma-prefers-dark": "^0.1.0-beta.1",
         "jquery": "^3.7.0",
-        "multiselect": "^0.9.12",
-        "notifyjs-browser": "^0.4.2"
+        "multiselect": "^0.9.12"
     }
 }

@@ -1,70 +1,66 @@
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+
 <p align="center">
-   <img height="210" src="https://github.com/bluecraank/cesma/blob/5d5aacbf36bd874a29d4ed4c0c93fa6308c93fd4/public/img/logo.png">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-# Central Switch Management [cesma] powered by Laravel
+## About Laravel
 
-## Working with
-- HP / ArubaOS like Aruba 2930F
-- HP / ArubaCX like Aruba 6100
-- DELL EMC (read-only)
-- DELL EMC PowerSwitch (read-only)
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-```
-"HP ProVision OS"
-ArubaOS-Switch - Run by ProVision based switches (i.e. 2500, 2900, 3800, 5400, HP 54Z**).
-ArubaOS-CX - Run by Aruba's next generation switches (6100, 6200, 6300, 6400, 8200, etc).
-```
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-## Requirements
-- Enabled API on Aruba Switch with Password authentication
-- At least Firmware 16.10 for ArubaOS, 10.11 for ArubaCX
-- SNMP enabled
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-### PHP Modules
+## Learning Laravel
 
-```php8.1 php8.1-gmp php8.1-yaml php8.1-curl php8.1-mysqli php8.1-ldap php8.1-bcmath php8.1-mbstring php8.1-dom```
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-### Database
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-```MariaDB / MySQL Server```
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
+## Laravel Sponsors
 
-### SNMP
-Make sure, your server can reach your routers with snmp / ping in order to get full client data
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-## Add device into cesma
-- Make sure to set session timeout to one minute
-- Make sure to enable rest-interface on aruba switch
-- newest firmware recommended
+### Premium Partners
 
-## Info about uplinks
-- You should set your uplinks to get high accurancy of client discovery
-- Else you see clients on trunks or uplinks port, which is not correct!
-- Nightly database clean up will delete wrong mac addresses and clients which were discovered on uplink ports
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Cubet Techno Labs](https://cubettech.com)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[Many](https://www.many.co.uk)**
+- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
+- **[DevSquad](https://devsquad.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[OP.GG](https://op.gg)**
+- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
+- **[Lendio](https://lendio.com)**
 
-## Credentials
-- You need to setup ldap authentication in order to log in.
-- Enable LDAP_LOGGING in your .env too debug your ldap connection
-- After login, set your self with Artisan command "php artisan user:role YOUR_GUID admin" to admin
-- You see youre YOUR_GUID with "php artisan user:show"
+## Contributing
 
-## Logging
-- In storage/logs/laravel.log you should see everything needed.
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Features
-- Execute Commands on selected switches, locations or every switch 
-- Tag and untag vlans to port and uplinks
-- Manage Vlans
-- Manage Uplinks / Trunks
-- Backup running-config
-- Restore Backup (ArubaOS tested)
-- Client lookup (mac, ip, port)
-- Port statistics (tx,rx)
-- Manage Site and buildings
-- Sync SSH Pubkeys across all Aruba Switches
-- Categorize clients into groups
-- Logging
-- API / SSH Connection settings
-- Build on PHP Version 8.1 with Laravel
-- High Performance
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

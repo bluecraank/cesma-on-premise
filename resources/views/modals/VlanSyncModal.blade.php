@@ -66,7 +66,7 @@
                 <button data-prevent="false" class="button submit is-primary"
                     onclick="$('.sync-vlan-cancel').addClass('is-hidden');">{{ __('Button.Sync') }}</button>
                 <button data-modal="sync-vlans" type="button"
-                    class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
+                    class="button sync-vlan-cancel">{{ __('Cancel') }}</button>
 
                 <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>

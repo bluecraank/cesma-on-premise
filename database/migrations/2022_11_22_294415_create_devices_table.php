@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreignId('building_id')->constrained();
             $table->foreignId('room_id')->constrained();
             $table->integer('location_description')->nullable();
-            $table->date('last_seen')->nullable();
+            $table->timestamp('last_seen')->nullable();
             $table->string('type');
             $table->timestamps();
         });

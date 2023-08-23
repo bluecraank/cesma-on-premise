@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ip')->unique();
             $table->string('desc');
             $table->boolean('check')->default(false);
+            $table->integer('entries')->default(0);
             $table->timestamps();
         });
     }

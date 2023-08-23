@@ -49,12 +49,12 @@
 
                     <input type="hidden" value="on" name="show-results" checked>
 
-                 </div> 
+                 </div>
             </section>
             <footer class="modal-card-foot">
                 <button data-prevent="false" onclick="$('.sync-vlan-info').show()" class="button submit is-primary">{{ __('Button.Sync') }}</button>
                 <button data-modal="sync-vlans-specific" type="button"
-                    class="button sync-vlan-cancel">{{ __('Button.Cancel') }}</button>
+                    class="button sync-vlan-cancel">{{ __('Cancel') }}</button>
 
                 <span class="sync-vlan-info help is-size-6 is-hidden">{{ __('Msg.SubmitWait') }}</span>
             </footer>

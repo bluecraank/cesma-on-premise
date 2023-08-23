@@ -1,135 +1,142 @@
-@section('title', __('Switches'))
+@section('title', 'Switches')
 
-<div class="box">
-    <h1 class="title is-pulled-left">{{ __('Switches') }}</h1>
+<div>
+    <div class="card has-table">
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-switch"></i></span>
+                Switches
+            </p>
 
-    <div class="is-pulled-right ml-4">
-        @if (Auth::user()->role >= 1)
-            <button data-modal="new-switch" class="button is-small is-success"><i
-                    class="fas fa-plus mr-1"></i> {{ __('Button.Create') }}</button>
-        @endif
-    </div>
+            <div class="mr-5 in-card-header-actions">
+                <div class="is-inline-block ml-2">
+                    @if (Auth::user()->role >= 1)
+                        <button data-modal="create-device" wire:click="show(0, 'create')"
+                            class="button is-small is-success"><i class="mdi mdi-plus mr-1"></i>
+                            {{ __('Create') }}</button>
+                    @endif
+                </div>
 
-    <div class="is-pulled-right">
-        <div class="field">
-            <div class="control has-icons-right">
-                <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm"
-                    placeholder="{{ __('Search.Placeh.Switch') }}">
-                <span class="icon is-small is-right">
-                    <i class="fas fa-search fa-xs"></i>
-                </span>
+                <x-export-button :filename="__('Switches')" table="table" />
+
+                <div class="is-inline-block">
+                    <div class="field">
+                        <div class="control has-icons-right">
+                            <input class="input is-small" type="text" wire:model.debounce.500ms="searchTerm"
+                                placeholder="{{ __('Search for switches') }}">
+                            <span class="icon is-small is-right">
+                                <i class="mdi mdi-search-web"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <div class="card-content">
+            <div class="b-table has-pagination">
+                <div class="table-wrapper has-mobile-cards">
+                    <table class="table is-fullwidth is-striped is-hoverable is-narrow is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Hostname</th>
+                                {{-- <th>MAC</th> --}}
+                                <th>Model</th>
+                                <th>Firmware</th>
+                                <th>{{ __('Site') }}</th>
+                                <th>{{ __('Building') }}</th>
+                                <th>{{ __('Room') }}</th>
+                                <th>{{ __('Description') }}</th>
+                                <th class="has-text-centered">{{ __('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($devices->count() == 0)
+                                <tr>
+                                    <td colspan="9" class="has-text-centered">
+                                        <span class="icon"><i class="mdi mdi-information-outline"></i></span>
+                                        {{ __('No switches found') }}
+                                    </td>
+                                </tr>
+                            @endif
+                            @foreach ($devices as $device)
+                                <tr>
+                                    <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}"
+                                            class="mr-1 fa fa-circle {{ $device->active() ? 'has-text-success' : 'has-text-danger' }}"></i>
+                                        <a class="dark-fix-color"
+                                            href="{{ route('show-device', $device->id) }}">{{ $device->name }}
+                                        </a>
+                                    </td>
+
+                                    @php
+                                        $mac_chunks = str_split($device->mac_address ?? '', 2);
+
+                                        $mac_address = strtoupper(implode(':', $mac_chunks));
+                                    @endphp
+                                    <td>{{ $device->hostname }}</td>
+                                    {{-- <td>{{ $mac_address }}</td> --}}
+                                    <td>{{ $device->model }}</td>
+                                    <td>{{ $device->firmware }}</td>
+                                    <td>{{ $device->site->name }}</td>
+                                    <td>{{ $device->building->name }}</td>
+                                    <td>{{ $device->room->name }}</td>
+                                    <td>{{ $device->location_description }}</td>
+                                    <td class="is-actions-cell has-text-centered">
+                                        <div class="buttons is-right">
+                                            <a class="button is-info is-small"
+                                                href="https://{{ $device->hostname }}"><i
+                                                    class="mdi mdi-open-in-new"></i></a>
+                                            <a class="button is-small is-success"
+                                                @if ($device->created_at != $device->updated_at) href="{{ route('show-device', $device->id) }}" @else disabled @endif><i
+                                                    class="mdi mdi-eye"></i></a>
+                                            <button data-modal="update-device"
+                                                wire:click="show({{ $device->id }}, 'update')"
+                                                class="button is-small is-primary" type="button">
+                                                <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                            </button>
+                                            <button data-modal="delete-device"
+                                                wire:click="show({{ $device->id }}, 'delete')"
+                                                class="button is-small is-danger" type="button">
+                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                {{ $devices->links('pagination::default') }}
             </div>
         </div>
     </div>
 
-    <div class="is-pulled-right ml-4">
-        <button title="Export zu CSV" class="button is-small is-primary export-csv-button mr-2" data-table="table" data-file-name="{{ __('Switches') }}"><i class="fa-solid fa-file-arrow-down"></i></button>
-    </div>
+    @if (Auth::user()->role >= 1)
+        <div>
+            <section>
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            <span class="icon"><i class="mdi mdi-web"></i></span>
+                            {{ __('Actions for every switch') }}
+                        </p>
 
+                    </header>
 
-    <table class="table is-narrow is-hoverable is-striped is-fullwidth">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Modell</th>
-                <th>MAC</th>
-                <th>Firmware</th>
-                <th>{{ __('Building') }}</th>
-                <th>{{ __('Room') }}</th>
-                <th>{{ __('Description') }}</th>
-                <th style="width:150px;text-align:center">{{ __('Actions') }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if ($devices->count() == 0)
-                <tr>
-                    <td colspan="7" class="has-text-centered">{{ __('Switch.NoFound') }}</td>
-                </tr>
-            @endif
-
-            @foreach ($devices as $device)
-                <tr>
-                    @if($device->created_at == $device->updated_at)
-                        <td><div title="{{ __('Hint.NewlyCreated') }}" class="mr-1 lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> <a class="dark-fix-color">{{ $device->name }}</href></td>
-                    @else
-                        <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}" class="mr-1 fa fa-circle {{ ($device->online) ? 'has-text-success' : 'has-text-danger' }}"></i> <a class="dark-fix-color" href="{{ route('show-device', $device->id) }}">{{ $device->name }}</href></td>
-                    @endif
-                    
-                    @php
-                        $mac_chunks = str_split($device->mac_address ?? '', 2);
-
-                        $mac_address = strtoupper(implode(':', $mac_chunks));
-                    @endphp
-
-                    <td>{{ $device->modelOrUnknown() }}</td>
-                    <td>{{ $mac_address }}</td>
-                    <td>{{ $device->firmwareOrUnknown() }}</td>
-                    <td>{{ $device->building()->first()->name }}</td>
-                    <td>{{ $device->room()->first()->name }}</td>
-                    <td>{{ $device->location_description }}</td>
-                    <td style="width:150px;">
-                        <div class="field has-addons is-justify-content-center">
-                            <div class="control">
-                                <a title="{{ __('Show') }}" @disabled($device->created_at == $device->updated_at) @if($device->created_at != $device->updated_at) href="{{ route('show-device', $device->id) }}"  @endif class="button is-success is-small">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </div>
-                            <div class="control">
-                                <a title="{{ __('GUI_External') }}" class="button is-small is-link" href="{{ $https }}{{ $device->hostname }}"
-                                    target="_blank">
-                                    <i class="fa fa-arrow-up-right-from-square"></i>
-                                </a>
-                            </div>
-                            @if (Auth::user()->role >= 1)
-                                <div class="control">
-                                    <button title="{{ __('Switch.Edit.Hint') }}"
-                                        data-modal="edit-switch"
-                                        data-id="{{ $device->id }}"
-                                        data-name="{{ $device->name }}"
-                                        data-hostname="{{ $device->hostname }}"
-                                        data-site_id="{{ $device->site_id }}"
-                                        data-building_id="{{ $device->building_id }}"
-                                        data-room_id="{{ $device->room_id }}"
-                                        data-location_description="{{ $device->location_description }}"
-                                        class="button is-info is-small"><i class="fa fa-gear"></i></button>
-                                </div>
-                                <div class="control">
-                                    <button title="{{ __('Button.Delete') }}"
-                                        data-modal="delete-switch"
-                                        data-id="{{ $device->id }}"
-                                        data-name="{{ $device->name }}"
-                                        class="button is-danger is-small"><i class="fa fa-trash-can"></i></button>
-                                </div>
-                            @endif
+                    <div class="card-content">
+                        <div class="buttons are-small">
+                            @include('buttons.ButtonSyncVlan')
+                            @include('buttons.ButtonSyncPubkeys')
+                            @include('buttons.ButtonCreateBackup')
                         </div>
-                    </td>
-                </tr>
-            @endforeach
-
-           
-        </table>
-        {{ $devices->links('pagination::default') }} 
-</div>
-
-
-@if (Auth::user()->role >= 1)
-    @livewire('show-notifications')
-    <div class="box">
-        <div class="label is-small">{{ __('Text.AllSwitches') }}</div>
-        <div class="buttons are-small">
-            @include('buttons.ButtonCreateBackup')
-            @include('buttons.ButtonSyncPubkeys')
-            @include('buttons.ButtonSyncVlan')
+                    </div>
+                </div>
+            </section>
         </div>
-    </div>
-
-    @include('modals.create.SwitchCreateModal')
-
-    @include('modals.edit.SwitchEditModal')
-
-    @include('modals.delete.SwitchDeleteModal')
-
-    @include('modals.PubkeySyncModal')
-
-    @include('modals.VlanSyncModal')
-@endif
+        @livewire('device-modals')
+        {{-- @include('modals.PubkeySyncModal') --}}
+        {{-- @include('modals.VlanSyncModal') --}}
+    @endif
+</div>

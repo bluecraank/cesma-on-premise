@@ -27,7 +27,7 @@
             <footer class="modal-card-foot">
                 <button id="actionSyncPubkeys" @disabled(empty($keys_list))
                     class="button submit is-primary">{{ __('Button.Sync') }}</button>
-                <button data-modal="sync-pubkeys" type="button" class="button">{{ __('Button.Cancel') }}</button>
+                <button data-modal="sync-pubkeys" type="button" class="button">{{ __('Cancel') }}</button>
             </footer>
         </div>
     </form>

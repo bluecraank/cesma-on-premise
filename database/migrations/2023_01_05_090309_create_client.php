@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->string('type')->default('client');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

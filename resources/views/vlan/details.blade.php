@@ -1,7 +1,7 @@
 @section('title', $vlan['name'])
 
 <x-layouts.main>
-    <div style="display:none" class="notification status is-danger">
+    <div style="display:none" class="notification is-response is-danger">
         <ul>
             <li></li>
         </ul>
@@ -53,7 +53,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                         @foreach ($devices as $switch => $p)
                             <tr>
                                 <td>{{ $switch }}</td>

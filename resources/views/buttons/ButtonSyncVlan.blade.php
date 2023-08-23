@@ -1,6 +1,6 @@
-<button class="button is-info" data-modal="sync-vlans">
+<a href="{{ route('sync-vlans') }}" class="button is-info">
     <span class="icon is-small">
-        <i class="fas fa-sync"></i>
+        <i class="mdi mdi-network"></i>
       </span>
-      <span>{{ __('Button.SyncVlans') }}</span>
-</button>
+      <span>{{ __('Sync vlans') }}</span>
+</a>
