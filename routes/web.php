@@ -23,7 +23,6 @@ use App\Livewire\ShowUsers;
 use App\Livewire\ShowVlans;
 use App\Livewire\SyncVlans;
 use App\Models\Device;
-use App\Models\DeviceBackup;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -44,9 +43,7 @@ use Tabuna\Breadcrumbs\Trail;
 
 // Main Routes
 Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
-    Route::get('/', function () {
-        return view('dashboard');
-    })->breadcrumbs(function (Trail $trail) {
+    Route::get('/', [SystemController::class,'dashboard'])->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Dashboard'), route('dashboard'));
     })->name('dashboard');
 
@@ -95,12 +92,11 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Backups'), route('backups'));
     })->name('backups');
 
+    Route::post('/backups', [DeviceController::class, 'createBackupAllDevices'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Backups'), route('backups'));
+    })->name('create-backups');
 
     Route::get('/{device}/backups/{devicebackup}', [BackupController::class, 'downloadBackup'])->name('download-backup');
-
-    Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
-        $trail->push(__('Backups'), route('backups'));
-    })->name('backups');
 
 
     Route::get('/backups/{backup}', ShowBackups::class)->breadcrumbs(function (Trail $trail) {

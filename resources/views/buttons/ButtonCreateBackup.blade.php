@@ -1,4 +1,4 @@
-<button id="actionCreateBackup" class="button is-info">
+<button data-action="backup-all" class="action button is-info">
     <span class="icon is-small">
         <i class="mdi mdi-backup-restore"></i>
       </span>

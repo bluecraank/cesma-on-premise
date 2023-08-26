@@ -136,7 +136,7 @@
             </section>
         </div>
         @livewire('device-modals')
-        {{-- @include('modals.PubkeySyncModal') --}}
+        @include('modals.PubkeySyncModal')
         {{-- @include('modals.VlanSyncModal') --}}
     @endif
 </div>

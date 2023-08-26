@@ -130,7 +130,7 @@ class DeviceController extends Controller
         }
 
         CLog::info("Switch", "Backup for all switches created");
-        return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
+        return json_encode(['success' => 'true', 'message' => __('Successfully created backups')]);
     }
 
     public function syncPubkeys(Device $device)

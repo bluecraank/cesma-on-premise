@@ -23,7 +23,7 @@ class ShowBuildings extends Component
     public function render()
     {
         // dd($this->searchTerm);
-        $buildings = Building::orderBy('vid')->where('name', 'LIKE', "%".$this->searchTerm."%")->where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);
+        $buildings = Building::orderBy('name')->where('name', 'LIKE', "%".$this->searchTerm."%")->where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);
         $buildings->sortBy('name');
 
         // Sort buildings by name in natural order

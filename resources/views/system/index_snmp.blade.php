@@ -45,7 +45,7 @@
                                     <td>{{ $router->desc }}</td>
                                     <td>{{ $router->ip }}</td>
                                     <td>{!! $router->check ? '<span class="has-text-success">Successfully got SNMP data</span>' : '<span class="has-text-danger">No data retrieved from snmp</span>' !!}</td>
-                                    <td>{{ $router->entries }}</td>
+                                    <td>{{ $router->entries()->count() }}</td>
                                     <td class="is-actions-cell has-text-centered">
                                         <div class="buttons is-small is-right">
                                             <button data-id="{{ $router->id }}" data-ip="{{ $router->ip }}" data-modal="delete-gateway" class="button is-small is-danger" type="button">

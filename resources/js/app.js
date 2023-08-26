@@ -311,6 +311,8 @@ $(".action").on('click', function () {
         url = "/devices/"+id+"/update";
     } else if(action == "sync-pubkeys") {
         url = "/devices/"+id+"/sync-pubkeys";
+    } else if(action == "backup-all") {
+        url = "/devices/backups";
     }
 
     fetch(

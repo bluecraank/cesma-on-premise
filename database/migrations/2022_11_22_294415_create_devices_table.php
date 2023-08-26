@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('hostname')->unique();
             $table->string('mac_address')->unique()->nullable();
             $table->string('username')->default('admin');
-            $table->string('password');
+            $table->longText('password');
             $table->string('model')->nullable();
             $table->string('serial')->nullable();
             $table->string('firmware')->nullable();

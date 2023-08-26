@@ -8,13 +8,30 @@ use App\Models\Router;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\CLog;
+use App\Models\Client;
 use App\Models\Device;
 use App\Models\DevicePort;
+use App\Models\DeviceVlan;
+use App\Models\DeviceVlanPort;
 use App\Models\MacType;
 use App\Models\Topology;
+use App\Models\Vlan;
+use App\Services\ChartService;
 
 class SystemController extends Controller
 {
+    public function dashboard()
+    {
+        $portsToVlans = ChartService::portsToVlans();
+        $clientsToVlans = ChartService::clientsToVlans();
+        $portsOnline = ChartService::portsOnline();
+        $devicesOnline = ChartService::devicesOnline();
+        $clients = Client::all()->count();
+        $vlans = Vlan::all()->count();
+
+        return view('dashboard', compact('portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans'));
+    }
+
     public function index_usersettings()
     {
         return view('system.view_usersettings');

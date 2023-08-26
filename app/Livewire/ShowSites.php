@@ -23,7 +23,7 @@ class ShowSites extends Component
     public function render()
     {
         $site = Site::where('name', 'LIKE', "%".$this->searchTerm."%")->where('id', Auth::user()->currentSite()->id)->firstOrFail();
-        $sites = Site::orderBy('vid')->paginate($this->numberOfEntries ?? 25);
+        $sites = Site::orderBy('name')->paginate($this->numberOfEntries ?? 25);
         $sites->sortBy('name');
 
         // Sort sites by name in natural order

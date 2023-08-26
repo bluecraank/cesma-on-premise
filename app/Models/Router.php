@@ -12,6 +12,9 @@ class Router extends Model
         'ip',
         'desc',
         'check',
-        'entries'
     ];
+
+    public function entries() {
+        return $this->hasMany(SnmpMacData::class, 'router', 'id');
+    }
 }

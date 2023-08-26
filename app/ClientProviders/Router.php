@@ -11,18 +11,19 @@ class Router implements ClientProviderInterface
 {
     static function queryClientData(): Array {
         $ip_to_mac = [];
-        
+
         $routers = RouterModel::all()->pluck('ip')->toArray();
 
         foreach($routers as $router) {
                 try {
                     $snmp_data = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 5000000, 1);
-                    
+                    $router = RouterModel::where('ip', $router)->first();
                     foreach($snmp_data as $ip => $mac) {
                         if(count($snmp_data) > 1) {
-                            RouterModel::where('ip', $router)->update(['check' => true]);
+                            $router->check = true;
                         } else {
-                            RouterModel::where('ip', $router)->update(['check' => false]);
+                            $router->check = false;
+                            $router->save();
                             continue;
                         }
 
@@ -35,12 +36,14 @@ class Router implements ClientProviderInterface
                                 $filtered_mac
                             ],
                             'ip_address' => $filtered_ip,
-                            'router' => $router,
+                            'router' => $router->id,
                         ];
+
+                        $router->save();
                     }
                 } catch(\Exception $e) {
                     RouterModel::where('ip', $router)->update(['check' => false]);
-                    
+
                     Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
                 }
         }

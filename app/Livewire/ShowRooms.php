@@ -24,7 +24,7 @@ class ShowRooms extends Component
     public function render()
     {
         $buildings = Building::where('name', 'LIKE', "%".$this->searchTerm."%")->where('site_id', Auth::user()->currentSite()->id)->get();
-        $rooms = Room::orderBy('vid')->whereIn('building_id', $buildings->pluck('id')->toArray())->paginate($this->numberOfEntries ?? 25);
+        $rooms = Room::orderBy('name')->whereIn('building_id', $buildings->pluck('id')->toArray())->paginate($this->numberOfEntries ?? 25);
         $rooms->sortBy('name');
 
         // Sort rooms by name in natural order

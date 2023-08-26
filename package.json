@@ -18,7 +18,7 @@
         "bulma-upload-control": "^1.2.0",
         "laravel-vite-plugin": "^0.7.5",
         "sass": "^1.56.1",
-        "vite": "^4.0.0"
+        "vite": "^4.4.9"
     },
     "dependencies": {
         "bulma-prefers-dark": "^0.1.0-beta.1",
