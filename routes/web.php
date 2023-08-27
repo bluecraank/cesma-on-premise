@@ -88,6 +88,8 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
     Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
 
+    Route::post('/{device}/uplinks', [DeviceController::class, 'updatePort'])->name('set-uplink');
+
     Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Backups'), route('backups'));
     })->name('backups');

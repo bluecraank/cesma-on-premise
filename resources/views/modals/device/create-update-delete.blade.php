@@ -115,8 +115,7 @@
                                     <label class="label is-small">{{ __('Description') }}</label>
                                     <input wire:model="description"
                                         class="input is-small is-fullwidth switch-numbering @error('description') is-danger @enderror"
-                                        name="location_description" type="number" placeholder="1" value="1"
-                                        required>
+                                        name="location_description" type="number" placeholder="1" value="1">
                                 </div>
                                 @error('description')
                                     <p class="help is-danger">{{ $message }}</p>

@@ -97,7 +97,7 @@ class SystemController extends Controller
                         'margin' => 10,
                         'color' => [
                             'background' => '#ffffff',
-                            'border' => '#ffffff',
+                            'border' => '#000000',
                         ]
                     ];
                 }
@@ -161,8 +161,20 @@ class SystemController extends Controller
                 $to_port = str_replace(["1/1/"], "", $edge['to_port']);
             }
 
+            // dd($edge, $from_port, $to_port);
             $get_from_device_port = DevicePort::where('device_id', $edge['from'])->where('name', $from_port)->first();
             $get_to_device_port = DevicePort::where('device_id', $edge['to'])->where('name', $to_port)->first();
+
+            // dd($get_from_device_port, $get_to_device_port);
+
+            // if(!$get_from_device_port || !$get_to_device_port) {
+            //     continue;
+            // }
+
+            if(!$get_from_device_port) {
+                $get_from_device_port = new DevicePort();
+                $get_from_device_port->speed = 0;
+            }
 
             if ($get_from_device_port->speed == 100) {
                 $speed_color = "#f0ad4e";
@@ -188,12 +200,6 @@ class SystemController extends Controller
                 ],
             ]);
         }
-
-        // if(count($new_edges) == 0) {
-        //     $message = __('Msg.NoTopologyData');
-        // } else {
-        //     $message = null;
-        // }
 
         $keys = array_column($new_edges, 'from');
         array_multisort($keys, SORT_ASC, $new_edges);

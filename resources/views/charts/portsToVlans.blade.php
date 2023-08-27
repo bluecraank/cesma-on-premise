@@ -1,6 +1,7 @@
 <canvas id="ports-to-vlans"></canvas>
 <script>
-    new Chart(document.getElementById('ports-to-vlans'), {
+    setTimeout(() => {
+        new Chart(document.getElementById('ports-to-vlans'), {
         type: 'pie',
         data: {
             datasets: [{
@@ -22,4 +23,6 @@
             }
         },
     });
+    }, 500);
+
 </script>

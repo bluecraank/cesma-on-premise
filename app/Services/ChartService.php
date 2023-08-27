@@ -68,12 +68,11 @@ class ChartService
     }
 
     public static function portsOnline() {
-        $ports = DevicePort::all()->groupBy('link')->toArray();
-
-        // dd($ports);
+        $ports = DevicePort::where('link', 1)->count();
+        $ports_offline = DevicePort::where('link', 0)->count();
 
         $keys = ["Online", "Offline"];
-        $values = [count($ports[1]), count($ports[0])];
+        $values = [$ports, $ports_offline];
 
         return [$keys, $values];
     }

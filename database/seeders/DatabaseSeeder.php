@@ -22,5 +22,15 @@ class DatabaseSeeder extends Seeder
         \App\Models\Site::create([
             'name' => 'Default',
         ]);
+
+        \App\Models\Building::create([
+            'name' => 'Default',
+            'site_id' => 1,
+        ]);
+
+        \App\Models\Room::create([
+            'name' => 'Default',
+            'building_id' => 1,
+        ]);
     }
 }

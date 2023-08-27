@@ -45,7 +45,7 @@ class QueryClientProviders extends Command
         }
 
         if($queriedAtLeastOneProvider != 0) {
-            Log::info('[Clients] Client data retrieved from ' . $queriedAtLeastOneProvider . ' providers in' . (microtime(true) - $start) . ' seconds');
+            Log::info('[Clients] Client data retrieved from ' . $queriedAtLeastOneProvider . ' providers in ' . (microtime(true) - $start) . ' seconds');
         }
     }
 }

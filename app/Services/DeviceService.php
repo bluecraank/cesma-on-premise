@@ -13,7 +13,6 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 
 class DeviceService

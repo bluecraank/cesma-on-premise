@@ -24,7 +24,7 @@
     </nav>
 
     <div class="columns">
-        <div class="column is-4">
+        <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -40,23 +40,7 @@
             </div>
         </div>
 
-        <div class="column is-4">
-            <div class="card">
-                <header class="card-header">
-                    <p class="card-header-title">
-                        <span class="icon"><i class="mdi mdi-desktop-classic"></i></span>
-                        {{ __('Clients to vlans') }}
-                    </p>
-
-                </header>
-
-                <div class="card-content">
-                    @include('charts.clientsToVlans')
-                </div>
-            </div>
-        </div>
-
-        <div class="column is-4">
+        <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -70,6 +54,44 @@
                     @include('charts.portsOnline')
                 </div>
             </div>
+        </div>
+
+        <div class="column is-3">
+            {{-- <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        <span class="icon"><i class="mdi mdi-desktop-classic"></i></span>
+                        {{ __('Clients to vlans') }}
+                    </p>
+
+                </header>
+
+                <div class="card-content">
+                    @include('charts.clientsToVlans')
+                </div>
+            </div> --}}
+        </div>
+
+        <div class="column is-3">
+            {{-- <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        <span class="icon"><i class="mdi mdi-desktop-classic"></i></span>
+                        {{ __('Clients to vlans') }}
+                    </p>
+
+                </header>
+
+                <div class="card-content">
+                    @include('charts.clientsToVlans')
+                </div>
+            </div> --}}
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column is-12">
+            <livewire:show-notifications lazy />
         </div>
     </div>
 </x-layouts>

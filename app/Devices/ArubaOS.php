@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
-
-use App\Helper\CLog;
 use App\Models\DeviceVlanPort;
 use App\Services\PublicKeyService;
 use App\Http\Controllers\BackupController;
@@ -214,11 +212,8 @@ class ArubaOS implements DeviceInterface
             // Return cookie if login was successful
             if ($response->successful() and !empty($response->json()['cookie'])) {
                 return $response->json()['cookie'] . ";" . $api_version;
-            } else {
-                Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $e->getMessage());
         }
 
         return "";

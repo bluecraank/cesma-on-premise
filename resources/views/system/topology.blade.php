@@ -16,7 +16,7 @@
             </header>
 
             <div class="card-content p-3">
-                @if (!isset($new_edges) || count($new_edges) == 0)
+                @if (!isset($edges) || count($edges) == 0)
                     <div style="width:100%;height:600px;display:flex;align-items:center;justify-content:center;"><b
                             class="is-size-4">{{ __('No topology data found') }}</b></div>
                 @else
@@ -32,8 +32,7 @@
             </div>
         </div>
 
-    {{-- <script type="text/javascript">
-    document.addEventListener('livewire:navigated', () => {
+    <script type="text/javascript">
         // ...
         // create an array with nodes
         var nodes = new vis.DataSet(@json($nodes));
@@ -52,14 +51,8 @@
           height: '600px',
           layout: {
             randomSeed: 203,
-          },
-          'physics': {
-            'barnesHut': {
-              'springLength': 300,
-            }
           }
         };
         var network = new vis.Network(container, data, options);
-    })
-      </script> --}}
+      </script>
     </x-layouts>

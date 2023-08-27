@@ -17,6 +17,11 @@ class Kernel extends ConsoleKernel
             ->everyFiveMinutes()
             ->runInBackground();
 
+        // Scan for new devices
+        $schedule->command('device:arp-scan')
+            ->everyFiveMinutes()
+            ->runInBackground();
+
         // SNMP refresh every minute cause it's fast
         $schedule->command('device:refresh-all')->everyMinute();
 
@@ -38,6 +43,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('clients:resolve-mac-vendors')
             ->daily()
             ->at('05:00')
+            ->runInBackground();
+
+        $schedule->command('device:resolve-topology')
+            ->hourly()
             ->runInBackground();
 
         // Create backups of every device

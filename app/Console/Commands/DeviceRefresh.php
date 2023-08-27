@@ -5,10 +5,10 @@ namespace App\Console\Commands;
 use App\Devices\DellEMC;
 use App\Models\Device;
 use Illuminate\Console\Command;
-use App\Http\Controllers\DeviceController;
 use App\Services\DeviceService;
 use App\Helper\CLog;
 use Illuminate\Support\Facades\Log;
+use App\Models\Notification;
 
 class DeviceRefresh extends Command
 {
@@ -44,11 +44,23 @@ class DeviceRefresh extends Command
         $refreshStatus = json_decode($refresh, true);
 
         if($refreshStatus['success'] == "false") {
-            Log::error("Failed to refresh device " . $device->name);
-            Command::error("Failed to refresh device " . $device->name);
+            if($this->argument('type') == "api") {
+                Log::info("TEST");
+                $notification = Notification::firstOrCreate([
+                    'unique-identifier' => "device-refresh-failed-".$device->id,
+                ],[
+                    'title' => $device->name,
+                    'type' => 'error',
+                    'message' => "Login failed or no connection",
+                    'device_id' => $device->id,
+                    'data' => "Login failed or no connection",
+                ]);
+
+                $notification->touch();
+            }
+
+            Log::error("[".$this->argument('type')."] Failed to refresh device " . $device->name);
             return;
         }
-
-        Log::info("Successfully refreshed device " . $device->name);
     }
 }

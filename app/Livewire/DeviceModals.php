@@ -35,7 +35,7 @@ class DeviceModals extends Component
     #[Rule('required|numeric|exists:rooms,id')]
     public $room_id;
 
-    #[Rule('required|min:1|max:255')]
+    #[Rule('nullable|min:1|max:255')]
     public $description;
 
     #[Rule('required|min:4|max:255')]
@@ -92,7 +92,7 @@ class DeviceModals extends Component
             'site_id' => 'required|numeric|exists:sites,id',
             'building_id' => 'required|numeric|exists:buildings,id',
             'room_id' => 'required|numeric|exists:rooms,id',
-            'description' => 'required|min:1|max:255',
+            'description' => 'nullable|min:1|max:255',
             'password' => 'required|min:4|max:255',
             'type' => 'required|in:aruba-os,aruba-cx,dell-emc,dell-emc-powerswitch',
         ]);

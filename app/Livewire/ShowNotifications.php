@@ -15,7 +15,7 @@ class ShowNotifications extends Component
 
     public function render()
     {
-        $notifications = \App\Models\Notification::take($this->numberOfEntries)->latest()->get();
+        $notifications = \App\Models\Notification::latest('updated_at')->where('status', 'waiting')->take($this->numberOfEntries)->get();
 
         return view('livewire.show-notifications', [
             'notifications' => $notifications,
