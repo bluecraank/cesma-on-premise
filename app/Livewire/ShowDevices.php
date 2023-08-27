@@ -39,12 +39,16 @@ class ShowDevices extends Component
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($searchTerm) {
             $query->where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm);
-        })->orderBy('name')->paginate($this->numberOfEntries ?? 25, ['*'], 'devices');
+        })->orderBy('name', 'asc');
+
+        $devices = $devices->paginate($this->numberOfEntries);
 
         // Sort devices by name in natural order
-        $devices->sort(function ($a, $b) {
+        $collection = $devices->sort(function ($a, $b) {
             return strnatcmp($a['name'], $b['name']);
         });
+
+        $devices->setCollection($collection);
 
         $buildings = Building::where('site_id', Auth::user()->currentSite()->id)->get();
 
@@ -55,7 +59,6 @@ class ShowDevices extends Component
             'buildings' => $buildings,
             'rooms' => Room::whereIn('building_id', $buildings->pluck('id')->toArray())->get(),
             'keys_list' => PublicKeyService::getPubkeysDescriptionAsArray(),
-            'notifications' => Notification::latest()->take(10)->get(),
         ]);
     }
 

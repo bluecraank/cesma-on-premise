@@ -33,7 +33,7 @@
         </div>
         <span class="mr-4 m-2 is-block">
             {{ __('Show') }}
-            <select wire:model="numberOfEntries" wire:change="updateNumberOfEntries" name="numberOfEntries">
+            <select wire:model.live="numberOfEntries" wire:change="updateNumberOfEntries" name="numberOfEntries">
                 <option @selected($this->numberOfEntries == 10) value="10">10</option>
                 <option @selected($this->numberOfEntries == 25) value="25">25</option>
                 <option @selected($this->numberOfEntries == 50) value="50" selected>50</option>
@@ -47,7 +47,7 @@
 <div class="notification m-0">
     <span class="mr-4 m-2 is-block">
         {{ __('Show') }}
-        <select wire:model="numberOfEntries" wire:change="updateNumberOfEntries" name="numberOfEntries">
+        <select wire:model.live="numberOfEntries" wire:change="updateNumberOfEntries" name="numberOfEntries">
             <option @selected($this->numberOfEntries == 10) value="10">10</option>
             <option @selected($this->numberOfEntries == 25) value="25" selected>25</option>
             <option @selected($this->numberOfEntries == 50) value="50">50</option>

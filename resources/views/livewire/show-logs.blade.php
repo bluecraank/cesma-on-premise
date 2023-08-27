@@ -15,7 +15,7 @@
                 <div class="is-inline-block">
                     <div class="field">
                         <div class="control has-icons-right">
-                            <input class="input is-small" type="text" wire:model="searchTerm"
+                            <input class="input is-small" type="text" wire:model.live="searchTerm"
                                 placeholder="{{ __('Search for logs') }}">
                             <span class="icon is-small is-right">
                                 <i class="mdi mdi-search-web"></i>
