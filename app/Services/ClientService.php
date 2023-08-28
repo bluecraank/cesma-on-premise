@@ -73,6 +73,10 @@ class ClientService {
 
             $mac_already_added[$mac] = true;
 
+            if($macs[$mac]['port_id'] == 0) {
+                continue;
+            }
+
             $DbClient = Client::updateOrCreate([
                 'id' => md5($mac.$client['hostname']),
             ],
