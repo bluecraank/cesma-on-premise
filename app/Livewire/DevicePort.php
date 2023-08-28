@@ -21,6 +21,7 @@ class DevicePort extends Component
     public $speed;
     public $name;
     public $clients;
+    public $port_clients;
 
     public $propertyUpdated = [];
 
@@ -77,8 +78,7 @@ class DevicePort extends Component
         $this->speed = $curPort->getSpeedAsTagAttribute();
         $this->name = $curPort->name;
         $this->clients = $curPort->clients_count();
-
-
+        $this->port_clients = $curPort->clients()->toArray();
     }
 
     #[Renderless]

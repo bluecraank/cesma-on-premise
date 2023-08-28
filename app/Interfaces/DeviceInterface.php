@@ -58,7 +58,7 @@
 
         static function snmpFormatVlanData(Array $vlans): Array;
 
-        static function snmpFormatMacTableData(Array $data, Array $vlans, Device $device, String $cookie, String $api_version): Array;
+        static function snmpFormatMacTableData(Array $data, Array $vlans, Array $portMacs, Device $device): Array;
 
         static function snmpFormatSystemData(Array $system): Array;
 

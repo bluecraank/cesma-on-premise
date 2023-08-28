@@ -19,6 +19,7 @@ class UpdateDeviceData
         foreach ($ports as $port) {
 
             $snmp_if_index = $port['snmp_if_index'] ?? (isset($existingPorts[$port['name']]) ? $existingPorts[$port['name']]['snmp_if_index'] : null);
+
             DevicePort::updateOrCreate(
                 [
                     'name' => $port['id'],
@@ -103,11 +104,17 @@ class UpdateDeviceData
             if ($vlanport['vlan_id'] == "Trunk") {
                 $return['uplinks'][$vlanport['port_id']] = $vlanport['port_id'];
             } else {
+                $device_port = $device->ports()->where('name', $vlanport['port_id'])->first();
+                $device_vlan = $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first();
+                if(!$device_port || !$device_vlan) {
+                    continue;
+                }
+
                 $device->vlanports()->updateOrCreate(
                     [
-                        'device_port_id' => $device->ports()->where('name', $vlanport['port_id'])->first()->id,
+                        'device_port_id' => $device_port->id,
                         'device_id' => $device->id,
-                        'device_vlan_id' => $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first()->id,
+                        'device_vlan_id' => $device_vlan->id,
                         'is_tagged' => $vlanport['is_tagged']
                     ]
                 );
@@ -172,24 +179,26 @@ class UpdateDeviceData
 
     static function updateMacData($macs, $combined_uplinks, $device) {
         foreach ($macs as $mac) {
-            // Do not store macs on uplinks because its not correct discovered
-            if (in_array($mac['port'], $combined_uplinks)) {
-                // Store uplink mac address
-                Mac::updateOrCreate(
-                    [
-                        'mac_address' => $mac['mac'],
-                        'type' => 'uplink'
-                    ],
-                    [
-                        'device_id' => $device->id,
-                        'port_id' => $mac['port'],
-                        'vlan_id' => $mac['vlan'],
-                    ]
-                );
+            $combined_uplinks[0] = 0;
 
-                // Prevent storing same mac address twice
-                continue;
-            }
+            // Do not store macs on uplinks because its not correct discovered
+            // if (in_array($mac['port'], $combined_uplinks)) {
+            //     // Store uplink mac address
+            //     Mac::updateOrCreate(
+            //         [
+            //             'mac_address' => $mac['mac'],
+            //             'type' => 'uplink'
+            //         ],
+            //         [
+            //             'device_id' => $device->id,
+            //             'port_id' => $mac['port'],
+            //             'vlan_id' => $mac['vlan'],
+            //         ]
+            //     );
+
+            //     // Prevent storing same mac address twice
+            //     continue;
+            // }
 
             // Update because if a mac address is moved to another port / switch it will be updated
             Mac::updateOrCreate(
@@ -298,10 +307,18 @@ class UpdateDeviceData
                 if(!$uplink) {
                     $uplink = DevicePort::where('name', "1/1/".$local_port)->first();
                 }
+
+                if(!$uplink) {
+                    continue;
+                }
             } elseif($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
                 $uplink = DevicePort::where('name', $remote_port)->first();
                 if(!$uplink) {
                     $uplink = DevicePort::where('name', "1/1/".$remote_port)->first();
+                }
+
+                if(!$uplink) {
+                    continue;
                 }
             } else {
                 continue;

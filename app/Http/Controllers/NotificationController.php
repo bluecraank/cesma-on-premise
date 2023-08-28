@@ -32,7 +32,8 @@ class NotificationController extends Controller
         }
 
         Notification::updateOrCreate([
-            'unique-identifier' => $type.'-' . $device->id . '-' . $port
+            'unique-identifier' => $type.'-' . $device->id . '-' . $port,
+            'device_id' => $device->id,
         ],
         [
             'title' => $title,

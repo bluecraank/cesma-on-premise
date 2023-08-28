@@ -11,8 +11,6 @@ use App\Helper\CLog;
 use App\Models\Client;
 use App\Models\Device;
 use App\Models\DevicePort;
-use App\Models\DeviceVlan;
-use App\Models\DeviceVlanPort;
 use App\Models\MacType;
 use App\Models\Topology;
 use App\Models\Vlan;
@@ -71,11 +69,11 @@ class SystemController extends Controller
 
             // Add note for local device if not already added
             if (!isset($already_added[$topo->local_device])) {
-                $name = $devices->where('id', $topo->local_device)->first()?->named;
+                $name = $devices->where('id', $topo->local_device)->first()?->name;
                 if ($name) {
                     $nodes[] = [
                         'id' => $topo->local_device,
-                        'label' => $name . "(" . $topo->local_device . ")",
+                        'label' => $name,
                         'shape' => 'box',
                         'margin' => 10,
                         'color' => [
@@ -88,11 +86,11 @@ class SystemController extends Controller
 
             // Add note for remote device if not already added
             if (!isset($already_added[$topo->remote_device])) {
-                $name2 = $devices->where('id', $topo->remote_device)->first()?->named;
+                $name2 = $devices->where('id', $topo->remote_device)->first()?->name;
                 if ($name2) {
                     $nodes[] = [
                         'id' => $topo->remote_device,
-                        'label' => $name2 . "(" . $topo->remote_device . ")",
+                        'label' => $name2,
                         'shape' => 'box',
                         'margin' => 10,
                         'color' => [
@@ -161,11 +159,8 @@ class SystemController extends Controller
                 $to_port = str_replace(["1/1/"], "", $edge['to_port']);
             }
 
-            // dd($edge, $from_port, $to_port);
             $get_from_device_port = DevicePort::where('device_id', $edge['from'])->where('name', $from_port)->first();
             $get_to_device_port = DevicePort::where('device_id', $edge['to'])->where('name', $to_port)->first();
-
-            // dd($get_from_device_port, $get_to_device_port);
 
             // if(!$get_from_device_port || !$get_to_device_port) {
             //     continue;

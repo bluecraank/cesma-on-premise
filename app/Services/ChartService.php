@@ -16,22 +16,40 @@ class ChartService
         $portsToVlans = DeviceVlanPort::all()->groupBy('device_vlan_id')->toArray();
         $allDeviceVlans = DeviceVlan::all()->keyBy('id')->toArray();
         $vlans = Vlan::all()->keyBy('vid')->toArray();
-
         $vlanToPorts = [];
 
         foreach($portsToVlans as $device_vlan_id => $ports) {
             $vlan_id = $allDeviceVlans[$device_vlan_id]['vlan_id'];
             $key_name = $vlans[$vlan_id]['name']." (".$allDeviceVlans[$device_vlan_id]['vlan_id'].")";
 
-            if(!isset($vlanToPorts[$vlan_id])) {
+            if(!isset($vlanToPorts[$key_name])) {
                 $vlanToPorts[$key_name] = [];
             }
 
-            $vlanToPorts[$key_name] = array_merge($vlanToPorts[$key_name], array_keys($portsToVlans[$device_vlan_id]));
+            $vlanToPorts[$key_name] = array_merge($vlanToPorts[$key_name], array_keys($ports));
+        }
+
+        $vlanToPorts["Everything else"] = 0;
+
+        if(count($vlans) >= 30) {
+            $ignoreCount = 10;
+        } elseif(count($vlans) >= 20) {
+            $ignoreCount = 5;
+        } elseif(count($vlans) >= 10) {
+            $ignoreCount = 2;
+        } else {
+            $ignoreCount = 0;
         }
 
         foreach($vlanToPorts as $vlan_id => $ports) {
+            if($vlan_id == "Everything else") {
+                continue;
+            }
+
             $vlanToPorts[$vlan_id] = count($ports);
+            if(count($ports) == 0 || count($ports) <= $ignoreCount) {
+                $vlanToPorts["Everything else"] += count($ports);
+            }
         }
 
         $keys = array_keys($vlanToPorts);

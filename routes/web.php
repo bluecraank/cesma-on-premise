@@ -23,6 +23,7 @@ use App\Livewire\ShowUsers;
 use App\Livewire\ShowVlans;
 use App\Livewire\SyncVlans;
 use App\Models\Device;
+use App\Models\DevicePort;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -88,7 +89,7 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
     Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
 
-    Route::post('/{device}/uplinks', [DeviceController::class, 'updatePort'])->name('set-uplink');
+    Route::post('/{device}/uplinks', [DeviceService::class, 'storeUplink'])->name('set-uplink');
 
     Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Backups'), route('backups'));
@@ -221,4 +222,58 @@ Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/', [RoomController::class, 'store'])->name('create-room');
 });
 
+Route::get('/test', function () {
+    $ip = "10.50.2.120";
+
+    $snmp = snmp2_real_walk($ip, "public", ".1.3.6.1.2.1.17.7.1.2.2.1.2", 500000, 2);
+
+
+    if($snmp == false || $snmp == [] || $snmp == "\"\"") {
+        return false;
+    }
+
+    $data = [];
+    foreach($snmp as $key => $value) {
+        $cur_key = $key;
+        $cur_value = $value;
+        $mac = explode(".", $key);
+        $decimal_mac = [
+            $mac[count($mac) - 6],
+            $mac[count($mac) - 5],
+            $mac[count($mac) - 4],
+            $mac[count($mac) - 3],
+            $mac[count($mac) - 2],
+            $mac[count($mac) - 1],
+        ];
+
+        foreach($decimal_mac as $key => $value) {
+            $new_value = $value;
+
+            $new_value = dechex($new_value);
+
+            if(strlen($new_value) == 1) {
+                $new_value = "0" . $new_value;
+            }
+
+            $decimal_mac[$key] = $new_value;
+        }
+
+        $decimal_mac = implode(":", $decimal_mac);
+        $data[$decimal_mac] = [];
+        $datavalue = str_replace("INTEGER: ", "", $cur_value);
+        $data[$decimal_mac] = $datavalue ;
+    }
+
+    $ports = DevicePort::where('device_id', 13)->get()->keyBy('snmp_if_index')->toArray();
+
+    $new_data = [];
+    foreach($data as $mac => $port) {
+        echo $port . "\n";
+        if(isset($ports[$port])) {
+            $new_data[$mac] = $ports[$port]['name'];
+        }
+    }
+
+    dd($new_data);
+})->name('test');
 Auth::routes();

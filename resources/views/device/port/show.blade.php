@@ -30,7 +30,7 @@
                     <div class="select is-small is-pulled-right mr-3">
                         <select onchange="location.href='/devices/{{ $device->id }}/ports/'+$(this).val()+'?timespan={{ app('request')->input('timespan') }}'">
                             @if ($port_id == null)
-                                <option value="" selected>Bitte wählen</option>
+                                <option value="" selected>{{ __('Select please') }}</option>
                             @endif
                             @foreach ($ports as $port)
                                 @if (str_contains($port['name'], 'Trk'))

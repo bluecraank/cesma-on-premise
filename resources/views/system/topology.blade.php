@@ -51,7 +51,18 @@
           height: '600px',
           layout: {
             randomSeed: 203,
-          }
+          },
+          physics: {
+            enabled: true,
+            barnesHut: {
+              gravitationalConstant: -2000,
+              centralGravity: 0.3,
+              springLength: 165,
+              springConstant: 0.04,
+              damping: 0.09,
+              avoidOverlap: 1
+            }
+          },
         };
         var network = new vis.Network(container, data, options);
       </script>

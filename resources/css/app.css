@@ -23,6 +23,10 @@
     align-items: center;
 }
 
+.is-actions-cell {
+    width: 100px;
+}
+
 
 .ds-element {
     padding: 2.5px 0px;

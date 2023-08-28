@@ -19,7 +19,7 @@ class ClientService {
     */
     static function getClients() {
         $start = microtime(true);
-        
+
         $macs = Mac::where('type', '!=', 'uplink')->orWhereNull('type')->get()->keyBy('mac_address')->toArray();
         $endpoints = SnmpMacData::all();
         $devices = Device::all()->keyBy('id')->toArray();
@@ -28,9 +28,11 @@ class ClientService {
         // TODO: Pluck VlanID führt dazu, dass verschiedene Standorte so nicht gehen. Clients dürfen nicht die VlanID als Attribut haben, sondern die ID des Vlans in aus der DB
         $vlans = Vlan::where('is_client_vlan', false)->pluck('vid')->toArray();
 
+        $array_uplinks = [];
+
         foreach($uplinks as $dev_id => $uplink) {
             foreach($uplink as $each_uplink) {
-                $array_uplinks[$dev_id][] = $each_uplink['name']; 
+                $array_uplinks[$dev_id][] = $each_uplink['name'];
             }
         }
 
@@ -39,7 +41,7 @@ class ClientService {
 
         foreach($endpoints as $client) {
             $mac = $client['mac_address'];
-            
+
             if(empty($mac) || $mac == "") {
                 continue;
             }
@@ -58,7 +60,7 @@ class ClientService {
             if(isset($array_uplinks[$macs[$mac]['device_id']]) && in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
                 continue;
             }
-                
+
             // VLAN ist kein Client VLAN
             if(in_array($macs[$mac]['vlan_id'], $vlans)) {
                 continue;
@@ -73,7 +75,7 @@ class ClientService {
 
             $DbClient = Client::updateOrCreate([
                 'id' => md5($mac.$client['hostname']),
-            ], 
+            ],
             [
                 'mac_address' => $mac,
                 'port_id' => $macs[$mac]['port_id'],
@@ -92,7 +94,7 @@ class ClientService {
         }
 
         Log::info("[Clients] Updated {$updated} and created {$created} clients.");
-    } 
+    }
 
     static function getClientType($mac)
     {
@@ -109,7 +111,6 @@ class ClientService {
     static function getClientIcon($type)
     {
         $icons = MacTypeIcon::all()->keyBy('mac_type_id')->toArray();
-        // dd($type, $icons);
         if (array_key_exists($type, $icons)) {
             return "fas " . $icons[$type]['mac_icon'];
         }

@@ -77,8 +77,6 @@ class VlanModals extends Component
         $this->vlan->site_id = $this->site_id;
         $this->vlan->is_synced = $this->is_synced == "On" ? true : false;
         $this->vlan->is_client_vlan = $this->is_client_vlan == "On" ? true : false;
-
-        // dd($this->vlan);
         $this->vlan->save();
         $this->show = false;
         $this->dispatch('notify-success', message: __('Vlan updated'));

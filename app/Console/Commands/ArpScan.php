@@ -8,6 +8,7 @@ use App\Models\Room;
 use App\Models\Site;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class ArpScan extends Command
 {
@@ -63,11 +64,22 @@ class ArpScan extends Command
             try {
                 $snmp = snmp2_get($neighbour['ip'], 'public', ".1.3.6.1.2.1.47.1.1.1.1.13.1", 5000000, 1);
             } catch (\Exception $e) {
-                continue;
+
             }
 
-            if ($snmp === false) {
-                continue;
+            if ($snmp === false || $snmp == "") {
+                try {
+                    $snmp = snmp2_get($neighbour['ip'], 'public', ".1.3.6.1.2.1.1.1.0", 5000000, 1);
+                    if(!str_contains($snmp, "Switch") && !str_contains($snmp, "ProCurve")) {
+                        $snmp = false;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                if($snmp === false || $snmp == "") {
+                    continue;
+                }
             }
 
             $model = str_replace(["STRING: ", "\""], "", $snmp);
@@ -82,7 +94,7 @@ class ArpScan extends Command
 
 
             $hostname = gethostbyaddr($neighbour['ip']);
-
+            $full_hostname = $hostname;
 
             if($hostname == "") {
                 $hostname = $neighbour['ip'];
@@ -106,12 +118,12 @@ class ArpScan extends Command
                 $type = "dell-emc";
             }
 
-
+            Log::info("ARP: Found new device: " . $hostname . " (" . $neighbour['ip'] . ") - " . $model . " - " . $type);
 
             Device::firstOrCreate([
                 'name' => $hostname,
             ], [
-                'hostname' => $hostname,
+                'hostname' => $full_hostname,
                 'mac_address' => $neighbour['mac'],
                 'type' => $type,
                 'password' => Crypt::encrypt("public"),

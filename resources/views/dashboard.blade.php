@@ -57,7 +57,7 @@
         </div>
 
         <div class="column is-3">
-            {{-- <div class="card">
+            <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
                         <span class="icon"><i class="mdi mdi-desktop-classic"></i></span>
@@ -69,7 +69,7 @@
                 <div class="card-content">
                     @include('charts.clientsToVlans')
                 </div>
-            </div> --}}
+            </div>
         </div>
 
         <div class="column is-3">

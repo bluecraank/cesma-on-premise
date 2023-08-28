@@ -83,7 +83,6 @@ class DeviceModals extends Component
 
     public function update()
     {
-        // dd($this->device);
         $this->type = $this->device->type;
 
         $this->validate([

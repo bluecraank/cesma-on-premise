@@ -20,6 +20,14 @@
                          </tr>
                      </thead>
                      <tbody>
+                         @if (count($notifications) == 0)
+                             <tr>
+                                 <td colspan="4" class="has-text-centered">
+                                     <span class="icon"><i class="mdi mdi-information-outline"></i></span>
+                                     {{ __('No events to review') }}
+                                 </td>
+                             </tr>
+                         @endif
                          @foreach ($notifications as $notification)
                              <tr>
                                  <td>{{ $notification->title }}</td>
@@ -28,8 +36,7 @@
                                  <td>
                                      @if (Auth::user()->role >= 1 && $notification->type == 'uplink' && $notification->status == 'waiting')
                                          <form method="POST"
-                                             action="{{ route('set-uplink', [$notification->device_id ?? 0]) }}">
-                                             @method('PUT')
+                                             action="{{ route('set-uplink', [$notification->device_id ?? json_decode($notification->data, true)['device_id']]) }}">
                                              @csrf
                                              <input type="hidden" value="{{ $notification->id }}" name="id">
                                              <button type="submit" value="yes" name="a"
@@ -56,7 +63,7 @@
                      <option @selected($this->numberOfEntries == '*') value="*">Alle</option>
                  </select>
                  Einträge pro Seite
-                </div>
+             </div>
          </div>
      </div>
  </div>

@@ -23,6 +23,7 @@ class DellEMCPowerSwitch implements DeviceInterface
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
         $snmpIpToMac = [];
+        $snmpMacToPort = [];
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
         $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
         $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
@@ -66,7 +67,7 @@ class DellEMCPowerSwitch implements DeviceInterface
         }
         $allVlans = self::foreachAssignedUntaggedVlansToPort($snmpPortsAssignedToUntaggedVlan, $allVlans);
         $allVlans = self::foreachAssignedVlansToPort($snmpPortsAssignedToVlans, $allVlans);
-        
+
         list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
         $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
         $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
@@ -75,7 +76,7 @@ class DellEMCPowerSwitch implements DeviceInterface
         $data = [
             'ports' => self::snmpFormatPortData($allPorts, []),
             'vlans' => self::snmpFormatVlanData($allVlans),
-            'macs' => self::snmpFormatMacTableData($snmpIpToMac, $allVlansByIndex, $device, "", ""),
+            'macs' => self::snmpFormatMacTableData($snmpIpToMac, $allVlansByIndex, $snmpMacToPort, $device),
             'vlanports' => self::snmpFormatPortVlanData([$allPorts, $allVlans]),
             'informations' => self::snmpFormatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
             'statistics' => self::snmpFormatExtendedPortStatisticData([], $allPorts),
@@ -161,7 +162,7 @@ class DellEMCPowerSwitch implements DeviceInterface
         return $return;
     }
 
-    static function snmpFormatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
+    static function snmpFormatMacTableData(array $data, array $vlans, array $macData, Device $device): array
     {
         $return = [];
 
@@ -231,7 +232,7 @@ class DellEMCPowerSwitch implements DeviceInterface
         return $return;
     }
 
-    static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): array
+    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): bool
     {
         $oid = self::$snmp_oids['untagged_ports'] . "." . ($port->snmp_if_index ?? '0');
 
@@ -240,14 +241,13 @@ class DellEMCPowerSwitch implements DeviceInterface
 
         $portHexString = [];
         foreach ($ports as $key => $untaggedPort) {
-            if ((isset($untaggedPort['untagged']) and $untaggedPort['untagged']['id'] == $vlan) || $port->id == $untaggedPort['id']) {
+            if ((isset($untaggedPort['untagged']) and $untaggedPort['untagged']['id'] == $newVlan) || $port->id == $untaggedPort['id']) {
                 $portHexString[$key] = "1";
             } else {
                 $portHexString[$key] = "0";
             }
         }
 
-        dd($portHexString);
-        return [];
+        return true;
     }
 }

@@ -11,14 +11,14 @@
 
     <td>
         <input x-bind:disabled="!editable" wire:change="updateProperty('description')"
-            wire:model.debounce.1000ms="description" class="input is-small" type="text" name="portDescription">
+            wire:model.live.debounce.1000ms="description" class="input is-small" type="text" name="portDescription">
         <span
             class="has-custom-text-warning is-size-4">{{ isset($this->propertyUpdated['description']) ? '*' : '' }}</span>
     </td>
 
     <td>
         <div class="select is-small">
-            <select x-bind:disabled="!editable" wire:change="updateProperty('untagged')" wire:model="untagged">
+            <select x-bind:disabled="!editable" wire:change="updateProperty('untagged')" wire:model.live="untagged">
                 <option @empty($vlans) selected @endempty value="0">None</option>
                 @foreach ($vlans as $vlan)
                     <option value="{{ $vlan->id }}" @if ($untagged == $vlan->id) selected @endif>
@@ -54,9 +54,10 @@
                 <div class="dropdown-menu" id="dropdown-menu4" role="menu">
                     <div class="dropdown-content">
                         <div class="dropdown-item">
-                            {{-- @foreach ($port->clients() as $client)
-                                <div>{{ $client->hostname }}</div>
-                            @endforeach --}}
+                            @foreach ($port_clients as $client)
+                                 @php $hostname = strstr($client['hostname'], ".", true); @endphp
+                                <div width="100%">{{ $hostname != "" ? $hostname : $client['hostname'] ?? "DEV-".$client['mac_address'] }}</div>
+                            @endforeach
                         </div>
                     </div>
                 </div>

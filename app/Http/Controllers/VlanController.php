@@ -58,9 +58,6 @@ class VlanController extends Controller
             }
         }
 
-
-        // dd($untagged, $tagged);
-
         return view('vlan.details', compact(
             'has_vlan',
             'count_untagged',

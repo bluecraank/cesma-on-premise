@@ -1,8 +1,9 @@
 <?php
     namespace App\Traits;
 
-    use App\Interfaces\DeviceInterface;
+ use App\Interfaces\DeviceInterface;
 use App\Models\Device;
+use App\Models\DevicePort;
 
     trait DefaultSnmpMethods
     {
@@ -18,9 +19,10 @@ use App\Models\Device;
             'ifOperStatus' => '.1.3.6.1.2.1.2.2.1.8',
             'ifHighSpeed' => '1.3.6.1.2.1.31.1.1.1.15',
             'sysDescr' => '.1.3.6.1.2.1.1.1.0',
-            'macToPort' => '.1.3.6.1.2.1.17.4.3.1.1',
+            'vlan_to_mac' => '.1.3.6.1.2.1.17.4.3.1.1',
             'macToIf' => '.1.3.6.1.2.1.17.4.3.1.2',
-            'sysUptime' => '.1.3.6.1.2.1.1.3.0'
+            'sysUptime' => '.1.3.6.1.2.1.1.3.0',
+            'macToPort' => '.1.3.6.1.2.1.17.7.1.2.2.1.2'
         ];
 
         static function getSnmpData(Device $device): array
@@ -35,7 +37,7 @@ use App\Models\Device;
                 $value = str_replace("Hex-STRING: ", "", $value);
                 $value = explode(" ", $value);
                 $i = 1;
-    
+
                 $ports = [];
                 foreach($value as $port) {
                     $port = hexdec($port);
@@ -58,7 +60,7 @@ use App\Models\Device;
                 $value = str_replace("Hex-STRING: ", "", $value);
                 $value = explode(" ", $value);
                 $i = 1;
-    
+
                 $ports = [];
                 foreach($value as $port) {
                     $port = hexdec($port);
@@ -78,12 +80,12 @@ use App\Models\Device;
             foreach($data as $key => $value) {
                 $key = explode(".", $key);
                 $ifIndex = $key[count($key) - 1];
-    
+
                 $description = str_replace(["STRING: ","\""], "", $value);
                 if(isset($allPorts[$ifIndex])) {
                     $allPorts[$ifIndex] = array_merge($allPorts[$ifIndex], ['description' => $description]);
                 }
-    
+
                 if(isset($allVlansByIndex[$ifIndex]))
                 {
                     $allVlans[$allVlansByIndex[$ifIndex]] = array_merge($allVlans[$allVlansByIndex[$ifIndex]], ['description' => $description]);
@@ -97,13 +99,13 @@ use App\Models\Device;
             foreach($allVlans as $vlan_id => $value) {
                 $portsAssigned = $value['ports'];
                 foreach($portsAssigned as $key => $port) {
-                    if($port == 1) {   
+                    if($port == 1) {
                         if(isset($portExtendedIndex[$key+1]) && isset($allPorts[$portExtendedIndex[$key+1]])) {
                             $allPorts[$portExtendedIndex[$key+1]]['tagged'][] = $vlan_id;
                         }
                     }
                 }
-    
+
                 if(isset($value['untagged_ports'])) {
                     $untaggedPortsAssigned = $value['untagged_ports'];
                     foreach($untaggedPortsAssigned as $key => $port) {
@@ -142,7 +144,7 @@ use App\Models\Device;
                 } else {
                     $value = "down";
                 }
-        
+
                 if(isset($allPorts[$ifIndex])) {
                     $allPorts[$ifIndex] = array_merge($allPorts[$ifIndex], ['status' => $value]);
                 }
@@ -150,12 +152,12 @@ use App\Models\Device;
 
             return $allPorts;
         }
-    
+
         static function snmpFormatPortVlanData(array $vlanports): array
         {
             return [];
         }
-    
+
         static function snmpFormatSystemData(array $system): array
         {
             return [];
@@ -166,55 +168,115 @@ use App\Models\Device;
             // Incompatible with DellEMC
             return [];
         }
-        
+
         static function snmpFormatUplinkData($data): array
         {
             $uplinks = [];
-    
+
             foreach ($data['ports'] as $port) {
                 if (isset($port['tagged']) && count($port['tagged']) >= count($data['vlans']) - 10 && count($data['vlans']) > 15) {
                     $uplinks[$port['name']] = $port['name'];
                 }
             }
-    
+
             return $uplinks;
         }
-        
+
         static function snmpFormatVlanData(array $vlans): array
         {
             $return = [];
-    
+
             if (empty($vlans) or !is_array($vlans) or !isset($vlans)) {
                 return $return;
             }
-    
+
             foreach ($vlans as $key => $vlan) {
                 if ($vlan['description'] != "") {
                     $return[$key] = $vlan['description'];
                 }
             }
-    
+
             return $return;
         }
 
-        static function snmpFormatMacTableData(array $data, array $vlans, Device $device, String $cookie, String $api_version): array
+        static function snmpFormatMacTableData(array $data, array $vlans, array $snmpMacToPort, Device $device): array
         {
             $return = [];
-    
+
+            // if (empty($data) or !is_array($data) or !isset($data)) {
+            //     return $return;
+            // }
+
+            // $ports = DevicePort::where('device_id', $device->id)->get()->keyBy('snmp_if_index')->toArray();
+
+            // $mac_port = [];
+            // foreach($snmpMacToPort as $mac => $port) {
+            //     $mac = explode(".", $mac);
+
+            //     $decimal_mac = [
+            //         dechex(intval($mac[count($mac) - 6])),
+            //         dechex(intval($mac[count($mac) - 5])),
+            //         dechex(intval($mac[count($mac) - 4])),
+            //         dechex(intval($mac[count($mac) - 3])),
+            //         dechex(intval($mac[count($mac) - 2])),
+            //         dechex(intval($mac[count($mac) - 1])),
+            //     ];
+
+            //     foreach($decimal_mac as $key => $value) {
+
+            //         if(strlen($value) == 1) {
+            //             $value = "0" . $value;
+            //         }
+
+            //         $decimal_mac[$key] = $value;
+            //     }
+
+            //     $port = str_replace("INTEGER: ", "", $port);
+
+            //     $mac = implode("", $decimal_mac);
+            //     $mac_port[$mac] = $port;
+            // }
+
+            // foreach ($data as $oid => $mac) {
+            //     $exploded_oid = explode(".", $oid);
+            //     $port_id = $exploded_oid[11];
+            //     $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
+
+            //     if($port == 0) {
+            //         continue;
+            //     }
+
+            //     if (isset($ports[$port_id])) {
+            //         $return[$formatted_mac] = [
+            //             'port' => $ports[$port_id]['name'],
+            //             'mac' => $formatted_mac,
+            //             'vlan' => 0,
+            //         ];
+            //     }
+            // }
+
+            return $return;
+        }
+
+        static function snmpFormatIpMacTableData(array $data, array $vlans, Device $device): array
+        {
+            $return = [];
+
             if (empty($data) or !is_array($data) or !isset($data)) {
                 return $return;
             }
-    
+
+
             foreach ($data as $ip => $mac) {
                 $exploded_ip = explode(".", $ip);
                 $formatted_ip = array_slice($exploded_ip, -4, 4, true);
-    
+
                 $vlan = array_slice($exploded_ip, -5, 1, true);
-    
+
                 $formatted_ip = implode(".", $formatted_ip);
-    
+
                 $formatted_mac = str_replace(["Hex-STRING: ", " "], "", $mac);
-    
+
                 if (isset($vlans[$vlan[10]])) {
                     $return[$formatted_mac] = [
                         'port' => 0,
@@ -224,18 +286,18 @@ use App\Models\Device;
                     ];
                 }
             }
-    
+
             return $return;
         }
 
         static function snmpFormatPortData(array $ports, array $stats): array
         {
             $return = [];
-    
+
             if (empty($ports) or !is_array($ports) or !isset($ports)) {
                 return $return;
             }
-    
+
             foreach ($ports as $ifIndex => $port) {
                 $return[$port['name']] = [
                     'name' => $port['description'],
@@ -247,7 +309,7 @@ use App\Models\Device;
                     'snmp_if_index' => $ifIndex,
                 ];
             }
-    
+
             return $return;
         }
     }

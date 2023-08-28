@@ -94,14 +94,14 @@ class DeviceService
         Mac::where('device_id', $id)->delete();
     }
 
-    static function storeUplink(Request $request)
+    static function storeUplink(Device $device, Request $request)
     {
         // Update/Create uplinks via notification
         if ($request->has("id") && $request->has("a")) {
             $notification = Notification::find($request->id);
 
             if (!$notification) {
-                return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
+                return redirect()->back()->withErrors(['message' => __('Something went wrong')]);
             }
 
             $data = json_decode($notification->data, true);
@@ -114,26 +114,26 @@ class DeviceService
                     'device_port_id' => $port->id,
                 ]);
 
-                CLog::info("Device", "Added Port ".$data['port']." as uplink for device {$data['device_id']}");
+                CLog::info("Device", "Added Port ".$data['port']." as uplink for device {$device->name}");
 
                 $notification->update([
                     'status' => 'accepted',
                 ]);
 
-                return redirect()->back()->with('success', __('Msg.UplinkUpdated'));
+                return redirect()->back()->with('success', __('Uplink added'));
             } else {
                 $notification->update([
                     'status' => 'declined',
                 ]);
 
-                CLog::info("Device", "Declined Port ".$data['port']." as uplink for device {$data['device_id']}");
+                CLog::info("Device", "Declined Port ".$data['port']." as uplink for device {$device->name}");
 
-                return redirect()->back()->with('success', __('Msg.UplinkDeclined'));
+                return redirect()->back()->with('success', __('Uplink declined'));
             }
 
         }
 
-        return redirect()->back()->withErrors(['message' => __('Msg.UplinkNotUpdated')]);
+        return redirect()->back()->withErrors(['message' => __('Something went wrong')]);
     }
 
     static function updatePortDescription(String $cookie, DevicePort $port, $device_id, $newDescription)
@@ -144,8 +144,6 @@ class DeviceService
         if (!$device) {
             return false;
         }
-
-        // dd($cookie, $port, $device_id, $newDescription, $device);
 
         $class = config('app.types')[$device->type];
 
@@ -163,8 +161,6 @@ class DeviceService
         if (!$device) {
             return false;
         }
-
-        // dd($cookie, $port, $device_id, $untaggedVlan, $device);
 
         $class = config('app.types')[$device->type];
 
@@ -184,8 +180,6 @@ class DeviceService
         if (!$device) {
             return false;
         }
-
-        // dd($cookie, $port, $device_id, $taggedVlans, $device);
 
         $class = config('app.types')[$device->type];
 

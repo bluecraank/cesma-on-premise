@@ -51,9 +51,17 @@ class ArubaOS implements DeviceInterface
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
         try {
+            $snmpVlanToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['vlan_to_mac'], 5000000, 1);
+        } catch (\Exception $e) {
+            $snmpVlanToMac = [];
+        }
+
+        try {
             $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+            $snmpMacToPort = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
         } catch (\Exception $e) {
             $snmpIpToMac = [];
+            $snmpMacToPort = [];
         }
 
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
@@ -122,11 +130,11 @@ class ArubaOS implements DeviceInterface
 
         $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
 
-
         $data = [
             'ports' => self::snmpFormatPortData($allPorts, []),
             'vlans' => self::snmpFormatVlanData($allVlans),
-            'macs' => self::snmpFormatMacTableData($snmpIpToMac, $allVlansByIndex, $device, "", ""),
+            'snmp_mac_table' => self::snmpFormatMacTableData($snmpVlanToMac, $allVlansByIndex, $snmpMacToPort, $device),
+            'macs' => self::snmpFormatIpMacTableData($snmpIpToMac, $allVlansByIndex, $device),
             'vlanports' => self::snmpFormatPortVlanData([$allPorts, $allVlans]),
             'informations' => self::snmpFormatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
             'statistics' => self::snmpFormatExtendedPortStatisticData([], $allPorts),

@@ -529,8 +529,6 @@ class ArubaCX implements DeviceInterface
             }
         }
 
-        dd($vlansToSet, $vlansToRemove, $vlansSucessfullySet, $vlansSucessfullyRemoved);
-
         return [$vlansToSet, $vlansToRemove, $vlansSucessfullySet, $vlansSucessfullyRemoved];
     }
 

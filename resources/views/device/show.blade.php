@@ -223,14 +223,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($found_uplinks as $trunk => $ports)
-                                        @php
-                                            $ports = $ports[0]['ports'];
-                                        @endphp
+                                    @foreach ($found_uplinks as $port => $data)
                                         <tr>
-                                            <td>{{ $trunk }}</td>
+                                            <td>{{ $data["alias"] ?? $port }}</td>
                                             <td class="has-text-right">
-                                                {{ implode(', ', $ports != '' ? $ports : [$trunk]) }}</td>
+                                                {{ implode(', ', $data['members'] != '' ? $data['members'] : [$port]) }}</td>
                                         </tr>
                                     @endforeach
 

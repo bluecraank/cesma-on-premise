@@ -44,23 +44,40 @@ class DeviceRefresh extends Command
         $refreshStatus = json_decode($refresh, true);
 
         if($refreshStatus['success'] == "false") {
-            if($this->argument('type') == "api") {
-                Log::info("TEST");
+            if($this->argument('type') == "api" && config('app.write_type')[$device->type] == "api") {
                 $notification = Notification::firstOrCreate([
-                    'unique-identifier' => "device-refresh-failed-".$device->id,
+                    'unique-identifier' => "device-refresh-failed-api-".$device->id,
                 ],[
                     'title' => $device->name,
                     'type' => 'error',
-                    'message' => "Login failed or no connection",
+                    'message' => "Login failed or no connection (api/".config('app.https')."",
                     'device_id' => $device->id,
                     'data' => "Login failed or no connection",
                 ]);
 
                 $notification->touch();
+            } elseif($this->argument('type') == "snmp") {
+                $notification = Notification::firstOrCreate([
+                    'unique-identifier' => "device-refresh-failed-snmp-".$device->id,
+                ],[
+                    'title' => $device->name,
+                    'type' => 'error',
+                    'message' => "SNMP failed or no connection",
+                    'device_id' => $device->id,
+                    'data' => "SNMP failed or no connection",
+                ]);
+
+                $notification->touch();
             }
 
-            Log::error("[".$this->argument('type')."] Failed to refresh device " . $device->name);
+            // Log::error("[".$this->argument('type')."] Failed to refresh device " . $device->name);
             return;
+        } else {
+            if($this->argument('type') == "api" && config('app.write_type')[$device->type] == "api") {
+                Notification::where('unique-identifier', "device-refresh-failed-api-".$device->id)->delete();
+            } elseif($this->argument('type') == "snmp") {
+                Notification::where('unique-identifier', "device-refresh-failed-snmp-".$device->id)->delete();
+            }
         }
     }
 }

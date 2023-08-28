@@ -79,6 +79,9 @@ class DevicePort extends Model
         } else if ($this->speed == 10000) {
             $label = '10G';
             $color = 'is-primary';
+        } else if ($this->speed == 200000) {
+            $label = '200G';
+            $color = 'is-primary';
         } else {
             $label = $this->speed;
             $color = 'is-info';

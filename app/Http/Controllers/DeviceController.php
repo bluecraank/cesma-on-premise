@@ -63,6 +63,8 @@ class DeviceController extends Controller
             return strnatcmp($a->name, $b->name);
         });
 
+        $tempPorts = $device->ports->keyBy('name')->toArray();
+
         // Get name for firmware model
         $device->type_name = config('app.typenames')[$device->type];
 
@@ -70,6 +72,25 @@ class DeviceController extends Controller
         $found_uplinks = $device->uplinks->sort(function ($a, $b) {
             return strnatcmp($a->name, $b->name);
         })->groupBy('name')->toArray();
+
+        $uplinks = [];
+        foreach($found_uplinks as $port => $somedata) {
+            $uplinks[$port] = [
+                'name' => $port,
+                'alias' => $tempPorts[$port]['description'] ?? null,
+                'members' => [],
+            ];
+
+            $members = [];
+
+            foreach($somedata as $data) {
+                $members[] = $data['name'];
+            }
+
+            $uplinks[$port]['members'] = $members;
+        }
+
+        $found_uplinks = $uplinks;
 
         // Sort vlans
         $device->vlans = $device->vlans->sort(function ($a, $b) {
