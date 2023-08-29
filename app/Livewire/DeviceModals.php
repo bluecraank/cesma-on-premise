@@ -50,7 +50,7 @@ class DeviceModals extends Component
         $this->show = true;
         $this->modal = $modal;
         if($modal != "create") {
-            $device = Device::find($device);
+            $device = Device::where('id', $device)->first();
 
             if(!$device) {
                 $this->dispatch('notify-error', message: __('Device not found'));

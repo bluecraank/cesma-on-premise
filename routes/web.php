@@ -19,6 +19,7 @@ use App\Livewire\ShowDevices;
 use App\Livewire\ShowLogs;
 use App\Livewire\ShowRooms;
 use App\Livewire\ShowSites;
+use App\Livewire\ShowUplinks;
 use App\Livewire\ShowUsers;
 use App\Livewire\ShowVlans;
 use App\Livewire\SyncVlans;
@@ -76,6 +77,10 @@ Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
         $trail->push(__('Rooms'), route('rooms'));
     })->name('rooms');
 
+    Route::get('/uplinks', ShowUplinks::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Uplinks'), route('uplinks'));
+    })->name('uplinks');
+
 });
 
 Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
@@ -88,8 +93,6 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/{device}/backup', [DeviceController::class, 'createBackup'])->name('create-backup');
     Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
     Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
-
-    Route::post('/{device}/uplinks', [DeviceService::class, 'storeUplink'])->name('set-uplink');
 
     Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Backups'), route('backups'));

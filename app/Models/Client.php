@@ -9,9 +9,6 @@ class Client extends Model
 {
     use SoftDeletes;
 
-    public $incrementing = false;
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'id',
         'device_id',

@@ -23,7 +23,7 @@ class ShowDevices extends Component
     use NumberOfEntries;
 
     public $searchTerm = "";
-    public $numberOfEntries = 25;
+    public $numberOfEntries = 50;
 
     public $title = "Switches";
 

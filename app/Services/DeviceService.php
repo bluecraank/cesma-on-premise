@@ -13,6 +13,7 @@ use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\Notification;
+use App\Models\Topology;
 use Illuminate\Http\Request;
 
 class DeviceService
@@ -92,48 +93,7 @@ class DeviceService
         DeviceVlan::where('device_id', $id)->delete();
         Client::where('device_id', $id)->delete();
         Mac::where('device_id', $id)->delete();
-    }
-
-    static function storeUplink(Device $device, Request $request)
-    {
-        // Update/Create uplinks via notification
-        if ($request->has("id") && $request->has("a")) {
-            $notification = Notification::find($request->id);
-
-            if (!$notification) {
-                return redirect()->back()->withErrors(['message' => __('Something went wrong')]);
-            }
-
-            $data = json_decode($notification->data, true);
-            $port = DevicePort::where('device_id', $data['device_id'])->where('name', $data['port'])->first();
-
-            if($request["a"] == "yes" && $port) {
-                DeviceUplink::updateOrCreate([
-                    'name' => $data['port'],
-                    'device_id' => $data['device_id'],
-                    'device_port_id' => $port->id,
-                ]);
-
-                CLog::info("Device", "Added Port ".$data['port']." as uplink for device {$device->name}");
-
-                $notification->update([
-                    'status' => 'accepted',
-                ]);
-
-                return redirect()->back()->with('success', __('Uplink added'));
-            } else {
-                $notification->update([
-                    'status' => 'declined',
-                ]);
-
-                CLog::info("Device", "Declined Port ".$data['port']." as uplink for device {$device->name}");
-
-                return redirect()->back()->with('success', __('Uplink declined'));
-            }
-
-        }
-
-        return redirect()->back()->withErrors(['message' => __('Something went wrong')]);
+        Topology::where('local_device', $id)->orWhere('remote_device', $id)->delete();
     }
 
     static function updatePortDescription(String $cookie, DevicePort $port, $device_id, $newDescription)

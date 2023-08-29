@@ -9,10 +9,12 @@ use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\SnmpMacData;
 use App\Http\Controllers\NotificationController as Notification;
+use App\Models\DeviceUplink;
 
 class UpdateDeviceData
 {
-    static function updateDevicePorts($ports, $device) {
+    static function updateDevicePorts($ports, $device)
+    {
         $existingPorts = $device->ports()->get('name')->keyBy('name')->toArray();
 
         // Update/Create ports
@@ -34,7 +36,7 @@ class UpdateDeviceData
                 ]
             );
 
-            if(isset($existingPorts[$port['name']]) && $existingPorts[$port['name']]['link'] != $port['link']) {
+            if (isset($existingPorts[$port['name']]) && $existingPorts[$port['name']]['link'] != $port['link']) {
                 // Notification::new($port['name'], $device, [
                 //     'port' => $port['name'],
                 //     'device_id' => $device->id,
@@ -55,7 +57,8 @@ class UpdateDeviceData
         // }
     }
 
-    static function updateDeviceVlans($vlans, $device) {
+    static function updateDeviceVlans($vlans, $device)
+    {
         // Update/Create vlans
         foreach ($vlans as $vid => $vname) {
             $device->vlans()->updateOrCreate(
@@ -80,7 +83,8 @@ class UpdateDeviceData
         })->delete();
     }
 
-    static function updateVlanPorts($vlanports, $device) {
+    static function updateVlanPorts($vlanports, $device)
+    {
         $return = ['uplinks' => []];
 
         $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->count();
@@ -106,7 +110,7 @@ class UpdateDeviceData
             } else {
                 $device_port = $device->ports()->where('name', $vlanport['port_id'])->first();
                 $device_vlan = $device->vlans()->where('vlan_id', $vlanport['vlan_id'])->first();
-                if(!$device_port || !$device_vlan) {
+                if (!$device_port || !$device_vlan) {
                     continue;
                 }
 
@@ -124,14 +128,15 @@ class UpdateDeviceData
         return $return;
     }
 
-    static function updateDeviceUplinks($uplinks, $new_uplinks, $device) {
+    static function updateDeviceUplinks($uplinks, $new_uplinks, $device)
+    {
 
         $current_uplinks = $device->uplinks()->get()->keyBy('name');
-        foreach($uplinks as $port => $trunk_group) {
-            if(isset($current_uplinks[$trunk_group])) {
-                if(is_array($current_uplinks[$trunk_group]->ports))
+        foreach ($uplinks as $port => $trunk_group) {
+            if (isset($current_uplinks[$trunk_group])) {
+                if (is_array($current_uplinks[$trunk_group]->ports))
                     $ports = $current_uplinks[$trunk_group]->ports;
-                elseif(!empty($current_uplinks[$trunk_group]->ports))
+                elseif (!empty($current_uplinks[$trunk_group]->ports))
                     $ports = json_decode($current_uplinks[$trunk_group]->ports, true);
                 else
                     $ports = [];
@@ -145,7 +150,8 @@ class UpdateDeviceData
         return $uplinks;
     }
 
-    static function updateDevicePortStatistics($statistics, $device) {
+    static function updateDevicePortStatistics($statistics, $device)
+    {
         foreach ($statistics as $statistic) {
             // Skip if no id is set
             if (!isset($statistic['id']) or !$statistic['id']) {
@@ -177,28 +183,29 @@ class UpdateDeviceData
         }
     }
 
-    static function updateMacData($macs, $combined_uplinks, $device) {
+    static function updateMacData($macs, $combined_uplinks, $device)
+    {
         foreach ($macs as $mac) {
             $combined_uplinks[0] = 0;
 
             // Do not store macs on uplinks because its not correct discovered
-            // if (in_array($mac['port'], $combined_uplinks)) {
-            //     // Store uplink mac address
-            //     Mac::updateOrCreate(
-            //         [
-            //             'mac_address' => $mac['mac'],
-            //             'type' => 'uplink'
-            //         ],
-            //         [
-            //             'device_id' => $device->id,
-            //             'port_id' => $mac['port'],
-            //             'vlan_id' => $mac['vlan'],
-            //         ]
-            //     );
+            if (in_array($mac['port'], $combined_uplinks)) {
+                // Store uplink mac address
+                Mac::updateOrCreate(
+                    [
+                        'mac_address' => $mac['mac'],
+                        'type' => 'uplink'
+                    ],
+                    [
+                        'device_id' => $device->id,
+                        'port_id' => $mac['port'],
+                        'vlan_id' => $mac['vlan'],
+                    ]
+                );
 
-            //     // Prevent storing same mac address twice
-            //     continue;
-            // }
+                // Prevent storing same mac address twice
+                continue;
+            }
 
             // Update because if a mac address is moved to another port / switch it will be updated
             Mac::updateOrCreate(
@@ -211,10 +218,10 @@ class UpdateDeviceData
                     'port_id' => $mac['port'],
                     'vlan_id' => $mac['vlan'],
                 ]
-                );
+            );
 
             // Store mac address with ip address
-            if(isset($mac['ip'])) {
+            if (isset($mac['ip'])) {
                 SnmpMacData::updateOrCreate(
                     [
                         'mac_address' => $mac['mac'],
@@ -229,7 +236,8 @@ class UpdateDeviceData
         }
     }
 
-    static function updateDeviceSystemInfo($system, $device) {
+    static function updateDeviceSystemInfo($system, $device)
+    {
         // Prevent overwriting device data with empty data
         $device->named = $system['name'] ?? $device->named;
         $device->model = $system['model'] ?? $device->model;
@@ -238,24 +246,35 @@ class UpdateDeviceData
         $device->mac_address = $system['mac'] ?? $device->mac_address;
         $device->firmware = $system['firmware'] ?? $device->firmware;
 
-        if(isset($system['uptime']) && $system['uptime'] != "") {
+        if (isset($system['uptime']) && $system['uptime'] != "") {
             $device->uptime = $system['uptime'];
         }
     }
 
-    static function checkForUplinks($device, $found_uplinks) {
-        $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
-
-        //
-        foreach($found_uplinks as $uplink) {
-            if(str_contains($uplink, "Trk") || str_contains($uplink, "trk") || str_contains($uplink, "Trunk") || str_contains($uplink, "trunk")) {
-                Notification::new($uplink, $device, [
-                    'trunk' => $uplink,
-                    'port' => $uplink,
-                    'device_id' => $device->id,
-                ], 'uplink', 'trunk');
+    static function checkForUplinks($device, $found_uplinks)
+    {
+        foreach ($found_uplinks as $uplink) {
+            if (str_contains($uplink, "Trk") || str_contains($uplink, "trk") || str_contains($uplink, "Trunk") || str_contains($uplink, "trunk") || str_contains($uplink, "port-channel")) {
+                $port = DevicePort::where('device_id', $device->id)->where('name', $uplink)->first();
+                if (!$port) {
+                    $port = DevicePort::where('device_id', $device->id)->where('name', "1/1/" . $uplink)->first();
+                }
+                if (!$port) {
+                    continue;
+                }
+                DeviceUplink::updateOrCreate(
+                    [
+                        'device_id' => $device->id,
+                        'name' => $uplink,
+                    ],
+                    [
+                        'device_port_id' => $port->id,
+                    ]
+                );
             }
         }
+
+        $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
 
         // Client based uplink detection
         $clients = $device->clients()->get()->groupBy('port_id')->toArray();
@@ -274,7 +293,7 @@ class UpdateDeviceData
         $vlans = $device->vlans()->get()->toArray();
         foreach ($vlanports as $portId => $vlanport) {
             $port = DevicePort::where('id', $portId)->first()->name;
-            if (count($vlanport) > (count($vlans)*0.8) && !isset($currentUplinks[$port])) {
+            if (count($vlanport) > (count($vlans) * 0.8) && !isset($currentUplinks[$port])) {
                 Notification::new($port, $device, [
                     'vlans' => count($vlanport),
                     'port' => $port,
@@ -285,8 +304,8 @@ class UpdateDeviceData
 
         // Topology based uplink detection
         $topology = $device->topology()->get(['local_port', 'remote_port', 'local_device', 'remote_device'])->toArray();
-        foreach($topology as $index => $port_combination) {
-            if($port_combination['local_port'] > $port_combination['remote_port']) {
+        foreach ($topology as $index => $port_combination) {
+            if ($port_combination['local_port'] > $port_combination['remote_port']) {
                 $temp = $port_combination['local_port'];
                 $temp2 = $port_combination['local_device'];
                 $topology[$index]['local_port'] = $port_combination['remote_port'];
@@ -298,26 +317,26 @@ class UpdateDeviceData
 
         $topology = array_unique($topology, SORT_REGULAR);
 
-        foreach($topology as $port_combination) {
-            $local_port = str_replace(["ethernet","1/1/"], "", $port_combination['local_port']);
-            $remote_port = str_replace(["ethernet","1/1/"], "", $port_combination['remote_port']);
+        foreach ($topology as $port_combination) {
+            $local_port = str_replace(["ethernet", "1/1/"], "", $port_combination['local_port']);
+            $remote_port = str_replace(["ethernet", "1/1/"], "", $port_combination['remote_port']);
 
-            if($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
+            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
                 $uplink = DevicePort::where('name', $local_port)->first();
-                if(!$uplink) {
-                    $uplink = DevicePort::where('name', "1/1/".$local_port)->first();
+                if (!$uplink) {
+                    $uplink = DevicePort::where('name', "1/1/" . $local_port)->first();
                 }
 
-                if(!$uplink) {
+                if (!$uplink) {
                     continue;
                 }
-            } elseif($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
+            } elseif ($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
                 $uplink = DevicePort::where('name', $remote_port)->first();
-                if(!$uplink) {
-                    $uplink = DevicePort::where('name', "1/1/".$remote_port)->first();
+                if (!$uplink) {
+                    $uplink = DevicePort::where('name', "1/1/" . $remote_port)->first();
                 }
 
-                if(!$uplink) {
+                if (!$uplink) {
                     continue;
                 }
             } else {
@@ -330,8 +349,5 @@ class UpdateDeviceData
                 'device_id' => $device->id,
             ], 'uplink', 'topology');
         }
-
-
     }
-
 }

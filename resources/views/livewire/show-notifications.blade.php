@@ -35,15 +35,15 @@
                                  <td>{{ $notification->updated_at }}</td>
                                  <td>
                                      @if (Auth::user()->role >= 1 && $notification->type == 'uplink' && $notification->status == 'waiting')
-                                         <form method="POST"
+                                         {{-- <form method="POST"
                                              action="{{ route('set-uplink', [$notification->device_id ?? json_decode($notification->data, true)['device_id']]) }}">
-                                             @csrf
-                                             <input type="hidden" value="{{ $notification->id }}" name="id">
-                                             <button type="submit" value="yes" name="a"
+                                             @csrf --}}
+                                             {{-- <input type="hidden" value="{{ $notification->id }}" name="id"> --}}
+                                             <button type="submit" wire:click="accept({{ $notification->id }})"
                                                  class="button no-prevent is-info is-small">Akzeptieren</button>
-                                             <button type="submit" name="a" value="no"
+                                             <button type="submit" wire:click="decline({{ $notification->id }})"
                                                  class="ml-2 button no-prevent is-warning is-small">Ablehnen</button>
-                                         </form>
+                                         {{-- </form> --}}
                                      @elseif($notification->type == 'uplink')
                                          {{ $notification->status }}
                                      @endif

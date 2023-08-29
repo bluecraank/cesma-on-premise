@@ -50,7 +50,7 @@ class DeviceRefresh extends Command
                 ],[
                     'title' => $device->name,
                     'type' => 'error',
-                    'message' => "Login failed or no connection (api/".config('app.https')."",
+                    'message' => "Login failed or no connection (api/".(config('app.https') == 'https://' ? 'https' : 'http').")",
                     'device_id' => $device->id,
                     'data' => "Login failed or no connection",
                 ]);

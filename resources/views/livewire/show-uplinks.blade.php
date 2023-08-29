@@ -1,5 +1,3 @@
-@section('title', 'Switches')
-
 <div>
     <div class="card has-table">
         <header class="card-header">
@@ -122,32 +120,4 @@
             </div>
         </div>
     </div>
-
-    @if (Auth::user()->role >= 1)
-        <div>
-            <section>
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title">
-                            <span class="icon"><i class="mdi mdi-web"></i></span>
-                            {{ __('Actions for every switch') }}
-                        </p>
-
-                    </header>
-
-                    <div class="card-content">
-                        <div class="buttons are-small">
-                            @include('buttons.ButtonSyncVlan')
-                            @include('buttons.ButtonSyncPubkeys')
-                            @include('buttons.ButtonCreateBackup')
-                            <a href="{{ route('uplinks') }}" class="button is-info is-small">{{ __('Show uplinks') }}</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-        @livewire('device-modals')
-        @include('modals.PubkeySyncModal')
-        {{-- @include('modals.VlanSyncModal') --}}
-    @endif
 </div>

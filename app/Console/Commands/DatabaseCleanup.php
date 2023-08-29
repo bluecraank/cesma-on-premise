@@ -41,7 +41,7 @@ class DatabaseCleanup extends Command
         DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
-        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->delete();
+        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
 
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
 

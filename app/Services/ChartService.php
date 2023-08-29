@@ -18,6 +18,10 @@ class ChartService
         $vlans = Vlan::all()->keyBy('vid')->toArray();
         $vlanToPorts = [];
 
+        if(count($vlans) == 0 || count($portsToVlans) == 0 || count($allDeviceVlans) == 0) {
+            return [["No vlans"], [0]];
+        }
+
         foreach($portsToVlans as $device_vlan_id => $ports) {
             $vlan_id = $allDeviceVlans[$device_vlan_id]['vlan_id'];
             $key_name = $vlans[$vlan_id]['name']." (".$allDeviceVlans[$device_vlan_id]['vlan_id'].")";
@@ -62,6 +66,9 @@ class ChartService
         $clients = Client::all()->groupBy('vlan_id')->toArray();
         $vlans = Vlan::all()->keyBy('vid')->toArray();
 
+        if(count($vlans) == 0 || count($clients) == 0) {
+            return [["No vlans"], [0]];
+        }
 
         $vlanToClients = [];
 
@@ -88,6 +95,10 @@ class ChartService
     public static function portsOnline() {
         $ports = DevicePort::where('link', 1)->count();
         $ports_offline = DevicePort::where('link', 0)->count();
+
+        if($ports == 0 && $ports_offline == 0) {
+            return [["No ports"], [0]];
+        }
 
         $keys = ["Online", "Offline"];
         $values = [$ports, $ports_offline];

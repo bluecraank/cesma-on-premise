@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('clients', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
             $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
             $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->string('hostname')->nullable();

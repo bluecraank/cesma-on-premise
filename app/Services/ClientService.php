@@ -18,8 +18,6 @@ class ClientService {
     * @return array
     */
     static function getClients() {
-        $start = microtime(true);
-
         $macs = Mac::where('type', '!=', 'uplink')->orWhereNull('type')->get()->keyBy('mac_address')->toArray();
         $endpoints = SnmpMacData::all();
         $devices = Device::all()->keyBy('id')->toArray();
@@ -78,10 +76,11 @@ class ClientService {
             }
 
             $DbClient = Client::updateOrCreate([
-                'id' => md5($mac.$client['hostname']),
+                // 'id' => md5($mac.$client['hostname']),
+                'mac_address' => $mac,
             ],
             [
-                'mac_address' => $mac,
+                // 'hostname' => $client['hostname'],
                 'port_id' => $macs[$mac]['port_id'],
                 'device_id' => $macs[$mac]['device_id'],
                 'vlan_id' => $macs[$mac]['vlan_id'],
