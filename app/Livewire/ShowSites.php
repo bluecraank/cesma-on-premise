@@ -18,11 +18,11 @@ class ShowSites extends Component
     use NumberOfEntries;
 
     public $numberOfEntries = 25;
-    public $searchTerm;
+    public $search;
 
     public function render()
     {
-        $site = Site::where('name', 'LIKE', "%".$this->searchTerm."%")->where('id', Auth::user()->currentSite()->id)->firstOrFail();
+        $site = Site::where('name', 'LIKE', "%".$this->search."%")->where('id', Auth::user()->currentSite()->id)->firstOrFail();
         $sites = Site::orderBy('name')->paginate($this->numberOfEntries ?? 25);
         $sites->sortBy('name');
 

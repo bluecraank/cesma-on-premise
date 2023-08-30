@@ -1,4 +1,4 @@
-@section('title', 'Test')
+@section('title', __('Dashboard'))
 
 
 <x-layouts.main>

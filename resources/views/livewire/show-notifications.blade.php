@@ -33,19 +33,22 @@
                                  <td>{{ $notification->title }}</td>
                                  <td>{{ $notification->message }}</td>
                                  <td>{{ $notification->updated_at }}</td>
-                                 <td>
+                                 <td class="is-actions-cell has-text-centered">
                                      @if (Auth::user()->role >= 1 && $notification->type == 'uplink' && $notification->status == 'waiting')
-                                         {{-- <form method="POST"
-                                             action="{{ route('set-uplink', [$notification->device_id ?? json_decode($notification->data, true)['device_id']]) }}">
-                                             @csrf --}}
-                                             {{-- <input type="hidden" value="{{ $notification->id }}" name="id"> --}}
-                                             <button type="submit" wire:click="accept({{ $notification->id }})"
-                                                 class="button no-prevent is-info is-small">Akzeptieren</button>
-                                             <button type="submit" wire:click="decline({{ $notification->id }})"
-                                                 class="ml-2 button no-prevent is-warning is-small">Ablehnen</button>
-                                         {{-- </form> --}}
-                                     @elseif($notification->type == 'uplink')
+                                         <div class="field has-addons has-text-centered">
+                                             <div class="control">
+                                                 <button type="submit" wire:click="accept({{ $notification->id }})"
+                                                     class="button no-prevent is-info is-small">{{ __('Accept') }}</button>
+                                             </div>
+                                             <div class="control">
+                                                 <button type="submit" wire:click="decline({{ $notification->id }})"
+                                                     class="button no-prevent is-warning is-small">{{ __('Decline') }}</button>
+                                             </div>
+                                         </div>
+                                     @elseif(Auth::user()->role >= 1 && $notification->type == 'uplink')
                                          {{ $notification->status }}
+                                     @elseif($notification->type == 'uplink')
+                                         {{ __('No permission') }}
                                      @endif
                                  </td>
                              </tr>

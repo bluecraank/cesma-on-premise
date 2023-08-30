@@ -22,7 +22,7 @@
                 <div class="is-inline-block">
                     <div class="field">
                         <div class="control has-icons-right">
-                            <input class="input is-small" type="text" wire:model.live="searchTerm"
+                            <input class="input is-small" type="text" wire:model.live="search"
                                 placeholder="{{ __('Search for vlans') }}">
                             <span class="icon is-small is-right">
                                 <i class="mdi mdi-search-web"></i>
@@ -155,10 +155,7 @@
             </section>
 
             @include('modals.vlan.create')
-
             @livewire('vlan-modals')
-
-            @include('modals.VlanSyncModal')
         @endif
     </div>
 </div>

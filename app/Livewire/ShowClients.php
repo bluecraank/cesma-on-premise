@@ -13,6 +13,7 @@ use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 
 class ShowClients extends Component
 {
@@ -20,7 +21,8 @@ class ShowClients extends Component
     use WithPagination;
     use NumberOfEntries;
 
-    public $cHOSTNAME, $cIP, $cMAC, $cVLAN, $cSWITCH, $cPORT, $cSTATUS, $cTYPE;
+    #[Url]
+    public $hostname, $ip, $mac, $vlan, $switch, $port, $type;
     public $numberOfEntries = 25;
 
     public function mount()
@@ -41,17 +43,16 @@ class ShowClients extends Component
         $vendors = MacVendor::all()->keyBy('mac_prefix');
         $types = MacType::all()->sortBy('type')->unique();
 
-        $hostname = $this->cHOSTNAME;
-        $ip = $this->cIP;
-        $mac = $this->cMAC;
-        $vlan = $this->cVLAN;
-        $switch = $this->cSWITCH;
-        $port = $this->cPORT;
-        $status = $this->cSTATUS;
-        $type = $this->cTYPE;
+        $hostname = $this->hostname;
+        $ip = $this->ip;
+        $mac = $this->mac;
+        $vlan = $this->vlan;
+        $switch = $this->switch;
+        $port = $this->port;
+        $type = $this->type;
 
 
-        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($hostname, $ip, $mac, $vlan, $switch, $port, $status, $type) {
+        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($hostname, $ip, $mac, $vlan, $switch, $port, $type) {
             if ($hostname) {
                 $query->where('hostname', 'like', '%' . $hostname . '%');
             }
@@ -70,9 +71,6 @@ class ShowClients extends Component
             }
             if ($port) {
                 $query->where('port_id', 'like', '%' . $port . '%');
-            }
-            if ($status and $status != 'all') {
-                $query->where('online', '=', $status);
             }
             if ($type and $type != 'all') {
                 $query->where('type', '=', $type);

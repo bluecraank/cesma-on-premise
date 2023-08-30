@@ -5,7 +5,6 @@ namespace App\Livewire;
 
 use App\Models\Device;
 use App\Models\Building;
-use App\Models\Notification;
 use App\Models\Room;
 use App\Models\Site;
 use App\Services\PublicKeyService;
@@ -15,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 
 class ShowDevices extends Component
 {
@@ -22,7 +22,8 @@ class ShowDevices extends Component
     use WithPagination;
     use NumberOfEntries;
 
-    public $searchTerm = "";
+    #[Url]
+    public $search = "";
     public $numberOfEntries = 50;
 
     public $title = "Switches";
@@ -34,11 +35,11 @@ class ShowDevices extends Component
 
     public function render()
     {
-        $searchTerm = '%' . $this->searchTerm . '%';
+        $search = '%' . $this->search . '%';
         $https = config('app.https', 'http://');
 
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($searchTerm) {
-            $query->where('name', 'like', $searchTerm)->orWhere('hostname', 'like', $searchTerm);
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($search) {
+            $query->where('name', 'like', $search)->orWhere('hostname', 'like', $search);
         })->orderBy('name', 'asc');
 
         $devices = $devices->paginate($this->numberOfEntries);

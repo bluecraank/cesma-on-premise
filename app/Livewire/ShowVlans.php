@@ -9,6 +9,7 @@ use App\Traits\NumberOfEntries;
 use App\Traits\WithLogin;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
 
@@ -18,7 +19,8 @@ class ShowVlans extends Component
     use WithPagination;
     use NumberOfEntries;
 
-    public $searchTerm = "";
+    #[Url]
+    public $search = "";
     public $numberOfEntries = 25;
 
     public function mount()
@@ -28,12 +30,12 @@ class ShowVlans extends Component
 
     public function render()
     {
-        $searchTerm = '%' . $this->searchTerm . '%';
+        $search = '%' . $this->search . '%';
 
-        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($searchTerm) {
-            $query->where('name', 'like', $searchTerm)
-            ->orWhere('vid', 'like', $searchTerm)
-            ->orWhere('description', 'like', $searchTerm);
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($search) {
+            $query->where('name', 'like', $search)
+            ->orWhere('vid', 'like', $search)
+            ->orWhere('description', 'like', $search);
         })->orderBy('vid')->paginate($this->numberOfEntries ?? 25);
 
         $vlans->sort(function ($a, $b) {

@@ -24,7 +24,7 @@
                                     <label data-row="0" class="label is-small">NAME <i
                                             class="fa-angle-up ml-1 fas"></i></label>
                                     <div class="control is-small">
-                                        <input wire:model.live.debounce.500ms="cHOSTNAME"
+                                        <input wire:model.live.debounce.500ms="hostname"
                                             class="input is-small is-radiusless" type="text">
                                     </div>
                                 </div>
@@ -34,7 +34,7 @@
                                     <label data-row="1" class="label is-small">IP <i
                                             class="is-hidden ml-1 fas fa-angle-up"></i></label>
                                     <div class="control is-small">
-                                        <input wire:model.live.debounce.500ms="cIP" class="input is-small is-radiusless"
+                                        <input wire:model.live.debounce.500ms="ip" class="input is-small is-radiusless"
                                             type="text">
                                     </div>
                                 </div>
@@ -46,7 +46,7 @@
                                         <i title="Hover mac address to see vendor"
                                             class="ml-2 fas fa-circle-info"></i></label>
                                     <div class="control is-small">
-                                        <input wire:model.live.debounce.500ms="cMAC" class="input is-small is-radiusless"
+                                        <input wire:model.live.debounce.500ms="mac" class="input is-small is-radiusless"
                                             type="text">
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@
                                             class="is-hidden ml-1 fas fa-angle-up"></i></label>
                                     <div class="control is-small">
                                         <div class="select is-small is-fullwidth">
-                                            <select wire:model.live.debounce.500ms="cVLAN" class="is-radiusless">
+                                            <select wire:model.live.debounce.500ms="vlan" class="is-radiusless">
                                                 <option value="all">ALL</option>
                                                 @foreach ($vlans as $vlan)
                                                     <option value="{{ $vlan->vid }}">{{ $vlan->vid }}</option>
@@ -73,7 +73,7 @@
                                             class="is-hidden ml-1 fas fa-angle-up"></i></label>
                                     <div class="control is-small">
                                         <div class="select is-small is-radiusless is-fullwidth">
-                                            <select wire:model.live.debounce.500ms="cSWITCH" class="is-radiusless">
+                                            <select wire:model.live.debounce.500ms="switch" class="is-radiusless">
                                                 <option value="all">ALL</option>
                                                 @foreach ($devices as $device)
                                                     <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -88,7 +88,7 @@
                                     <label data-row="5" class="label is-small">PORT <i
                                             class="is-hidden ml-1 fas fa-angle-up"></i></label>
                                     <div class="control is-small">
-                                        <input wire:model.live.debounce.500ms="cPORT" class="input is-small is-radiusless"
+                                        <input wire:model.live.debounce.500ms="port" class="input is-small is-radiusless"
                                             type="text">
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                     <label data-row="0" class="label is-small">TYPE</label>
                                     <div class="control is-small">
                                         <div class="select is-small is-radiusless">
-                                            <select style="width:100px;" wire:model.live.debounce.500ms="cTYPE"
+                                            <select style="width:100px;" wire:model.live.debounce.500ms="type"
                                                 class="is-radiusless">
                                                 <option value="all">ALL</option>
                                                 <option value="client">Client</option>

@@ -18,11 +18,11 @@ class ShowBuildings extends Component
     use NumberOfEntries;
 
     public $numberOfEntries = 25;
-    public $searchTerm;
+    public $search;
 
     public function render()
     {
-        $buildings = Building::orderBy('name')->where('name', 'LIKE', "%".$this->searchTerm."%")->where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);
+        $buildings = Building::orderBy('name')->where('name', 'LIKE', "%".$this->search."%")->where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);
         $buildings->sortBy('name');
 
         // Sort buildings by name in natural order

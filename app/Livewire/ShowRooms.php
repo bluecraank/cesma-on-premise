@@ -19,11 +19,11 @@ class ShowRooms extends Component
     use NumberOfEntries;
 
     public $numberOfEntries = 25;
-    public $searchTerm;
+    public $search;
 
     public function render()
     {
-        $buildings = Building::where('name', 'LIKE', "%".$this->searchTerm."%")->where('site_id', Auth::user()->currentSite()->id)->get();
+        $buildings = Building::where('name', 'LIKE', "%".$this->search."%")->where('site_id', Auth::user()->currentSite()->id)->get();
         $rooms = Room::orderBy('name')->whereIn('building_id', $buildings->pluck('id')->toArray())->paginate($this->numberOfEntries ?? 25);
         $rooms->sortBy('name');
 

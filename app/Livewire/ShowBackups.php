@@ -27,15 +27,17 @@ class ShowBackups extends Component
     public function render()
     {
         $backups = DeviceBackup::select('id', 'status', 'created_at', 'device_id')->get()->keyBy('id');
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->orderBy('name')->paginate($this->numberOfEntries ?? 25);
 
         foreach ($devices as $device) {
             $device->last_backup = $backups->where('device_id', $device->id)->last();
         }
 
-        $devices->sort(function ($a, $b) {
+        $newDevices = $devices->sort(function ($a, $b) {
             return strnatcmp($a['name'], $b['name']);
         });
+
+        $devices->setCollection($newDevices);
 
         return view('livewire.show-backups', [
             'devices' => $devices,

@@ -48,7 +48,7 @@
         };
         var options = {
           width: '100%',
-          height: '600px',
+          height: '1200px',
           layout: {
             randomSeed: 203,
           },
