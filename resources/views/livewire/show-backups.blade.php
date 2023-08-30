@@ -33,7 +33,7 @@
                         <thead>
                             <tr>
                                 <th>Switch</th>
-                                <th>{{ __('Backup.Last') }}</th>
+                                <th>{{ __('Date') }}</th>
                                 <th>Status</th>
                                 <th class="has-text-centered">{{ __('Actions') }}</th>
                             </tr>
