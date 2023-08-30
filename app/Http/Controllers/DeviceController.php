@@ -40,7 +40,7 @@ class DeviceController extends Controller
         $device = Device::create($request->except('_token'));
 
         if ($device) {
-            CLog::info("Switch", "Switch {$request->input('name')} created");
+            CLog::info("Device", "Switch {$request->input('name')} created");
             return redirect()->back()->with('success', __('Successfully created device'));
         }
 
@@ -128,11 +128,11 @@ class DeviceController extends Controller
         $backup = $class::createBackup($device);
 
         if ($backup) {
-            CLog::info("Switch", "Backup for switch {$device->name} created", $device, "ID: ".$device->id);
+            CLog::info("Device", "Backup for switch {$device->name} created", $device, "ID: ".$device->id);
 
             return json_encode(['success' => 'true', 'message' => __('Backup successfully created')]);
         } else {
-            CLog::error("Switch", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
+            CLog::error("Device", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
             return json_encode(['success' => 'false', 'message' => __('Error creating backup')]);
         }
     }
@@ -150,7 +150,7 @@ class DeviceController extends Controller
             $class::createBackup($device);
         }
 
-        CLog::info("Switch", "Backup for all switches created");
+        CLog::info("Device", "Backup for all switches created");
         return json_encode(['success' => 'true', 'message' => __('Successfully created backups')]);
     }
 

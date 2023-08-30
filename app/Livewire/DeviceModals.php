@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Helper\CLog;
 use App\Models\Building;
 use App\Models\Device;
 use App\Services\DeviceService;
@@ -79,6 +80,9 @@ class DeviceModals extends Component
         $this->dispatch('delete', model: $id)->to(ShowDevices::class);
         $this->dispatch('notify-success', message: __('Device deleted'));
         $this->dispatch('refresh')->to(ShowDevices::class);
+        CLog::info("Device","Device {$this->device->name} and related data deleted", null, [
+            'device' => $this->device->name,
+        ]);
     }
 
     public function update()
