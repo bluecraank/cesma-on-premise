@@ -404,7 +404,7 @@ class ArubaCX implements DeviceInterface
         return ['success' => false, 'data' => 'Restore failed: ' . $restore->json() . " (" . $restore->status() . ")"];
     }
 
-    static function uploadPubkeys($device, $pubkeys): String
+    static function syncPubkeys($device, $pubkeys): String
     {
         if (!$login_info = self::API_LOGIN($device)) {
             return json_encode(['success' => 'false', 'message' => 'Login failed']);
@@ -430,9 +430,9 @@ class ArubaCX implements DeviceInterface
 
         if ($upload->successful()) {
             $device->last_pubkey_sync->touch();
-            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
+            return json_encode(['success' => 'true', 'message' => __('SSH pubkeys successfully synced')]);
         } else {
-            return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.Error')]);
+            return json_encode(['success' => 'false', 'message' => __('SSH pubkeys sync failed')]);
         }
     }
 

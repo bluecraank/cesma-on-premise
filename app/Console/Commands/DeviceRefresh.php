@@ -56,7 +56,7 @@ class DeviceRefresh extends Command
                 ]);
 
                 $notification->touch();
-            } elseif($this->argument('type') == "snmp") {
+            } elseif($this->argument('type') == "snmp" && config('app.write_type')[$device->type] == "snmp") {
                 $notification = Notification::firstOrCreate([
                     'unique-identifier' => "device-refresh-failed-snmp-".$device->id,
                 ],[
@@ -69,8 +69,6 @@ class DeviceRefresh extends Command
 
                 $notification->touch();
             }
-
-            // Log::error("[".$this->argument('type')."] Failed to refresh device " . $device->name);
             return;
         } else {
             if($this->argument('type') == "api" && config('app.write_type')[$device->type] == "api") {

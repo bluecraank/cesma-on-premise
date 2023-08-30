@@ -158,14 +158,13 @@ class SystemController extends Controller
             if ($devices[$edge['to']]['type'] == 'aruba-cx') {
                 $to_port = str_replace(["1/1/"], "", $edge['to_port']);
             }
+            // echo $from_port . " - " . $to_port . "<br>";
+            // $from_port = str_replace(":1", "", $from_port);
 
             $get_from_device_port = DevicePort::where('device_id', $edge['from'])->where('name', $from_port)->first();
             $get_to_device_port = DevicePort::where('device_id', $edge['to'])->where('name', $to_port)->first();
 
-            // if(!$get_from_device_port || !$get_to_device_port) {
-            //     continue;
-            // }
-
+            // echo $edge['from'] . " - " . $from_port . "<br>";
             if(!$get_from_device_port) {
                 $get_from_device_port = new DevicePort();
                 $get_from_device_port->speed = 0;

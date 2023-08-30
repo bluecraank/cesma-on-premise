@@ -77,7 +77,7 @@ class ShowClients extends Component
             if ($type and $type != 'all') {
                 $query->where('type', '=', $type);
             }
-        });
+        })->orderBy('updated_at', 'desc');
 
         $clients = $clients->paginate($this->numberOfEntries ?? 25);
 

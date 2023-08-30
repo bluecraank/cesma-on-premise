@@ -279,7 +279,7 @@ class UpdateDeviceData
         // Client based uplink detection
         $clients = $device->clients()->get()->groupBy('port_id')->toArray();
         foreach ($clients as $port => $client) {
-            if (count($client) > 10 && !isset($currentUplinks[$port])) {
+            if (count($client) > 10 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::new($port, $device, [
                     'clients' => count($client),
                     'port' => $port,
@@ -293,7 +293,7 @@ class UpdateDeviceData
         $vlans = $device->vlans()->get()->toArray();
         foreach ($vlanports as $portId => $vlanport) {
             $port = DevicePort::where('id', $portId)->first()->name;
-            if (count($vlanport) > (count($vlans) * 0.8) && !isset($currentUplinks[$port])) {
+            if (count($vlanport) > (count($vlans) * 0.8) && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::new($port, $device, [
                     'vlans' => count($vlanport),
                     'port' => $port,
@@ -321,7 +321,7 @@ class UpdateDeviceData
             $local_port = str_replace(["ethernet", "1/1/"], "", $port_combination['local_port']);
             $remote_port = str_replace(["ethernet", "1/1/"], "", $port_combination['remote_port']);
 
-            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port])) {
+            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
                 $uplink = DevicePort::where('name', $local_port)->first();
                 if (!$uplink) {
                     $uplink = DevicePort::where('name', "1/1/" . $local_port)->first();

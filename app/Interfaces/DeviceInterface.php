@@ -62,7 +62,7 @@
 
         static function snmpFormatSystemData(Array $system): Array;
 
-        static function uploadPubkeys($device, $pubkeys): String;
+        static function syncPubkeys($device, $pubkeys): String;
 
         static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): bool;
 

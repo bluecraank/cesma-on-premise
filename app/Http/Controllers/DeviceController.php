@@ -169,7 +169,7 @@ class DeviceController extends Controller
 
         $class = config('app.types')[$device->type];
         CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
-        return $class::uploadPubkeys($device, $pubkeys);
+        return $class::syncPubkeys($device, $pubkeys);
     }
 
     static function uploadPubkeysAllDevices()
@@ -184,7 +184,7 @@ class DeviceController extends Controller
 
                 CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
 
-                $class::uploadPubkeys($device, $pubkeys);
+                $class::syncPubkeys($device, $pubkeys);
             }
 
             CLog::info("Pubkey", "Uploading public keys to all switches");

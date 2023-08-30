@@ -555,7 +555,7 @@ class ArubaOS implements DeviceInterface
         return ['success' => false, 'data' => 'Restore failed: ' . $data['status'] . " " . $data['failure_reason']];
     }
 
-    static function uploadPubkeys($device, $pubkeys = false): String
+    static function syncPubkeys($device, $pubkeys = false): String
     {
         if (config('app.ssh_private_key')) {
             $private_key = Storage::disk('local')->get('ssh.key');
@@ -608,12 +608,12 @@ class ArubaOS implements DeviceInterface
                 }
 
                 $device->last_pubkey_sync->touch();
-                return json_encode(['success' => 'true', 'message' => __('Successfully uploaded Pubkeys')]);
+                return json_encode(['success' => 'true', 'message' => __('SSH pubkeys successfully synced')]);
             }
         } catch (\Exception $e) {
         }
 
-        return json_encode(['success' => 'false', 'message' => 'Could not upload Pubkeys']);
+        return json_encode(['success' => 'false', 'message' => 'SSH pubkeys sync failed']);
     }
 
     static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): bool

@@ -180,7 +180,7 @@ use Illuminate\Support\Facades\Http;
             return $return;
         }
 
-        static function uploadPubkeys($device, $pubkeys): string
+        static function syncPubkeys($device, $pubkeys): string
         {
             return "";
         }

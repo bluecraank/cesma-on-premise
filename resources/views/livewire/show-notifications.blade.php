@@ -55,7 +55,7 @@
              </div>
              <div class="p-3">
                  Zeige
-                 <select wire:model="numberOfEntries" name="numberOfEntries">
+                 <select wire:model.live="numberOfEntries" name="numberOfEntries">
                      <option @selected($this->numberOfEntries == 10) value="10">10</option>
                      <option @selected($this->numberOfEntries == 25) value="25">25</option>
                      <option @selected($this->numberOfEntries == 50) value="50">50</option>

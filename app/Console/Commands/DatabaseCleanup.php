@@ -61,7 +61,6 @@ class DatabaseCleanup extends Command
         }
 
         foreach($array_uplinks as $device_id => $uplinks) {
-            var_dump($uplinks);
             Client::where('device_id', $device_id)->whereIn('port_id', $uplinks)->delete();
         }
 
