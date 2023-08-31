@@ -4,35 +4,27 @@
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">{{ __('MacFilter.Title') }}</p>
+                <p class="modal-card-title">{{ __('Create mac type') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">
                     <label class="label">MAC Prefix</label>
-                    <p class="control has-icons-left">
+                    <p class="control">
                         <input class="input" name="mac_prefix" required placeholder="MAC Address oder Prefix">
-                        <span class="icon is-small is-left">
-                            <i class="fa fa-a"></i>
-                        </span>
                     </p>
                 </div>
                 <div class="field">
                     <label class="label">{{ __('Description') }}*</label>
-                    <p class="control has-icons-left">
+                    <p class="control">
                         <input class="input" name="mac_desc" required placeholder="Type of devices">
-                        <span class="icon is-small is-left">
-                            <i class="fa fa-info"></i>
-                        </span>
+
                     </p>
                 </div>
 
                 <div class="field">
                     <label class="label">{{ __('Type') }}</label>
-                    <p class="control has-icons-left">
+                    <p class="control">
                         <input class="input" name="mac_type_input" placeholder="MAC Type (e.g accesspoint)">
-                        <span class="icon is-small is-left">
-                            <i class="mdi mdi-info"></i>
-                        </span>
                     </p>
                 </div>
 
@@ -51,9 +43,10 @@
             </section>
             <footer class="modal-card-foot">
                 <button class="button submit is-success">{{ __('Save') }}</button>
-                <button data-modal="add-mac" type="button"
+                <button data-modal="create-mac-type" type="button"
                     class="button">{{ __('Cancel') }}</button>
             </footer>
+
         </div>
     </form>
 </div>

@@ -133,11 +133,9 @@
                                 $formatted_mac = implode(':', $splitted_mac);
                             @endphp
                             <tr class="client-table-row">
-                                <td style="width:300px" class="hostname-cell"
-                                    title="Online N/A, Last update {{ trim($client->updated_at->format('d.m.Y H:i:s')) }}">
-                                    <i style=""
-                                        class="client-status mr-2 {{ $cc::getClientIcon($client->type) }}"></i><span
-                                        title="{{ $client->hostname ?? 'DEV-' . $client->mac_address }}"
+                                <td style="width:300px" class="hostname-cell" title="Last update {{ trim($client->updated_at->format('d.m.Y H:i:s')) }}">
+                                    <i class="mdi {{ $client->getTypeIconAttribute() }}"></i>
+                                    <span title="{{ $client->hostname ?? 'DEV-' . $client->mac_address }}"
                                         class="client-hostname">{{ trim($client->hostname ?? 'DEV-' . $client->mac_address) }}</span>
                                 </td>
 

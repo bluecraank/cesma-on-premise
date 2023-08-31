@@ -99,16 +99,19 @@ class ClientService {
         Log::info("[Clients] Updated {$updated} and created {$created} clients.");
     }
 
-    static function getClientType($mac)
+    static function getClientType($mac, $types = null)
     {
-        $types = MacType::all()->keyBy('mac_prefix')->toArray();
-
-        $mac_prefix = substr($mac, 0, 6);
-        if (array_key_exists($mac_prefix, $types)) {
-            return $types[$mac_prefix]['id'];
+        if(!$types) {
+            $types = MacType::all()->keyBy('mac_prefix')->toArray();
         }
 
-        return 0;
+        $mac_prefix = strtoupper(substr($mac, 0, 6));
+
+        if (array_key_exists($mac_prefix, $types)) {
+            return $types[$mac_prefix]['type'];
+        }
+
+        return "client";
     }
 
     static function getClientIcon($type)

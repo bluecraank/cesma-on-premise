@@ -81,6 +81,7 @@
                             <tr>
                                 <th>{{ __('Type') }}</th>
                                 <th>{{ __('Icon') }}</th>
+                                <th>{{ __('Preview') }}</th>
                                 <th class="has-text-centered">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -96,6 +97,7 @@
                                 <tr>
                                     <td>{{ $mac_type_icon->mac_type }}</td>
                                     <td>{{ $mac_type_icon->mac_icon }}</td>
+                                    <td><i class="mdi {{ $mac_type_icon->mac_icon }}"></i></td>
                                     <td class="is-actions-cell has-text-centered">
                                         <div class="buttons is-small is-right">
                                             <button data-id="{{ $mac_type_icon->id }}" data-mac_icon="{{ $mac_type_icon->mac_icon }}" data-mac_type="{{ $mac_type_icon->mac_type }}" data-modal="update-mac-type-icon" class="button is-small is-info" type="button">

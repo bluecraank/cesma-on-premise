@@ -21,4 +21,20 @@ class Client extends Model
         'type',
         'online'
     ];
+
+    protected $appends = [
+        'type_icon'
+    ];
+
+    public function getTypeIconAttribute()
+    {
+        $type = $this->type;
+        $icon = MacTypeIcon::where('mac_type', $type)->first();
+
+        if(!$icon) {
+            return 'mdi-desktop-classic';
+        }
+
+        return $icon->mac_icon;
+    }
 }

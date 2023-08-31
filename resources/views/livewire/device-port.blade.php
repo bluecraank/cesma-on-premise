@@ -56,7 +56,7 @@
                         <div class="dropdown-item">
                             @foreach ($port_clients as $client)
                                  @php $hostname = strstr($client['hostname'], ".", true); @endphp
-                                <div width="100%">{{ $hostname != "" ? $hostname : $client['hostname'] ?? "DEV-".$client['mac_address'] }}</div>
+                                <div width="100%"><i class="mdi {{ $client['type_icon'] }}"></i> {{ $hostname != "" ? $hostname : $client['hostname'] ?? "DEV-".$client['mac_address'] }}</div>
                             @endforeach
                         </div>
                     </div>

@@ -2,7 +2,8 @@
 
 
 <x-layouts.main>
-    <div class="columns">
+<div x-data="{ fullwidth: false }">
+    <div class="columns" x-show="!fullwidth">
         <div class="column">
             <div class="box">
                 <p class="heading"><strong>{{ __('Last update') }}</strong>
@@ -48,7 +49,7 @@
 
     </div>
 
-    <div class="columns" x-data="{ fullwidth: false }">
+    <div class="columns">
         <div class="column is-3" x-show="!fullwidth">
             @php
                 $startDate = Illuminate\Support\Carbon::now()->subMilliseconds($device->uptime);
@@ -337,6 +338,7 @@
             @livewire('portoverview', ['ports' => $ports, 'device' => $device])
         </div>
     </div>
+</div>
 
     @livewire('VlanTaggingModal')
     </x-layouts>
