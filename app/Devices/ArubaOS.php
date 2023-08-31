@@ -183,7 +183,7 @@ class ArubaOS implements DeviceInterface
         $data = [
             'informations' => self::formatSystemData($data['status']),
             'vlans' => (isset($data['vlans'])) ? self::formatVlanData($data['vlans']['vlan_element']) : [],
-            'ports' => (isset($data['ports'])) ? self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']) : [],
+            'ports' => (isset($data['ports']) && isset($data['portstats'])) ? self::formatPortData($data['ports']['port_element'], $data['portstats']['port_statistics_element']) : [],
             'vlanports' => (isset($data['vlanport'])) ? self::formatPortVlanData($data['vlanport']['vlan_port_element']) : [],
             'statistics' => (isset($data['portstats'])) ? self::formatExtendedPortStatisticData($data['portstats']['port_statistics_element'], $data['ports']['port_element']) : [],
             'macs' => (isset($data['mac-table'])) ? self::formatMacTableData($data['mac-table']['mac_table_entry_element']) : [],

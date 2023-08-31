@@ -69,7 +69,7 @@ class ArubaCX implements DeviceInterface
         $data = [
             'informations' => self::formatSystemData($data['status']),
             'vlans' => (isset($data['vlans'])) ? self::formatVlanData($data['vlans']) : [],
-            'ports' => (isset($data['ports'])) ? self::formatPortData($data['ports'], $data['portstats']) : [],
+            'ports' => (isset($data['ports']) && $data['portstats']) ? self::formatPortData($data['ports'], $data['portstats']) : [],
             'vlanports' => (isset($data['vlanport'])) ? self::formatPortVlanData($data['vlanport']) : [],
             'statistics' => (isset($data['portstats'])) ? self::formatExtendedPortStatisticData($data['portstats'], $data['ports']) : [],
             'macs' => (isset($data['vlans'])) ? self::formatMacTableData([], $data['vlans'], $device, $cookie, $api_version) : [],
