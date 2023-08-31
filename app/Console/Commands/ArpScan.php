@@ -34,7 +34,7 @@ class ArpScan extends Command
         $result = shell_exec('ip neighbour');
         $array = explode("\n", $result);
 
-        $devices = Device::all()->keyBy('hostname');
+        $devices = Device::all()->keyBy('hostname')->toArray();
 
         $site = Site::first();
         $building = Building::where('site_id', $site->id)->first();
@@ -104,7 +104,7 @@ class ArpScan extends Command
 
             $hostname = strtoupper($hostname);
 
-            if(isset($devices[$hostname])) {
+            if(isset($devices[$full_hostname]) || isset($devices[$hostname]) || isset($devices[$neighbour['ip']])) {
                 continue;
             }
 

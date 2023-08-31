@@ -19,10 +19,23 @@ class DellEMCPowerSwitch implements DeviceInterface
 
     static function getSnmpData(Device $device): array
     {
-        $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
-        $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        $data = [
+            'success' => false,
+        ];
 
-        $snmpIpToMac = [];
+        try {
+            $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        $snmpVlanToMac = [];
         $snmpMacToPort = [];
         $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
         $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);

@@ -48,9 +48,21 @@ class ArubaOS implements DeviceInterface
 
     static function getSnmpData(Device $device): array
     {
+        $data = [
+            'success' => false,
+        ];
 
-        $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
-        $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        try {
+            $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
 
         try {
             $snmpVlanToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['vlan_to_mac'], 5000000, 1);
