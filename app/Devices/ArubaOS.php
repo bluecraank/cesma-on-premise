@@ -2,6 +2,7 @@
 
 namespace App\Devices;
 
+use App\Helper\CLog;
 use App\Interfaces\DeviceInterface;
 
 use Illuminate\Support\Facades\Http;
@@ -47,6 +48,7 @@ class ArubaOS implements DeviceInterface
 
     static function getSnmpData(Device $device): array
     {
+
         $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
         $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
 
@@ -667,8 +669,8 @@ class ArubaOS implements DeviceInterface
 
         $vlansToSet = [];
         $vlansToRemove = [];
-        $vlansSucessfullySet = [];
-        $vlansSucessfullyRemoved = [];
+        $vlansSuccessfullySet = [];
+        $vlansSuccessfullyRemoved = [];
 
         if ($need_login) {
             $login_info = self::API_LOGIN($device);
@@ -699,19 +701,24 @@ class ArubaOS implements DeviceInterface
                 }
             }
 
+            $untaggedVlan = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', false)->first();
+            if(isset($untaggedVlan)) {
+                unset($vlansToSet[$untaggedVlan->device_vlan_id]);
+            }
+
             foreach ($vlansToSet as $vlan) {
                 $data = '{
                 "vlan_id": ' . $vlans[$vlan]['vlan_id'] . ',
                 "port_id": "' . $port->name . '",
                 "port_mode": "POM_TAGGED_STATIC"
-            }';
+                }';
 
                 $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
                 if($result['success']) {
                     DeviceVlanPort::updateOrCreate(
                         ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlan, 'is_tagged' => true],
                     );
-                    $vlansSucessfullySet[] = $vlan;
+                    $vlansSuccessfullySet[] = $vlan;
                 }
             }
 
@@ -720,17 +727,26 @@ class ArubaOS implements DeviceInterface
                 "vlan_id": ' . $vlans[$vlan]['vlan_id'] . ',
                 "port_id": "' . $port->name . '",
                 "port_mode": "POM_TAGGED_STATIC"
-            }';
+                }';
 
                 $result = self::API_DELETE_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
                 if($result['success']) {
                     DeviceVlanPort::where('device_id', $device->id)->where('device_port_id', $port->id)->where('device_vlan_id', $vlan)->where('is_tagged', true)->delete();
-                    $vlansSucessfullyRemoved[] = $vlan;
+                    $vlansSuccessfullyRemoved[] = $vlan;
                 }
             }
         }
 
-        return [$vlansToSet, $vlansToRemove, $vlansSucessfullySet, $vlansSucessfullyRemoved];
+        $logVlans = [];
+        foreach($taggedVlans as $unused => $device_vlan_id) {
+            $logVlans[] = $vlans[$device_vlan_id]['vlan_id'];
+        }
+
+        if(count($vlansSuccessfullySet) != 0 || count($vlansSuccessfullyRemoved) != 0) {
+            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device ". $device->name ." successfully changed", $device,"Count: ".count($logVlans).", Vlans: ".implode(", ", array_values($logVlans)));
+        }
+
+        return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
     }
 
     static function syncVlans($syncable_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink, $testmode): array

@@ -70,7 +70,8 @@ class DellEMC implements DeviceInterface
                 $allVlansByIndex[$ifIndex] = $value;
             }
 
-            if (str_contains($value, 'ethernet') && !str_contains($value, ':1')) {
+            // Why && !str_contains($value, ':1') ?
+            if (str_contains($value, 'ethernet')) {
                 $value = str_replace(["STRING: ", "\"", "ethernet"], "", $value);
                 $allPorts[$ifIndex] = ['name' => $value, 'type' => 'ethernet'];
             }

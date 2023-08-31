@@ -44,13 +44,19 @@
                                 <tr>
                                     <td>{{ $router->desc }}</td>
                                     <td>{{ $router->ip }}</td>
-                                    <td>{!! $router->check ? '<span class="has-text-success">Successfully got SNMP data</span>' : '<span class="has-text-danger">No data retrieved from snmp</span>' !!}</td>
+                                    <td>{!! $router->check
+                                        ? '<span class="has-text-success">Successfully got SNMP data</span>'
+                                        : '<span class="has-text-danger">No data retrieved from snmp</span>' !!}</td>
                                     <td>{{ $router->entries()->count() }}</td>
                                     <td class="is-actions-cell has-text-centered">
                                         <div class="buttons is-small is-right">
-                                            <button data-id="{{ $router->id }}" data-ip="{{ $router->ip }}" data-modal="delete-gateway" class="button is-small is-danger" type="button">
-                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                            </button>
+                                            @if (Auth::user()->role >= 1)
+                                                <button data-id="{{ $router->id }}" data-ip="{{ $router->ip }}"
+                                                    data-modal="delete-gateway" class="button is-small is-danger"
+                                                    type="button">
+                                                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

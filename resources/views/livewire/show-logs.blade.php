@@ -34,7 +34,7 @@
                         <thead>
                             <tr>
                                 <th style="width:100px;">{{ __('Level') }}</th>
-                                <th style="width:100px;">{{ __('Category') }}</th>
+                                <th style="width:150px;">{{ __('Category') }}</th>
                                 <th>{{ __('Action') }}</th>
                                 <th style="width:250px;">{{ __('Details') }}</th>
                                 <th class="is-pulled-right">{{ __('User') }}</th>
@@ -50,7 +50,7 @@
                                     <td>
                                         {{ $log->category }}
                                     </td>
-                                    <td style="width:450px;">{{ $log->description }} @empty(!$log->device_name) {{ $log->device_name }} @endempty</td>
+                                    <td style="width:450px;">{{ $log->description }}</td>
                                     <td style="width:250px;">
                                         {{ $log->additional_info }}
                                     </td>

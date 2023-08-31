@@ -41,7 +41,7 @@ class CLog
         $log->device_id = $device->id ?? null;
         $log->device_name = $device->name ?? null;
         $log->description = $description;
-        $log->additional_info = $additional_info;
+        $log->additional_info = is_array($additional_info) ? json_encode($additional_info, true) : $additional_info;
         $log->save();
     }
 }

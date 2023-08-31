@@ -11,9 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class VlanController extends Controller
 {
-    public function showVlanDetails($id)
+    public function index(Vlan $vlan)
     {
-        $vlan = Vlan::where('id', $id)->where('site_id', Auth::user()->currentSite()->id)->firstOrFail();
         $vlans = [];
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('name')->keyBy('name');
         $ports = [];
@@ -31,8 +30,8 @@ class VlanController extends Controller
             $untagged[$device->id] = [];
             $tagged[$device->id] = [];
 
-            if($device->vlans()->where('vlan_id', $vlan->vid)->first()) {
-                $vlans[$device->id] = $device->vlans()->where('vlan_id', $vlan->vid)->first()->id;
+            if($device->vlans()->where('vlan_id', $vlan['vid'])->first()) {
+                $vlans[$device->id] = $device->vlans()->where('vlan_id', $vlan['vid'])->first()->id;
 
                 $vlanports[$device->id] = $device->vlanports()->where('device_vlan_id', $vlans[$device->id])->get();
 

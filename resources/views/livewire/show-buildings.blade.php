@@ -53,17 +53,23 @@
                                     <td>{{ $building->site->name }}</td>
                                     <td>{{ $building->devices()->count() }}</td>
                                     <td class="is-actions-cell has-text-centered">
-                                        <div class="buttons is-right">
-                                            <button data-modal="update-building"
-                                                wire:click="show({{ $building->id }}, 'update')"
-                                                class="button is-small is-primary" type="button">
-                                                <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                                            </button>
-                                            <button data-modal="delete-building"
-                                                wire:click="show({{ $building->id }}, 'delete')"
-                                                class="button is-small is-danger" type="button">
-                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                            </button>
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <button data-modal="update-building"
+                                                    wire:click="show({{ $building->id }}, 'update')"
+                                                    class="button is-small is-primary" type="button">
+                                                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                                </button>
+                                            </div>
+
+                                            <div class="control">
+                                                <button data-modal="delete-building"
+                                                    wire:click="show({{ $building->id }}, 'delete')"
+                                                    class="button is-small is-danger" type="button">
+                                                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                                </button>
+                                            </div>
+
                                         </div>
                                     </td>
                                 </tr>

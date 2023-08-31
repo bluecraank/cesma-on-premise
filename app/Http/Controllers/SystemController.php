@@ -26,8 +26,9 @@ class SystemController extends Controller
         $devicesOnline = ChartService::devicesOnline();
         $clients = Client::all()->count();
         $vlans = Vlan::all()->count();
+        $ports = DevicePort::all()->count();
 
-        return view('dashboard', compact('portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans'));
+        return view('dashboard', compact('portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
 
     public function index_usersettings()
@@ -67,6 +68,10 @@ class SystemController extends Controller
         foreach ($topology as $topo) {
             $name = $name2 = null;
 
+            if ($topo->local_device == 0 || $topo->remote_device == 0 || $topo->local_port == 0 || $topo->remote_port == 0) {
+                continue;
+            }
+
             // Add note for local device if not already added
             if (!isset($already_added[$topo->local_device])) {
                 $name = $devices->where('id', $topo->local_device)->first()?->name;
@@ -104,9 +109,6 @@ class SystemController extends Controller
             $already_added[$topo->local_device] = true;
             $already_added[$topo->remote_device] = true;
 
-            if ($topo->local_device == 0 || $topo->remote_device == 0 || $topo->local_port == 0 || $topo->remote_port == 0) {
-                continue;
-            }
 
             // Switch ports to prevent duplicate edges
             if ($topo->local_device > $topo->remote_device) {
@@ -158,13 +160,10 @@ class SystemController extends Controller
             if ($devices[$edge['to']]['type'] == 'aruba-cx') {
                 $to_port = str_replace(["1/1/"], "", $edge['to_port']);
             }
-            // echo $from_port . " - " . $to_port . "<br>";
-            // $from_port = str_replace(":1", "", $from_port);
 
             $get_from_device_port = DevicePort::where('device_id', $edge['from'])->where('name', $from_port)->first();
             $get_to_device_port = DevicePort::where('device_id', $edge['to'])->where('name', $to_port)->first();
 
-            // echo $edge['from'] . " - " . $from_port . "<br>";
             if(!$get_from_device_port) {
                 $get_from_device_port = new DevicePort();
                 $get_from_device_port->speed = 0;
@@ -186,12 +185,11 @@ class SystemController extends Controller
                     'color' => $speed_color,
                 ],
                 'label' => $from_port . " - " . $to_port,
-                'chosen' => [
-                    'label' => true,
-                ],
                 'font' => [
                     'align' => 'middle',
                 ],
+                'width' => 4,
+                'title' => $devices[$edge['from']]['name'] . ':' . $from_port . ' to ' . $devices[$edge['to']]['name'] . ':' . $to_port
             ]);
         }
 

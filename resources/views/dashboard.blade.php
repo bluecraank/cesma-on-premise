@@ -11,6 +11,12 @@
         </div>
         <div class="level-item has-text-centered">
             <div>
+                <p class="heading">{{ __('Ports monitored') }}</p>
+                <p class="title">{{ $ports }}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
                 <p class="heading">{{ __('Vlans') }}</p>
                 <p class="title">{{ $vlans }}</p>
             </div>

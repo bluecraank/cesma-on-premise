@@ -53,17 +53,21 @@
                                     <td>{{ $site->buildings()->count() }}</td>
                                     <td>{{ $site->devices()->count() }}</td>
                                     <td class="is-actions-cell has-text-centered">
-                                        <div class="buttons is-right">
-                                            <button data-modal="update-site"
-                                                wire:click="show({{ $site->id }}, 'update')"
-                                                class="button is-small is-primary" type="button">
-                                                <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                                            </button>
-                                            <button data-modal="delete-site"
-                                                wire:click="show({{ $site->id }}, 'delete')"
-                                                class="button is-small is-danger" type="button">
-                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                            </button>
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <button data-modal="update-site"
+                                                    wire:click="show({{ $site->id }}, 'update')"
+                                                    class="button is-small is-primary" type="button">
+                                                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                                </button>
+                                            </div>
+                                            <div class="control">
+                                                <button data-modal="delete-site"
+                                                    wire:click="show({{ $site->id }}, 'delete')"
+                                                    class="button is-small is-danger" type="button">
+                                                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

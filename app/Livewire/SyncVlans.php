@@ -25,6 +25,12 @@ class SyncVlans extends Component
     public $renameVlans = true;
     public $tagToUplinks = false;
 
+    public function mount() {
+        if(Auth::user()->role <= 1) {
+            abort(403);
+        }
+    }
+
     #[On('update')]
     public function update($vlans, $devices) {
         $this->selectedDevices = $devices;

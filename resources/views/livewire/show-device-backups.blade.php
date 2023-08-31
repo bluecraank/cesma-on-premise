@@ -9,7 +9,7 @@
             </p>
 
             <div class="mr-5 in-card-header-actions">
-                <x-export-button :filename="__('Switches')" table="table" />
+                <x-export-button :filename="__('Backups')" table="table" />
             </div>
         </header>
 
@@ -54,16 +54,20 @@
                                         @endif
                                     </td>
                                     <td class="is-actions-cell has-text-centered">
-                                        <div class="buttons is-right">
-                                            <button wire:click="download({{ $backup->id }})" title="{{ __('Download') }}"
-                                                class="button is-small is-success">
-                                                <i class="mdi mdi-download"></i>
-                                            </button>
-                                            <button wire:click="show({{ $backup->id }}, 'delete')"
-                                                title="{{ __('Delete') }}" data-modal="delete-backup"
-                                                class="button is-danger is-small">
-                                                <i class="mdi mdi-trash-can"></i>
-                                            </button>
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <button wire:click="download({{ $backup->id }})"
+                                                    title="{{ __('Download') }}" class="button is-small is-success">
+                                                    <i class="mdi mdi-download"></i>
+                                                </button>
+                                            </div>
+                                            <div class="control">
+                                                <button wire:click="show({{ $backup->id }}, 'delete')"
+                                                    title="{{ __('Delete') }}" data-modal="delete-backup"
+                                                    class="button is-danger is-small">
+                                                    <i class="mdi mdi-trash-can"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

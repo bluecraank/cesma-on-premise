@@ -83,7 +83,7 @@
                                     </td>
                                     <td class="has-text-centered">
                                         <label class="switch is-rounded"><input
-                                                wire:click="updateSlider({{ $vlan->id }}, 'sync', {{ $sync }})"
+                                                @if (Auth::user()->role >= 1) wire:click="updateSlider({{ $vlan->id }}, 'sync', {{ $sync }})" @endif
                                                 type="checkbox" value="false"
                                                 @if ($sync) checked @endif>
                                             <span class="check"></span>
@@ -92,7 +92,7 @@
                                     </td>
                                     <td class="has-text-centered">
                                         <label class="switch is-rounded"><input
-                                                wire:click="updateSlider({{ $vlan->id }}, 'clients', {{ $clients }})"
+                                                @if (Auth::user()->role >= 1) wire:click="updateSlider({{ $vlan->id }}, 'clients', {{ $clients }})" @endif
                                                 type="checkbox" value="false"
                                                 @if ($clients) checked @endif>
                                             <span class="check"></span>

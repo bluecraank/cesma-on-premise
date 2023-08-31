@@ -45,11 +45,13 @@
                                     <td>{{ mb_substr(Crypt::decrypt($publickey->key), 0, 77) }}...</td>
                                     <td>{{ $publickey->created_at }}</td>
                                     <td class="is-actions-cell has-text-centered">
+                                        @if(Auth::user()->role >= 1)
                                         <div class="buttons is-small is-right">
                                             <button data-description="{{ $publickey->description }}" data-id="{{ $publickey->id }}" data-modal="delete-public-key" class="button is-small is-danger" type="button">
                                                 <span class="icon"><i class="mdi mdi-trash-can"></i></span>
                                             </button>
                                         </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

@@ -9,7 +9,9 @@ use App\Traits\NumberOfEntries;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\WithLogin;
+use Livewire\Attributes\On;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 
 class ShowBackups extends Component
 {
@@ -19,6 +21,9 @@ class ShowBackups extends Component
 
     public $numberOfEntries = 25;
 
+    #[Url]
+    public $search = '';
+
     public function mount()
     {
         $this->checkLogin();
@@ -27,7 +32,7 @@ class ShowBackups extends Component
     public function render()
     {
         $backups = DeviceBackup::select('id', 'status', 'created_at', 'device_id')->get()->keyBy('id');
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->orderBy('name')->paginate($this->numberOfEntries ?? 25);
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where('name', 'LIKE', '%'.$this->search.'%')->orderBy('name')->paginate($this->numberOfEntries ?? 25);
 
         foreach ($devices as $device) {
             $device->last_backup = $backups->where('device_id', $device->id)->last();

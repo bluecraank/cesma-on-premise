@@ -24,11 +24,10 @@ use App\Livewire\ShowUsers;
 use App\Livewire\ShowVlans;
 use App\Livewire\SyncVlans;
 use App\Models\Device;
-use App\Models\DevicePort;
+use App\Models\Vlan;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Tabuna\Breadcrumbs\Breadcrumbs;
 use Tabuna\Breadcrumbs\Trail;
 
 
@@ -42,7 +41,6 @@ use Tabuna\Breadcrumbs\Trail;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 // Main Routes
 Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
     Route::get('/', [SystemController::class,'dashboard'])->breadcrumbs(function (Trail $trail) {
@@ -138,11 +136,9 @@ Route::prefix('vlans')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Sync vlans'), route('sync-vlans'));
     })->name('sync-vlans');
 
-    Route::get('/{id}', function () {
-        return view('dashboard');
-    })->breadcrumbs(function (Trail $trail) {
+    Route::get('/{vlan}', [VlanController::class, 'index'])->breadcrumbs(function (Trail $trail, Vlan $vlan) {
         $trail->parent('vlans')
-        ->push(__('Vlan'), route('show-vlan', 1));
+        ->push($vlan->name, route('show-vlan', $vlan->id));
     })->name('show-vlan');
 
 
@@ -153,13 +149,6 @@ Route::prefix('sites')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/', ShowSites::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Sites'), route('sites'));
     })->name('sites');
-
-    Route::get('/{id}', function () {
-        return view('dashboard');
-    })->breadcrumbs(function (Trail $trail) {
-        $trail->parent('sites')
-        ->push(__('Site'), route('show-site', 1));
-    })->name('show-site');
 
     Route::put('/', [SiteController::class, 'changeSite'])->name('change-site');
     Route::post('/', [SiteController::class, 'store'])->name('create-site');
@@ -200,13 +189,6 @@ Route::prefix('buildings')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Buildings'), route('buildings'));
     })->name('buildings');
 
-    Route::get('/{id}', function () {
-        return view('dashboard');
-    })->breadcrumbs(function (Trail $trail) {
-        $trail->parent('buildings')
-            ->push(__('Building'), route('show-building', 1));
-    })->name('show-building');
-
     Route::post('/', [BuildingController::class, 'store'])->name('create-building');
 });
 
@@ -215,68 +197,7 @@ Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Rooms'), route('rooms'));
     })->name('rooms');
 
-    Route::get('/{id}', function () {
-        return view('dashboard');
-    })->breadcrumbs(function (Trail $trail) {
-        $trail->parent('rooms')
-            ->push(__('Room'), route('show-room', 1));
-    })->name('show-room');
-
     Route::post('/', [RoomController::class, 'store'])->name('create-room');
 });
 
-Route::get('/test', function () {
-    $ip = "10.50.2.120";
-
-    $snmp = snmp2_real_walk($ip, "public", ".1.3.6.1.2.1.17.7.1.2.2.1.2", 500000, 2);
-
-
-    if($snmp == false || $snmp == [] || $snmp == "\"\"") {
-        return false;
-    }
-
-    $data = [];
-    foreach($snmp as $key => $value) {
-        $cur_key = $key;
-        $cur_value = $value;
-        $mac = explode(".", $key);
-        $decimal_mac = [
-            $mac[count($mac) - 6],
-            $mac[count($mac) - 5],
-            $mac[count($mac) - 4],
-            $mac[count($mac) - 3],
-            $mac[count($mac) - 2],
-            $mac[count($mac) - 1],
-        ];
-
-        foreach($decimal_mac as $key => $value) {
-            $new_value = $value;
-
-            $new_value = dechex($new_value);
-
-            if(strlen($new_value) == 1) {
-                $new_value = "0" . $new_value;
-            }
-
-            $decimal_mac[$key] = $new_value;
-        }
-
-        $decimal_mac = implode(":", $decimal_mac);
-        $data[$decimal_mac] = [];
-        $datavalue = str_replace("INTEGER: ", "", $cur_value);
-        $data[$decimal_mac] = $datavalue ;
-    }
-
-    $ports = DevicePort::where('device_id', 13)->get()->keyBy('snmp_if_index')->toArray();
-
-    $new_data = [];
-    foreach($data as $mac => $port) {
-        echo $port . "\n";
-        if(isset($ports[$port])) {
-            $new_data[$mac] = $ports[$port]['name'];
-        }
-    }
-
-    dd($new_data);
-})->name('test');
 Auth::routes();

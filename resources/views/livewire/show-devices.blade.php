@@ -44,7 +44,7 @@
                                 <th>Name</th>
                                 <th>Model</th>
                                 <th>Firmware</th>
-                                <th>{{ __('Site') }}</th>
+                                {{-- <th>{{ __('Site') }}</th> --}}
                                 <th>{{ __('Building') }}</th>
                                 <th>{{ __('Room') }}</th>
                                 <th>{{ __('Description') }}</th>
@@ -76,15 +76,15 @@
                                     @endphp
                                     <td>{{ str_replace("Switch", "", $device->model) }}</td>
                                     <td>{{ $device->firmware }}</td>
-                                    <td>{{ $device->site->name }}</td>
-                                    <td>{{ $device->building->name }}</td>
-                                    <td>{{ $device->room->name }}</td>
+                                    {{-- <td>{{ $device->site->name }}</td> --}}
+                                    <td>{{ $buildings->where('id', $device->building_id)->first()?->name }}</td>
+                                    <td>{{ $rooms->where('id', $device->room_id)->first()?->name }}</td>
                                     <td>{{ $device->location_description }}</td>
                                     <td class="is-actions-cell has-text-centered">
                                         <div class="field has-addons">
                                             <div class="control">
                                                 <a class="button p-2 m-0 is-info is-small"
-                                                href="https://{{ $device->hostname }}"><i
+                                                href="{{ config('app.https', 'http://') }}{{ $device->hostname }}"><i
                                                     class="mdi mdi-open-in-new"></i></a>
                                             </div>
 

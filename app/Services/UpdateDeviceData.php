@@ -322,18 +322,18 @@ class UpdateDeviceData
             $remote_port = str_replace(["ethernet", "1/1/"], "", $port_combination['remote_port']);
 
             if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
-                $uplink = DevicePort::where('name', $local_port)->first();
+                $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', $local_port)->first();
                 if (!$uplink) {
-                    $uplink = DevicePort::where('name', "1/1/" . $local_port)->first();
+                    $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', "1/1/" . $local_port)->first();
                 }
 
                 if (!$uplink) {
                     continue;
                 }
             } elseif ($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
-                $uplink = DevicePort::where('name', $remote_port)->first();
+                $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', $remote_port)->first();
                 if (!$uplink) {
-                    $uplink = DevicePort::where('name', "1/1/" . $remote_port)->first();
+                    $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', "1/1/" . $remote_port)->first();
                 }
 
                 if (!$uplink) {

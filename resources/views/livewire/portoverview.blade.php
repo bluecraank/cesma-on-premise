@@ -46,7 +46,7 @@
                     </thead>
                     <tbody>
                         @foreach ($ports as $port)
-                            @if (!$port['memberOfTrunk'])
+                            @if (!$port['memberOfTrunk'] && !str_contains($port['name'], "Management"))
                                 <livewire:device-port :$port />
                             @endif
                         @endforeach

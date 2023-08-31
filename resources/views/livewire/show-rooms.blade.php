@@ -53,17 +53,22 @@
                                     <td>{{ $room->building->name }}</td>
                                     <td>{{ $room->devices()->count() }}</td>
                                     <td class="is-actions-cell has-text-centered">
-                                        <div class="buttons is-right">
-                                            <button data-modal="update-room"
-                                                wire:click="show({{ $room->id }}, 'update')"
-                                                class="button is-small is-primary" type="button">
-                                                <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                                            </button>
-                                            <button data-modal="delete-room"
-                                                wire:click="show({{ $room->id }}, 'delete')"
-                                                class="button is-small is-danger" type="button">
-                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                            </button>
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <button data-modal="update-room"
+                                                    wire:click="show({{ $room->id }}, 'update')"
+                                                    class="button is-small is-primary" type="button">
+                                                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                                </button>
+                                            </div>
+
+                                            <div class="control">
+                                                <button data-modal="delete-room"
+                                                    wire:click="show({{ $room->id }}, 'delete')"
+                                                    class="button is-small is-danger" type="button">
+                                                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

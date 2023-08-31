@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Helper\CLog;
 use App\Models\Device;
 use App\Models\Client;
 use App\Models\DeviceBackup;
@@ -14,7 +13,6 @@ use App\Models\DeviceVlanPort;
 use App\Models\Mac;
 use App\Models\Notification;
 use App\Models\Topology;
-use Illuminate\Http\Request;
 
 class DeviceService
 {

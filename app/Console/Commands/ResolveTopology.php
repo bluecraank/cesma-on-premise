@@ -40,10 +40,15 @@ class ResolveTopology extends Command
         $mac_data = [];
         foreach($dev_macs as $device) {
             $snmp = [];
-            // LLDP SNMP
-            $snmp = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.4.1.1', 5000000, 1);
-            // LLDP Local Port to IfIndex
-            $ifIndexes = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.3.7.1.3', 5000000, 1);
+
+            try {
+                // LLDP SNMP
+                $snmp = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.4.1.1', 5000000, 1);
+                // LLDP Local Port to IfIndex
+                $ifIndexes = snmp2_real_walk($device->hostname, 'public', '.1.0.8802.1.1.2.1.3.7.1.3', 5000000, 1);
+            } catch(\Exception $e) {
+                continue;
+            }
 
             $ifIndexesKey = [];
             foreach($ifIndexes as $key => $value) {
@@ -102,6 +107,8 @@ class ResolveTopology extends Command
                             $portName = DevicePort::where('device_id', $device->id)->where('snmp_if_index', $ifIndexesKey[$key[12]])->get('name');
                             if($portName && isset($portName[0])) {
                                 $mac_data[$device->id][$key[12]]['local_port'] = $portName[0]->name;
+                            } else {
+                                unset($mac_data[$device->id][$key[12]]);
                             }
 
                         } else {

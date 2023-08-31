@@ -30,23 +30,34 @@
                                 <tr>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ substr($user->guid, 0, 20) }}...</td>
-                                    <td>@if($user->role == 0) {{ __('Read-only user') }} @elseif($user->role == 1) Administrator @else Super Administrator @endif</td>
+                                    <td>
+                                        @if ($user->role == 0)
+                                            {{ __('Read-only user') }}
+                                        @elseif($user->role == 1)
+                                            Administrator
+                                        @else
+                                            Super Administrator
+                                        @endif
+                                    </td>
                                     <td class="is-actions-cell has-text-centered">
-                                        <div class="field has-addons">
-                                            <div class="control">
-                                                <button data-modal="update-user" wire:click="show({{ $user->id }}, 'update')"
-                                                    class="button is-small is-primary" type="button">
-                                                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                                                </button>
+                                        @if (Auth::user()->role >= 2)
+                                            <div class="field has-addons">
+                                                <div class="control">
+                                                    <button data-modal="update-user"
+                                                        wire:click="show({{ $user->id }}, 'update')"
+                                                        class="button is-small is-primary" type="button">
+                                                        <span class="icon"><i class="mdi mdi-pencil"></i></span>
+                                                    </button>
+                                                </div>
+                                                <div class="control">
+                                                    <button data-modal="delete-user"
+                                                        wire:click="show({{ $user->id }}, 'delete')"
+                                                        class="button is-small is-danger" type="button">
+                                                        <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div class="control">
-                                                <button data-modal="delete-user"
-                                                    wire:click="show({{ $user->id }}, 'delete')"
-                                                    class="button is-small is-danger" type="button">
-                                                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                                </button>
-                                            </div>
-                                        </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

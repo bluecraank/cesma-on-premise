@@ -141,6 +141,8 @@ class DevicePort extends Model
                 return $uplink;
             }
         }
+
+        return false;
     }
 
     public function isUplink()
