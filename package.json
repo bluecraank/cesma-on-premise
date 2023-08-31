@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "bulma-prefers-dark": "^0.1.0-beta.1",
+        "file-saver": "^2.0.5",
         "jquery": "^3.7.0",
         "multiselect": "^0.9.12"
     }

@@ -1,4 +1,4 @@
-@section('title', __('All Backups'))
+@section('title', __('Backups'))
 
 <div>
     <div class="card has-table">

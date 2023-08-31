@@ -9,14 +9,14 @@
         </p>
 
         <div class="mr-5 in-card-header-actions">
-            <x-export-button :filename="__('Switches')" table="table" />
+            <x-export-button :filename="__('Clients')" table="table" />
         </div>
     </header>
 
     <div class="card-content">
         <div class="b-table has-pagination">
             <div class="table-wrapper has-mobile-cards">
-                <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
+                <table class="table is-fullwidth is-striped is-hoverable is-fullwidth without-header">
                     <thead>
                         <tr>
                             <th>

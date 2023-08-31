@@ -1,6 +1,7 @@
 import './bootstrap';
 import $ from 'jquery';
 import 'multiselect/js/jquery.multi-select.js';
+import 'file-saver/dist/FileSaver.min.js';
 
 setTimeout(function () {
     $(".notification.is-response").slideUp(250);
