@@ -292,10 +292,11 @@ class UpdateDeviceData
         $vlanports = $device->vlanports()->get()->groupBy('device_port_id')->toArray();
         $vlans = $device->vlans()->get()->toArray();
         foreach ($vlanports as $portId => $vlanport) {
-            $port = DevicePort::where('id', $portId)->first()->name;
-            if (count($vlanport) > (count($vlans) * 0.8) && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
+            $cur_port = DevicePort::where('id', $portId)->first();
+            $port = $cur_port->name;
+            if (count($vlanport) > (count($vlans) * 0.65) && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::new($port, $device, [
-                    'vlans' => count($vlanport),
+                    'vlans' => count($cur_port->tagged),
                     'port' => $port,
                     'device_id' => $device->id,
                 ], 'uplink', 'vlans');

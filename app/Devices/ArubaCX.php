@@ -67,11 +67,11 @@ class ArubaCX implements DeviceInterface
         $uptime = self::snmpFormatSystemData(['uptime' => $snmpSysUptime]);
 
         $data = [
-            'informations' => self::formatSystemData($data['status']),
+            'informations' => (isset($data['status'])) ? self::formatSystemData($data['status']) : [],
             'vlans' => (isset($data['vlans'])) ? self::formatVlanData($data['vlans']) : [],
             'ports' => (isset($data['ports']) && $data['portstats']) ? self::formatPortData($data['ports'], $data['portstats']) : [],
             'vlanports' => (isset($data['vlanport'])) ? self::formatPortVlanData($data['vlanport']) : [],
-            'statistics' => (isset($data['portstats'])) ? self::formatExtendedPortStatisticData($data['portstats'], $data['ports']) : [],
+            'statistics' => (isset($data['portstats']) && isset($data['ports'])) ? self::formatExtendedPortStatisticData($data['portstats'], $data['ports']) : [],
             'macs' => (isset($data['vlans'])) ? self::formatMacTableData([], $data['vlans'], $device, $cookie, $api_version) : [],
             'uplinks' => (isset($data['ports'])) ? self::formatUplinkData($data['ports']) : [],
             'success' => true,

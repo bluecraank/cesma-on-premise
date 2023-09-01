@@ -15,6 +15,7 @@ use App\Models\MacType;
 use App\Models\Topology;
 use App\Models\Vlan;
 use App\Services\ChartService;
+use Illuminate\Support\Facades\Auth;
 
 class SystemController extends Controller
 {
@@ -58,7 +59,7 @@ class SystemController extends Controller
     public function index_topology()
     {
         $topology = Topology::all();
-        $devices = Device::all();
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
 
         $nodes = [];
         $already_added = [];
