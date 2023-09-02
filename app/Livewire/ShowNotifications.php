@@ -7,6 +7,7 @@ use App\Models\DevicePort;
 use App\Models\DeviceUplink;
 use App\Traits\NumberOfEntries;
 use App\Traits\WithLogin;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ShowNotifications extends Component
@@ -77,7 +78,7 @@ class ShowNotifications extends Component
 
     public function render()
     {
-        $notifications = \App\Models\Notification::latest('updated_at')->where('status', 'waiting')->take($this->numberOfEntries)->get();
+        $notifications = \App\Models\Notification::latest('updated_at')->where('status', 'waiting')->where('type', 'uplink')->where('site_id', Auth::user()->currentSite()->id)->take($this->numberOfEntries)->get();
 
         return view('livewire.show-notifications', [
             'notifications' => $notifications,

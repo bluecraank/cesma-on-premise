@@ -115,6 +115,7 @@ class DeviceModals extends Component
         $this->show = false;
         $this->dispatch('notify-success', message: __('Device updated'));
         $this->dispatch('refresh')->to(ShowDevices::class);
+        CLog::info("Device","Device {$this->device->name} updated", $this->device, "Device: {$this->device->name}");
     }
 
     public function create() {
@@ -137,7 +138,7 @@ class DeviceModals extends Component
             $this->show = false;
             $this->dispatch('notify-success', message: __('Device created'));
             $this->dispatch('refresh')->to(ShowDevices::class);
-
+            CLog::info("Device","Device {$this->device->name} created", $this->device, "Device: {$this->device->name}");
             proc_open("php " . base_path() . "/artisan device:refresh " . $device->id . " snmp", [], $pipes, base_path());
         } else
         {

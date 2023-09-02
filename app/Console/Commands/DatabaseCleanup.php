@@ -42,8 +42,22 @@ class DatabaseCleanup extends Command
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
         \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
+        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(1))->where('type', "link-change")->delete();
 
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
+
+        $sites = \App\Models\Site::all()->keyBy('id')->toArray();
+        $vlans = Vlan::all()->keyBy('vid')->toArray();
+
+        foreach($sites as $site) {
+            Client::where('site_id', $site['id'])->where(function($query) use ($vlans, $site) {
+                foreach ($vlans as $vlan) {
+                    if($vlan['site_id'] != $site['id']) {
+                        $query->orWhere('vlan_id', $vlan['vid']);
+                    }
+                }
+            })->delete();
+        }
 
         Client::where(function($query) use ($vlans_ignore) {
             $query->where('vlan_id', 0);

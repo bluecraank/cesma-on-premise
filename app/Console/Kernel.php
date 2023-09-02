@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
         // API refresh
         $schedule->command('device:refresh-all-api')
             ->everyFiveMinutes()
-            ->runInBackground();
+            ->runInBackground()
+            ->withoutOverlapping();
 
         // Scan for new devices
         $schedule->command('device:arp-scan')
@@ -31,7 +32,7 @@ class Kernel extends ConsoleKernel
 
         // Update clients
         $schedule->command('clients:update')
-            ->everyMinute()
+            ->everyFiveMinutes()
             ->runInBackground();
 
         // Resolve dns hostnames of clients

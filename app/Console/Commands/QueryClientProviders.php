@@ -31,7 +31,7 @@ class QueryClientProviders extends Command
     public function handle()
     {
         $providers = [
-            Baramundi::class,
+            // Baramundi::class,
             Router::class
         ];
 

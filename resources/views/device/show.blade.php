@@ -202,48 +202,7 @@
                 </div>
             </div>
 
-            <div x-cloak class="card has-table" x-data="{ open: false }">
-                <header class="card-header">
-                    <p class="card-header-title">
-                        <span class="icon"><i class="mdi mdi-arrow-up-down"></i></span>
-                        Uplinks
-                    </p>
-                    <a class="card-header-icon">
-                        <span class="icon" @click="open = !open"><i
-                                x-bind:class="!open ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="mdi"></i></span>
-                    </a>
-                </header>
-                <div class="card-content" x-show="open">
-                    <div class="b-table">
-                        <div class="table-wrapper has-mobile-cards">
-                            <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>{{ __('Members') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($found_uplinks as $port => $data)
-                                        <tr>
-                                            <td>{{ $data["alias"] ?? $port }}</td>
-                                            <td class="has-text-right">
-                                                {{ implode(', ', $data['members'] != '' ? $data['members'] : [$port]) }}</td>
-                                        </tr>
-                                    @endforeach
-
-                                    @if ($device->uplinks->count() == 0)
-                                        <tr>
-                                            <td colspan="2" class="has-text-centered">{{ __('No uplinks found') }}
-                                            </td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @livewire('device-uplinks', ['device' => $device])
 
             <div x-cloak class="card has-table" x-data="{ open: false }">
                 <header class="card-header">

@@ -21,15 +21,26 @@ class SystemController extends Controller
 {
     public function dashboard()
     {
-        $portsToVlans = ChartService::portsToVlans();
-        $clientsToVlans = ChartService::clientsToVlans();
-        $portsOnline = ChartService::portsOnline();
-        $devicesOnline = ChartService::devicesOnline();
-        $clients = Client::all()->count();
-        $vlans = Vlan::all()->count();
-        $ports = DevicePort::all()->count();
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
+        // $vlans = Vlan::all()->count();
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get();
+        // $clients = Client::all()->count();
+        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->get();
+        // $ports = DevicePort::all()->count();
+        $ports = DevicePort::whereIn('device_id', $devices->pluck('id'))->get();
 
-        return view('dashboard', compact('portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
+        $portsToVlans = ChartService::portsToVlans($devices, $vlans);
+        $clientsToVlans = ChartService::clientsToVlans($clients, $vlans);
+        $portsOnline = ChartService::portsOnline($ports);
+        $devicesOnline = ChartService::devicesOnline($devices);
+
+        $ports = $ports->count();
+        $vlans = $vlans->count();
+        $clients = $clients->count();
+
+        $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
+
+        return view('dashboard', compact('notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
 
     public function index_usersettings()

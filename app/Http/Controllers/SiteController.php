@@ -32,9 +32,7 @@ class SiteController extends Controller
             $url = url()->previous();
             $url = explode('/', $url)[3];
 
-            // check if web route exists
-
-            return redirect()->route($url);
+            return redirect()->route($url != "" ? $url : 'dashboard');
         }
 
         return redirect()->back();

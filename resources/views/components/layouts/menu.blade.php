@@ -9,7 +9,7 @@
                     <div class="level-item">
                         <ul>
                             @if(Route::currentRouteName() != "users" &&
-                                Route::currentRouteName() != "dashboard" &&
+                                Route::currentRouteName() != "logs" &&
                                 Route::currentRouteName() != "publickeys" &&
                                 Route::currentRouteName() != "snmp" &&
                                 Route::currentRouteName() != "mac-types")

@@ -68,30 +68,6 @@ class DeviceController extends Controller
         // Get name for firmware model
         $device->type_name = config('app.typenames')[$device->type];
 
-        // Get uplinks
-        $found_uplinks = $device->uplinks->sort(function ($a, $b) {
-            return strnatcmp($a->name, $b->name);
-        })->groupBy('name')->toArray();
-
-        $uplinks = [];
-        foreach($found_uplinks as $port => $somedata) {
-            $uplinks[$port] = [
-                'name' => $port,
-                'alias' => $tempPorts[$port]['description'] ?? null,
-                'members' => [],
-            ];
-
-            $members = [];
-
-            foreach($somedata as $data) {
-                $members[] = $data['name'];
-            }
-
-            $uplinks[$port]['members'] = $members;
-        }
-
-        $found_uplinks = $uplinks;
-
         // Sort vlans
         $device->vlans = $device->vlans->sort(function ($a, $b) {
             return strnatcmp($a->vlan_id, $b->vlan_id);
@@ -99,7 +75,7 @@ class DeviceController extends Controller
 
         $enoughPubkeysToSync = count(PublicKeyService::getPublicKeysAsArray());
 
-        return view('device.show', compact('device', 'found_uplinks', 'enoughPubkeysToSync'));
+        return view('device.show', compact('device', 'enoughPubkeysToSync'));
     }
 
     public function showBackups(Device $device)

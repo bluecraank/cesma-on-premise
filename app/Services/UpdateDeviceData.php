@@ -15,7 +15,7 @@ class UpdateDeviceData
 {
     static function updateDevicePorts($ports, $device)
     {
-        $existingPorts = $device->ports()->get('name')->keyBy('name')->toArray();
+        $existingPorts = $device->ports()->get(['name', 'link', 'speed'])->keyBy('name')->toArray();
 
         // Update/Create ports
         foreach ($ports as $port) {
@@ -36,25 +36,19 @@ class UpdateDeviceData
                 ]
             );
 
-            if (isset($existingPorts[$port['name']]) && $existingPorts[$port['name']]['link'] != $port['link']) {
-                // Notification::new($port['name'], $device, [
-                //     'port' => $port['name'],
-                //     'device_id' => $device->id,
-                // ], 'port', 'link');
+            // Notify on link status change
+            if (isset($existingPorts[$port['id']]) && $existingPorts[$port['id']]['link'] != $port['link']) {
                 DevicePort::where('name', $port['id'])->first()->touch('last_admin_status');
+                Notification::link_change($port['id'], $device, $port['link']);
+            }
+
+            // Notify on speed change only if port up
+            if (isset($existingPorts[$port['id']]) && $port['link'] && isset($port['speed']) && $port['speed'] != 0 && $existingPorts[$port['id']]['speed'] != $port['speed']) {
+                Notification::speed_change($port['id'], $device, $port['speed'], $existingPorts[$port['id']]['speed']);
             }
 
             $existingPorts[$port['id']] = true;
         }
-
-        // Delete ports that are not in the list
-        // foreach($existingPorts as $port => $isExisting) {
-        //     if(is_bool($isExisting) and $isExisting) {
-        //         continue;
-        //     }
-
-        //     DevicePort::where('device_id', $device->id)->where('name', $port)->delete();
-        // }
     }
 
     static function updateDeviceVlans($vlans, $device)
@@ -274,16 +268,16 @@ class UpdateDeviceData
             }
         }
 
-        $currentUplinks = $device->uplinks()->get()->pluck('name')->toArray();
-
+        $currentUplinks = $device->uplinks()->get('name')->keyBy('name')->toArray();
         // Client based uplink detection
         $clients = $device->clients()->get()->groupBy('port_id')->toArray();
         foreach ($clients as $port => $client) {
             if (count($client) > 10 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
-                Notification::new($port, $device, [
+                Notification::uplink($port, $device, [
                     'clients' => count($client),
                     'port' => $port,
                     'device_id' => $device->id,
+                    'site_id' => $device->site_id,
                 ], 'uplink', 'clients');
             }
         }
@@ -295,10 +289,11 @@ class UpdateDeviceData
             $cur_port = DevicePort::where('id', $portId)->first();
             $port = $cur_port->name;
             if (count($vlanport) > (count($vlans) * 0.65) && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
-                Notification::new($port, $device, [
+                Notification::uplink($port, $device, [
                     'vlans' => count($cur_port->tagged),
                     'port' => $port,
                     'device_id' => $device->id,
+                    'site_id' => $device->site_id,
                 ], 'uplink', 'vlans');
             }
         }
@@ -319,23 +314,23 @@ class UpdateDeviceData
         $topology = array_unique($topology, SORT_REGULAR);
 
         foreach ($topology as $port_combination) {
-            $local_port = str_replace(["ethernet", "1/1/"], "", $port_combination['local_port']);
-            $remote_port = str_replace(["ethernet", "1/1/"], "", $port_combination['remote_port']);
+            $local_port = str_replace(["ethernet"], "", $port_combination['local_port']);
+            $remote_port = str_replace(["ethernet"], "", $port_combination['remote_port']);
 
             if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
                 $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', $local_port)->first();
-                if (!$uplink) {
-                    $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', "1/1/" . $local_port)->first();
-                }
+                // if (!$uplink) {
+                //     $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', "1/1/" . $local_port)->first();
+                // }
 
                 if (!$uplink) {
                     continue;
                 }
-            } elseif ($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port])) {
+            } elseif ($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port]) && !isset($currentUplinks["1/1/".$remote_port])) {
                 $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', $remote_port)->first();
-                if (!$uplink) {
-                    $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', "1/1/" . $remote_port)->first();
-                }
+                // if (!$uplink) {
+                //     $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', "1/1/" . $remote_port)->first();
+                // }
 
                 if (!$uplink) {
                     continue;
@@ -344,10 +339,12 @@ class UpdateDeviceData
                 continue;
             }
 
-            Notification::new($uplink->name, $device, [
+            echo "uplink - " . $uplink->name ."\n";
+            Notification::uplink($uplink->name, $device, [
                 'topology' => "Entry in topology detected",
                 'port' => $uplink->name,
                 'device_id' => $device->id,
+                'site_id' => $device->site_id,
             ], 'uplink', 'topology');
         }
     }

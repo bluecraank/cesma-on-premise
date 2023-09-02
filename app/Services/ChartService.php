@@ -11,11 +11,14 @@ use App\Models\Vlan;
 
 class ChartService
 {
-    public static function portsToVlans()
+    public static function portsToVlans($devices, $vlans)
     {
-        $portsToVlans = DeviceVlanPort::all()->groupBy('device_vlan_id')->toArray();
-        $allDeviceVlans = DeviceVlan::all()->keyBy('id')->toArray();
-        $vlans = Vlan::all()->keyBy('vid')->toArray();
+        // $portsToVlans = DeviceVlanPort::all()->groupBy('device_vlan_id')->toArray();
+        $portsToVlans = DeviceVlanPort::whereIn('device_id', $devices->pluck('id'))->get()->groupBy('device_vlan_id')->toArray();
+        // $allDeviceVlans = DeviceVlan::all()->keyBy('id')->toArray();
+        $allDeviceVlans = DeviceVlan::whereIn('device_id', $devices->pluck('id'))->get()->keyBy('id')->toArray();
+        $vlans = $vlans->keyBy('vid')->toArray();
+
         $vlanToPorts = [];
 
         if(count($vlans) == 0 || count($portsToVlans) == 0 || count($allDeviceVlans) == 0) {
@@ -62,9 +65,9 @@ class ChartService
         return [$keys, $values];
     }
 
-    public static function clientsToVlans() {
-        $clients = Client::all()->groupBy('vlan_id')->toArray();
-        $vlans = Vlan::all()->keyBy('vid')->toArray();
+    public static function clientsToVlans($clients, $vlans) {
+        $clients = $clients->groupBy('vlan_id')->toArray();
+        $vlans = $vlans->keyBy('vid')->toArray();
 
         if(count($vlans) == 0 || count($clients) == 0) {
             return [["No vlans"], [0]];
@@ -92,23 +95,21 @@ class ChartService
         return [$keys, $values] ;
     }
 
-    public static function portsOnline() {
-        $ports = DevicePort::where('link', 1)->count();
-        $ports_offline = DevicePort::where('link', 0)->count();
+    public static function portsOnline($ports) {
+        $ports_online = $ports->where('link', 1)->count();
+        $ports_offline = $ports->where('link', 0)->count();
 
-        if($ports == 0 && $ports_offline == 0) {
+        if($ports_online == 0 && $ports_offline == 0) {
             return [["No ports"], [0]];
         }
 
         $keys = ["Online", "Offline"];
-        $values = [$ports, $ports_offline];
+        $values = [$ports_online, $ports_offline];
 
         return [$keys, $values];
     }
 
-    public static function devicesOnline() {
-        $devices = Device::all();
-
+    public static function devicesOnline($devices) {
         $count = $devices->count();
         $online = 0;
         foreach($devices as $device) {
