@@ -103,7 +103,7 @@
                                                 <option value="all">ALL</option>
                                                 <option value="client">Client</option>
                                                 @foreach ($types as $type)
-                                                    <option value="{{ $type->id }}">{{ $type->type }}</option>
+                                                    <option value="{{ $type->type }}">{{ $type->type }}</option>
                                                 @endforeach
                                             </select>
                                         </div>

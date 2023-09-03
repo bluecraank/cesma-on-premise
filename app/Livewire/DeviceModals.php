@@ -16,7 +16,7 @@ use Livewire\Attributes\Rule;
 class DeviceModals extends Component
 {
     public $show = false;
-    public Device $device;
+    public $device;
     public $modal;
 
     public $rooms = [];
@@ -51,7 +51,7 @@ class DeviceModals extends Component
         $this->show = true;
         $this->modal = $modal;
         if($modal != "create") {
-            $device = Device::where('id', $device)->first();
+            $device = Device::where('id', $device)->get(['id', 'name', 'hostname', 'site_id', 'building_id', 'room_id', 'location_description'])->first();
 
             if(!$device) {
                 $this->dispatch('notify-error', message: __('Device not found'));
@@ -71,6 +71,8 @@ class DeviceModals extends Component
 
     public function close() {
         $this->show = false;
+        $this->device = null;
+        $this->name = null;
     }
 
     public function delete() {

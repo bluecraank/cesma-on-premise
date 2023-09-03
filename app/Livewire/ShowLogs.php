@@ -17,6 +17,7 @@ class ShowLogs extends Component
 
     public $topic = "";
     public $numberOfEntries = 25;
+    public $search = "";
 
     public function mount() {
         $this->checkLogin();
@@ -24,13 +25,10 @@ class ShowLogs extends Component
 
     public function render()
     {
-        if($this->topic == "Port") {
-            $topic = "Port";
-        } else {
-            $topic = '%'.$this->topic.'%';
-        }
         return view('livewire.show-logs',[
-            'logs' => Log::where('category', 'LIKE', $topic)->latest()->paginate($this->numberOfEntries ?? 25),
+            'logs' => Log::where(function($query) {
+                $query->where('description', 'like', '%'.$this->search.'%');
+            })->latest()->paginate($this->numberOfEntries ?? 25),
             'topics' => Log::select('category')->distinct()->get(),
         ]);
     }

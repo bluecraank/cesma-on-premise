@@ -191,6 +191,7 @@ class DellEMC implements DeviceInterface
             $sys_data = explode("\n", $sys_data);
             $model = str_replace("System Type: ", "", $sys_data[4]);
             $version = str_replace("OS Version: ", "", $sys_data[3]);
+            $version = rtrim($version, ".");
         }
 
         $uptime = str_replace("Timeticks: (", "", $system['uptime']);

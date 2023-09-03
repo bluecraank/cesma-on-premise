@@ -78,7 +78,6 @@ class ShowVlans extends Component
             CLog::info("Vlan", __('Vlan :name updated', ['name' => $vlan->name]), null, $type . " => " . json_encode(!$initialState));
         } else {
             $this->dispatch('notify-error', message: __('Vlan could not be updated'));
-            CLog::error("Vlan", __('Vlan :name could not be updated', ['name' => $vlan->name]), null, $type . " => " . json_encode(!$initialState));
         }
 
     }
@@ -87,5 +86,6 @@ class ShowVlans extends Component
     public function delete($model)
     {
         Vlan::where('id', $model)->delete();
+        CLog::info("Vlan", __('Vlan :name deleted', ['name' => $model]));
     }
 }

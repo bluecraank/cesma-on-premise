@@ -14,7 +14,7 @@ class UserRoleModal extends Component
 {
     public $showModal = false;
     public $type;
-    public User $user;
+    public $user;
 
     public $name;
     public $guid;
@@ -92,7 +92,8 @@ class UserRoleModal extends Component
         $this->dispatch('refresh')->to(ShowUsers::class);
         CLog::info("User", __('User :id deleted', ['id' => $this->user->id]), null, $this->user->name);
         $user->delete();
-        $this->user = Auth::user();
+        $this->user = null;
+        $this->name = null;
     }
 
     public function close() {

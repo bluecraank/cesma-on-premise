@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Controllers\LogController;
 use App\Models\PublicKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -11,13 +10,13 @@ use App\Helper\CLog;
 class PublicKeyService
 {
     static function storePublicKey(Request $request) {
-    
+
         PublicKey::create([
             'description' => $request->description,
             'key' => Crypt::encrypt($request->input('key')),
         ]);
 
-        CLog::info("Pubkey", "Create pubkey {$request->description}", null, $request->key);
+        CLog::info("Pubkey", "SSH publickey created", null,"Description: {$request->description}, Key: ".substr($request->key, 0, 20));
     }
 
     static function getPublicKeysAsArray()

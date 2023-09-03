@@ -495,11 +495,16 @@ class ArubaOS implements DeviceInterface
 
         $api_url = $https . $device->hostname . '/rest/' . $api_version . '/cli';
 
-        $backup = Http::withoutVerifying()->asJson()->withHeaders([
-            'Cookie' => $cookie,
-        ])->post($api_url, array(
-            'cmd' => 'show running-config',
-        ));
+        try {
+            $backup = Http::withoutVerifying()->asJson()->withHeaders([
+                'Cookie' => $cookie,
+            ])->post($api_url, array(
+                'cmd' => 'show running-config',
+            ));
+        } catch (\Exception $e) {
+            BackupController::store(false, false, false, $device);
+            return false;
+        }
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
 

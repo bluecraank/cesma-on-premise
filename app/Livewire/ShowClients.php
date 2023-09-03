@@ -41,7 +41,7 @@ class ShowClients extends Component
         $count_clients = Client::count();
         $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendor::all()->keyBy('mac_prefix');
-        $types = MacType::all()->sortBy('type')->unique();
+        $types = MacType::all()->sortBy('type')->unique('type');
 
         $hostname = $this->hostname;
         $ip = $this->ip;

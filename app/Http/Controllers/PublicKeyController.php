@@ -18,7 +18,6 @@ class PublicKeyController extends Controller
         ])->validate();
 
         PublicKeyService::storePublicKey($request);
-        CLog::info("Pubkey", "SSH public key {$request->description} added", null, substr($request->key, 0, 30));
         return redirect()->back()->with('success', __('SSH public key created'));
     }
 

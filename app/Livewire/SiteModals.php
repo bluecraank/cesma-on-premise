@@ -11,7 +11,7 @@ use Livewire\Attributes\Rule;
 class SiteModals extends Component
 {
     public $show = false;
-    public Site $site;
+    public $site;
     public $modal;
 
     #[Rule('required|min:3|max:255')]
@@ -45,11 +45,14 @@ class SiteModals extends Component
             return;
         }
 
-        CLog::info("Site", __('Site :id deleted', ['id' => $this->site->id]), null, $this->site->name);
+        CLog::info("Site", __('Site :name deleted', ['name' => $this->site->name]), null, $this->site->name);
 
         $this->dispatch('delete', $this->site->id);
         $this->dispatch('notify-success', message: __('Site deleted'));
         $this->dispatch('refresh')->to(ShowSites::class);
+
+        $this->site = null;
+        $this->name = null;
     }
 
     public function update()
@@ -63,7 +66,7 @@ class SiteModals extends Component
         $this->dispatch('notify-success', message: __('Site updated'));
         $this->dispatch('refresh')->to(ShowSites::class);
 
-        CLog::info("Site", __('Site :id updated', ['id' => $this->site->id]), null, "{$temp} => {$this->name}");
+        CLog::info("Site", __('Site :name updated', ['id' => $temp]), null, "{$temp} => {$this->name}");
     }
 
     public function render()

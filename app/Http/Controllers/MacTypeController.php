@@ -11,14 +11,6 @@ use Illuminate\Support\Facades\Validator;
 class MacTypeController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -55,6 +47,7 @@ class MacTypeController extends Controller
 
         MacTypeIcon::firstOrCreate([
             'mac_type' => $mac_type,
+        ], [
             'mac_icon' => 'mdi-help-circle-outline'
         ]);
 

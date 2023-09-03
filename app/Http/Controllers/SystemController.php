@@ -56,9 +56,10 @@ class SystemController extends Controller
 
     public function index_mac_type() {
         $mac_types = MacType::all();
+        $mac_types_unique = $mac_types->unique('type');
         $mac_type_icons = MacTypeIcon::all();
 
-        return view('system.index_mac_types', compact('mac_types', 'mac_type_icons'));
+        return view('system.index_mac_types', compact('mac_types', 'mac_type_icons', 'mac_types_unique'));
     }
 
     public function index_publickeys() {

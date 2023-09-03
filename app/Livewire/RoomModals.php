@@ -12,7 +12,7 @@ class RoomModals extends Component
 {
 
     public $show = false;
-    public Room $room;
+    public $room;
 
     #[Rule('required|min:3|max:255')]
     public $name;
@@ -47,11 +47,14 @@ class RoomModals extends Component
             return;
         }
 
-        CLog::info("Room", __('Room :id deleted', ['id' => $this->room->id]), null, $this->room->name);
+        CLog::info("Room", __('Room :name deleted', ['name' => $this->room->name]), null, $this->room->name);
 
         $this->dispatch('delete', $this->room->id);
         $this->dispatch('notify-success', message: __('Room deleted'));
         $this->dispatch('refresh')->to(ShowRooms::class);
+
+        $this->room = null;
+        $this->name = null;
     }
 
     public function update()
@@ -64,7 +67,7 @@ class RoomModals extends Component
         $this->show = false;
         $this->dispatch('notify-success', message: __('Room updated'));
         $this->dispatch('refresh')->to(ShowRooms::class);
-        CLog::info("Room", __('Room :id updated', ['id' => $this->room->id]), null, "{$temp} => {$this->room->name}");
+        CLog::info("Room", __('Room :name updated', ['name' => $temp]), null, "{$temp} => {$this->room->name}");
     }
 
 

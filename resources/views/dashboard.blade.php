@@ -30,7 +30,7 @@
     </nav>
 
     <div class="columns">
-        <div class="column is-2">
+        <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="column is-2">
+        <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="column is-2">
+        <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -95,7 +95,7 @@
 
                 <div class="card-content">
                     <div class="b-table has-pagination">
-                        <div class="table-wrapper has-mobile-cards" style="overflow-y:scroll;max-height:600px;">
+                        <div class="table-wrapper has-mobile-cards" style="max-height:600px;">
                             <table class="is-fullwidth is-striped is-hoverable is-narrow is-fullwidth table">
                                 <thead>
                                     <tr>

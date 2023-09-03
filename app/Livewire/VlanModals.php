@@ -11,7 +11,7 @@ use Livewire\Component;
 class VlanModals extends Component
 {
     public $show = false;
-    public Vlan $vlan;
+    public $vlan;
     public $modal;
 
     #[Rule('required|min:2|max:255')]
@@ -65,6 +65,8 @@ class VlanModals extends Component
         $this->dispatch('notify-success', message: __('Vlan deleted'));
         $this->dispatch('refresh')->to(ShowVlans::class);
         CLog::info("Vlan", __('Vlan deleted', ['name' => $this->name]));
+        $this->vlan = null;
+        $this->name = null;
     }
 
     public function update()
@@ -81,6 +83,7 @@ class VlanModals extends Component
         $this->show = false;
         $this->dispatch('notify-success', message: __('Vlan updated'));
         $this->dispatch('refresh')->to(ShowVlans::class);
+        CLog::info("Vlan", __('Vlan :name updated', ['name' => $this->name]));
     }
 
     public function render()

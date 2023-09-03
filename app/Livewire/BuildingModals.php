@@ -12,7 +12,7 @@ class BuildingModals extends Component
 {
 
     public $show = false;
-    public Building $building;
+    public $building;
 
     #[Rule('required|min:3|max:255')]
     public $name;
@@ -41,11 +41,14 @@ class BuildingModals extends Component
             return;
         }
 
-        CLog::info("Building", __('Building :id deleted', ['id' => $this->building->id]), null, $this->building->name);
+        CLog::info("Building", __('Building :name deleted', ['name' => $this->building->name]), null, $this->building->name);
 
         $this->dispatch('delete', $this->building->id);
         $this->dispatch('notify-success', message: __('Building deleted'));
         $this->dispatch('refresh')->to(ShowBuildings::class);
+
+        $this->building = null;
+        $this->name = null;
     }
 
     public function update()
@@ -58,7 +61,7 @@ class BuildingModals extends Component
         $this->show = false;
         $this->dispatch('notify-success', message: __('Building updated'));
         $this->dispatch('refresh')->to(ShowBuildings::class);
-        CLog::info("Building", __('Building :id updated', ['id' => $this->building->id]), null, "{$temp} => {$this->name}");
+        CLog::info("Building", __('Building :name updated', ['name' => $temp]), null, "{$temp} => {$this->name}");
     }
 
 

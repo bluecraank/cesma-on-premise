@@ -1,4 +1,4 @@
-<div class="modal modal-delete-backup">
+<div class="modal modal-delete-backup" @if($show) style="display:block" @endif>
     <form wire:submit="delete" method="post">
         <div class="modal-background"></div>
         <div style="margin-top: 40px" class="modal-card">
@@ -21,8 +21,7 @@
                     <div class="field">
                         <label class="label">{{ __('Created') }}</label>
                         <div class="control">
-                            <input wire:model="created_at" class="input date" name="date" type="hidden"
-                                value="">
+                            <input wire:model="created_at" class="input date" name="date" type="text" readonly="true">
                         </div>
                     </div>
                 @endif

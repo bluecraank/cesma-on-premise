@@ -2,11 +2,13 @@
 
 namespace App\Livewire;
 
-
+use App\Helper\CLog;
 use App\Models\Device;
+use App\Models\DeviceBackup;
 use App\Traits\NumberOfEntries;
 use Livewire\Component;
 use App\Traits\WithLogin;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 
@@ -43,7 +45,33 @@ class ShowDeviceBackups extends Component
 
     public function download($id)
     {
-        $this->dispatch('download', backup: $id)->to(DeviceBackupModals::class);
+        $backup = DeviceBackup::where('id', $id)->first();
+
+        if(!$backup) {
+            $this->dispatch('notify-error', message: __('Backup not found'));
+            return;
+        }
+
+        CLog::info("Backup", __('Backup :id downloaded', ['id' => $backup->id]), null, __('Device: :name, Backup created: :date', ['name' => $backup->device->name, 'date' => $backup->created_at]));
+
+        return response()->streamDownload(function () use ($backup) {
+            echo Crypt::decrypt($backup->data);
+        }, $backup->device->name."-backup-{$backup->created_at}.txt");
+    }
+
+    #[On('delete')]
+    public function delete($id) {
+        $backup = DeviceBackup::where('id', $id)->first();
+
+        if(!$backup) {
+            $this->dispatch('notify-error', message: __('Backup not found'));
+            return;
+        }
+
+        CLog::info("Backup", __('Backup :id deleted', ['id' => $backup->id]), null, ['device' => $backup->device->name, 'backup' => $backup->created_at]);
+        $backup->delete();
+        $this->dispatch('notify-success', message: __('Backup deleted'));
+        unset($backup);
     }
 
     #[On('refresh')]

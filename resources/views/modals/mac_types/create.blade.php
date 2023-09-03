@@ -34,7 +34,7 @@
                     <div class="select is-fullwidth">
                         <select class="type" name="mac_type">
                             <option value="">{{ __('Select existing type') }}</option>
-                            @foreach($mac_types as $type)
+                            @foreach($mac_types_unique as $type)
                                 <option value="{{ $type->type }}">{{ $type->type }}</option>
                             @endforeach
                         </select>
