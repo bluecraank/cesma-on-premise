@@ -70,17 +70,6 @@
 
                 <div class="column">
                     <div x-cloak class="card" x-data="{ open: true }">
-                        {{-- <header class="card-header">
-                            <p class="card-header-title">
-                                <span class="icon"><i class="mdi mdi-gesture-tap"></i></span>
-                                {{ __('Actions') }}
-                            </p>
-                            <a class="card-header-icon">
-                                <span class="icon" @click="open = !open"><i
-                                        x-bind:class="!open ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-                                        class="mdi"></i></span>
-                            </a>
-                        </header> --}}
                         <div class="card-content p-3" x-show="open">
 
                             <div class="columns is-variable is-1">
@@ -145,11 +134,6 @@
                                     <tr>
                                         <td>Firmware</td>
                                         <td class="">{{ $device->firmware ?? 'Unknown' }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Serialnumber</td>
-                                        <td class="">{{ $device->serialnumber ?? 'Unknown' }}</td>
                                     </tr>
 
                                     <tr>

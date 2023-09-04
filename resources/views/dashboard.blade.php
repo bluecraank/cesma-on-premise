@@ -80,11 +80,12 @@
         </div>
 
         <div class="column is-3">
-            <div class="box">
-                {{-- @php
-                    echo File::get(storage_path('logs/worker.log'));
-                @endphp --}}
-            </div>
+                @php
+                    $time = Illuminate\Support\Carbon::parse(File::get(storage_path('logs/worker.log')));
+                @endphp
+                @if($time->diffInMinutes() > 5)
+                    <div class="notification is-danger">{{ __('Check service! Last service run: ').$time->diffForHumans() }}</div>';
+                @endif
         </div>
     </div>
 

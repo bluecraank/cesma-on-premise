@@ -41,6 +41,111 @@ class ArubaCX implements DeviceInterface
 
     static $port_if_uri = "system/interfaces/1%2F1%2F";
 
+    static function getSnmpData(Device $device): array
+    {
+        $data = [
+            'success' => false,
+        ];
+
+        try {
+            $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpVlanToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['vlan_to_mac'], 5000000, 1);
+        } catch (\Exception $e) {
+            $snmpVlanToMac = [];
+        }
+
+        try {
+            $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+            $snmpMacToPort = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
+        } catch (\Exception $e) {
+            $snmpIpToMac = [];
+            $snmpMacToPort = [];
+        }
+
+        // $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
+        // $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
+        // $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
+        $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
+        $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
+        $snmpIfTypes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_types'], 5000000, 1);
+        $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
+        $snmpSysUptime = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysUptime'], 5000000, 1);
+        $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
+
+        $allVlans = [];
+        $allPorts = [];
+        $portExtendedIndex = [];
+        $allVlansByIndex = [];
+        if (is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes)) {
+            return ['message' => 'Failed to get data from device', 'success' => false];
+        }
+
+        $types = [];
+        foreach ($snmpIfTypes as $key => $value) {
+            $key = explode(".", $key);
+            $ifIndex = $key[count($key) - 1];
+            $value = str_replace("INTEGER: ", "", $value);
+            $types[$ifIndex] = $value;
+        }
+
+        foreach ($snmpIfIndexes as $key => $value) {
+
+            $key = explode(".", $key);
+            $ifIndex = $key[count($key) - 1];
+
+            if (str_contains($value, 'vlan') || str_contains($value, 'VLAN') || str_contains($value, 'Vl') || str_contains($value, 'DEFAULT_VLAN')) {
+                if (str_contains($value, 'DEFAULT_VLAN')) {
+                    $value = "1";
+                } else {
+                    $value = str_replace(["STRING: ", "\"", "vlan", "VLAN", "Vl"], "", $value);
+                }
+
+                $allVlans[$value]['id'] = $ifIndex;
+                $allVlansByIndex[$ifIndex] = $value;
+            }
+
+            if (isset($types[$ifIndex]) && $types[$ifIndex] == 6) {
+                $value = str_replace(["STRING: ", "\"", "ethernet"], "", $value);
+                $allPorts[$ifIndex] = ['name' => $value, 'type' => 'ethernet'];
+            }
+        }
+
+        list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
+        // $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
+        $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
+
+        $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
+
+        foreach($allPorts as $port => $data) {
+            $allPorts[$port]['name'] = str_replace("1/1/", "", $allPorts[$port]['name']);
+        }
+
+        $data = [
+            'ports' => self::snmpFormatPortData($allPorts, []),
+            // 'vlans' => self::snmpFormatVlanData($allVlans),
+            // 'snmp_mac_table' => self::snmpFormatMacTableData($snmpVlanToMac, $allVlansByIndex, $snmpMacToPort, $device),
+            // 'macs' => self::snmpFormatIpMacTableData($snmpIpToMac, $allVlansByIndex, $device),
+            // 'vlanports' => self::snmpFormatPortVlanData([$allPorts, $allVlans]),
+            'informations' => self::snmpFormatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
+            // 'statistics' => self::snmpFormatExtendedPortStatisticData([], $allPorts),
+            // 'uplinks' => self::snmpFormatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
+            'success' => true,
+        ];
+
+        return $data;
+    }
+
     static function getApiData(Device $device): array
     {
         if (!$device) {

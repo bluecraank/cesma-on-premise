@@ -1,9 +1,7 @@
 <?php
     namespace App\Traits;
 
- use App\Interfaces\DeviceInterface;
-use App\Models\Device;
-use App\Models\DevicePort;
+    use App\Models\Device;
 
     trait DefaultSnmpMethods
     {
@@ -313,6 +311,3 @@ use App\Models\DevicePort;
             return $return;
         }
     }
-
-
-?>

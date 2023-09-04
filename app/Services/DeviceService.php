@@ -49,29 +49,44 @@ class DeviceService
         $device->touch('last_seen');
 
         // Update device system informations
-        UpdateDeviceData::updateDeviceSystemInfo($data['informations'], $device);
+        if(isset($data['informations'])) {
+            UpdateDeviceData::updateDeviceSystemInfo($data['informations'], $device);
+        }
 
         // Update device ports
-        UpdateDeviceData::updateDevicePorts($data['ports'], $device);
+        if(isset($data['ports'])) {
+            UpdateDeviceData::updateDevicePorts($data['ports'], $device);
+        }
 
         // Update device vlans
-        UpdateDeviceData::updateDeviceVlans($data['vlans'], $device);
+        if(isset($data['vlans'])) {
+            UpdateDeviceData::updateDeviceVlans($data['vlans'], $device);
+        }
 
         // Update device vlan ports
-        $new_uplinks = UpdateDeviceData::updateVlanPorts($data['vlanports'], $device);
-        $uplinks = array_merge($data['uplinks'], $new_uplinks['uplinks']);
+        if(isset($data['vlans'])) {
+            $new_uplinks = UpdateDeviceData::updateVlanPorts($data['vlanports'], $device);
+            $uplinks = array_merge($data['uplinks'], $new_uplinks['uplinks']);
+        }
 
         // Update device uplinks
-        $found_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
+        if(isset($data['uplinks'])) {
+            $found_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
+        }
 
         // Update device port statistics
-        UpdateDeviceData::updateDevicePortStatistics($data['statistics'], $device);
+        if(isset($data['statistics'])) {
+            UpdateDeviceData::updateDevicePortStatistics($data['statistics'], $device);
+        }
 
         // Update mac data
-        UpdateDeviceData::updateMacData($data['macs'], $found_uplinks, $device);
-
+        if(isset($data['macs'])) {
+            UpdateDeviceData::updateMacData($data['macs'], $found_uplinks, $device);
+        }
         // Check for uplinks
-        UpdateDeviceData::checkForUplinks($device, $found_uplinks);
+        if(isset($found_uplinks)) {
+            UpdateDeviceData::checkForUplinks($device, $found_uplinks);
+        }
 
         $device->save();
     }
