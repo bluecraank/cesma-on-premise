@@ -148,6 +148,21 @@ class ArubaCX implements DeviceInterface
         return true;
     }
 
+    static function snmpFormatSystemData(array $system): array
+    {
+        $uptime = 0;
+
+        if(isset($system['uptime'])) {
+            $uptime = str_replace("Timeticks: (", "", $system['uptime']);
+            $uptime = strstr($uptime, ")", true);
+            $uptime = ($uptime / 100) * 1000;
+        }
+
+        return [
+            'uptime' => $uptime,
+        ];
+    }
+
     static function formatUplinkData($ports): array
     {
         $uplinks = [];

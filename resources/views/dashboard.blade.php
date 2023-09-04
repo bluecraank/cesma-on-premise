@@ -29,13 +29,14 @@
         </div>
     </nav>
 
+
     <div class="columns">
         <div class="column is-3">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
                         <span class="icon"><i class="mdi mdi-ethernet"></i></span>
-                        {{ __('Ports to vlans') }}
+                        {{ __('Ports to untagged vlans') }}
                     </p>
 
                 </header>
@@ -78,7 +79,13 @@
             </div>
         </div>
 
-
+        <div class="column is-3">
+            <div class="box">
+                {{-- @php
+                    echo File::get(storage_path('logs/worker.log'));
+                @endphp --}}
+            </div>
+        </div>
     </div>
 
 
@@ -113,7 +120,7 @@
                                             </td>
                                         </tr>
                                     @endif
-                                    @foreach ($notifications as $notification)
+                                    @foreach ($notifications->where('type', '!=', 'uplink') as $notification)
                                         <tr>
                                             <td>{{ $notification->title }}</td>
                                             <td>{{ $notification->message }}</td>

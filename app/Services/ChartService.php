@@ -2,20 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Client;
-use App\Models\Device;
-use App\Models\DevicePort;
 use App\Models\DeviceVlan;
 use App\Models\DeviceVlanPort;
-use App\Models\Vlan;
 
 class ChartService
 {
     public static function portsToVlans($devices, $vlans)
     {
-        // $portsToVlans = DeviceVlanPort::all()->groupBy('device_vlan_id')->toArray();
-        $portsToVlans = DeviceVlanPort::whereIn('device_id', $devices->pluck('id'))->get()->groupBy('device_vlan_id')->toArray();
-        // $allDeviceVlans = DeviceVlan::all()->keyBy('id')->toArray();
+        $portsToVlans = DeviceVlanPort::whereIn('device_id', $devices->pluck('id'))->where('is_tagged', false)->get()->groupBy('device_vlan_id')->toArray();
         $allDeviceVlans = DeviceVlan::whereIn('device_id', $devices->pluck('id'))->get()->keyBy('id')->toArray();
         $vlans = $vlans->keyBy('vid')->toArray();
 
@@ -30,33 +24,10 @@ class ChartService
             $key_name = $vlans[$vlan_id]['name']." (".$allDeviceVlans[$device_vlan_id]['vlan_id'].")";
 
             if(!isset($vlanToPorts[$key_name])) {
-                $vlanToPorts[$key_name] = [];
+                $vlanToPorts[$key_name] = 0;
             }
 
-            $vlanToPorts[$key_name] = array_merge($vlanToPorts[$key_name], array_keys($ports));
-        }
-
-        $vlanToPorts["Everything else"] = 0;
-
-        if(count($vlans) >= 30) {
-            $ignoreCount = 10;
-        } elseif(count($vlans) >= 20) {
-            $ignoreCount = 5;
-        } elseif(count($vlans) >= 10) {
-            $ignoreCount = 2;
-        } else {
-            $ignoreCount = 0;
-        }
-
-        foreach($vlanToPorts as $vlan_id => $ports) {
-            if($vlan_id == "Everything else") {
-                continue;
-            }
-
-            $vlanToPorts[$vlan_id] = count($ports);
-            if(count($ports) == 0 || count($ports) <= $ignoreCount) {
-                $vlanToPorts["Everything else"] += count($ports);
-            }
+            $vlanToPorts[$key_name] += count(array_keys($ports));
         }
 
         $keys = array_keys($vlanToPorts);
@@ -79,14 +50,10 @@ class ChartService
             $name = $vlans[$vlan_id]['name']." (".$vlan_id.")";
 
             if(!isset($vlanToClients[$vlan_id])) {
-                $vlanToClients[$name] = [];
+                $vlanToClients[$name] = 0;
             }
 
-            $vlanToClients[$name] = array_merge($vlanToClients[$name], $clients[$vlan_id]);
-        }
-
-        foreach($vlanToClients as $vlan_id => $clients) {
-            $vlanToClients[$vlan_id] = count($clients);
+            $vlanToClients[$name] += count($clients[$vlan_id]);
         }
 
         $keys = array_keys($vlanToClients);

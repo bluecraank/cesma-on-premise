@@ -118,7 +118,7 @@ class ArpScan extends Command
                 $type = "dell-emc";
             }
 
-            Log::info("ARP: Found new device: " . $hostname . " (" . $neighbour['ip'] . ") - " . $model . " - " . $type);
+            Log::info("[ARP] Found new device: " . $hostname . " (" . $neighbour['ip'] . ") - " . $model . " - " . $type);
 
             Device::firstOrCreate([
                 'name' => $hostname,

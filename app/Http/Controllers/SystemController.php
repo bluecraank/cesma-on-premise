@@ -39,6 +39,7 @@ class SystemController extends Controller
         $clients = $clients->count();
 
         $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
+        // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
 
         return view('dashboard', compact('notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }

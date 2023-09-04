@@ -9,6 +9,7 @@ use App\Services\DeviceService;
 use App\Helper\CLog;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
+use Illuminate\Support\Facades\File;
 
 class DeviceRefresh extends Command
 {
@@ -33,6 +34,9 @@ class DeviceRefresh extends Command
      */
     public function handle()
     {
+        // Tell that this service is running
+        File::put(storage_path('logs/worker.log'), date('Y-m-d H:i:s')."\n");
+
         $device = Device::find($this->argument('id'));
 
         if(!$device) {
