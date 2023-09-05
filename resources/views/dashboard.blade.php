@@ -84,7 +84,7 @@
                     $time = Illuminate\Support\Carbon::parse(File::get(storage_path('logs/worker.log')));
                 @endphp
                 @if($time->diffInMinutes() > 5)
-                    <div class="notification is-danger">{{ __('Check service! Last service run: ').$time->diffForHumans() }}</div>';
+                    <div class="notification is-danger">{{ __('Check service! Last service run: ').$time->diffForHumans() }}</div>
                 @endif
         </div>
     </div>

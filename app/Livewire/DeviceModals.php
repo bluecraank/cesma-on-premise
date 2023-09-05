@@ -140,7 +140,7 @@ class DeviceModals extends Component
             $this->show = false;
             $this->dispatch('notify-success', message: __('Device created'));
             $this->dispatch('refresh')->to(ShowDevices::class);
-            CLog::info("Device","Device {$this->device->name} created", $this->device, "Device: {$this->device->name}");
+            CLog::info("Device","Device {$device->name} created", $device, "Device: {$device->name}");
             proc_open("php " . base_path() . "/artisan device:refresh " . $device->id . " snmp", [], $pipes, base_path());
         } else
         {
