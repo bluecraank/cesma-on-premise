@@ -1,11 +1,11 @@
-@section('title', __('SNMP'))
+@section('title', "SNMP")
 
 <x-layouts.main>
     <div class="card">
         <header class="card-header">
             <p class="card-header-title">
                 <span class="icon"><i class="mdi mdi-account"></i></span>
-                {{ __('SNMP') }}
+                SNMP
             </p>
 
             <div class="mr-5 in-card-header-actions">

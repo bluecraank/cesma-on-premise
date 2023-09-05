@@ -40,13 +40,13 @@ class BackupController extends Controller
                     $start = microtime(true);
                     ArubaOS::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo __('Msg.BackupCreated').": " . $device->name . " (" . $elapsed . "sec)\n";
+                    echo __('Backup successfully created').": " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 case 'aruba-cx':
                     $start = microtime(true);
                     ArubaCX::createBackup($device);
                     $elapsed = microtime(true) - $start;
-                    echo __('Msg.BackupCreated').": " . $device->name . " (" . $elapsed . "sec)\n";
+                    echo __('Backup successfully created').": " . $device->name . " (" . $elapsed . "sec)\n";
                     break;
                 default:
                     echo "Error: Unknown device type: " . $device->type . "\n";

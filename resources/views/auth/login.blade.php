@@ -48,7 +48,7 @@
                                         <div class="field">
                                             <p class="control is-expanded has-icons-left has-icons-right">
                                                 <input class="input @error('password') is-danger @enderror" type="password"
-                                                    placeholder="Password" name="password" required
+                                                    placeholder="{{ __('Password') }}" name="password" required
                                                     autocomplete="current-password">
                                                 <span class="icon is-small is-left"><i class="mdi mdi-lock"></i></span>
                                             </p>

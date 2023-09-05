@@ -60,7 +60,7 @@
                             @endif
                             @foreach ($devices as $device)
                                 <tr>
-                                    <td><i title="{{ __('Hint.Updated') }}{{ $device->updated_at->diffForHumans() }}"
+                                    <td><i title="{{ __('Updated') }}{{ $device->updated_at->diffForHumans() }}"
                                             class="mr-1 fa fa-circle {{ $device->active() ? 'has-text-success' : 'has-text-danger' }}"></i>
                                         <a class="dark-fix-color"
                                             href="{{ route('show-device', $device->id) }}">{{ $device->name }}

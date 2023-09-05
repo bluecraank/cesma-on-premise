@@ -164,11 +164,11 @@ class DeviceController extends Controller
             }
 
             CLog::info("Pubkey", "Uploading public keys to all switches");
-            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
+            return json_encode(['success' => 'true', 'message' => __('Successfully synced public keys to all switches')]);
         }
 
         CLog::error("Pubkey", "Not enough public keys to upload to all switches");
-        return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
+        return json_encode(['success' => 'false', 'message' => __('Not enough public keys to upload to all switches')]);
     }
 
     static function restoreBackup(Request $request)
@@ -187,7 +187,7 @@ class DeviceController extends Controller
                 CLog::error("Backup", "Backup for switch {$device->name} could not be restored", $device, $device->id);
             }
 
-            return ($restore['success']) ? redirect()->back()->with('success', __('Msg.BackupRestored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
+            return ($restore['success']) ? redirect()->back()->with('success', __('Backup successfully restored')) : redirect()->back()->withErrors(['message' => $restore['data']]);
         }
     }
 
