@@ -13,6 +13,8 @@ class OnlyAllowedGroups implements Rule
      */
     public function passes(LdapRecord $user, Eloquent $model = null): bool
     {
-        return true;
+        $administrators = Group::find(config('app.ldap_admin_group'));
+
+        return $this->user->groups()->recursive()->exists($administrators);
     }
 }

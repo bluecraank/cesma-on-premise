@@ -213,14 +213,12 @@ return [
         'dell-emc-powerswitch' => true,
     ],
 
-
     'write_type' => [
         'aruba-os' => 'api',
         'aruba-cx' => 'api',
         'dell-emc' => 'none',
         'dell-emc-powerswitch' => 'snmp',
     ],
-
 
     'api_username' => env('API_USERNAME', 'admin'),
     'ssh_private_key' => env('SSH_PRIVATEKEY', 'false'),
@@ -231,5 +229,4 @@ return [
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 
     'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),
-    'ldap_user_group' => env('LDAP_USER_GROUP'),
 ];
