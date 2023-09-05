@@ -228,13 +228,6 @@ return [
 
     'https' => (env('API_HTTPS') == "true") ? "https://" : "http://",
 
-    'encryption' => env('APP_ENCRYPTION', 'false'),
-
-    'enable_baramundi' => (env('ENABLE_BARAMUNDI') == "true") ? true : false,
-    'baramundi_api_url' => env('BARAMUNDI_URL', 'false'),
-    'baramundi_username' => env('BARAMUNDI_USERNAME', 'false'),
-    'baramundi_password' => env('BARAMUNDI_PASSWORD', 'false'),
-
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 
     'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),

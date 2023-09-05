@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\ClientProviders\Baramundi;
 use App\ClientProviders\Router;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +20,7 @@ class QueryClientProviders extends Command
      *
      * @var string
      */
-    protected $description = 'Retrieve client data from routers (and or baramundi)';
+    protected $description = 'Retrieve client data from routers';
 
     /**
      * Execute the console command.
@@ -31,7 +30,6 @@ class QueryClientProviders extends Command
     public function handle()
     {
         $providers = [
-            // Baramundi::class,
             Router::class
         ];
 
