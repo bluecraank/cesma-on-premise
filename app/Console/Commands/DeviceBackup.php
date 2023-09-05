@@ -31,19 +31,15 @@ class DeviceBackup extends Command
      */
     public function handle()
     {
-        static $models = [
-            'aruba-os' => ArubaOS::class,
-            'aruba-cx' => ArubaCX::class,
-        ];
 
         $device = Device::find($this->argument('id'));
-        
+
         if(!$device) {
-            Log::error(__('DeviceNotFound'));
+            Log::error(__('Device not found'));
             return;
         }
 
-        $class = $models[$device->type];
+        $class = config('app.types')[$device->type];
         $class::createBackup($device);
 
         Log::info('Backup for device ' . $device->id . ' created');

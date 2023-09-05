@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-bullseye AS php-base
+FROM php:8.2-fpm-bookworm AS php-base
 
 LABEL maintainer "Nils Fischer"
 
@@ -59,11 +59,11 @@ EXPOSE 80
 EXPOSE 443
 
 
-
 FROM php-base
 
 RUN install-php-extensions ldap
-RUN apt-get update && apt-get install -y fping 
+RUN install-php-extensions snmp
+RUN apt-get update && apt-get install -y fping
 
 # Clean
 RUN apt-get -y autoremove \
@@ -84,10 +84,13 @@ USER www-data
 # RUN composer install --optimize-autoloader --no-dev
 # TODO: Faker is a dev dependency
 RUN composer install --optimize-autoloader
-#RUN npm install
+RUN npm install
 #RUN npm run build && rm -rf node_modules
-RUN php artisan key:generate
-
+RUN mkdir /var/www/html/storage/logs
+RUN touch /var/www/html/storage/logs/laravel.log
+RUN chmod 777 /var/www/html/storage/logs/laravel.log
+RUN touch /var/www/html/storage/logs/worker.log
+RUN chmod 777 /var/www/html/storage/logs/worker.log
 USER root
 
 # Start the php-fpm as daemon in the background and

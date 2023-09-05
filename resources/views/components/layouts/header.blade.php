@@ -1,42 +1,21 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <link rel="shortcut icon" href="/img/favicon.png?{{ config('app.version') }}" type="image/x-icon">
-    <link rel="stylesheet" href="/css/bulma.min.css?{{ config('app.version') }}">
-    <link rel="stylesheet" href="" id="theme">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/multi-select.css?{{ config('app.version') }}">
-    <link rel="stylesheet" href="/css/cesma.css?{{ config('app.version') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', $title ?? ucfirst(Route::currentRouteName())) | {{ Auth::user()->currentSite()->name }} | cesma</title>
 
-    <script src="/js/jquery-3.6.0.min.js?{{ config('app.version') }}"></script>
-    <script src="/js/jquery.multi-select.js?{{ config('app.version') }}"></script>
-
-    @livewireStyles
-    @livewireScripts
-
-    @if (Route::is('details'))
-        <script src="/js/api_ports.js?{{ config('app.version') }}"></script>
-    @endif
-
-    @if (Auth::user() && Auth::user()->role >= 1) 
-        <script src="/js/api.js?{{ config('app.version') }}"></script>
-    @endif
-
-    <script src="/js/notify.min.js?{{ config('app.version') }}"></script>
-    <script src="/js/functions.js?{{ config('app.version') }}"></script>
-    <script src="/js/theme.js?{{ config('app.version') }}"></script>
-
-    <title>@yield('title') | CESMA</title>
-</head>
-<noscript>
-    <div class="no-use">
-        <div class="notification is-danger always-visible is-radiusless">
-            {!! __('Misc.NoScript') !!}
-        </div>
-    </div>
-</noscript>
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/scss/main.scss'])
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.notify.min.js"></script>
+    <script type="text/javascript" src="/js/notify.js"></script>
+    <script type="text/javascript" src="/js/multiselect.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<body>
+    <div id="app">

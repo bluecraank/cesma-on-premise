@@ -1,0 +1,15 @@
+[Unit]
+Description=CESMA Worker Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/var/www/cesma
+ExecStart=/usr/bin/php /var/www/cesma/artisan schedule:work
+
+[Install]
+WantedBy=multi-user.target

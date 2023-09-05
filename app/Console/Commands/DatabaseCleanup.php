@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\DeviceBackup;
-use App\Models\DeviceCustomUplink;
 use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\Log;
@@ -12,7 +11,6 @@ use App\Models\Mac;
 use App\Models\Vlan;
 use App\Models\SnmpMacData;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log as FacadesLog;
 
 class DatabaseCleanup extends Command
 {
@@ -40,11 +38,26 @@ class DatabaseCleanup extends Command
         Mac::whereDate('created_at', '<=', now()->subWeek(1))->delete();
         Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
         DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
-        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(4))->delete();
+        DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
         SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
+        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
+        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(1))->where('type', "link-change")->delete();
 
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
+
+        $sites = \App\Models\Site::all()->keyBy('id')->toArray();
+        $vlans = Vlan::all()->keyBy('vid')->toArray();
+
+        foreach($sites as $site) {
+            Client::where('site_id', $site['id'])->where(function($query) use ($vlans, $site) {
+                foreach ($vlans as $vlan) {
+                    if($vlan['site_id'] != $site['id']) {
+                        $query->orWhere('vlan_id', $vlan['vid']);
+                    }
+                }
+            })->delete();
+        }
 
         Client::where(function($query) use ($vlans_ignore) {
             $query->where('vlan_id', 0);
@@ -52,26 +65,19 @@ class DatabaseCleanup extends Command
                 $query->orWhere('vlan_id', $vlan['vid']);
             }
         })->delete();
-        
+
+        $array_uplinks = [];
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
-
-        foreach ($uplinks as $uplink) {
-            foreach ($uplink as $key => $value) {
-                Client::where('port_id', $value['name'])->where('device_id', $value['device_id'])->delete();
+        foreach($uplinks as $dev_id => $uplink) {
+            foreach($uplink as $each_uplink) {
+                $array_uplinks[$dev_id][] = $each_uplink['name'];
             }
         }
-        
-        $custom_uplinks = DeviceCustomUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
 
-        foreach ($custom_uplinks as $dev_id => $device) {
-            foreach ($device as $key => $value) {
-                $uplinks = json_decode($value['uplinks'], true);
-
-                foreach ($uplinks as $uplink) {
-                    Client::where('port_id', $uplink)->where('device_id', $dev_id)->delete();
-                }
-            }
+        foreach($array_uplinks as $device_id => $uplinks) {
+            Client::where('device_id', $device_id)->whereIn('port_id', $uplinks)->delete();
         }
+
 
         \Illuminate\Support\Facades\Log::info('[System] Database cleaned up');
     }

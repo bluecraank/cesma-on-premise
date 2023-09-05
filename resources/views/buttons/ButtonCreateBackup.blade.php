@@ -1,6 +1,6 @@
-<button class="button is-info" onclick="switchCreateBackup(this)">
+<button data-action="backup-all" class="action button is-info">
     <span class="icon is-small">
-        <i class="fas fa-hdd"></i>
+        <i class="mdi mdi-backup-restore"></i>
       </span>
-      <span>{{ __('Button.CreateBackup') }}</span>
+      <span>{{ __('Create backup') }}</span>
 </button>

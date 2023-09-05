@@ -2,24 +2,29 @@
 
 namespace App\Devices;
 
+use App\Helper\CLog;
 use App\Interfaces\DeviceInterface;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
-
-use App\Helper\CLog;
 use App\Models\DeviceVlanPort;
-use App\Services\PublicKeyService;
 use App\Http\Controllers\BackupController;
+use App\Models\Device;
+use App\Models\DeviceVlan;
+use App\Models\Vlan;
 
 class ArubaCX implements DeviceInterface
 {
+    use \App\Traits\DefaultApiMethods;
+    use \App\Traits\DefaultSnmpMethods;
+    use \App\Traits\DefaultDevice;
+
+    static $fetch_from = [
+        'snmp' => true,
+        'api' => true,
+    ];
+
     static $api_auth = [
         "login" => "login",
         "logout" => "logout",
@@ -35,6 +40,156 @@ class ArubaCX implements DeviceInterface
     ];
 
     static $port_if_uri = "system/interfaces/1%2F1%2F";
+
+    static function getSnmpData(Device $device): array
+    {
+        $data = [
+            'success' => false,
+        ];
+
+        try {
+            $snmpIfNames = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_name'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpIfIndexes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index'], 5000000, 1);
+        } catch (\Exception $e) {
+            return $data;
+        }
+
+        try {
+            $snmpVlanToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['vlan_to_mac'], 5000000, 1);
+        } catch (\Exception $e) {
+            $snmpVlanToMac = [];
+        }
+
+        try {
+            $snmpIpToMac = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ip_to_mac'], 5000000, 1);
+            $snmpMacToPort = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['macToPort'], 5000000, 1);
+        } catch (\Exception $e) {
+            $snmpIpToMac = [];
+            $snmpMacToPort = [];
+        }
+
+        // $snmpPortsAssignedToVlans = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['assigned_ports_to_vlan'], 5000000, 1);
+        // $snmpPortsAssignedToUntaggedVlan = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['untagged_ports'], 5000000, 1);
+        // $snmpPortIndexToQBridgeIndex = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_index_to_port'], 5000000, 1);
+        $snmpIfOperStatus = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifOperStatus'], 5000000, 1);
+        $snmpIfHighSpeed = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['ifHighSpeed'], 5000000, 1);
+        $snmpIfTypes = snmp2_real_walk($device->hostname, 'public', self::$snmp_oids['if_types'], 5000000, 1);
+        $snmpSysDescr = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysDescr'], 5000000, 1);
+        $snmpSysUptime = snmp2_get($device->hostname, 'public', self::$snmp_oids['sysUptime'], 5000000, 1);
+        $snmpHostname = snmp2_get($device->hostname, 'public', self::$snmp_oids['hostname'], 5000000, 1);
+
+        $allVlans = [];
+        $allPorts = [];
+        $portExtendedIndex = [];
+        $allVlansByIndex = [];
+        if (is_object($snmpHostname) || !is_array($snmpIfNames) || !is_array($snmpIfIndexes)) {
+            return ['message' => 'Failed to get data from device', 'success' => false];
+        }
+
+        $types = [];
+        foreach ($snmpIfTypes as $key => $value) {
+            $key = explode(".", $key);
+            $ifIndex = $key[count($key) - 1];
+            $value = str_replace("INTEGER: ", "", $value);
+            $types[$ifIndex] = $value;
+        }
+
+        foreach ($snmpIfIndexes as $key => $value) {
+
+            $key = explode(".", $key);
+            $ifIndex = $key[count($key) - 1];
+
+            if (str_contains($value, 'vlan') || str_contains($value, 'VLAN') || str_contains($value, 'Vl') || str_contains($value, 'DEFAULT_VLAN')) {
+                if (str_contains($value, 'DEFAULT_VLAN')) {
+                    $value = "1";
+                } else {
+                    $value = str_replace(["STRING: ", "\"", "vlan", "VLAN", "Vl"], "", $value);
+                }
+
+                $allVlans[$value]['id'] = $ifIndex;
+                $allVlansByIndex[$ifIndex] = $value;
+            }
+
+            if (isset($types[$ifIndex]) && $types[$ifIndex] == 6) {
+                $value = str_replace(["STRING: ", "\"", "ethernet"], "", $value);
+                $allPorts[$ifIndex] = ['name' => $value, 'type' => 'ethernet'];
+            }
+        }
+
+        list($allPorts, $allVlans) = self::foreachIfNames($snmpIfNames, $allPorts, $allVlans, $allVlansByIndex);
+        // $allPorts = self::foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex);
+        $allPorts = self::foreachIfHighspeeds($snmpIfHighSpeed, $allPorts);
+
+        $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
+
+        foreach($allPorts as $port => $data) {
+            $allPorts[$port]['name'] = str_replace("1/1/", "", $allPorts[$port]['name']);
+        }
+
+        $data = [
+            'ports' => self::snmpFormatPortData($allPorts, []),
+            // 'vlans' => self::snmpFormatVlanData($allVlans),
+            // 'snmp_mac_table' => self::snmpFormatMacTableData($snmpVlanToMac, $allVlansByIndex, $snmpMacToPort, $device),
+            // 'macs' => self::snmpFormatIpMacTableData($snmpIpToMac, $allVlansByIndex, $device),
+            // 'vlanports' => self::snmpFormatPortVlanData([$allPorts, $allVlans]),
+            'informations' => self::snmpFormatSystemData(['data' => $snmpSysDescr, 'hostname' => $snmpHostname, 'uptime' => $snmpSysUptime]),
+            // 'statistics' => self::snmpFormatExtendedPortStatisticData([], $allPorts),
+            // 'uplinks' => self::snmpFormatUplinkData(['ports' => $allPorts, 'vlans' => $allVlans]),
+            'success' => true,
+        ];
+
+        return $data;
+    }
+
+    static function getApiData(Device $device): array
+    {
+        if (!$device) {
+            return ['success' => false, 'data' => 'Device not found', 'message' => "Device not found"];
+        }
+        if (!$login_info = self::API_LOGIN($device)) {
+            return ['success' => false, 'data' => 'API Login failed', 'message' => "'API Login failed'"];
+        }
+
+        $data = [];
+
+        list($cookie, $api_version) = explode(";", $login_info);
+
+        foreach (self::$available_apis as $key => $api) {
+            $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version, false);
+
+            if ($api_data['success']) {
+                $data[$key] = $api_data['data'];
+            }
+        }
+
+        // Only get uptime from snmp
+        $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
+        $uptime = self::snmpFormatSystemData(['uptime' => $snmpSysUptime]);
+
+        $data = [
+            'informations' => (isset($data['status'])) ? self::formatSystemData($data['status']) : [],
+            'vlans' => (isset($data['vlans'])) ? self::formatVlanData($data['vlans']) : [],
+            'ports' => (isset($data['ports']) && $data['portstats']) ? self::formatPortData($data['ports'], $data['portstats']) : [],
+            'vlanports' => (isset($data['vlanport'])) ? self::formatPortVlanData($data['vlanport']) : [],
+            'statistics' => (isset($data['portstats']) && isset($data['ports'])) ? self::formatExtendedPortStatisticData($data['portstats'], $data['ports']) : [],
+            'macs' => (isset($data['vlans'])) ? self::formatMacTableData([], $data['vlans'], $device, $cookie, $api_version) : [],
+            'uplinks' => (isset($data['ports'])) ? self::formatUplinkData($data['ports']) : [],
+            'success' => true,
+        ];
+
+        if (isset($uptime['uptime'])) {
+            $data['informations']['uptime'] = $uptime['uptime'];
+        }
+
+        self::API_LOGOUT($device->hostname, $cookie, $api_version);
+
+        return $data;
+    }
 
     static function API_GET_VERSIONS($hostname): string
     {
@@ -72,12 +227,8 @@ class ArubaCX implements DeviceInterface
             // Return cookie if login was successful
             if ($response->successful() and !empty($response->header('Set-Cookie'))) {
                 return $response->cookies()->toArray()[0]['Name'] . "=" . $response->cookies()->toArray()[0]['Value'] . ";" . $api_version;
-            } else {
-                Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error("[Error] Failed to login to device " . $device->name . " ERROR: " . $e->getMessage());
-            return "";
         }
 
         return "";
@@ -102,143 +253,22 @@ class ArubaCX implements DeviceInterface
         return true;
     }
 
-    static function API_PUT_DATA($hostname, $cookie, $api, $version, $data): array
+    static function snmpFormatSystemData(array $system): array
     {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-        try {
+        $uptime = 0;
 
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->put($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_GET_DATA($hostname, $cookie, $api, $version, $plain = false): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            if($plain) {
-                $response = Http::accept('text/plain')->withoutVerifying()->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Cookie' => "$cookie",
-                ])->get($api_url);
-            } else {
-                $response = Http::withoutVerifying()->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Cookie' => "$cookie",
-                ])->get($api_url);
-            }
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_PATCH_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->patch($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_DELETE_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        // $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        // try {
-        // } catch (\Exception $e) {
-        //     return ['success' => false, 'data' => []];
-        // }
-
-        // NOT NEEDED YET
-
-        return ['success' => false, 'data' => []];
-    }
-
-    static function API_POST_DATA($hostname, $cookie, $api, $version, $data): array
-    {
-        $api_url = config('app.https') . $hostname . '/rest/' . $version . '/' . $api;
-
-        try {
-            $response = Http::withBody($data, 'application/json')->withoutVerifying()->withHeaders([
-                'Cookie' => "$cookie",
-            ])->post($api_url);
-
-            if ($response->successful()) {
-                return ['success' => true, 'data' => array($response->status(), $response->json())];
-            } else {
-                return ['success' => false, 'data' => $response->json()];
-            }
-        } catch (\Exception $e) {
-            return ['success' => false, 'data' => $e->getMessage()];
-        }
-    }
-
-    static function API_REQUEST_ALL_DATA($device): array
-    {
-        if (!$device) {
-            return ['success' => false, 'data' => __('DeviceNotFound'), 'message' => "Device not found"];
+        if(isset($system['uptime'])) {
+            $uptime = str_replace("Timeticks: (", "", $system['uptime']);
+            $uptime = strstr($uptime, ")", true);
+            $uptime = ($uptime / 100) * 1000;
         }
 
-        if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => __('Msg.ApiLoginFailed'), 'message' => "API Login failed"];
-        }
-
-        $data = [];
-
-        list($cookie, $api_version) = explode(";", $login_info);
-
-        foreach (self::$available_apis as $key => $api) {
-            $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version);
-
-            if ($api_data['success']) {
-                $data[$key] = $api_data['data'];
-            }
-        }
-
-        $data = [
-            'informations' => self::formatSystemData($data['status']),
-            'vlans' => self::formatVlanData($data['vlans']),
-            'ports' => self::formatPortData($data['ports'], $data['portstats']),
-            'vlanports' => self::formatPortVlanData($data['vlanport']),
-            'statistics' => self::formatExtendedPortStatisticData($data['portstats'], $data['ports']),
-            'macs' => self::formatMacTableData([], $data['vlans'], $device, $cookie, $api_version),
-            'uplinks' => self::formatUplinkData($data['ports']),
-            'success' => true,
+        return [
+            'uptime' => $uptime,
         ];
-
-        self::API_LOGOUT($device->hostname, $cookie, $api_version);
-
-        return $data;
     }
 
-    static function formatUplinkData($ports)
+    static function formatUplinkData($ports): array
     {
         $uplinks = [];
         foreach ($ports as $port) {
@@ -267,7 +297,7 @@ class ArubaCX implements DeviceInterface
         $vlan_macs = [];
         foreach ($vlans as $vlan) {
             $url = "system/vlans/" . $vlan['id'] . "/macs?attributes=port,mac_addr&depth=2";
-            $api_data = self::API_GET_DATA($device->hostname, $cookie, $url, $api_version);
+            $api_data = self::API_GET_DATA($device->hostname, $cookie, $url, $api_version, false);
             if ($api_data['success']) {
                 $vlan_macs[$vlan['id']] = $api_data['data'];
             }
@@ -373,7 +403,7 @@ class ArubaCX implements DeviceInterface
             }
         }
 
-        foreach($portdata as $port) {
+        foreach ($portdata as $port) {
             if ($port['ifindex'] < 1000) {
                 $return[$port['ifindex']]['port_status'] = ($port['link_state'] == "up") ? true : false;
             }
@@ -441,7 +471,7 @@ class ArubaCX implements DeviceInterface
 
         list($cookie, $api_version) = explode(";", $login_info);
 
-        $data = self::API_GET_DATA($device->hostname, $cookie, "configs/running-config", $api_version);
+        $data = self::API_GET_DATA($device->hostname, $cookie, "configs/running-config", $api_version, false);
         $dataraw = self::API_GET_DATA($device->hostname, $cookie, "configs/running-config", $api_version, true);
 
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
@@ -467,7 +497,7 @@ class ArubaCX implements DeviceInterface
         }
 
         if (!$login_info = self::API_LOGIN($device)) {
-            return ['success' => false, 'data' => __('Msg.ApiLoginFailed')];
+            return ['success' => false, 'data' => 'API Login failed'];
         }
 
         list($cookie, $api_version) = explode(";", $login_info);
@@ -494,7 +524,7 @@ class ArubaCX implements DeviceInterface
         return ['success' => false, 'data' => 'Restore failed: ' . $restore->json() . " (" . $restore->status() . ")"];
     }
 
-    static function uploadPubkeys($device, $pubkeys): String
+    static function syncPubkeys($device, $pubkeys): String
     {
         if (!$login_info = self::API_LOGIN($device)) {
             return json_encode(['success' => 'false', 'message' => 'Login failed']);
@@ -519,16 +549,15 @@ class ArubaCX implements DeviceInterface
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
         if ($upload->successful()) {
-            return json_encode(['success' => 'true', 'message' => __('Pubkeys.Sync.Success')]);
+            $device->last_pubkey_sync->touch();
+            return json_encode(['success' => 'true', 'message' => __('SSH pubkeys successfully synced')]);
         } else {
-            return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.Error')]);
+            return json_encode(['success' => 'false', 'message' => __('SSH pubkeys sync failed')]);
         }
     }
 
-    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): array
+    static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): bool
     {
-        $success = $failed = 0;
-
         if ($need_login) {
             $login_info = self::API_LOGIN($device);
         } else {
@@ -567,9 +596,9 @@ class ArubaCX implements DeviceInterface
                     ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => true],
                 );
 
-                return ['success' => true, 'data' => ''];
+                return true;
             } else {
-                return ['success' => false, 'data' => $result['data']];
+                return false;
             }
 
             if ($need_login) {
@@ -580,8 +609,12 @@ class ArubaCX implements DeviceInterface
 
     static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login = true, $logindata = ""): array
     {
-        $return = [];
-        $uri = self::$port_if_uri . $port;
+        $uri = self::$port_if_uri . $port->name;
+
+        $vlansToSet = [];
+        $vlansToRemove = [];
+        $vlansSuccessfullySet = [];
+        $vlansSuccessfullyRemoved = [];
 
         if ($need_login) {
             $login_info = self::API_LOGIN($device);
@@ -589,180 +622,167 @@ class ArubaCX implements DeviceInterface
             $login_info = $logindata;
         }
 
-        if ($login_info) {
-
-            list($cookie, $api_version) = explode(";", $login_info);
-            $rest_vlans_uri = "/rest/" . $api_version . "/system/vlans/";
-
-            $untaggedVlan = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', false)->first();    // Get all tagged vlans from port
-
-            $data_builder = [];
-            $data_builder['vlan_trunks'] = [];
-            $data_builder['vlan_mode'] = "native-untagged";
-
-            if (isset($untaggedVlan->device_vlan_id)) {
-                $data_builder['vlan_tag'] = $rest_vlans_uri . $vlans[$untaggedVlan->device_vlan_id]['vlan_id'] ?? $rest_vlans_uri . "1";
-            }
-
-            foreach ($taggedVlans as $vlan) {
-                if (!in_array($rest_vlans_uri . $vlans[$vlan]['vlan_id'], $data_builder['vlan_trunks'])) {
-                    $data_builder['vlan_trunks'][] = $rest_vlans_uri . $vlans[$vlan]['vlan_id'];
-                }
-            }
-
-            $data = json_encode($data_builder);
-
-            $uri = self::$port_if_uri . $port->name;
-            $result = self::API_PUT_DATA($device->hostname, $cookie, $uri, $api_version, $data);
-
-            if ($result['success']) {
-                $old = DeviceVlanPort::where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', true);
-                if ($old) {
-                    $old->delete();
-                }
-
-                foreach ($taggedVlans as $vlan) {
-                    $return[] = ['success' => true, 'data' => ''];
-                    DeviceVlanPort::updateOrCreate(
-                        ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$vlan]['id'], 'is_tagged' => true],
-                    );
-                }
-
-                $return[] = ['success' => true, 'data' => ''];
-            } else {
-                foreach ($taggedVlans as $vlan) {
-                    $return[] = ['success' => false, 'data' => ''];
-                }
-            }
-
-            if ($need_login) {
-                proc_open('php ' . base_path() . '/artisan device:refresh ' . $device->id . ' > /dev/null &', [], $pipes);
-                self::API_LOGOUT($device->hostname, $cookie, $api_version);
-            }
-
-            return $return;
+        if (!$login_info) {
+            return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
         }
 
-        $return[] = [
-            'success' => false,
-            'message' => __('Msg.ApiLoginFailed'),
-        ];
+        list($cookie, $api_version) = explode(";", $login_info);
 
-        Log::channel('database')->error(__('Msg.ApiLoginFailed') . " " . $device->hostname);
+        $rest_vlans_uri = "/rest/" . $api_version . "/system/vlans/";
 
-        return $return;
+        $data_builder = [];
+        $data_builder['vlan_trunks'] = [];
+        $data_builder['vlan_mode'] = "native-untagged";
+
+        $untaggedVlan = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', false)->first();
+        if(isset($untaggedVlan)) {
+            $data_builder['vlan_tag'] = $rest_vlans_uri . $vlans[$untaggedVlan->device_vlan_id]['vlan_id'];
+            $data_builder['vlan_trunks'][] = $rest_vlans_uri . $vlans[$untaggedVlan->device_vlan_id]['vlan_id'];
+            $vlansToSet[$untaggedVlan->device_vlan_id] = true;
+        }
+
+        foreach ($taggedVlans as $taggedVlan => $unused) {
+            $vlansToSet[$taggedVlan] = $taggedVlan;
+        }
+
+        foreach($taggedVlans as $device_vlan_id => $unused) {
+            if($untaggedVlan->device_vlan_id == $device_vlan_id) {
+                continue;
+            }
+
+            $data_builder['vlan_trunks'][] = $rest_vlans_uri . $vlans[$device_vlan_id]['vlan_id'];
+        }
+
+        $data = json_encode($data_builder);
+
+        $result = self::API_PUT_DATA($device->hostname, $cookie, $uri, $api_version, $data);
+
+        if($result['success']) {
+            DeviceVlanPort::where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', true)->delete();
+            $vlansSuccessfullySet = $data_builder['vlan_trunks'];
+
+            $logVlans = [];
+            foreach($taggedVlans as $device_vlan_id => $unused) {
+                DeviceVlanPort::updateOrCreate(
+                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $device_vlan_id, 'is_tagged' => true],
+                );
+
+                $logVlans[] = $vlans[$device_vlan_id]['vlan_id'];
+            }
+
+            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device ". $device->name ." successfully changed", $device,"Count: ".count($data_builder['vlan_trunks']).", Vlans: ".implode(", ", array_values($logVlans)));
+        }
+
+        return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
     }
 
-    static function syncVlans($syncable_vlans, $current_vlans, $device, $create_vlans, $rename_vlans, $testmode): array
+    static function syncVlans($syncable_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink, $testmode): array
     {
+        $siteVlans = Vlan::where('site_id', $device->site_id)->get()->keyBy('vid')->toArray();
+        $current_vlans = DeviceVlan::where('device_id', $device->id)->get()->keyBy('vlan_id')->toArray();
+        // syncable_vlans = key random, value vlan_id
+        // current_vlans = key vlan_id, value vlan_name
 
-        $start = microtime(true);
-        $not_found = $chg_name = [];
-
-        $i_not_found = $i_chg_name = $i_vlan_created = $i_vlan_chg_name = 0;
-        $return = [];
-
-        foreach ($syncable_vlans as $key => $vlan) {
-            if (!array_key_exists($key, $current_vlans)) {
-                $not_found[$key] = $vlan;
-                $i_not_found++;
-            } else {
-                if ($vlan['name'] != $current_vlans[$key]['name']) {
-                    $chg_name[$key] = $vlan;
-                    $i_chg_name++;
-                }
-            }
+        if (count($current_vlans) == 0) {
+            return ['created' => 'No vlan data exists', 'renamed' => 'No vlan data exists', 'tagged_to_uplink' => '	No vlan data exists', 'test' => $testmode, 'status' => 'error', 'message' => 'No vlan data exists'];
         }
 
-        if ($i_not_found == 0 && $i_chg_name == 0) {
-            return [];
-        }
+        $create_vlans_data = [];
+        $rename_vlans_data = [];
+        $tag_to_uplink_data = [];
+
+        $result_create_vlans = 0;
+        $result_rename_vlans = 0;
+        $result_tagged_vlans_to_uplink = 0;
 
         if (!$testmode && !$login_info = self::API_LOGIN($device)) {
-            return [];
+            return ['created' => 0, 'renamed' => 0, 'tagged_to_uplink' => 0, 'test' => $testmode, 'status' => 'error', 'message' => 'API Login failed'];
         }
 
         if (!$testmode) {
             list($cookie, $api_version) = explode(";", $login_info);
         }
 
-        if ($create_vlans) {
-            foreach ($not_found as $key => $vlan) {
-                $return[$vlan->vid]['name'] = $vlan->name;
+        foreach ($syncable_vlans as $vlan_id) {
+            if (!isset($current_vlans[$vlan_id])) {
+                $create_vlans_data[$vlan_id] = $vlan_id;
+            }
 
-                $data = '{
-                    "name": "' . $vlan->name . '",
-                    "id": ' . $vlan->vid . '
-                }';
-
-                if (!$testmode) {
-                    // $response = self::API_POST_DATA($device->hostname, $cookie, "system/vlans", $api_version, $data);
-                } else {
-                    $response['success'] = true;
+            if (isset($current_vlans[$vlan_id])) {
+                if ($current_vlans[$vlan_id]['name'] != $siteVlans[$vlan_id]['name']) {
+                    $rename_vlans_data[$vlan_id] = $siteVlans[$vlan_id]['name'];
                 }
-
-                if ($response['success']) {
-                    $i_vlan_created++;
-                }
-
-                $return[$vlan->vid]['created'] = $response['success'];
             }
         }
 
-        if ($rename_vlans) {
-            foreach ($chg_name as $vlan) {
-                $return[$vlan->vid]['old'] = $current_vlans[$vlan->vid]['name'];
-                $return[$vlan->vid]['name'] = $current_vlans[$vlan->vid]['name'];
+        if (($create_vlans || $rename_vlans) && ($create_vlans_data || $rename_vlans_data)) {
+            foreach ($create_vlans_data as $vlan) {
+                $name = $current_vlans[$vlan]['name'] ?? $siteVlans[$vlan]['name'];
+                if (isset($rename_vlans_data[$vlan])) {
+                    $name = $rename_vlans_data[$vlan];
+                }
 
                 $data = '{
-                    "name": "' . $vlan->name . '"
+                    "name": "' . $name . '",
+                    "id": ' . $vlan . '
                 }';
 
                 if (!$testmode) {
-                    $response = self::API_PUT_DATA($device->hostname, $cookie, "system/vlans/" . $vlan->vid, $api_version, $data);
+                    $response = self::API_POST_DATA($device->hostname, $cookie, "system/vlans", $api_version, $data);
+                    if ($response['success']) {
+                        $result_create_vlans++;
+                        if (isset($rename_vlans_data[$vlan])) {
+                            $result_rename_vlans++;
+                        }
+                    }
                 } else {
-                    $response['success'] = true;
+                    $result_create_vlans++;
+                    if (isset($rename_vlans_data[$vlan])) {
+                        $result_rename_vlans++;
+                    }
                 }
+            }
 
-                if ($response['success']) {
-                    $i_vlan_chg_name++;
-                    $return[$vlan->vid]['name'] = $vlan->name;
+            if (count($create_vlans_data) == 0 && $rename_vlans) {
+                foreach ($rename_vlans_data as $vlan_id => $name) {
+                    $data = '{
+                        "name": "' . $name . '"
+                    }';
+
+                    if (!$testmode) {
+                        $response = self::API_PUT_DATA($device->hostname, $cookie, "system/vlans/" . $vlan_id, $api_version, $data);
+                        if ($response['success']) {
+                            $result_rename_vlans++;
+                        }
+                    } else {
+                        $result_rename_vlans++;
+                    }
                 }
-                $return[$vlan->vid]['changed'] = ($response['success']) ? true : false;
             }
         }
 
-        if (!$testmode) {
-            $logdata = [
-                "summary" => [
-                    "created" => $i_vlan_created, 
-                    "renamed" => $i_vlan_chg_name
-                ],
-                "vlans" => $return
-            ];
-    
-            CLog::info("Sync", "VLANs synced on device " . $device->name, $device, json_encode($logdata));
-            
-            self::API_LOGOUT($device->hostname, $cookie, $api_version);
-        }
+        $return_create = $create_vlans == "true" ? $result_create_vlans . " of " . count($create_vlans_data) : 'Not enabled';
+        $return_rename = $rename_vlans == "true" ? $result_rename_vlans . " of " . count($rename_vlans_data) : 'Not enabled';
+        $return_tagged = $tag_to_uplink == "true" ? $result_tagged_vlans_to_uplink . " of " . count($tag_to_uplink_data) : 'Not enabled';
 
-        return $return;
+        return ['created' => $return_create, 'renamed' => $return_rename, 'tagged_to_uplink' => $return_tagged, 'test' => $testmode, 'message' => 'Successful'];
     }
 
-    static function setPortName($port, $name, $device, $logininfo)
+    static function setPortDescription($port, $description, $device, $logininfo): bool
     {
         list($cookie, $api_version) = explode(";", $logininfo);
 
         $data = '{
-            "description": "' . $name . '"
+            "description": "' . $description . '"
         }';
 
-        $response = self::API_PATCH_DATA($device->hostname, $cookie, self::$port_if_uri . $port, $api_version, $data);
+        $response = self::API_PATCH_DATA($device->hostname, $cookie, self::$port_if_uri . $port->name, $api_version, $data);
 
         if ($response['success']) {
-            return true;
-        } else {
-            return false;
+            $port->description = $description;
+            $port->save();
         }
+
+        return $response['success'];
     }
 }

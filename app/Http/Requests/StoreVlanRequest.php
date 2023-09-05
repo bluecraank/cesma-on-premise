@@ -13,7 +13,7 @@ class StoreVlanRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,13 @@ class StoreVlanRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'vid' => 'required|integer|between:1,4096',
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'ip_range' => 'nullable|string',
+            'scan' => 'nullable|string',
+            'sync' => 'nullable|string',
+            'site_id' => 'required|integer|exists:sites,id'
         ];
     }
 }

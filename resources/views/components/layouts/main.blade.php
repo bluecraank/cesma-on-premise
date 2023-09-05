@@ -1,33 +1,23 @@
 <x-layouts.header />
+<x-layouts.menu />
 
-<body>
-    <div class="columns is-gapless">
-        @if(!Route::is('login'))
-        <x-layouts.menu />
-        @endif
-        <div class="column">
-            <div class="container is-fluid mt-3">
-                @if ($errors->any())
-                <div class="notification status is-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if(session()->has('success'))
-                <div class="notification status is-success">
-                    {{ session()->get('success') }}
-                </div>
-                @endif
-                
-                {{ $slot }}
-            </div>
+<section class="section is-main-section">
+    @if ($errors->any())
+        <div class="notification is-response is-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
-    </div>
-</body>
-@if(!Route::is('login'))
+    @endif
+    @if (session()->has('success'))
+        <div class="notification is-response is-success">
+            {{ session()->get('success') }}
+        </div>
+    @endif
+    {{ $slot }}
+</section>
+
+
 <x-layouts.footer />
-@endif

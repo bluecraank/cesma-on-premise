@@ -24,7 +24,8 @@ class StoreBuildingRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'site_id' => 'required|integer|exists:sites,id',
+            'name' => 'required|max:100',
         ];
     }
 }

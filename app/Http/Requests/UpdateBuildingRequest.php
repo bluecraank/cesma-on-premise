@@ -24,7 +24,8 @@ class UpdateBuildingRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|max:100',
+            'id' => 'required|integer|exists:buildings,id',
         ];
     }
 }

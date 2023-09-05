@@ -11,6 +11,10 @@ class Router extends Model
     protected $fillable = [
         'ip',
         'desc',
-        'check'
+        'check',
     ];
+
+    public function entries() {
+        return $this->hasMany(SnmpMacData::class, 'router', 'id');
+    }
 }

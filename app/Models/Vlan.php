@@ -6,23 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vlan extends Model
 {
-
-    protected $primaryKey = 'vid';
+    protected $primaryKey = "id";
 
     protected $fillable = [
         'name',
         'vid',
         'description',
-        'location_id',
+        'site_id',
         'ip_range',
         'is_client_vlan',
         'is_synced',
-        'is_scanned'
     ];
 
-    public function location()
+    protected $casts = [
+        'is_client_vlan' => 'boolean',
+        'is_synced' => 'boolean',
+    ];
+
+    public function site()
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Site::class);
     }
 
     public function deviceVlans()

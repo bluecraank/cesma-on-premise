@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\ClientProviders\Baramundi;
+use App\ClientProviders\Router;
 use Illuminate\Console\Command;
-use App\Services\ClientService;
 use Illuminate\Support\Facades\Log;
 
 class QueryClientProviders extends Command
@@ -29,8 +30,22 @@ class QueryClientProviders extends Command
      */
     public function handle()
     {
-        if(ClientService::getClientDataFromProviders()) {
-            Log::info('[Clients] Client data retrieved from providers');
+        $providers = [
+            // Baramundi::class,
+            Router::class
+        ];
+
+        $queriedAtLeastOneProvider = 0;
+
+
+        $start = microtime(true);
+        foreach($providers as $provider) {
+            $queriedAtLeastOneProvider++;
+            $provider::queryClientData();
+        }
+
+        if($queriedAtLeastOneProvider != 0) {
+            Log::info('[Clients] Client data retrieved from ' . $queriedAtLeastOneProvider . ' providers in ' . (microtime(true) - $start) . ' seconds');
         }
     }
 }

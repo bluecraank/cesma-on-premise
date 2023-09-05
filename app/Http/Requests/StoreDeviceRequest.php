@@ -24,7 +24,13 @@ class StoreDeviceRequest extends FormRequest
     public function rules()
     {
         return [
-            
+            'name' => 'required|unique:devices|max:100',
+            'hostname' => 'required|unique:devices|max:100',
+            'building_id' => 'required|integer|exists:buildings,id',
+            'site_id' => 'required|integer|exists:sites,id',
+            'room_id' => 'required|integer|exists:rooms,id',
+            'location_description' => 'required|integer',
+            'type' => 'required|string'
         ];
     }
 }

@@ -11,21 +11,21 @@ class Building extends Model
 
     protected $fillable = [
         'name',
-        'location_id'
+        'site_id'
     ];
 
-    public function location()
+    public function site()
     {
-        return $this->belongsTo(Location::class);
-    }
-
-    public function getLocationName()
-    {
-        return $this->location->name;
+        return $this->belongsTo(Site::class);
     }
 
     public function rooms()
     {
         return $this->hasMany(Room::class);
+    }
+
+    public function devices()
+    {
+        return $this->hasManyThrough(Device::class, Room::class);
     }
 }

@@ -1,9 +1,0 @@
-{
-    "$schema":"http://json-schema.org/draft-04/schema#", 
-    "description":"CDP Types", 
-    "title": "CdpType", 
-    "enum":
-    [
-        "CT_VOIP_VLAN_QUERY"
-    ]
-}

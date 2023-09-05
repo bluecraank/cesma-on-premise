@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
         'hostname',
         'mac_address',
         'building_id',
-        'location_id',
-        'location_number',
+        'site_id',
+        'location_description',
         'room_id',
         'password',
         'serialnumber',
@@ -22,6 +23,10 @@ class Device extends Model
         'named',
         'model',
         'type',
+    ];
+
+    protected $dates = [
+        'last_seen',
     ];
 
     /**
@@ -45,68 +50,50 @@ class Device extends Model
         return $this->hasMany(DeviceVlan::class);
     }
 
-    public function location() {
-        return $this->belongsTo(Location::class);
+    public function site() {
+        return $this->belongsTo(Site::class);
     }
 
     public function building() {
         return $this->belongsTo(Building::class);
-    } 
+    }
 
     public function room() {
         return $this->belongsTo(Room::class);
     }
-    
+
     public function backups() {
         return $this->hasMany(DeviceBackup::class);
-    }
-
-    public function firmwareOrUnknown() {
-        return $this->firmware ?? 'Unknown';
-    }
-
-    public function hardwareOrUnknown() {
-        return $this->hardware ?? 'Unknown';
-    }
-
-    public function serialOrUnknown() {
-        return $this->serial ?? 'Unknown';
-    }
-
-    public function modelOrUnknown() {
-        return $this->model ?? 'Unknown';
     }
 
     public function vlanports() {
         return $this->hasMany(DeviceVlanPort::class);
     }
 
-    public function portsOnline() {
-        return $this->ports()->where('link', true)->get();
-    }
-
-    public function vlanPortsUntagged() {
-        return $this->vlanports()->where('is_tagged', '0')->get()->keyBy('device_port_id');
-    }
-
-    public function vlanPortsTagged() {
-
-        return $this->vlanports()->where('is_tagged', '1')->get()->groupBy('device_port_id');
-    }
-
-    public function uplinksGroupedKeyByNameArray() {
-        return $this->uplinks()->get()->groupBy('name')->toArray();
-    }
-
     public function getPortById($id) {
         return $this->ports()->where('id', $id)->first()->name;
     }
 
-    public function custom_uplink() {
-        return $this->hasOne(DeviceCustomUplink::class);
-    }
-
     public function clients() {
         return $this->hasMany(Client::class);
+    }
+
+    public function topology() {
+        return Topology::whereNot('local_device', 0)->whereNot('remote_device', 0)->where(function($query) {
+            $query->where('local_device', $this->id)->orWhere('remote_device', $this->id);
+        });
+    }
+
+    public function active() {
+        try {
+            if ($fp = fsockopen($this->hostname, 22, $errCode, $errStr, 0.2)) {
+                fclose($fp);
+                return true;
+            }
+            fclose($fp);
+        } catch (\Exception $e) {
+        }
+
+        return false;
     }
 }

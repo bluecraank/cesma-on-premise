@@ -1,6 +1,6 @@
 version: '3'
 services:
-    app:
+    cesma-app:
         build:
             context: .
             dockerfile: Dockerfile
@@ -11,19 +11,31 @@ services:
         networks:
             - cesma-net
         depends_on:
-            - mysql
+            - cesma-db
+        volumes:
+            - shared-data:/var/www/html
 
-    mysql:
+    cesma-worker:
+      image: cesma/app
+      depends_on:
+        - cesma-app
+        - cesma-db
+      networks:
+        - cesma-net
+      volumes:
+        - shared-data:/var/www/html
+      ## for the scheduler we use an infinite while loop
+      entrypoint: sh -c "while true; do php /var/www/html/artisan schedule:run --verbose & sleep 60; done"
+
+    cesma-db:
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_HOST: '%'
             MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            MYSQL_USER: '${DB_USERNAME}'
         volumes:
             - 'db-data:/var/lib/mysql'
         networks:
@@ -36,21 +48,12 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
-    # adminer:
-    #     image: adminer
-    #     restart: always
-    #     ports:
-    #         - 8080:8080
-    #     networks:
-    #         - cesma-net
-    #     depends_on:
-    #         - mysql-external
-    #         - mysql
-
 networks:
     cesma-net:
         driver: bridge
 
 volumes:
     db-data:
+        driver: local
+    shared-data:
         driver: local

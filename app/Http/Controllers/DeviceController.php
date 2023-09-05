@@ -2,68 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Devices\ArubaCX;
-use App\Devices\ArubaOS;
 use App\Http\Requests\StoreDeviceRequest;
-use App\Http\Requests\UpdateDeviceRequest;
 use App\Helper\CLog;
 use App\Models\Device;
-use App\Models\Location;
-use App\Models\Building;
 use App\Models\DeviceBackup;
-use App\Models\Room;
-use App\Services\DeviceService;
+use App\Models\DeviceVlan;
 use App\Services\PublicKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Validator;
-use App\Helper\Diff;
-
+use Illuminate\Support\Facades\Auth;
 
 class DeviceController extends Controller
 {
-    static $types = [
-        'aruba-os' => ArubaOS::class,
-        'aruba-cx' => ArubaCX::class,
-    ];
-
-    static $typenames = [
-        'aruba-os' => 'ArubaOS (old gen)',
-        'aruba-cx' => 'AOS-CX (new gen)',
-    ];
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    function index()
-    {
-        $devices = Device::all()->sortBy('name');
-        $locations = Location::all()->keyBy('id');
-        $buildings = Building::all()->keyBy('id');
-        $rooms = Room::all()->keyBy('id');
-
-        $keys_list = PublicKeyService::getPubkeysDescriptionAsArray();
-        $https = config('app.https');
-
-        return view('switch.switch-overview', compact(
-            'devices',
-            'locations',
-            'buildings',
-            'rooms',
-            'https',
-            'keys_list'
-        ));
-    }
-
-    static function view_uplinks()
-    {
-        $devices = Device::all()->keyBy('id');
-
-        return view('switch.view_uplinks', compact('devices'));
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -72,26 +22,28 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:devices|max:100',
-            'hostname' => 'required|unique:devices|max:100',
-            'building_id' => 'required|integer|exists:buildings,id',
-            'location_id' => 'required|integer|exists:locations,id',
-            'room_id' => 'required|integer|exists:rooms,id',
-            'location_number' => 'required|integer',
-            'type' => 'required|string'
-        ])->validate();
-
-        if (!in_array($request->input('type'), array_keys(self::$types))) {
+        if (!in_array($request->input('type'), array_keys(config('app.types')))) {
             return redirect()->back()->withErrors('Device type not found');
         }
 
-        if (DeviceService::storeDevice($request)) {
-            CLog::info("Switch", "Switch {$request->input('name')} created");
-            return redirect()->back()->with('success', __('Msg.SwitchCreated'));
+        // Get hostname from device else use ip
+        $hostname = $request->input('hostname');
+        if (filter_var($request->input('hostname'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $hostname = gethostbyaddr($request->input('hostname')) or $request->input('hostname');
+        }
+        $request->merge(['hostname' => $hostname]);
+
+        // Encrypt password
+        $request->merge(['password' => Crypt::encrypt($request->password)]);
+
+        // Create device
+        $device = Device::create($request->except('_token'));
+
+        if ($device) {
+            CLog::info("Device", "Switch {$request->input('name')} created");
+            return redirect()->back()->with('success', __('Successfully created device'));
         }
 
-        CLog::error("Switch", "Switch {$request->input('name')} could not be created");
         return redirect()->back()->withErrors('Could not create device');
     }
 
@@ -101,210 +53,114 @@ class DeviceController extends Controller
      * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
-    public function show($device_id)
+    public function show(Device $device)
     {
-        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients', 'custom_uplink')->where('id', $device_id)->firstOrFail();
-        
+        $device_id = $device->id;
+        $device = Device::with('ports', 'vlanports', 'uplinks', 'vlans', 'backups', 'clients')->where('id', $device_id)->firstOrFail();
+
         // Sort ports
         $device->ports = $device->ports->sort(function ($a, $b) {
             return strnatcmp($a->name, $b->name);
         });
 
+        $tempPorts = $device->ports->keyBy('name')->toArray();
+
         // Get name for firmware model
-        $device->type_name = self::$typenames[$device->type];
+        $device->type_name = config('app.typenames')[$device->type];
 
-        // Get uplinks
-        $found_uplinks = $device->uplinks->sort(function ($a, $b) {
-            return strnatcmp($a->name, $b->name);
-        })->groupBy('name');
-
-        // Get port names for uplinks
-        $generated_uplinks = [];
-        foreach($found_uplinks as $key => $ports) {
-            $name = $device->ports->where('name', $key)->first()->description;
-            if ($name == '') {
-                $name = $key;
-            }
-
-            $new_ports = array_map(function ($ports) use ($device) {
-                return $device->ports->where('id', $ports['device_port_id'])->first()->name;
-            }, $ports->toArray());
-
-            $generated_uplinks[$name] = implode(",", $new_ports);
-        }
-        $found_uplinks = $generated_uplinks;
-
-        // Get custom uplinks
-        $custom_uplinks = $device->custom_uplink?->uplinks ?? '[]';
-        $custom_uplinks_comma_seperated = implode(', ', json_decode($custom_uplinks, true));
-        $custom_uplinks_array = json_decode($custom_uplinks) ?? [];
-
-
-        // Sort vlans 
+        // Sort vlans
         $device->vlans = $device->vlans->sort(function ($a, $b) {
             return strnatcmp($a->vlan_id, $b->vlan_id);
         });
 
-        // Get online status
-        $is_online = DeviceService::isOnline($device->hostname);
+        $enoughPubkeysToSync = count(PublicKeyService::getPublicKeysAsArray());
 
-        return view('switch.view_details', compact('device', 'is_online', 'found_uplinks', 'custom_uplinks_comma_seperated', 'custom_uplinks_array'));
+        return view('device.show', compact('device', 'enoughPubkeysToSync'));
     }
 
     public function showBackups(Device $device)
     {
 
         if (!$device) {
-            return abort(404, __('DeviceNotFound'));
+            return abort(404, 'Device not found');
         }
 
         $backups = $device->backups()->latest()->take(150)->get();
 
-        return view('switch.switch-backups', compact('device', 'backups'));
+        return view('device.backups', compact('device', 'backups'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateDeviceRequest  $request
-     * @param  \App\Models\Device  $device
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateDeviceRequest $request, Device $device)
+    static function createBackup(Device $device)
     {
-        if ($request->input('password') != "__hidden__" and $request->input('password') != "") {
-            $encrypted_pw = Crypt::encrypt($request->input('password'));
-            $request->merge(['password' => $encrypted_pw]);
-        } else {
-            $request->merge(['password' => $device->whereId($request->input('id'))->first()->password]);
-        }
-
-        $device = Device::find($request->input('id'));
-
-        if(!$device) {
-            return redirect()->back()->withErrors(['message' => 'Device not found']);
-        }
-
-        $tmp = $device->attributesToArray();
-
-        if ($device->update($request->except('_token', '_method'))) {
-            CLog::info("Switch", "Updated device {$device->name}", $device, Diff::compare($tmp, $device));
-            return redirect()->back()->with('success', __('Msg.SwitchUpdated'));
-        }
-
-
-        CLog::error("Switch", "Failed to update device {$device->name}", $device, $device);
-        return redirect()->back()->withErrors(['message' => 'Could not update device']);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Device  $device
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $device)
-    {
-        $find = Device::find($device->input('id'));
-        $tmp = $find;
-
-        if (!$find) {
-            return redirect()->back()->with('message', __('DeviceNotFound'));
-        }
-
-        DeviceService::deleteDeviceData($find);
-
-        if ($find->delete()) {
-            CLog::info("Switch", "Switch {$tmp->name} deleted", $tmp, "ID: ".$tmp->id);
-
-            return redirect()->back()->with('success', __('Msg.SwitchDeleted'));
-        }
-        return redirect()->back()->with('message', 'Could not delete device');
-    }
-
-    static function createBackup(Request $request)
-    {
-        $device = Device::find($request->device_id);
-
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+            return json_encode(['success' => 'false', 'message' => __('Device could not be found')]);
         }
 
-        if (!in_array($device->type, array_keys(self::$types))) {
-            return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
+        if (!in_array($device->type, array_keys(config('app.types')))) {
+            return json_encode(['success' => 'false', 'message' => __('Error creating backup')]);
         }
 
-        $class = self::$types[$device->type];
+        $class = config('app.types')[$device->type];
         $backup = $class::createBackup($device);
 
         if ($backup) {
-            CLog::info("Switch", "Backup for switch {$device->name} created", $device, "ID: ".$device->id);
+            CLog::info("Device", "Backup for switch {$device->name} created", $device, "ID: ".$device->id);
 
-            return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
+            return json_encode(['success' => 'true', 'message' => __('Backup successfully created')]);
         } else {
-            CLog::error("Switch", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
-            return json_encode(['success' => 'false', 'message' => 'Error creating backup']);
+            CLog::error("Device", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
+            return json_encode(['success' => 'false', 'message' => __('Error creating backup')]);
         }
-
-        CLog::error("Switch", "Backup for switch {$device->name} could not be created", $device, "ID: ".$device->id);
-        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound') . $request->device_id]);
     }
 
     static function createBackupAllDevices()
     {
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(self::$types))) {
+            if (!in_array($device->type, array_keys(config('app.types')))) {
                 continue;
             }
 
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
             $class::createBackup($device);
         }
 
-        CLog::info("Switch", "Backup for all switches created");
-        return json_encode(['success' => 'true', 'message' => __('Msg.BackupCreated')]);
+        CLog::info("Device", "Backup for all switches created");
+        return json_encode(['success' => 'true', 'message' => __('Successfully created backups')]);
     }
 
-    public function uploadPubkeysToSwitch(Device $device, Request $request)
+    public function syncPubkeys(Device $device)
     {
         if (!$device) {
-            return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+            return json_encode(['success' => 'false', 'message' => __('Device could not be found')]);
         }
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
         if (count($pubkeys) <= 2 || empty($pubkeys)) {
             CLog::error("Pubkey", "Not enough public keys to upload to switch {$device->name}", $device, $device->id);
-            return json_encode(['success' => 'false', 'message' => __('Pubkeys.Sync.NotEnough')]);
+            return json_encode(['success' => 'false', 'message' => __('Not enough public keys to upload to switch')]);
         }
 
-        if ($device) {
-            $class = self::$types[$device->type];
-
-            CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
-
-            return $class::uploadPubkeys($device, $pubkeys);
-        }
-
-        CLog::error("Pubkey", "Could not upload public keys to switch {$device->name}", $device, $device->id);
-        return json_encode(['success' => 'false', 'message' => __('DeviceNotFound')]);
+        $class = config('app.types')[$device->type];
+        CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
+        return $class::syncPubkeys($device, $pubkeys);
     }
 
     static function uploadPubkeysAllDevices()
     {
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
         if (count($pubkeys) >= 2 && !empty($pubkeys)) {
             foreach ($devices as $device) {
-                $class = self::$types[$device->type];
+                $class = config('app.types')[$device->type];
 
                 CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
 
-                $class::uploadPubkeys($device, $pubkeys);
+                $class::syncPubkeys($device, $pubkeys);
             }
 
             CLog::info("Pubkey", "Uploading public keys to all switches");
@@ -322,7 +178,7 @@ class DeviceController extends Controller
 
         if ($device and $backup) {
             $password_switch = $request->input('password-switch');
-            $class = self::$types[$device->type];
+            $class = config('app.types')[$device->type];
             $restore = $class::restoreBackup($device, $backup, $password_switch);
 
             if ($restore['success']) {
@@ -335,33 +191,28 @@ class DeviceController extends Controller
         }
     }
 
-    public function hasUpdate(Device $device, Request $request)
-    {
-        // \DebugBar::disable();
+    static function syncVlansToDevice(Request $request) {
+        $device = Device::find($request->input('device'));
 
-        if ($request->time < $device->updated_at) {
-            return response()
-                ->withHeaders(['Content-Type' => 'application/json'])
-                ->json(
-                    [
-                        'success' => true,
-                        'updated' => true,
-                        'message' => __('Msg.ViewOutdated') . ' <a style="text-decoration:underline" href="/switch/' . $device->id . '">' . __('Msg.ClickToRefresh') . '</a>'
-                    ],
-                    200,
-                    ['Content-Type' => 'application/json']
-                );
-        } else {
-            return response()
-                ->json(
-                    [
-                        'success' => true,
-                        'updated' => false,
-                        'message' => ''
-                    ],
-                    200,
-                    ['Content-Type' => 'application/json']
-                );
+        $vlans = $request->input('vlans') ?? '{}';
+        $vlans = json_decode($vlans, true);
+
+        $create = $request->input('createVlans') ?? false;
+        $rename = $request->input('renameVlans') ?? false;
+        $tagToUplink = $request->input('tagToUplink') ?? false;
+        $testmode = $request->input('testmode') == "false" ? false : true;
+
+        // // For security!
+        // $testmode = true;
+
+        if ($device and $vlans) {
+            $class = config('app.types')[$device->type];
+            $sync = $class::syncVlans($vlans, $device, $create, $rename, $tagToUplink, $testmode);
+
+            CLog::info("Vlan", "Vlans for switch {$device->name} synced", $device, $device->id);
+            return json_encode($sync);
         }
+
+        return json_encode(['success' => 'false', 'message' => __('Device could not be found')]);
     }
 }
