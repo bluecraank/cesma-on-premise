@@ -200,4 +200,8 @@ Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/', [RoomController::class, 'store'])->name('create-room');
 });
 
+Route::get('/home', function() {
+    return redirect()->route('dashboard');
+})
+
 Auth::routes();
