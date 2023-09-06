@@ -65,7 +65,7 @@
         @endif
     </td>
 
-    <td data-label="Progress" class="is-progress-cell">
+    {{-- <td data-label="Progress" class="is-progress-cell">
         <progress max="100" class="progress is-small is-primary" data-label="79" value="79">79</progress>
-    </td>
+    </td> --}}
 </tr>

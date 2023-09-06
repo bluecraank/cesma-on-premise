@@ -41,7 +41,7 @@
                             <th>Untagged vlan</th>
                             <th>Tagged vlans</th>
                             <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
-                            <th class="has-text-centered">{{ __('Actions') }}</th>
+                            {{-- <th class="has-text-centered">{{ __('Actions') }}</th> --}}
                         </tr>
                     </thead>
                     <tbody>

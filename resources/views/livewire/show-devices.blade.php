@@ -140,7 +140,7 @@
                             @include('buttons.ButtonSyncVlan')
                             @include('buttons.ButtonSyncPubkeys')
                             @include('buttons.ButtonCreateBackup')
-                            <a href="{{ route('uplinks') }}" class="button is-info is-small">{{ __('Show uplinks') }}</a>
+                            {{-- <a href="{{ route('uplinks') }}" class="button is-info is-small">{{ __('Show uplinks') }}</a> --}}
                         </div>
                     </div>
                 </div>

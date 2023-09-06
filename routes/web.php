@@ -202,6 +202,6 @@ Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
 
 Route::get('/home', function() {
     return redirect()->route('dashboard');
-})
+});
 
 Auth::routes();

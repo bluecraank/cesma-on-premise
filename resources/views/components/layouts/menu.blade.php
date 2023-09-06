@@ -69,11 +69,11 @@
                     <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
                 </a>
                 <div class="navbar-dropdown">
-                    <a class="navbar-item">
+                    {{-- <a class="navbar-item">
                         <span class="icon"><i class="mdi mdi-cog"></i></span>
                         <span>Settings</span>
-                    </a>
-                    <hr class="navbar-divider">
+                    </a> --}}
+                    {{-- <hr class="navbar-divider"> --}}
                     <form id="logoutForm" method="POST" action="/logout">
                         @csrf
                         <a class="navbar-item" onclick='document.getElementById("logoutForm").submit()'>

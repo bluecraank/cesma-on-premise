@@ -134,7 +134,7 @@ class DevicePort extends Model
 
     public function getMemberOfTrunkAttribute()
     {
-        $uplinks = DeviceUplink::where('device_id', $this->device_id)->get();
+        $uplinks = DeviceUplink::where('device_id', $this->device_id)->where('name', 'LIKE', "%Trk%")->get();
         foreach ($uplinks as $uplink) {
             $ports = $uplink->ports ?? [];
             if (in_array($this->name, $ports)) {
