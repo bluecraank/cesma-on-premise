@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Helper\CLog;
 use App\Models\DevicePort as ModelsDevicePort;
 use App\Models\DeviceVlan;
 use App\Services\DeviceService;
@@ -121,14 +122,19 @@ class DevicePort extends Component
     public function updatePortDescription($cookie, $port) {
         if(DeviceService::updatePortDescription($cookie, $port, $this->device_id, $this->description)) {
             $this->dispatch('notify-success', message: __('Description of port :port changed', ['port' => $port->name]));
+            CLog::info("DevicePort", "Description of port {$port->name} changed", null, "Old: \"{$port->description}\" New: \"{$this->description}\"");
         } else {
             $this->dispatch('notify-error', message: __('Description of port :port could not be changed', ['port' => $port->name]));
         }
     }
 
     public function updatePortUntaggedVlan($cookie, $port) {
+        $temp = $port->untagged->id;
+        $vlan = DeviceVlan::whereId($temp)->first();
+        $newVlan = DeviceVlan::whereId($this->untagged)->first();
         if(DeviceService::updatePortUntaggedVlan($cookie, $port, $this->device_id, $this->untagged)) {
-            $this->dispatch('notify-success', message: __('Untagged vlan of port :port changed', ['port' => $port->name]));
+            $this->dispatch('notify-success', message: __('Untagged vlan of port :port changed to :new', ['port' => $port->name, 'new' => $newVlan?->name]));
+            CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", null, "Old: {$vlan?->name} New: {$newVlan?->name}");
         } else {
             $this->dispatch('notify-error', message: __('Untagged vlan of port :port could not be changed', ['port' => $port->name]));
         }
@@ -140,6 +146,7 @@ class DevicePort extends Component
 
         if(count($returnArrays[0]) == count($returnArrays[2]) && count($returnArrays[1]) == count($returnArrays[3])) {
             $this->dispatch('notify-success', message: __('Tagged vlans of port :port changed', ['port' => $port->name]));
+            CLog::info("DevicePort", "Tagged vlans of port {$port->name} changed", null, "{count($returnArrays[0])} tagged");
         } else {
             // Gewählte und erfolgreiche entfernte
             $count_all = count($returnArrays[0]) + count($returnArrays[1]);
