@@ -570,31 +570,44 @@ class ArubaCX implements DeviceInterface
 
             $rest_vlans_uri = "/rest/" . $api_version . "/system/vlans/";
 
+            $deviceVlanIdOld = $port->untaggedVlan();
+            $vlan_id = $vlans[$newVlan]['vlan_id'] ?? $vlans[$deviceVlanIdOld]['vlan_id'];
+
             $data = '{
                 "vlan_mode": "' . $port->vlan_mode . '",
-                "vlan_tag": "' . $rest_vlans_uri . $vlans[$newVlan]['vlan_id'] . '",
+                "vlan_tag": "' . $rest_vlans_uri . $vlan_id . '",
                 "vlan_trunks": [
-                    "' . $rest_vlans_uri . $vlans[$newVlan]['vlan_id'] . '"
+                    "' . $rest_vlans_uri . $vlan_id . '"
                 ]
                 }';
 
             $uri = self::$port_if_uri . $port->name;
 
-            $result = self::API_PATCH_DATA($device->hostname, $cookie, $uri, $api_version, $data);
+            if($newVlan == 0) {
+                $result = self::API_DELETE_DATA($device->hostname, $cookie, $uri, $api_version, $data);
+            } else {
+                $result = self::API_PATCH_DATA($device->hostname, $cookie, $uri, $api_version, $data);
+            }
 
             if ($result['success']) {
                 $old = $port->untaggedVlan();
+
+                if($newVlan == 0) {
+                    DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->delete();
+                }
 
                 if ($old) {
                     DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
 
-                DeviceVlanPort::updateOrCreate(
-                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
-                );
-                DeviceVlanPort::updateOrCreate(
-                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => true],
-                );
+                if($newVlan != 0) {
+                    DeviceVlanPort::updateOrCreate(
+                        ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
+                    );
+                    DeviceVlanPort::updateOrCreate(
+                        ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => true],
+                    );
+                }
 
                 return true;
             } else {

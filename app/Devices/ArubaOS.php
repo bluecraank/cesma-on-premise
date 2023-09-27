@@ -637,8 +637,11 @@ class ArubaOS implements DeviceInterface
 
     static function setUntaggedVlanToPort($newVlan, $port, $device, $vlans, $need_login = true, $logindata = ""): bool
     {
+        $deviceVlanIdOld = $port->untaggedVlan();
+        $vlan_id = $vlans[$newVlan]['vlan_id'] ?? $vlans[$deviceVlanIdOld]['vlan_id'];
+
         $data = '{
-            "vlan_id": ' . $vlans[$newVlan]['vlan_id'] . ',
+            "vlan_id": ' . $vlan_id . ',
             "port_id": "' . $port->name . '",
             "port_mode": "POM_UNTAGGED"
         }';
@@ -652,7 +655,11 @@ class ArubaOS implements DeviceInterface
         if ($login_info) {
             list($cookie, $api_version) = explode(";", $login_info);
 
-            $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+            if($newVlan == 0) {
+                $result = self::API_DELETE_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+            } else {
+                $result = self::API_POST_DATA($device->hostname, $cookie, self::$available_apis['vlanport'], $api_version, $data);
+            }
 
             if ($result['success']) {
                 $old = DeviceVlanPort::where('device_id', $device->id)->where('device_port_id', $port->id)->where('is_tagged', false)->first()->device_vlan_id ?? false;
@@ -661,9 +668,13 @@ class ArubaOS implements DeviceInterface
                     DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
 
-                DeviceVlanPort::updateOrCreate(
-                    ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
-                );
+                if($newVlan == 0) {
+                    DeviceVlanPort::where('device_vlan_id', $deviceVlanIdOld)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
+                } {
+                    DeviceVlanPort::updateOrCreate(
+                        ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
+                    );
+                }
 
                 Log::channel('database')->info(__('Log.Vlan.Untagged.Updated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                 return true;
@@ -756,7 +767,9 @@ class ArubaOS implements DeviceInterface
 
         $logVlans = [];
         foreach($taggedVlans as $unused => $device_vlan_id) {
-            $logVlans[] = $vlans[$device_vlan_id]['vlan_id'];
+            if($currentVlans[$device_vlan_id]) {
+                $logVlans[] = $currentVlans[$device_vlan_id]['vlan_id'];
+            }
         }
 
         if(count($vlansSuccessfullySet) != 0 || count($vlansSuccessfullyRemoved) != 0) {

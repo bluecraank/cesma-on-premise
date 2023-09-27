@@ -129,9 +129,13 @@ class DevicePort extends Component
     }
 
     public function updatePortUntaggedVlan($cookie, $port) {
-        $temp = $port->untagged->id;
-        $vlan = DeviceVlan::whereId($temp)->first();
-        $newVlan = DeviceVlan::whereId($this->untagged)->first();
+        $temp = $port->untagged->id ?? '0';
+        $vlan = DeviceVlan::whereId($temp)->first() ?? new DeviceVlan();
+        $vlan->name = $vlan->name ?? 'None';
+
+        $newVlan = DeviceVlan::whereId($this->untagged)->first() ?? new DeviceVlan();
+        $newVlan->name = $newVlan->name ?? 'None';
+
         if(DeviceService::updatePortUntaggedVlan($cookie, $port, $this->device_id, $this->untagged)) {
             $this->dispatch('notify-success', message: __('Untagged vlan of port :port changed to :new', ['port' => $port->name, 'new' => $newVlan?->name]));
             CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", null, "Old: {$vlan?->name} New: {$newVlan?->name}");
