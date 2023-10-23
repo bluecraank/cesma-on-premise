@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
@@ -676,11 +675,8 @@ class ArubaOS implements DeviceInterface
                     );
                 }
 
-                Log::channel('database')->info(__('Log.Vlan.Untagged.Updated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
                 return true;
             } else {
-                Log::channel('database')->error(__('Log.Vlan.Untagged.NotUpdated', ['vlan' => $vlans[$newVlan]['vlan_id'], 'port' => $port->name]), ['extra' => Auth::user()->name, 'context' => "Port"]);
-
                 return false;
             }
 
