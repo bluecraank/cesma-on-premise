@@ -159,7 +159,7 @@
                                     </tr>
                                     <tr>
                                         <td>{{ __('Location') }}</td>
-                                        <td class="">{{ $device->location_description }}</td>
+                                        <td class="">{{ $device->location_description ?? 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Synced vlans</td>

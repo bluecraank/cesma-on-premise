@@ -169,7 +169,6 @@ use Illuminate\Support\Facades\Http;
 
         static function formatMacTableData(array $data, array $vlans, $device, String $cookie, String $api_version): array
         {
-            // Not supported by DellEMC
             return [];
         }
 
