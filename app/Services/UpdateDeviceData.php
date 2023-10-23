@@ -313,18 +313,12 @@ class UpdateDeviceData
 
             if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
                 $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', $local_port)->first();
-                // if (!$uplink) {
-                //     $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', "1/1/" . $local_port)->first();
-                // }
 
                 if (!$uplink) {
                     continue;
                 }
             } elseif ($port_combination['remote_device'] == $device->id && !isset($currentUplinks[$remote_port]) && !isset($currentUplinks["1/1/" . $remote_port])) {
                 $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', $remote_port)->first();
-                // if (!$uplink) {
-                //     $uplink = DevicePort::where('device_id', $port_combination['remote_device'])->where('name', "1/1/" . $remote_port)->first();
-                // }
 
                 if (!$uplink) {
                     continue;
@@ -333,7 +327,6 @@ class UpdateDeviceData
                 continue;
             }
 
-            echo "uplink - " . $uplink->name . "\n";
             Notification::uplink($uplink->name, $device, [
                 'topology' => "Entry in topology detected",
                 'port' => $uplink->name,
