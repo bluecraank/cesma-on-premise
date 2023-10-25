@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\DeviceBackup;
+use App\Models\DevicePort;
 use App\Models\DevicePortStat;
 use App\Models\DeviceUplink;
 use App\Models\Log;
@@ -55,6 +56,15 @@ class DatabaseCleanup extends Command
                     if($vlan['site_id'] != $site['id']) {
                         $query->orWhere('vlan_id', $vlan['vid']);
                     }
+                }
+            })->delete();
+        }
+
+        $ports = DevicePort::get()->groupBy('device_id')->toArray();
+        foreach($ports as $device_id => $device_ports) {
+            Client::where('device_id', $device_id)->where(function($query) use ($device_ports) {
+                foreach ($device_ports as $port) {
+                    $query->whereNot('port_id', $port['name']);
                 }
             })->delete();
         }

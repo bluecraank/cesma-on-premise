@@ -138,7 +138,7 @@ class DevicePort extends Component
 
         if(DeviceService::updatePortUntaggedVlan($cookie, $port, $this->device_id, $this->untagged)) {
             $this->dispatch('notify-success', message: __('Untagged vlan of port :port changed to :new', ['port' => $port->name, 'new' => $newVlan?->name]));
-            CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", null, "Old: {$vlan?->name} New: {$newVlan?->name}");
+            CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", null, "Device: {$port->device->name} ,Old: {$vlan?->name} New: {$newVlan?->name}");
         } else {
             $this->dispatch('notify-error', message: __('Untagged vlan of port :port could not be changed', ['port' => $port->name]));
         }
