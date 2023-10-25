@@ -78,7 +78,7 @@ class BackupController extends Controller
     static function sendMail() {
 
         $backups = DeviceBackup::all()->keyBy('id');
-        $devices = Device::all()->keyBy('id');
+        $devices = Device::all()->keyBy('id')->sortBy('name');
 
         $modDevices = [];
         $totalError = true;
@@ -91,13 +91,14 @@ class BackupController extends Controller
             $modDevices[$key]->success = $backups->where('device_id', $device->id)->where('status', 1)->where('created_at', '>', Carbon::now()->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())->count();
             $modDevices[$key]->fail = $backups->where('device_id', $device->id)->where('status', 0)->where('created_at', '>', Carbon::now()->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())->count();
             $modDevices[$key]->success_total = ($modDevices[$key]->fail == 0) ? 1 : 0;
+            $modDevices[$key]->site = $device->site->name;
 
             if ($modDevices[$key]->success_total == 0) {
                 $totalError = false;
             }
         }
 
-        Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($backups, $modDevices, $totalError));
+        Mail::to(config('app.backup_mail_address'))->send(new SendBackupStatus($modDevices, $totalError));
 
         CLog::info("Backup", 'Backup status mail has been sent');
     }
