@@ -62,7 +62,7 @@
             <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
                 <a class="navbar-link is-arrowless">
                     <div class="is-user-avatar">
-                        <img src="https://avatars.dicebear.com/v2/initials/{{ Auth::user()->initials() }}.svg"
+                        <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ Auth::user()->initials() }}.svg"
                             alt="{{ Auth::user()->name }}">
                     </div>
                     <div class="is-user-name"><span>{{ Auth::user()->name }}</span></div>
