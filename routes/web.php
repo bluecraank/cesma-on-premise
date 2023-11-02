@@ -90,6 +90,7 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/{device}/execute', [SSHController::class, 'performSSH'])->name('perform-ssh');
     Route::post('/{device}/backup', [DeviceController::class, 'createBackup'])->name('create-backup');
     Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
+    Route::post('/{device}/sync-vlans', [DeviceController::class, 'syncVlansToDevice'])->name('sync-vlans');
     Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
 
     Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
@@ -161,6 +162,14 @@ Route::prefix('settings/snmp-gateways')->middleware(['auth:sanctum'])->group(fun
 
     Route::post('/', [SystemController::class, 'createGateway'])->name('create-gateway');
     Route::delete('/', [SystemController::class, 'deleteGateway'])->name('delete-gateway');
+});
+
+Route::prefix('settings/privatekey')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [SystemController::class, 'index_privatekey'])->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('SSH Privatekey'), route('privatekey'));
+    })->name('privatekey');
+
+    Route::post('/', [SSHController::class, 'store_privatekey'])->name('create-private-key');
 });
 
 Route::prefix('settings/publickeys')->middleware(['auth:sanctum'])->group(function () {

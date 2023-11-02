@@ -172,7 +172,7 @@
                                             Pubkey sync
                                         </td>
                                         <td>
-                                            {{ $device->last_pubkey_sync ? $device->last_pubkey_sync->diffForHumans() : 'Never' }}
+                                            {{ $device->last_pubkey_sync ? Carbon\Carbon::parse($device->last_pubkey_sync)->diffForHumans() : 'Never' }}
                                         </td>
                                     </tr>
                                     <tr>

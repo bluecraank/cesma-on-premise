@@ -144,7 +144,7 @@ class DeviceController extends Controller
         }
 
         $class = config('app.types')[$device->type];
-        CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
+        CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, "device-id: " . $device->id. ", Count: ".count($pubkeys));
         return $class::syncPubkeys($device, $pubkeys);
     }
 
@@ -158,12 +158,12 @@ class DeviceController extends Controller
             foreach ($devices as $device) {
                 $class = config('app.types')[$device->type];
 
-                CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, $device->id);
+                CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, "device-id: " . $device->id. ", Count: ".count($pubkeys));
 
                 $class::syncPubkeys($device, $pubkeys);
             }
 
-            CLog::info("Pubkey", "Uploading public keys to all switches");
+            CLog::info("Pubkey", "Uploading public keys to all switches", null, "Count devices: ".count($devices)." ,Count: ".count($pubkeys));
             return json_encode(['success' => 'true', 'message' => __('Successfully synced public keys to all switches')]);
         }
 
@@ -192,24 +192,34 @@ class DeviceController extends Controller
     }
 
     static function syncVlansToDevice(Request $request) {
+        sleep(1);
         $device = Device::find($request->input('device'));
 
         $vlans = $request->input('vlans') ?? '{}';
         $vlans = json_decode($vlans, true);
 
-        $create = $request->input('createVlans') ?? false;
-        $rename = $request->input('renameVlans') ?? false;
-        $tagToUplink = $request->input('tagToUplink') ?? false;
+        $create = $request->input('createVlans') == "false" ? false : true;
+        $rename = $request->input('renameVlans') == "false" ? false : true;
+        $tagToUplink = $request->input('tagToUplink') == "false" ? false : true;
         $testmode = $request->input('testmode') == "false" ? false : true;
+        $delete = $request->input('deleteVlans') == "false" ? false : true;
 
         // // For security!
         // $testmode = true;
 
         if ($device and $vlans) {
             $class = config('app.types')[$device->type];
-            $sync = $class::syncVlans($vlans, $device, $create, $rename, $tagToUplink, $testmode);
+            $sync = $class::syncVlans($vlans, $device, $create, $rename, $tagToUplink, $delete, $testmode);
 
-            CLog::info("Vlan", "Vlans for switch {$device->name} synced", $device, $device->id);
+            if(!$testmode) {
+                CLog::info("Vlan", "Vlans for switch {$device->name} synced", $device,
+                "create_vlans => ".json_encode($create) .
+                ", rename_vlans => ".json_encode($rename) .
+                ", tag_to_uplink => ".json_encode($tagToUplink) .
+                ", delete_vlans => ".json_encode($delete) .
+                ", data =>" . json_encode($vlans));
+            }
+
             return json_encode($sync);
         }
 

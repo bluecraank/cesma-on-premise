@@ -15,14 +15,8 @@ use phpseclib3\Crypt\PublicKeyLoader;
 
 class SSHController extends Controller
 {
-    public function encrypt_key_index()
+    public function store_privatekey(Request $request)
     {
-        return view('ssh.encrypt');
-    }
-
-    public function encrypt_key_save(Request $request)
-    {
-
         $validator = Validator::make($request->all(), [
             'key' => 'required|starts_with:-----BEGIN RSA PRIVATE KEY-----,ends_with:-----END RSA PRIVATE KEY-----'
         ])->validate();
@@ -31,12 +25,16 @@ class SSHController extends Controller
 
         if ($validator) {
             $key = Crypt::encrypt(request()->input('key'));
-            Storage::disk('local')->put('ssh.key', $key);
-            CLog::info("System", "Import private key successful");
-            return "Importiert";
+            $save = Storage::disk('local')->put('ssh.key', $key);
+            if($save) {
+                CLog::info("System", "Import private key successful");
+                return "Successfully imported private key";
+            }
+
+            return "Could not import private key... Permission denied?";
         } else {
             CLog::error("System", "Import private key failed");
-            return "{'message': 'Kein gültiger Schlüssel'}";
+            return "{'message': 'Private key failed validation'}";
         }
     }
 

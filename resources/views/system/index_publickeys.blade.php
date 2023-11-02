@@ -76,6 +76,15 @@
         <p>{{ __('Go to') }} <a href="{{ route('devices') }}">{{ __('Devices') }}</a> {{ __('to sync added public keys on aruba switches') }}</p>
     </div>
 
+    @php
+        $disk = Illuminate\Support\Facades\Storage::disk('local')->get('ssh.key');
+    @endphp
+    @if($disk == null)
+    <div class="notification is-warning">
+        <p>{{ __('No private key found! - ') }} <a href="{{ route('privatekey') }}">{{ __('To sync publics keys over ssh, please add a private key for CESMA') }}</a></p>
+    </div>
+    @endif
+
     @include('modals.publickeys.create')
     @include('modals.publickeys.delete')
     </x-layouts>

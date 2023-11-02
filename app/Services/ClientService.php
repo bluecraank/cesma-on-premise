@@ -24,8 +24,7 @@ class ClientService {
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
 
-        $macs = Mac::where('port_id', '52')->where('device_id', 22)->get()->keyBy('mac_address')->toArray();
-        dd($macs);
+        // $macs = Mac::where('port_id', '52')->where('device_id', 22)->get()->keyBy('mac_address')->toArray();
 
         // TODO: Pluck VlanID führt dazu, dass verschiedene Standorte so nicht gehen. Clients dürfen nicht die VlanID als Attribut haben, sondern die ID des Vlans in aus der DB
         $vlans = Vlan::where('is_client_vlan', false)->pluck('vid')->toArray();
@@ -58,6 +57,7 @@ class ClientService {
                 continue;
             }
 
+
             // Gerät wurde an einem Uplink Port gefunden, ignorieren
             if(isset($array_uplinks[$macs[$mac]['device_id']]) && in_array($macs[$mac]['port_id'], $array_uplinks[$macs[$mac]['device_id']])) {
                 continue;
@@ -74,22 +74,21 @@ class ClientService {
             }
 
             // Port existiert nicht
-            if(!DevicePort::where('name', $macs[$mac]['port_id'])->where('device_id', $macs[$mac['device_id']])->exists()) {
+            if(!DevicePort::where('name', $macs[$mac]['port_id'])->where('device_id', $macs[$mac]['device_id'])->exists()) {
                 continue;
             }
-
-            $mac_already_added[$mac] = true;
 
             if($macs[$mac]['port_id'] == 0) {
                 continue;
             }
 
+
+            $mac_already_added[$mac] = true;
+
             $DbClient = Client::updateOrCreate([
-                // 'id' => md5($mac.$client['hostname']),
                 'mac_address' => $mac,
             ],
             [
-                // 'hostname' => $client['hostname'],
                 'port_id' => $macs[$mac]['port_id'],
                 'device_id' => $macs[$mac]['device_id'],
                 'vlan_id' => $macs[$mac]['vlan_id'],

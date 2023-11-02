@@ -16,6 +16,7 @@ use App\Models\Topology;
 use App\Models\Vlan;
 use App\Services\ChartService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SystemController extends Controller
 {
@@ -67,6 +68,12 @@ class SystemController extends Controller
         $publickeys = PublicKey::all();
 
         return view('system.index_publickeys', compact('publickeys'));
+    }
+
+    public function index_privatekey() {
+        $privatekey = Storage::disk('local')->get('ssh.key');
+
+        return view('system.index_privatekey', compact('privatekey'));
     }
 
     public function index_topology()

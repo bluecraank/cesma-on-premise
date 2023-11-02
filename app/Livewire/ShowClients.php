@@ -37,7 +37,7 @@ class ShowClients extends Component
 
     public function render()
     {
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id')->sortBy('name');
         $count_clients = Client::count();
         $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->sortBy('vid')->keyBy('vid');
         $vendors = MacVendor::all()->keyBy('mac_prefix');

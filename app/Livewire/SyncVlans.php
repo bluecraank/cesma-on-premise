@@ -24,6 +24,7 @@ class SyncVlans extends Component
     public $createVlans = true;
     public $renameVlans = true;
     public $tagToUplinks = false;
+    public $deleteVlans = false;
 
     public function mount() {
         if(Auth::user()->role <= 1) {
@@ -36,23 +37,12 @@ class SyncVlans extends Component
         $this->selectedDevices = $devices;
         $this->selectedVlans = $vlans;
 
-
-        // if($this->selectedVlans == null || count($this->selectedVlans) == 0) {
-        //     $this->dispatch('notify-error', message: __('No vlans selected'));
-        //     return;
-        // }
-
-        // if($this->selectedDevices == null || count($this->selectedDevices) == 0) {
-        //     $this->dispatch('notify-error', message: __('No devices selected'));
-        //     return;
-        // }
-
         $this->hidePreparation = true;
         $this->someIsEmpty = false;
 
         foreach($this->selectedDevices as $device) {
             $selDevice = Device::where('id', $device)->first();
-            $this->dispatch("sync-vlan-to-device", vlans: $this->selectedVlans, device: $selDevice->id, name: $selDevice->name, testmode: $this->testmode, createVlans: $this->createVlans, renameVlans: $this->renameVlans, tagToUplink: $this->tagToUplinks);
+            $this->dispatch("sync-vlan-to-device", vlans: $this->selectedVlans, device: $selDevice->id, name: $selDevice->name, testmode: $this->testmode, createVlans: $this->createVlans, renameVlans: $this->renameVlans, tagToUplink: $this->tagToUplinks, deleteVlans: $this->deleteVlans);
         }
 
     }
@@ -63,13 +53,14 @@ class SyncVlans extends Component
 
         foreach($this->selectedDevices as $device) {
             $selDevice = Device::where('id', $device)->first();
-            $this->dispatch("sync-vlan-to-device", vlans: $this->selectedVlans, device: $selDevice->id, name: $selDevice->name, testmode: $this->testmode, createVlans: $this->createVlans, renameVlans: $this->renameVlans, tagToUplink: $this->tagToUplinks);
+            $this->dispatch("sync-vlan-to-device", vlans: $this->selectedVlans, device: $selDevice->id, name: $selDevice->name, testmode: $this->testmode, createVlans: $this->createVlans, renameVlans: $this->renameVlans, tagToUplink: $this->tagToUplinks, deleteVlans: $this->deleteVlans);
         }
     }
 
     public function render()
     {
         $this->vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where('is_synced', 1)->get()->toArray();
+        array_multisort(array_column($this->vlans, 'name'), SORT_NATURAL, $this->vlans);
 
         $writeableTypes = array_filter(config('app.read-only'), function($type) {
             return $type == false;
@@ -77,6 +68,7 @@ class SyncVlans extends Component
         $writeableTypes = array_keys($writeableTypes);
 
         $this->devices = Device::where('site_id', Auth::user()->currentSite()->id)->whereIn('type', $writeableTypes)->get()->toArray();
+        array_multisort(array_column($this->devices, 'name'), SORT_NATURAL, $this->devices);
 
         return view('livewire.sync-vlans');
     }

@@ -127,7 +127,7 @@ class ArubaCX implements DeviceInterface
 
         $allPorts = self::foreachIfOperStatus($snmpIfOperStatus, $allPorts);
 
-        foreach($allPorts as $port => $data) {
+        foreach ($allPorts as $port => $data) {
             $allPorts[$port]['name'] = str_replace("1/1/", "", $allPorts[$port]['name']);
         }
 
@@ -257,7 +257,7 @@ class ArubaCX implements DeviceInterface
     {
         $uptime = 0;
 
-        if(isset($system['uptime'])) {
+        if (isset($system['uptime'])) {
             $uptime = str_replace("Timeticks: (", "", $system['uptime']);
             $uptime = strstr($uptime, ")", true);
             $uptime = ($uptime / 100) * 1000;
@@ -549,7 +549,8 @@ class ArubaCX implements DeviceInterface
         self::API_LOGOUT($device->hostname, $cookie, $api_version);
 
         if ($upload->successful()) {
-            $device->last_pubkey_sync->touch();
+            $device->last_pubkey_sync = now();
+            $device->save();
             return json_encode(['success' => 'true', 'message' => __('SSH pubkeys successfully synced')]);
         } else {
             return json_encode(['success' => 'false', 'message' => __('SSH pubkeys sync failed')]);
@@ -583,7 +584,7 @@ class ArubaCX implements DeviceInterface
 
             $uri = self::$port_if_uri . $port->name;
 
-            if($newVlan == 0) {
+            if ($newVlan == 0) {
                 $result = self::API_DELETE_DATA($device->hostname, $cookie, $uri, $api_version, $data);
             } else {
                 $result = self::API_PATCH_DATA($device->hostname, $cookie, $uri, $api_version, $data);
@@ -592,7 +593,7 @@ class ArubaCX implements DeviceInterface
             if ($result['success']) {
                 $old = $port->untaggedVlan();
 
-                if($newVlan == 0) {
+                if ($newVlan == 0) {
                     DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->delete();
                 }
 
@@ -600,7 +601,7 @@ class ArubaCX implements DeviceInterface
                     DeviceVlanPort::where('device_vlan_id', $old)->where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', false)->delete();
                 }
 
-                if($newVlan != 0) {
+                if ($newVlan != 0) {
                     DeviceVlanPort::updateOrCreate(
                         ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $vlans[$newVlan]['id'], 'is_tagged' => false],
                     );
@@ -648,7 +649,7 @@ class ArubaCX implements DeviceInterface
         $data_builder['vlan_mode'] = "native-untagged";
 
         $untaggedVlan = $device->vlanports()->where('device_port_id', $port->id)->where('is_tagged', false)->first();
-        if(isset($untaggedVlan)) {
+        if (isset($untaggedVlan)) {
             $data_builder['vlan_tag'] = $rest_vlans_uri . $vlans[$untaggedVlan->device_vlan_id]['vlan_id'];
             $data_builder['vlan_trunks'][] = $rest_vlans_uri . $vlans[$untaggedVlan->device_vlan_id]['vlan_id'];
             $vlansToSet[$untaggedVlan->device_vlan_id] = true;
@@ -658,8 +659,8 @@ class ArubaCX implements DeviceInterface
             $vlansToSet[$taggedVlan] = $taggedVlan;
         }
 
-        foreach($taggedVlans as $device_vlan_id => $unused) {
-            if($untaggedVlan->device_vlan_id == $device_vlan_id) {
+        foreach ($taggedVlans as $device_vlan_id => $unused) {
+            if ($untaggedVlan->device_vlan_id == $device_vlan_id) {
                 continue;
             }
 
@@ -670,12 +671,12 @@ class ArubaCX implements DeviceInterface
 
         $result = self::API_PUT_DATA($device->hostname, $cookie, $uri, $api_version, $data);
 
-        if($result['success']) {
+        if ($result['success']) {
             DeviceVlanPort::where('device_port_id', $port->id)->where('device_id', $device->id)->where('is_tagged', true)->delete();
             $vlansSuccessfullySet = $data_builder['vlan_trunks'];
 
             $logVlans = [];
-            foreach($taggedVlans as $device_vlan_id => $unused) {
+            foreach ($taggedVlans as $device_vlan_id => $unused) {
                 DeviceVlanPort::updateOrCreate(
                     ['device_id' => $device->id, 'device_port_id' => $port->id, 'device_vlan_id' => $device_vlan_id, 'is_tagged' => true],
                 );
@@ -683,13 +684,13 @@ class ArubaCX implements DeviceInterface
                 $logVlans[] = $vlans[$device_vlan_id]['vlan_id'];
             }
 
-            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device ". $device->name ." successfully changed", $device,"Count: ".count($data_builder['vlan_trunks']).", Vlans: ".implode(", ", array_values($logVlans)));
+            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device " . $device->name . " successfully changed", $device, "Count: " . count($data_builder['vlan_trunks']) . ", Vlans: " . implode(", ", array_values($logVlans)));
         }
 
         return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
     }
 
-    static function syncVlans($syncable_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink, $testmode): array
+    static function syncVlans($syncable_vlans, $device, $create_vlans, $rename_vlans, $tag_to_uplink, $delete_vlans, $testmode): array
     {
         $siteVlans = Vlan::where('site_id', $device->site_id)->get()->keyBy('vid')->toArray();
         $current_vlans = DeviceVlan::where('device_id', $device->id)->get()->keyBy('vlan_id')->toArray();
@@ -697,7 +698,7 @@ class ArubaCX implements DeviceInterface
         // current_vlans = key vlan_id, value vlan_name
 
         if (count($current_vlans) == 0) {
-            return ['created' => 'No vlan data exists', 'renamed' => 'No vlan data exists', 'tagged_to_uplink' => '	No vlan data exists', 'test' => $testmode, 'status' => 'error', 'message' => 'No vlan data exists'];
+            return ['created' => 'No vlan data exists', 'renamed' => 'No vlan data exists', 'tagged_to_uplink' => '	No vlan data exists', 'deleted' => ' No vlan data exists', 'test' => $testmode, 'status' => 'error', 'message' => 'No vlan data exists'];
         }
 
         $create_vlans_data = [];
@@ -707,15 +708,34 @@ class ArubaCX implements DeviceInterface
         $result_create_vlans = 0;
         $result_rename_vlans = 0;
         $result_tagged_vlans_to_uplink = 0;
+        $result_delete_vlans = 0;
 
         if (!$testmode && !$login_info = self::API_LOGIN($device)) {
-            return ['created' => 0, 'renamed' => 0, 'tagged_to_uplink' => 0, 'test' => $testmode, 'status' => 'error', 'message' => 'API Login failed'];
+            return ['created' => 0, 'renamed' => 0, 'tagged_to_uplink' => 0, 'deleted' => 0, 'test' => $testmode, 'status' => 'error', 'message' => 'API Login failed'];
         }
 
         if (!$testmode) {
             list($cookie, $api_version) = explode(";", $login_info);
         }
 
+        // Delete vlans
+        if ($delete_vlans) {
+            foreach ($syncable_vlans as $unused => $vlan_id) {
+                // Check if vlan is present on switch
+                if (isset($current_vlans[$vlan_id])) {
+                    if (!$testmode) {
+                        $response = self::API_DELETE_DATA($device->hostname, $cookie, "system/vlans/" . $vlan_id, $api_version, "");
+                        if ($response['success']) {
+                            $result_delete_vlans++;
+                        }
+                    } else {
+                        $result_delete_vlans++;
+                    }
+                }
+            }
+        }
+
+        // Check if vlan not exists
         foreach ($syncable_vlans as $vlan_id) {
             if (!isset($current_vlans[$vlan_id])) {
                 $create_vlans_data[$vlan_id] = $vlan_id;
@@ -728,6 +748,7 @@ class ArubaCX implements DeviceInterface
             }
         }
 
+        // Rename and or create vlans
         if (($create_vlans || $rename_vlans) && ($create_vlans_data || $rename_vlans_data)) {
             foreach ($create_vlans_data as $vlan) {
                 $name = $current_vlans[$vlan]['name'] ?? $siteVlans[$vlan]['name'];
@@ -774,11 +795,12 @@ class ArubaCX implements DeviceInterface
             }
         }
 
-        $return_create = $create_vlans == "true" ? $result_create_vlans . " of " . count($create_vlans_data) : 'Not enabled';
-        $return_rename = $rename_vlans == "true" ? $result_rename_vlans . " of " . count($rename_vlans_data) : 'Not enabled';
-        $return_tagged = $tag_to_uplink == "true" ? $result_tagged_vlans_to_uplink . " of " . count($tag_to_uplink_data) : 'Not enabled';
+        $return_create = $create_vlans ? $result_create_vlans . " of " . count($create_vlans_data) : 'Not enabled';
+        $return_rename = $rename_vlans ? $result_rename_vlans . " of " . count($rename_vlans_data) : 'Not enabled';
+        $return_tagged = $tag_to_uplink ? $result_tagged_vlans_to_uplink . " of " . count($tag_to_uplink_data) : 'Not enabled';
+        $return_deleted = $delete_vlans ? $result_delete_vlans . " of " . count($syncable_vlans) : 'Not enabled';
 
-        return ['created' => $return_create, 'renamed' => $return_rename, 'tagged_to_uplink' => $return_tagged, 'test' => $testmode, 'message' => 'Successful'];
+        return ['created' => $return_create, 'renamed' => $return_rename, 'tagged_to_uplink' => $return_tagged, 'deleted' => $return_deleted, 'test' => $testmode, 'message' => 'Successful'];
     }
 
     static function setPortDescription($port, $description, $device, $logininfo): bool

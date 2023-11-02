@@ -222,7 +222,7 @@ document.addEventListener('sync-vlan-to-device', function (e) {
     console.log(e.detail);
 
     setTimeout(function () {
-        $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
+        $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
     }, 100);
 
     console.log($("tbody.results"));
@@ -235,6 +235,7 @@ document.addEventListener('sync-vlan-to-device', function (e) {
     formData.append("createVlans", e.detail.createVlans);
     formData.append("renameVlans", e.detail.renameVlans);
     formData.append("tagToUplink", e.detail.tagToUplink);
+    formData.append("deleteVlans", e.detail.deleteVlans);
 
 
     fetch(
@@ -250,7 +251,7 @@ document.addEventListener('sync-vlan-to-device', function (e) {
         if (response.status == "error") {
             element = "<span class='has-text-danger'>"+response.message+testmode+"</span>";
         }
-        let data = `<td>${e.detail.name}</td><td>${element}</td><td>${response.created}</td><td>${response.renamed}</td><td>${response.tagged_to_uplink}</td>`
+        let data = `<td>${e.detail.name}</td><td>${element}</td><td>${response.created}</td><td>${response.renamed}</td><td>${response.deleted}</td><td>${response.tagged_to_uplink}</td>`
         $("tbody.results").find(`tr[data-id='${e.detail.device}']`).html(data);
     });
 });

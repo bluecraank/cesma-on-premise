@@ -23,6 +23,7 @@ class Device extends Model
         'named',
         'model',
         'type',
+        'last_pubkey_sync'
     ];
 
     protected $dates = [
