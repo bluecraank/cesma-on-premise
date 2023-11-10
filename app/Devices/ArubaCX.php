@@ -172,8 +172,12 @@ class ArubaCX implements DeviceInterface
         }
 
         // Only get uptime from snmp
-        $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
-        $uptime = self::snmpFormatSystemData(['uptime' => $snmpSysUptime]);
+        try {
+            $snmpSysUptime = snmp2_get($device->hostname, 'public', '.1.3.6.1.2.1.1.3.0', 5000000, 1);
+            $uptime = self::snmpFormatSystemData(['uptime' => $snmpSysUptime]);
+        } catch (\Exception $e) {
+            $uptime = [];
+        }
 
         $data = [
             'informations' => (isset($data['status'])) ? self::formatSystemData($data['status']) : [],
