@@ -302,7 +302,6 @@
                     'id' => $port['name'],
                     'link' => $port['status'] == "up" ? true : false,
                     'trunk_group' => $port['trunk_group'] ?? null,
-                    'vlan_mode' => "native-untagged",
                     'speed' => $port['speed'] ?? null,
                     'snmp_if_index' => $ifIndex,
                 ];

@@ -15,12 +15,14 @@ class UpdateDeviceData
 {
     static function updateDevicePorts($ports, $device)
     {
-        $existingPorts = $device->ports()->get(['name', 'link', 'speed'])->keyBy('name')->toArray();
+        $existingPorts = $device->ports()->get(['name', 'link', 'speed', 'vlan_mode', 'snmp_if_index'])->keyBy('name')->toArray();
 
         // Update/Create ports
         foreach ($ports as $port) {
 
-            $snmp_if_index = $port['snmp_if_index'] ?? (isset($existingPorts[$port['name']]) ? $existingPorts[$port['name']]['snmp_if_index'] : null);
+            $snmp_if_index = $port['snmp_if_index'] ?? (isset($existingPorts[$port['id']]) ? $existingPorts[$port['id']]['snmp_if_index'] : null);
+
+            $vlan_mode = $port['vlan_mode'] ?? (isset($existingPorts[$port['id']]) ? $existingPorts[$port['id']]['vlan_mode'] : 'native-untagged');
 
             DevicePort::updateOrCreate(
                 [
@@ -31,19 +33,22 @@ class UpdateDeviceData
                     'description' => $port['name'],
                     'link' => $port['link'],
                     'speed' => $port['speed'] ?? 0,
-                    'vlan_mode' => $port['vlan_mode'],
+                    'vlan_mode' => $vlan_mode,
                     'snmp_if_index' => $snmp_if_index,
                 ]
             );
+
+            $link_changed = false;
 
             // Notify on link status change
             if (isset($existingPorts[$port['id']]) && $existingPorts[$port['id']]['link'] != $port['link']) {
                 DevicePort::where('name', $port['id'])->first()->touch('last_admin_status');
                 Notification::link_change($port['id'], $device, $port['link']);
+                $link_changed = true;
             }
 
             // Notify on speed change only if port up
-            if (isset($existingPorts[$port['id']]) && $port['link'] && isset($port['speed']) && $port['speed'] != 0 && $existingPorts[$port['id']]['speed'] != $port['speed']) {
+            if (isset($existingPorts[$port['id']]) && $link_changed && isset($port['speed']) && $port['speed'] != 0 && $existingPorts[$port['id']]['speed'] != $port['speed']) {
                 Notification::speed_change($port['id'], $device, $port['speed'], $existingPorts[$port['id']]['speed']);
             }
 
