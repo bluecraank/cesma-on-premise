@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\Vlan;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 
 class SyncVlans extends Component
@@ -33,12 +34,19 @@ class SyncVlans extends Component
     }
 
     #[On('update')]
+    #[Renderless]
     public function update($vlans, $devices) {
         $this->selectedDevices = $devices;
         $this->selectedVlans = $vlans;
 
-        $this->hidePreparation = true;
         $this->someIsEmpty = false;
+
+        if($this->deleteVlans && ($this->createVlans || $this->renameVlans || $this->tagToUplinks)) {
+            $this->dispatch('notify-error', message: 'You can\'t delete and create/rename/tag at the same time. Action cancelled.');
+            return false;
+        }
+
+        $this->hidePreparation = true;
 
         foreach($this->selectedDevices as $device) {
             $selDevice = Device::where('id', $device)->first();

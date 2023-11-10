@@ -54,28 +54,28 @@
                         <div class="field mb-4 pb-4">
 
                             <div class="control">
-                                <label class="b-checkbox checkbox"><input class="create-vlans is-checkbox" checked wire:model="createVlans"
+                                <label class="b-checkbox checkbox"><input checked wire:model="createVlans"
                                         type="checkbox">
                                     <span class="check is-primary"></span>
                                     <span class="control-label">{{ __('Create vlans') }}</span>
                                 </label>
                             </div>
                             <div class="control">
-                                <label class="b-checkbox checkbox"><input class="rename-vlans is-checkbox" checked wire:model="renameVlans"
+                                <label class="b-checkbox checkbox"><input checked wire:model="renameVlans"
                                         type="checkbox">
                                     <span class="check is-primary"></span>
                                     <span class="control-label">{{ __('Rename vlans') }}</span>
                                 </label>
                             </div>
                             <div class="control">
-                                <label class="b-checkbox checkbox"><input class="tag-to-uplinks is-checkbox" wire:model="tagToUplinks" type="checkbox">
+                                <label class="b-checkbox checkbox"><input wire:model="tagToUplinks" type="checkbox">
                                     <span class="check is-primary"></span>
                                     <span class="control-label">{{ __('Tag vlans to uplinks') }}</span>
                                 </label>
                             </div>
 
                             <div class="control">
-                                <label class="b-checkbox checkbox"><input class="delete-vlans is-checkbox" wire:model="deleteVlans" type="checkbox">
+                                <label class="b-checkbox checkbox"><input wire:model="deleteVlans" type="checkbox">
                                     <span class="check is-danger"></span>
                                     <span class="control-label">{{ __('Delete vlans') }}</span>
                                 </label>
@@ -102,20 +102,6 @@
                             })
                         } else {
                             $.notify("Select at least one device and one vlan", {
-                                style: 'bulma-error',
-                                autoHideDelay: 8000
-                            });
-                        }
-                    });
-
-                    $(".is-checkbox").on('click', function() {
-                        if ($(".delete-vlans").is(':checked')) {
-                            // False all checkboxes
-                            $(".create-vlans").prop('checked', false);
-                            $(".rename-vlans").prop('checked', false);
-                            $(".tag-to-uplinks").prop('checked', false);
-
-                            $.notify("You can't delete and create/rename/tag vlans at the same time", {
                                 style: 'bulma-error',
                                 autoHideDelay: 8000
                             });

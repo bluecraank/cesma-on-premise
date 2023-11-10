@@ -221,7 +221,7 @@ $(".is-collapsable-button").on('click', function () {
 document.addEventListener('sync-vlan-to-device', function (e) {
     console.log(e.detail);
 
-    setTimeout(function () {
+    setTimeout(function () { 
         $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
     }, 100);
 
