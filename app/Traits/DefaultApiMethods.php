@@ -194,7 +194,7 @@ use Illuminate\Support\Facades\Http;
             return [];
         }
 
-        static function syncVlans($vlans, $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks,  Bool $test_mode): array
+        static function syncVlans($vlans, $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks, Bool $delete_vlans,  Bool $test_mode): array
         {
             return [];
         }
