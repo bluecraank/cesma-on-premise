@@ -36,7 +36,7 @@ class ArubaCX implements DeviceInterface
         "vlans" => 'system/vlans?attributes=name,id&depth=2',
         "ports" => 'system/interfaces?attributes=ifindex,vlan_mode,link_state,description&depth=2',
         "portstats" => 'system/interfaces?attributes=ifindex,rate_statistics,statistics,link_speed,description&depth=2',
-        "vlanport" => 'system/interfaces?attributes=ifindex,vlan_mode,vlan_tag,vlan_trunks&depth=2',
+        "vlanport" => 'system/interfaces?attributes=ifindex,vlan_mode,applied_vlan_tag,vlan_tag,vlan_trunks&depth=2',
     ];
 
     static $port_if_uri = "system/interfaces/1%2F1%2F";
@@ -158,6 +158,10 @@ class ArubaCX implements DeviceInterface
         $data = [];
 
         list($cookie, $api_version) = explode(";", $login_info);
+
+        if ($cookie == "") {
+            return ['success' => false, 'data' => 'API Login failed', 'message' => "'API Login failed'"];
+        }
 
         foreach (self::$available_apis as $key => $api) {
             $api_data = self::API_GET_DATA($device->hostname, $cookie, $api, $api_version, false);
@@ -313,12 +317,14 @@ class ArubaCX implements DeviceInterface
                     continue;
                 }
 
-                $return[$mac_filtered] = [
-                    // Expecting 1/1/1 as Port, so we need to explode the key
-                    'port' => explode("/", key($mac['port']))[2],
-                    'mac' => $mac_filtered,
-                    'vlan' => $key,
-                ];
+                if (str_contains(key($mac['port']), "1/1/")) {
+                    $return[$mac_filtered] = [
+                        // Expecting 1/1/1 as Port, so we need to explode the key
+                        'port' => explode("/", key($mac['port']))[2],
+                        'mac' => $mac_filtered,
+                        'vlan' => $key,
+                    ];
+                }
             }
         }
 
@@ -352,11 +358,11 @@ class ArubaCX implements DeviceInterface
         }
 
         foreach ($ports as $port) {
-            if ($port['ifindex'] < 1000) {
+            if ($port['ifindex'] < 700) {
                 $return[$port['ifindex']] = [
                     'name' => $port['description'],
                     'id' => $port['ifindex'],
-                    'link' => ($port['link_state'] == "up") ? true : false,
+                    'link' => (isset($port['link_state']) && $port['link_state'] == "up") ? true : false,
                     'trunk_group' => null,
                     'vlan_mode' => $port['vlan_mode'] ?? "access",
                 ];
@@ -364,8 +370,8 @@ class ArubaCX implements DeviceInterface
         }
 
         foreach ($stats as $stat) {
-            if ($stat['ifindex'] < 1000) {
-                $return[$stat['ifindex']]['speed'] = ($stat['link_speed'] != 0) ? $stat['link_speed'] / 1000000 : 0;
+            if ($stat['ifindex'] < 700) {
+                $return[$stat['ifindex']]['speed'] = (isset($stat['link_speed']) && $stat['link_speed'] != 0) ? $stat['link_speed'] / 1000000 : 0;
             }
         }
 
@@ -381,7 +387,7 @@ class ArubaCX implements DeviceInterface
         }
 
         foreach ($portstats as $port) {
-            if ($port['ifindex'] < 1000) {
+            if ($port['ifindex'] < 700) {
                 $packets_tx = (isset($port['statistics']['tx_packets'])) ? $port['statistics']['tx_packets'] : 0;
                 $packets_rx = (isset($port['statistics']['rx_packets'])) ? $port['statistics']['rx_packets'] : 0;
                 $no_errors = (isset($port['statistics']['total_packets_no_errors'])) ? $port['statistics']['total_packets_no_errors'] : 0;
@@ -390,7 +396,7 @@ class ArubaCX implements DeviceInterface
                 $return[$port['ifindex']] = [
                     "id" => $port['ifindex'],
                     "name" => $port['description'] ?? '',
-                    "port_speed_mbps" => ($port['link_speed'] != 0) ? $port['link_speed'] / 1000000 : 0,
+                    "port_speed_mbps" => (isset($port['link_speed']) && $port['link_speed'] != 0) ? $port['link_speed'] / 1000000 : 0,
                     "port_tx_packets" => $packets_tx,
                     "port_rx_packets" => $packets_rx,
                     "port_tx_bytes" => (isset($port['statistics']['tx_bytes'])) ? $port['statistics']['tx_bytes'] : 0,
@@ -404,8 +410,8 @@ class ArubaCX implements DeviceInterface
         }
 
         foreach ($portdata as $port) {
-            if ($port['ifindex'] < 1000) {
-                $return[$port['ifindex']]['port_status'] = ($port['link_state'] == "up") ? true : false;
+            if ($port['ifindex'] < 700) {
+                $return[$port['ifindex']]['port_status'] = (isset($port['link_state']) && $port['link_state'] == "up") ? true : false;
             }
         }
 
@@ -422,11 +428,11 @@ class ArubaCX implements DeviceInterface
 
         $i = 0;
         foreach ($vlanports as $vlanport) {
-            if ($vlanport['ifindex'] < 1000) {
-                if ($vlanport['vlan_mode'] == "native-untagged") { // Untagged und erlaubte als trunks
-                    $untagged_vlan = $vlanport['vlan_tag'] ?? [];
-                    $tagged_vlans = $vlanport['vlan_trunks'] ?? [];
+            if ($vlanport['ifindex'] < 700) {
+                    $vlan_mode = $vlanport['vlan_mode'] ?? "access";
 
+                    $untagged_vlan = $vlanport['vlan_tag'] ?? $vlanport['applied_vlan_tag'] ?? [];
+                    $tagged_vlans = $vlanport['vlan_trunks'] ?? [];
 
                     if (is_array($tagged_vlans) and count($tagged_vlans) == 0) {
                         // Man kann davon ausgehen, dass es ein Trunk ist
@@ -455,7 +461,6 @@ class ArubaCX implements DeviceInterface
                         ];
                         $i++;
                     }
-                }
             }
         }
 
