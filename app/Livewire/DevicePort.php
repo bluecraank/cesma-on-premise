@@ -23,8 +23,8 @@ class DevicePort extends Component
     public $name;
     public $clients;
     public $port_clients;
-
     public $propertyUpdated = [];
+    public $vlan_mode;
 
     public $somethingChanged = false;
 
@@ -80,6 +80,7 @@ class DevicePort extends Component
         $this->name = $curPort->name;
         $this->clients = $curPort->clients_count();
         $this->port_clients = $curPort->clients()->toArray();
+        $this->vlan_mode = $curPort->vlan_mode;
     }
 
     #[Renderless]
