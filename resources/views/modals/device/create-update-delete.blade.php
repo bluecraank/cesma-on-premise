@@ -11,7 +11,7 @@
                         <div class="loader-wrapper is-active">
                             <div class="loader is-loading"></div>
                         </div>
-                    @else
+                    @elseif ($modal == 'create')
                         <div class="field">
                             <label class="label">Name</label>
                             <div class="control">
@@ -145,7 +145,7 @@
                         <div class="loader-wrapper is-active">
                             <div class="loader is-loading"></div>
                         </div>
-                    @else
+                    @elseif ($modal == 'update')
                         <div class="field">
                             <label class="label">Name</label>
                             <div class="control">
@@ -218,9 +218,9 @@
                                     <label class="label is-small">{{ __('Room') }}</label>
                                     <div class="@error('room_id') is-danger @enderror select is-fullwidth is-small">
                                         <select wire:model="room_id" class="room_id" name="room_id">
-                                            <option value="0">{{ __('Select room') }}</option>
+                                            <option>{{ __('Select room') }}</option>
                                             @foreach ($rooms as $room)
-                                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                                <option @if($device->room_id == $room->id) selected @endif value="{{ $room->id }}">{{ $room->name }}</option>
                                             @endforeach
                                         </select>
                                         @error('room_id')
@@ -264,7 +264,7 @@
                         <div class="loader-wrapper is-active">
                             <div class="loader is-loading"></div>
                         </div>
-                    @else
+                    @elseif ($modal == 'delete')
                         <div class="field">
                             <label class="label">{{ __('Are you sure to delete this switch?') }}</label>
                             <div class="control">
