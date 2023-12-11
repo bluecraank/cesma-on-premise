@@ -199,10 +199,13 @@
                             <li>Fixed a bug where the log could not be written during the port vlan update, resulting in
                                 a crash</li>
                             <li>Menu sorting updated</li>
+                            <li>Vlan-mode was not visible on device port table</li>
+                            <li>SNMP Error spamming in Log fixed</li>
                         </ul>
                         <label class="label mt-5">Features</label>
                         <ul style="list-style: square;" class="ml-5">
                             <li>New vlan sync status container on dashboard</li>
+                            <li>Delete vlans via vlan syncing</li>
                         </ul>
 
                         <label class="label mt-5">Upcoming</label>
