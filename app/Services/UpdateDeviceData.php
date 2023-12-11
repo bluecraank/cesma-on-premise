@@ -271,7 +271,7 @@ class UpdateDeviceData
         // Client based uplink detection
         $clients = $device->clients()->get()->groupBy('port_id')->toArray();
         foreach ($clients as $port => $client) {
-            if (count($client) > 10 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
+            if (count($client) > 25 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::uplink($port, $device, [
                     'clients' => count($client),
                     'port' => $port,
