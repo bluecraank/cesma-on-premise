@@ -5,8 +5,8 @@
         <div class="level">
             <div class="level-item has-text-centered">
                 <div>
-                    <p class="heading"><strong>Vorhanden auf</strong></p>
-                    <p class="subtitle">{{ $has_vlan }}</p>
+                    <p class="heading"><strong>Exists on</strong></p>
+                    <p class="subtitle">{{ $has_vlan }} devices</p>
                 </div>
             </div>
             <div class="level-item has-text-centered">
