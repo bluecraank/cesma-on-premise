@@ -136,7 +136,7 @@
         </div>
 
         <div class="column is-6">
-            <div x-cloak class="card has-table" x-data="{ open: true }">
+            <div x-cloak class="card has-table" style="overflow: hidden" x-data="{ open: true }">
                 <header class="card-header">
                     <p class="card-header-title">
                         <span class="icon"><i class="mdi mdi-sync"></i></span>
@@ -204,6 +204,7 @@
                             <li>Menu sorting updated</li>
                             <li>Vlan-mode was not visible on device port table</li>
                             <li>SNMP Error spamming in Log fixed</li>
+                            <li>Uplink detection based on clients limit from 10 to 25</li>
                         </ul>
                         <label class="label mt-5">Features</label>
                         <ul style="list-style: square;" class="ml-5">
