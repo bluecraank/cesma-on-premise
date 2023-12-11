@@ -720,7 +720,7 @@ class ArubaCX implements DeviceInterface
         $result_delete_vlans = 0;
 
         if (!$testmode && !$login_info = self::API_LOGIN($device)) {
-            return ['created' => 0, 'renamed' => 0, 'tagged_to_uplink' => 0, 'deleted' => 0, 'test' => $testmode, 'status' => 'error', 'message' => 'API Login failed'];
+            return ['created' => 0, 'renamed' => 0, 'tagged_to_uplink' => 0, 'deleted' => 0, 'test' => $testmode, 'status' => 'error', 'message' => 'Login failed. Try again later.'];
         }
 
         if (!$testmode) {
@@ -786,8 +786,13 @@ class ArubaCX implements DeviceInterface
                 }
             }
 
-            if (count($create_vlans_data) == 0 && $rename_vlans) {
+            if ($rename_vlans) {
                 foreach ($rename_vlans_data as $vlan_id => $name) {
+                    if(!isset($current_vlans[$vlan_id]) && !$create_vlans) {
+                        continue;
+                    }
+
+
                     $data = '{
                         "name": "' . $name . '"
                     }';
