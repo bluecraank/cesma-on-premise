@@ -126,12 +126,6 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('backups') }}" class="@if (Route::currentRouteName() == 'backups') is-active @endif has-icon">
-                    <span class="icon"><i class="mdi mdi-backup-restore"></i></span>
-                    <span class="menu-item-label">Backups</span>
-                </a>
-            </li>
-            <li>
                 <a href="{{ route('vlans') }}" class="@if (Route::currentRouteName() == 'vlans') is-active @endif has-icon">
                     <span class="icon"><i class="mdi mdi-network"></i></span>
                     <span class="menu-item-label">Vlans</span>
@@ -149,16 +143,16 @@
                     <span class="menu-item-label">{{ __('Topology') }}</span>
                 </a>
             </li>
-        </ul>
-
-        <p class="menu-label">{{ __('Sites') }}</p>
-        <ul class="menu-list">
             <li>
-                <a href="{{ route('sites') }}" class="@if (Route::currentRouteName() == 'sites') is-active @endif has-icon">
-                    <span class="icon"><i class="mdi mdi-web"></i></span>
-                    <span class="menu-item-label">{{ __('Sites') }}</span>
+                <a href="{{ route('backups') }}" class="@if (Route::currentRouteName() == 'backups') is-active @endif has-icon">
+                    <span class="icon"><i class="mdi mdi-backup-restore"></i></span>
+                    <span class="menu-item-label">Backups</span>
                 </a>
             </li>
+        </ul>
+
+        <p class="menu-label">{{ __('Site management') }}</p>
+        <ul class="menu-list">
             <li>
                 <a href="{{ route('buildings') }}"
                     class="@if (Route::currentRouteName() == 'buildings') is-active @endif has-icon">
@@ -182,6 +176,12 @@
                     <span class="menu-item-label">Logs</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('reports') }}" class="@if (Route::currentRouteName() == 'reports') is-active @endif has-icon">
+                    <span class="icon"><i class="mdi mdi-file-chart-outline"></i></span>
+                    <span class="menu-item-label">Reports</span>
+                </a>
+            </li>
             {{-- <li>
                 <a href="{{ route('settings') }}"
                     class="@if (Route::currentRouteName() == 'settings') is-active @endif has-icon">
@@ -189,6 +189,12 @@
                     <span class="menu-item-label">{{ __('Settings') }}</span>
                 </a>
             </li> --}}
+            <li>
+                <a href="{{ route('sites') }}" class="@if (Route::currentRouteName() == 'sites') is-active @endif has-icon">
+                    <span class="icon"><i class="mdi mdi-web"></i></span>
+                    <span class="menu-item-label">{{ __('Sites') }}</span>
+                </a>
+            </li>
             <li class="menu-is-dropdown">
                 <a class="@if (Route::currentRouteName() == 'settings') is-active @endif has-icon has-dropdown-icon">
                     <span class="icon"><i class="mdi mdi-view-list"></i></span>
