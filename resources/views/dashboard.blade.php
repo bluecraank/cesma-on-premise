@@ -136,24 +136,27 @@
         </div>
 
         <div class="column is-6">
-            <div class="card has-table">
+            <div x-cloak class="card has-table" x-data="{ open: true }">
                 <header class="card-header">
                     <p class="card-header-title">
                         <span class="icon"><i class="mdi mdi-sync"></i></span>
                         {{ __('Vlan sync status') }}
                     </p>
-
+                    <a class="card-header-icon">
+                        <span class="icon" @click="open = !open"><i
+                                x-bind:class="!open ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="mdi"></i></span>
+                    </a>
                 </header>
 
-                <div class="card-content">
+                <div class="card-content" x-bind:style="open ? 'max-height: 400px' : ''">
                     <div class="b-table has-pagination">
-                        <div class="table-wrapper has-mobile-cards" style="max-height:600px;">
+                        <div class="table-wrapper has-mobile-cards">
                             <table class="is-fullwidth is-striped is-hoverable is-narrow is-fullwidth table">
                                 <thead>
                                     <tr>
                                         <th>{{ __('Device') }}</th>
-                                        <th>{{ __('Vlans exist') }}</th>
-                                        <th>{{ __('Vlan naming') }}</th>
+                                        <th>{{ __('Syncable vlans exist') }}</th>
+                                        <th>{{ __('Syncable vlan names') }}</th>
                                         <th>{{ __('Result') }}</th>
                                     </tr>
                                 </thead>
@@ -161,9 +164,9 @@
                                     @foreach ($deviceStatus as $status)
                                         <tr>
                                             <td>{{ $status['name'] }}</td>
-                                            <td>{{ $status['vlans'] }} of {{ $vlans }}</td>
+                                            <td>{{ $status['vlans'] }} of {{ $syncableVlans }}</td>
                                             <td>{{ $status['correctNames'] }} of {{ $status['vlans'] }}</td>
-                                            <td style="color:@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) green; @else red; @endif">@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) Fully sync @else Incomplete sync @endif</td>
+                                            <td style="color:@if($status['vlans'] >= $syncableVlans && $status['correctNames'] == $status['vlans']) green; @else red; @endif">@if($status['vlans'] >= $syncableVlans && $status['correctNames'] == $status['vlans']) Fully sync @else Incomplete sync @endif</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

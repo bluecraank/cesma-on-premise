@@ -23,6 +23,10 @@ class SystemController extends Controller
     public function dashboard()
     {
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
+        $devices = $devices->sort(function ($a, $b) {
+            return strnatcmp($a['name'], $b['name']);
+        });
+
         // $vlans = Vlan::all()->count();
         $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('vid');
         // $clients = Client::all()->count();
@@ -54,10 +58,12 @@ class SystemController extends Controller
         $vlans = $vlans->count();
         $clients = $clients->count();
 
+        $syncableVlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where('is_synced', true)->get()->count();
+
         $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
         // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
 
-        return view('dashboard', compact('deviceStatus', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
+        return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
 
     public function index_usersettings()
