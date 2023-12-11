@@ -24,7 +24,7 @@ class SystemController extends Controller
     {
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
         // $vlans = Vlan::all()->count();
-        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get();
+        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('vid');
         // $clients = Client::all()->count();
         $clients = Client::where('site_id', Auth::user()->currentSite()->id)->get();
         // $ports = DevicePort::all()->count();
@@ -35,6 +35,21 @@ class SystemController extends Controller
         $portsOnline = ChartService::portsOnline($ports);
         $devicesOnline = ChartService::devicesOnline($devices);
 
+        $deviceStatus = [];
+        foreach($devices as $device) {
+            $deviceStatus[$device->id] = [];
+            $devVlans = $device->vlans()->get();
+            $deviceStatus[$device->id]['correctNames'] = 0;
+            $deviceStatus[$device->id]['vlans'] = $devVlans->count();
+            $deviceStatus[$device->id]['name'] = $device->name;
+
+            foreach($devVlans as $vlan) {
+                if($vlan->name == $vlans[$vlan->vlan_id]->name) {
+                    $deviceStatus[$device->id]['correctNames']++;
+                }
+            }
+        }
+
         $ports = $ports->count();
         $vlans = $vlans->count();
         $clients = $clients->count();
@@ -42,7 +57,7 @@ class SystemController extends Controller
         $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
         // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
 
-        return view('dashboard', compact('notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
+        return view('dashboard', compact('deviceStatus', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
 
     public function index_usersettings()
