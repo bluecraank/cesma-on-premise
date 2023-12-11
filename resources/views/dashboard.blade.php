@@ -163,7 +163,7 @@
                                             <td>{{ $status['name'] }}</td>
                                             <td>{{ $status['vlans'] }} of {{ $vlans }}</td>
                                             <td>{{ $status['correctNames'] }} of {{ $status['vlans'] }}</td>
-                                            <td style="color:@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) green; @else red; @endif">@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) Fully synced @else Incomplete synced @endif</td>
+                                            <td style="color:@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) green; @else red; @endif">@if($status['vlans'] == $vlans && $status['correctNames'] == $status['vlans']) Fully sync @else Incomplete sync @endif</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
