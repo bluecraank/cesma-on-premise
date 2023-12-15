@@ -769,7 +769,7 @@ class ArubaOS implements DeviceInterface
         }
 
         if (count($vlansSuccessfullySet) != 0 || count($vlansSuccessfullyRemoved) != 0) {
-            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device " . $device->name . " successfully changed", $device, "New count: " . count($logVlans) . ", Vlans: " . (count($logVlans) != 0) ? implode(", ", array_values($logVlans)) : 'None');
+            CLog::info("Device", "Tagged vlans of port " . $port->name . " changed", $device, "Device: " . $device->name . ", New count: " . count($logVlans) . ", Vlans: " . (count($logVlans) != 0) ? implode(", ", array_values($logVlans)) : 'None');
         }
 
         return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
