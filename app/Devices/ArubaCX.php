@@ -693,7 +693,7 @@ class ArubaCX implements DeviceInterface
                 $logVlans[] = $vlans[$device_vlan_id]['vlan_id'];
             }
 
-            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device " . $device->name . " successfully changed", $device, "Count: " . count($data_builder['vlan_trunks']) . ", Vlans: " . implode(", ", array_values($logVlans)));
+            CLog::info("Device", "Tagged vlans of port " . $port->name . " for device " . $device->name . " successfully changed", $device, "New count: " . count($data_builder['vlan_trunks']) . ", Vlans: " . (count($logVlans) != 0) ? implode(", ", array_values($logVlans)) : 'None');
         }
 
         return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
