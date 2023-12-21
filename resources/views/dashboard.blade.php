@@ -79,12 +79,13 @@
         </div>
 
         <div class="column is-3">
-                @php
-                    $time = Illuminate\Support\Carbon::parse(File::get(storage_path('logs/worker.log')));
-                @endphp
-                @if($time->diffInMinutes() > 5)
-                    <div class="notification is-danger">{{ __('Check service! Last service run: ').$time->diffForHumans() }}</div>
-                @endif
+            @php
+                $time = Illuminate\Support\Carbon::parse(File::get(storage_path('logs/worker.log')));
+            @endphp
+            @if ($time->diffInMinutes() > 5)
+                <div class="notification is-danger">
+                    {{ __('Check service! Last service run: ') . $time->diffForHumans() }}</div>
+            @endif
         </div>
     </div>
 
@@ -148,8 +149,8 @@
                     </a>
                 </header>
 
-                <div class="card-content" x-bind:style="open ? 'max-height: 400px' : ''">
-                    <div class="b-table has-pagination">
+                <div class="card-content">
+                    <div class="b-table has-pagination" x-bind:style="open ? 'max-height: 400px' : ''">
                         <div class="table-wrapper has-mobile-cards">
                             <table class="is-fullwidth is-striped is-hoverable is-narrow is-fullwidth table">
                                 <thead>
@@ -164,14 +165,24 @@
                                     @foreach ($deviceStatus as $status)
                                         <tr>
                                             <td>{{ $status['name'] }}</td>
-                                            <td>{{ $status['vlans'] }} of {{ $syncableVlans }}</td>
-                                            <td>{{ $status['correctNames'] }} of {{ $status['vlans'] }}</td>
-                                            <td style="color:@if($status['vlans'] >= $syncableVlans && $status['correctNames'] == $status['vlans']) green; @else red; @endif">@if($status['vlans'] >= $syncableVlans && $status['correctNames'] == $status['vlans']) Fully sync @else Incomplete sync @endif</td>
+                                            <td>{{ $status['vlans'] > $syncableVlans ? $syncableVlans : $status['vlans'] }} of {{ $syncableVlans }}</td>
+                                            <td>{{ $status['correctNames'] > $syncableVlans ? $syncableVlans : $status['correctNames'] }} of {{ $syncableVlans }}</td>
+                                            <td
+                                                style="color:@if ($status['vlans'] >= $syncableVlans && $status['correctNames'] >= $syncableVlans) green; @else red; @endif">
+                                                @if ($status['vlans'] >= $syncableVlans && $status['correctNames'] >= $syncableVlans)
+                                                    Fully synced
+                                                @else
+                                                    Incomplete sync
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div class="has-text-centered m-3">
+                        <a href="{{ route('sync-vlans') }}" class="has-text-centered">{{ __('Go to vlan sync') }}</a>
                     </div>
                 </div>
             </div>

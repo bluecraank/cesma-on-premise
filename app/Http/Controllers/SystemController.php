@@ -50,6 +50,8 @@ class SystemController extends Controller
             foreach($devVlans as $vlan) {
                 if($vlan->name == $vlans[$vlan->vlan_id]->name) {
                     $deviceStatus[$device->id]['correctNames']++;
+                } elseif($vlan->vlan_id == 1 && $device->type != 'aruba-os') {
+                    $deviceStatus[$device->id]['correctNames']++;
                 }
             }
         }
