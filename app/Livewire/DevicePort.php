@@ -139,7 +139,7 @@ class DevicePort extends Component
 
         if(DeviceService::updatePortUntaggedVlan($cookie, $port, $this->device_id, $this->untagged)) {
             $this->dispatch('notify-success', message: __('Untagged vlan of port :port changed to :new', ['port' => $port->name, 'new' => $newVlan?->name]));
-            CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", null, "Device: {$port->device->name} ,Old: {$vlan?->name} New: {$newVlan?->name}");
+            CLog::info("DevicePort", "Untagged vlan of port {$port->name} changed", $port->device, "Old vlan: {$vlan?->name} New vlan: {$newVlan?->name}");
         } else {
             $this->dispatch('notify-error', message: __('Untagged vlan of port :port could not be changed', ['port' => $port->name]));
         }
@@ -151,12 +151,12 @@ class DevicePort extends Component
 
         if(count($returnArrays[0]) == count($returnArrays[2]) && count($returnArrays[1]) == count($returnArrays[3])) {
             $this->dispatch('notify-success', message: __('Tagged vlans of port :port changed', ['port' => $port->name]));
-            CLog::info("DevicePort", "Tagged vlans of port {$port->name} changed", null, "{count($returnArrays[0])} tagged");
+            CLog::info("DevicePort", "Tagged vlans of port {$port->name} changed", $port->device, "Added vlans: " . count($returnArrays[2]). ", Removed vlans: ". count($returnArrays[3]));
         } else {
             // Gewählte und erfolgreiche entfernte
             $count_all = count($returnArrays[0]) + count($returnArrays[1]);
             $count_successful = count($returnArrays[2]) + count($returnArrays[3]);
-
+            CLog::warning("DevicePort", "Tagged vlans of port {$port->name} changed", $port->device, "Added vlans: " . $count_successful. ", Expected vlans: ". $count_all);
             $this->dispatch('notify-error', message: __('Only :count of :count_all vlans changed on port :port', ['count' => $count_successful, 'count_all' => $count_all, 'port' => $port->name]));
         }
     }
