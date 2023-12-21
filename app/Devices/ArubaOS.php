@@ -763,14 +763,14 @@ class ArubaOS implements DeviceInterface
 
         $logVlans = [];
         foreach ($taggedVlans as $unused => $device_vlan_id) {
-            if ($currentVlans[$device_vlan_id]) {
+            if (isset($device_vlan_id) && is_int($device_vlan_id) && isset($currentVlans[$device_vlan_id])) {
                 $logVlans[] = $currentVlans[$device_vlan_id]['vlan_id'];
             }
         }
-
-        if (count($vlansSuccessfullySet) != 0 || count($vlansSuccessfullyRemoved) != 0) {
-            CLog::info("Device", "Tagged vlans of port " . $port->name . " changed", $device, "Device: " . $device->name . ", New count: " . count($logVlans) . ", Vlans: " . (count($logVlans) != 0) ? implode(", ", array_values($logVlans)) : 'None');
-        }
+        // Seems to already be logged in DevicePort Livewire Component
+        // if (count($vlansSuccessfullySet) != 0 || count($vlansSuccessfullyRemoved) != 0) {
+        //     CLog::info("Device", "Tagged vlans of port " . $port->name . " changed", $device, "Device: " . $device->name . ", New count: " . count($logVlans) . ", Vlans: " . (count($logVlans) != 0) ? implode(", ", array_values($logVlans)) : 'None');
+        // }
 
         return [$vlansToSet, $vlansToRemove, $vlansSuccessfullySet, $vlansSuccessfullyRemoved];
     }
