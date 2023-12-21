@@ -17,6 +17,7 @@ use App\Livewire\ShowClients;
 use App\Livewire\ShowDeviceBackups;
 use App\Livewire\ShowDevices;
 use App\Livewire\ShowLogs;
+use App\Livewire\ShowReports;
 use App\Livewire\ShowRooms;
 use App\Livewire\ShowSites;
 use App\Livewire\ShowUplinks;
@@ -59,6 +60,10 @@ Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
         $trail->push(__('Logs'), route('logs'));
     })->name('logs');
 
+    Route::get('reports', ShowReports::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Reports'), route('reports'));
+    })->name('reports');
+
     Route::get('topology', [SystemController::class, 'index_topology'])->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Topology'), route('topology'));
     })->name('topology');
@@ -74,10 +79,6 @@ Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
     Route::get('/rooms', ShowRooms::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Rooms'), route('rooms'));
     })->name('rooms');
-
-    Route::get('/uplinks', ShowUplinks::class)->breadcrumbs(function (Trail $trail) {
-        $trail->push(__('Uplinks'), route('uplinks'));
-    })->name('uplinks');
 
 });
 
