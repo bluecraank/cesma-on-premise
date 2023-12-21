@@ -1,6 +1,24 @@
 @section('title', 'Logs')
 
 <div>
+    <div class="modal modal-log-detail">
+        <div class="modal-background"></div>
+
+        <div style="margin-top: 40px" class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">{{ __('Details of log') }}</p>
+            </header>
+            <section class="modal-card-body">
+                <pre class="content">
+
+                </pre>
+            </section>
+            <footer class="modal-card-foot">
+                <button data-modal="log-detail" type="button"
+                    class="is-cancel button">{{ __('Close') }}</button>
+            </footer>
+        </div>
+    </div>
     <div class="card has-table">
         <header class="card-header">
             <p class="card-header-title">
@@ -33,30 +51,33 @@
                     <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
                         <thead>
                             <tr>
+                                <th style="width:200px;" >{{ __('Time') }}</th>
+                                <th>{{ __('User') }}</th>
                                 <th style="width:100px;">{{ __('Level') }}</th>
                                 <th style="width:150px;">{{ __('Category') }}</th>
+                                <th style="width:150px">{{ __('Device') }}</th>
+                                <th>{{ __('Description') }}</th>
                                 <th>{{ __('Action') }}</th>
-                                <th style="width:250px;">{{ __('Details') }}</th>
-                                <th class="is-pulled-right">{{ __('User') }}</th>
-                                <th style="width:200px;" class="has-text-centered">{{ __('Time') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($logs as $log)
                                 <tr>
+                                    <td>{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
+                                    <td>{{ $log->user ?? 'No User' }}</td>
                                     <td style="width:100px;"><span
                                             class="log-{{ strtolower($log->level) }}">{{ strtoupper($log->level) }}</span>
                                     </td>
                                     <td>
                                         {{ $log->category }}
                                     </td>
-                                    <td style="width:450px;">{{ $log->description }}</td>
-                                    <td style="width:250px;">
-                                        {{ $log->additional_info }}
+                                    <td>
+                                        {{ $log->device_name }}
                                     </td>
-                                    <td class="is-pulled-right">{{ $log->user ?? 'No User' }}</td>
-                                    <td class="has-text-centered">{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
-
+                                    <td>{{ $log->description }}</td>
+                                    <td class="is-pulled-right">
+                                        <button data-text='{{ $log->additional_info }}' class="show-details-of-log is-info button is-small">{{ __('Details') }}</button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -69,6 +90,10 @@
 
     <style>
         .log-debug {
+            color: #868eeb;
+        }
+
+        log-warning {
             color: #d1bf84;
         }
 
@@ -80,4 +105,5 @@
             color: #c63d3d;
         }
     </style>
+
 </div>

@@ -83,12 +83,6 @@ $(document).on('submit', 'form', function () {
     $(this).find('button.submit').addClass('is-loading');
 });
 
-
-// Scroll to top
-$(".scroll-to-top button").on('click', function (element) {
-    $('html, body').animate({ scrollTop: 0 }, 'normal');
-});
-
 window.addEventListener("scroll", () => {
     if (window.pageYOffset > 100) {
         $(".scroll-to-top").removeClass('is-hidden');
@@ -221,11 +215,10 @@ $(".is-collapsable-button").on('click', function () {
 document.addEventListener('sync-vlan-to-device', function (e) {
     console.log(e.detail);
 
-    setTimeout(function () { 
+    setTimeout(function () {
         $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
     }, 100);
 
-    console.log($("tbody.results"));
     let formData = new FormData();
     let token = $('meta[name="csrf-token"]').attr('content');
     formData.append('_token', token);
@@ -345,4 +338,12 @@ $(".action").on('click', function () {
 
         window.dispatchEvent(event);
     });
+});
+
+
+$(".show-details-of-log").on('click', function () {
+    console.log("click");
+    let data = $(this).attr("data-text");
+    $(".modal-log-detail").show();
+    $(".modal-log-detail .modal-card-body .content").html(data);
 });
