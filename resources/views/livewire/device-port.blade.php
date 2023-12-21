@@ -31,10 +31,14 @@
     </td>
 
     <td>
+        @if($vlan_mode == "native-untagged")
         <a class="no-prevent" wire:click="openTagModal">
             {{ count($tagged) }} {{ trans_choice('Vlan|Vlans', count($tagged)) }}
         </a>
         <span class="has-custom-text-warning is-size-4">{{ isset($this->propertyUpdated['tagged']) ? '*' : '' }}</span>
+        @else
+        Access mode
+        @endif
     </td>
 
     <td>
@@ -63,13 +67,5 @@
                 </div>
             </div>
         @endif
-    </td>
-
-    {{-- <td data-label="Progress" class="is-progress-cell">
-        <progress max="100" class="progress is-small is-primary" data-label="79" value="79">79</progress>
-    </td> --}}
-
-    <td>
-        {{ $vlan_mode }}
     </td>
 </tr>
