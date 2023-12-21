@@ -287,7 +287,7 @@ class UpdateDeviceData
         foreach ($vlanports as $portId => $vlanport) {
             $cur_port = DevicePort::where('id', $portId)->first();
             $port = $cur_port->name;
-            if (count($vlanport) > (count($vlans) * 0.65) && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
+            if (count($vlanport) > (count($vlans) * 0.65) && count($cur_port->tagged) != 0 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::uplink($port, $device, [
                     'vlans' => count($cur_port->tagged),
                     'port' => $port,
