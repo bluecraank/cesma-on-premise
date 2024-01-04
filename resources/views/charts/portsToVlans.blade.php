@@ -5,7 +5,7 @@
         type: 'pie',
         data: {
             datasets: [{
-                label: 'Ports: ',
+                label: 'Ports',
                 data: @json($portsToVlans[1]),
             }],
             labels: @json($portsToVlans[0]),
