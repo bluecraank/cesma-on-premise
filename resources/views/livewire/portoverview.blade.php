@@ -28,7 +28,7 @@
             @endif
         </a>
     </header>
-    <div class="card-content" x-show="open">
+    <div class="card-content" x-show="open" style="height: 54rem;overflow: scroll;">
         <div class="b-table">
             <div class="table-wrapper has-mobile-cards">
                 <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
@@ -40,9 +40,7 @@
                             <th>{{ __('Description') }}</th>
                             <th>Untagged vlan</th>
                             <th>Tagged vlans</th>
-                            <th class="has-text-left">{{ trans_choice('Clients', 2) }}</th>
-                            {{-- <th class="has-text-centered">{{ __('Actions') }}</th> --}}
-                            <th>mode</th>
+                            <th class="has-text-left">{{ __('Clients') }}</th>
                         </tr>
                     </thead>
                     <tbody>
