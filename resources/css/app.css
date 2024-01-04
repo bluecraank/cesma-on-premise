@@ -10,7 +10,9 @@
     color: #363636 !important;
 }
 
-[x-cloak] { display: none !important; }
+[x-cloak] {
+    display: none !important;
+}
 
 * {
     font-family: 'Titillium Web', sans-serif !important;
@@ -40,15 +42,23 @@ progress {
     border: none;
 
     /* Set the progressbar to relative */
-    position:relative;
-  }
-  progress:before {
+    position: relative;
+}
+
+progress:before {
     content: attr(data-label);
     font-size: 0.7em;
     vertical-align: 0;
     top: -0.1em;
     /*Position text over the progress bar */
-    position:absolute;
-    left:0;
-    right:0;
-  }
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.sticky-portoverview-header {
+    top: 3.25rem;
+    z-index: 999;
+    position: fixed;
+    background-color: #fff;
+}
