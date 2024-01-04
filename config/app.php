@@ -229,4 +229,8 @@ return [
     'backup_mail_address' => env('BACKUP_MAIL_ADDRESS', ''),
 
     'ldap_admin_group' => env('LDAP_ADMIN_GROUP'),
+
+    'sso_enabled' => env('SSO_ENABLED') == "true" ? true : false,
+    'sso_http_header_user_key' => env('SSO_HTTP_HEADER_USER_KEY', 'HTTP_AUTH_USER'),
+    'sso_bypass_domain_verification' => env('SSO_BYPASS_DOMAIN_VERIFICATION') == "true" ? true : false,
 ];

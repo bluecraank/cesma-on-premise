@@ -8,16 +8,16 @@
                 <div class="level-left">
                     <div class="level-item">
                         <ul>
-                            @if(Route::currentRouteName() != "users" &&
-                                Route::currentRouteName() != "logs" &&
-                                Route::currentRouteName() != "publickeys" &&
-                                Route::currentRouteName() != "snmp" &&
-                                Route::currentRouteName() != "mac-types")
-                           <li class="breadcrumb-item breadcrumb-color">
-                                <a href="/">
-                                    {{ Auth::user()->currentSite()->name }}
-                                </a>
-                            </li>
+                            @if (Route::currentRouteName() != 'users' &&
+                                    Route::currentRouteName() != 'logs' &&
+                                    Route::currentRouteName() != 'publickeys' &&
+                                    Route::currentRouteName() != 'snmp' &&
+                                    Route::currentRouteName() != 'mac-types')
+                                <li class="breadcrumb-item breadcrumb-color">
+                                    <a href="/">
+                                        {{ Auth::user()->currentSite()->name }}
+                                    </a>
+                                </li>
                             @endif
                             <x-breadcrumbs />
                         </ul>
@@ -74,13 +74,20 @@
                         <span>Settings</span>
                     </a> --}}
                     {{-- <hr class="navbar-divider"> --}}
-                    <form id="logoutForm" method="POST" action="/logout">
-                        @csrf
-                        <a class="navbar-item" onclick='document.getElementById("logoutForm").submit()'>
-                            <span class="icon"><i class="mdi mdi-logout"></i></span>
-                            <span>{{ __('Log Out') }}</span>
-                        </a>
-                    </form>
+                    @if (!config('app.sso_enabled') || !isset($_SERVER[config('app.sso_http_header_user_key')]))
+                        <form id="logoutForm" method="POST" action="/logout">
+                            @csrf
+                            <a class="navbar-item" onclick='document.getElementById("logoutForm").submit()'>
+                                <span class="icon"><i class="mdi mdi-logout"></i></span>
+                                <span>{{ __('Log Out') }}</span>
+                            </a>
+                        </form>
+                    @else
+                    <a class="navbar-item">
+                        <span class="icon"><i class="mdi mdi-information"></i></span>
+                        <span class="has-text-centered">Logged in via SSO</span>
+                    </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -106,7 +113,8 @@
         <p class="menu-label">{{ __('Action') }}</p>
         <ul class="menu-list">
             <li>
-                <div style="position: absolute;width:100%;height:42.5px;line-height:42.5px;text-align:center;color:white;background:rgba(0,0,0,.5)">
+                <div
+                    style="position: absolute;width:100%;height:42.5px;line-height:42.5px;text-align:center;color:white;background:rgba(0,0,0,.5)">
                     Not available
                 </div>
                 <a href="{{ route('ssh') }}" class="@if (Route::currentRouteName() == 'ssh') is-active @endif has-icon">
@@ -177,7 +185,8 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('reports') }}" class="@if (Route::currentRouteName() == 'reports') is-active @endif has-icon">
+                <a href="{{ route('reports') }}"
+                    class="@if (Route::currentRouteName() == 'reports') is-active @endif has-icon">
                     <span class="icon"><i class="mdi mdi-file-chart-outline"></i></span>
                     <span class="menu-item-label">Reports</span>
                 </a>

@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use LdapRecord\Laravel\Middleware\WindowsAuthenticate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -35,5 +36,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('is-user', function (User $user) {
             return $user->role === 0;
         });
+
+        WindowsAuthenticate::serverKey(config('app.sso_http_header_user_key'));
+        WindowsAuthenticate::bypassDomainVerification();
+
     }
 }
