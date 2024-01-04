@@ -204,34 +204,26 @@
                 <section class="modal-card-body">
                     <div class="is-size-3">Patchnotes</div>
                     <div class="is-size-4 ml-1">
-                        v4.1
+                        v4.2
                     </div>
                     <div class="ml-4">
                         <label class="label">Fixed</label>
                         <ul style="list-style: square;" class="ml-5">
-                            <li>Renaming multiple vlans did not work if one of the vlans did not exist</li>
-                            <li>Fixed a bug where the log could not be written during the port vlan update, resulting in
-                                a crash</li>
-                            <li>Menu sorting updated</li>
-                            <li>Vlan-mode was not visible on device port table</li>
-                            <li>SNMP Error spamming in Log fixed</li>
-                            <li>Uplink detection based on clients limit from 10 to 25</li>
+                            <li>Logging beim taggen / untaggen von Vlans hat Fehler geworfen</li>
+                            <li>Bessere Logübersicht</li>
+                            <li>Vlan 1 wird bei der Sync-vlan Übersicht bei Aruba-CX Switchen ignoriert</li>
+                            <li>Doppeltes Logging beim taggen von Vlans entfernt</li>
+                            <li>Vlan erstellen Popup war fehlerhaft</li>
                         </ul>
                         <label class="label mt-5">Features</label>
                         <ul style="list-style: square;" class="ml-5">
-                            <li>New vlan sync status container on dashboard</li>
-                            <li>Delete vlans via vlan syncing</li>
-                        </ul>
-
-                        <label class="label mt-5">Upcoming</label>
-                        <ul style="list-style: square;" class="ml-5">
-                            <li>Report generator</li>
+                            <li>Uplinkübersicht aus cesma entfernt</li>
                         </ul>
                     </div>
 
                 </section>
                 <footer class="modal-card-foot">
-                    <button onclick="setCookie('patchnotes', '4.1', 365);" type="button"
+                    <button onclick="setCookie('patchnotes', '4.2', 365);" type="button"
                         class="button">{{ __('Close') }}</button>
                 </footer>
             </div>
@@ -264,7 +256,7 @@
             return "";
         }
 
-        let version = "4.1";
+        let version = "4.2";
         let cookie = getCookie("patchnotes");
         if (cookie != version) {
             $(".patchnotes").show();
