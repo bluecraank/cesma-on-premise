@@ -51,11 +51,20 @@ class DatabaseCleanup extends Command
         $vlans = Vlan::all()->keyBy('vid')->toArray();
 
         foreach($sites as $site) {
+            // Delete clients that are not in the site
             Client::where('site_id', $site['id'])->where(function($query) use ($vlans, $site) {
                 foreach ($vlans as $vlan) {
                     if($vlan['site_id'] != $site['id']) {
                         $query->orWhere('vlan_id', $vlan['vid']);
                     }
+                }
+            })->delete();
+
+            // Delete clients where the vlan does not exist anymore
+            $siteVlans = Vlan::where('site_id', $site['id'])->get()->keyBy('vid')->toArray();
+            Client::where('site_id', $site['id'])->where(function($query) use ($siteVlans, $site) {
+                foreach ($siteVlans as $vlan) {
+                    $query->whereNot('vlan_id', $vlan['vid']);
                 }
             })->delete();
         }
