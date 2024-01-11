@@ -47,6 +47,11 @@ class ChartService
         $vlanToClients = [];
 
         foreach($clients as $vlan_id => $all_clients) {
+
+            if(!isset($vlans[$vlan_id])) {
+                continue;
+            }
+
             $name = $vlans[$vlan_id]['name']." (".$vlan_id.")";
 
             if(!isset($vlanToClients[$vlan_id])) {
