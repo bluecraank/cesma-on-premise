@@ -4,7 +4,7 @@
         <div class="modal-background"></div>
         <div style="margin-top: 50px" class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">{{ __('Vlan.Add') }}</p>
+                <p class="modal-card-title">{{ __('Create vlan') }}</p>
             </header>
             <section class="modal-card-body">
                 <div class="field">

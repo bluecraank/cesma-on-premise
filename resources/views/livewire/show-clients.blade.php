@@ -84,7 +84,7 @@
                                 </div>
                             </th>
                             <th>
-                                <div class="field">
+                                <div class="field is-inline-block-desktop">
                                     <label data-row="5" class="label is-small">PORT <i
                                             class="is-hidden ml-1 fas fa-angle-up"></i></label>
                                     <div class="control is-small">
@@ -92,8 +92,6 @@
                                             type="text">
                                     </div>
                                 </div>
-                            </th>
-                            <th>
                                 <div class="field is-inline-block-desktop">
                                     <label data-row="0" class="label is-small">TYPE</label>
                                     <div class="control is-small">
@@ -110,6 +108,9 @@
                                     </div>
                                 </div>
                             </th>
+                            {{-- <th>
+
+                            </th> --}}
                     </thead>
                     <tbody>
                         @if ($clients->count() == 0)
@@ -139,19 +140,18 @@
                                         class="client-hostname">{{ trim($client->hostname ?? 'DEV-' . $client->mac_address) }}</span>
                                 </td>
 
-                                <td>{{ $client->ip_address }}</td>
-                                <td title="{{ $vendor }}">{{ trim($formatted_mac) }}</td>
+                                <td>{{ trim($client->ip_address) }}</td>
+                                <td title="{{ $vendor }}">{{ trim($formatted_mac) }} ({{ $vendor }})</td>
                                 <td>@if(isset($vlans[$client->vlan_id]))<a class="dark-fix-color"
                                         href="{{ route('show-vlan', $vlans[$client->vlan_id]->id) }}">{{ trim($client->vlan_id) }}</a>@else Unknown @endif
                                 </td>
                                 <td><a class="dark-fix-color"
                                         href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                                 </td>
-                                <td style="width:100px"><a class="dark-fix-color"
-                                        href="{{ route('show-port', [$client->device_id, $client->port_id]) }}">{{ trim($client->port_id) }}</a>
+                                <td colspan="2" style="width:100px">{{ trim($client->port_id) }}</a>
                                 </td>
-                                <td class="has-text-centered">{{ trim($client->updated_at->format('d.m.Y H:i:s')) }}
-                                </td>
+                                {{-- <td class="has-text-centered">{{ trim($client->updated_at->format('d.m.Y H:i:s')) }}
+                                </td> --}}
                             </tr>
                         @endforeach
                     </tbody>

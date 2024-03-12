@@ -12,19 +12,21 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        // MOVED TO REFRESH DEVICES LOOP
         // API refresh
-        $schedule->command('device:refresh-all-api')
-            ->everyFiveMinutes()
-            ->runInBackground()
-            ->withoutOverlapping();
+        // $schedule->command('device:refresh-all-api')
+        //     ->everyFiveMinutes()
+        //     ->runInBackground()
+        //     ->withoutOverlapping();
 
         // Scan for new devices
         $schedule->command('device:arp-scan')
             ->everyFiveMinutes()
             ->runInBackground();
 
+        // MOVED TO REFRESH DEVICES LOOP
         // SNMP refresh every minute cause it's fast
-        $schedule->command('device:refresh-all')->everyMinute();
+        // $schedule->command('device:refresh-all')->everyMinute();
 
         // Get clients from providers
         $schedule->command('clients:query-providers')
