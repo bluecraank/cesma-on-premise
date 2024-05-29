@@ -16,12 +16,31 @@ use App\Models\Topology;
 use App\Models\Vlan;
 use App\Services\ChartService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class SystemController extends Controller
 {
     public function dashboard()
     {
+        $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
+        // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
+
+        // Check if data is in cache
+        if (Cache::has('deviceStatus')) {
+            $deviceStatus = Cache::get('deviceStatus');
+            $syncableVlans = Cache::get('syncableVlans');
+            $portsToVlans = Cache::get('portsToVlans');
+            $clientsToVlans = Cache::get('clientsToVlans');
+            $portsOnline = Cache::get('portsOnline');
+            $devicesOnline = Cache::get('devicesOnline');
+            $clients = Cache::get('clients');
+            $vlans = Cache::get('vlans');
+            $ports = Cache::get('ports');
+
+            return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
+        }
+
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
         $devices = $devices->sort(function ($a, $b) {
             return strnatcmp($a['name'], $b['name']);
@@ -62,8 +81,16 @@ class SystemController extends Controller
 
         $syncableVlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where('is_synced', true)->get()->count();
 
-        $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
-        // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
+        // Cache these data for 5 minutes
+        Cache::put('deviceStatus', $deviceStatus, 300);
+        Cache::put('syncableVlans', $syncableVlans, 300);
+        Cache::put('portsToVlans', $portsToVlans, 300);
+        Cache::put('clientsToVlans', $clientsToVlans, 300);
+        Cache::put('portsOnline', $portsOnline, 300);
+        Cache::put('devicesOnline', $devicesOnline, 300);
+        Cache::put('clients', $clients, 300);
+        Cache::put('vlans', $vlans, 300);
+        Cache::put('ports', $ports, 300);
 
         return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
