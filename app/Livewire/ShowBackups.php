@@ -31,11 +31,13 @@ class ShowBackups extends Component
 
     public function render()
     {
-        $backups = DeviceBackup::select('id', 'status', 'created_at', 'device_id')->get()->keyBy('id');
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where('name', 'LIKE', '%'.$this->search.'%')->orderBy('name')->paginate($this->numberOfEntries ?? 25);
 
+        // Big performance improve if we only get the last backup for each device
         foreach ($devices as $device) {
-            $device->last_backup = $backups->where('device_id', $device->id)->last();
+            $backup = DeviceBackup::where('device_id', $device->id)->latest()->first();
+            $backups[] = $backup;
+            $device->last_backup = $backup;
         }
 
         $newDevices = $devices->sort(function ($a, $b) {
