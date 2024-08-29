@@ -52,7 +52,7 @@ SSO_BYPASS_DOMAIN_VERIFICATION=true
 ```
 ## BACKUP MAILS
 ```
-BACKUP_MAIL_ADDRESS=administration-netzwerk@doepke.de
+BACKUP_MAIL_ADDRESS=backup@domain.local
 
 MAIL_MAILER=smtp
 MAIL_HOST=mail.domain.local
