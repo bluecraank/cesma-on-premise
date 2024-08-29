@@ -1,66 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# cesma - A switch management tool for aruba os, hp and dell emc
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Features
+- Create, edit, delete and sync vlans from and to devices
+- Tag/Untag vlans to Ports
+- Daily backups
+- Port status and speed notifications
+- Client lookup (IP to MAC to Port)
+- Logging
+- Push SSH-Keys to Switches
+- Visualize switch topology
+- Define Uplinks
+- Assign Icons to MACs for better visualization
+- LDAP User login
 
-## About Laravel
+# Compatible switches
+- HP Aruba OS (SNMP & API)
+- Dell EMC (SNMP in read only)
+- HP Switches like J9851A (SNMP & API)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Risky features
+- Tagging Vlans to Uplinks (Should work, but has a risk to kill your infrastructure)
+- Sync Vlans across all devices (Works well so far)
+- Push SSH-Keys (Has a safety minimum push rate of atleast 2 keys)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Development & future plans
+- This repo is archived, because i dont time to maintain it
+- Feel free to fork
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Configuration
+## LDAP (required)
+```
+LDAP_LOGGING=false
+LDAP_CONNECTION=default
+LDAP_HOST=dc1.domain.local
+LDAP_USERNAME="CN=readonly,CN=Users,DC=Domain,DC=local"
+LDAP_PASSWORD=
+LDAP_PORT=636
+LDAP_BASE_DN="dc=Domain,dc=local"
+LDAP_TIMEOUT=15
+LDAP_SSL=true
+LDAP_TLS=false
+LDAP_ADMIN_GROUP="CN=GROUP_ALLOWED,OU=Groups,DC=Domain,DC=local"
 
-## Learning Laravel
+Test with php artisan ldap:test
+```
+## SSO
+```
+SSO_ENABLED=true
+SSO_HTTP_HEADER_USER_KEY=HTTP_X_AUTHENTIK_USERNAME
+SSO_BYPASS_DOMAIN_VERIFICATION=true
+```
+## BACKUP MAILS
+```
+BACKUP_MAIL_ADDRESS=administration-netzwerk@doepke.de
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+MAIL_MAILER=smtp
+MAIL_HOST=mail.domain.local
+MAIL_PORT=587
+MAIL_USERNAME=mailer@domain.local
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=STARTTLS
+MAIL_FROM_ADDRESS="mailer@domain.local"
+MAIL_FROM_NAME="CESMA Weekly Report"
+```
+## API Authentication
+```
+API_USERNAME=admin
+API_HTTPS=true
+```
+## SSH (deprecated)
+```
+SSH_USERNAME=admin
+SSH_PRIVATEKEY=true
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Workers
+### General worker
+```
+sudo cp ./cesma-worker.service /etc/systemd/system/
+sudo systemctl enable cesma-worker.service
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Task: Triggers scheduled jobs
+```
+### Specific switch update worker loop
+```
+[Unit]
+Description=CESMA Device Refresh Loop Service
+After=network.target
+StartLimitIntervalSec=0
 
-## Laravel Sponsors
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/var/www/cesma
+ExecStart=/usr/bin/php /var/www/cesma/artisan app:refresh-devices-loop
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+[Install]
+WantedBy=multi-user.target
+```
