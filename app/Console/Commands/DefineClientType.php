@@ -19,7 +19,7 @@ class DefineClientType extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Set the type of all clients again from the MAC prefixes';
 
     /**
      * Execute the console command.

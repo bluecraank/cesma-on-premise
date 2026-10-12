@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         //     ->withoutOverlapping();
 
         // Scan for new devices
-        $schedule->command('device:arp-scan')
+        $schedule->command('devices:arp-scan')
             ->everyFiveMinutes()
             ->runInBackground()
             ->withoutOverlapping();
