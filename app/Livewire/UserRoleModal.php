@@ -64,6 +64,8 @@ class UserRoleModal extends Component
         ]);
 
         // Name and guid come from LDAP and must not be changed by the client
+        $oldRole = $this->user->role;
+        $oldSites = Permission::where('guid', $this->user->guid)->pluck('site_id')->sort()->values()->toArray();
         $this->user->role = (int) $this->role;
         $this->user->save();
 
@@ -80,7 +82,11 @@ class UserRoleModal extends Component
         $this->showModal = false;
         $this->dispatch('notify-success', message: __('User :user updated', ['user' => $this->user->name]));
         $this->dispatch('refresh')->to(ShowUsers::class);
-        CLog::info("User", __('User :id updated', ['id' => $this->user->id]), null, $this->user->name);
+        CLog::info("User", __('User :name updated', ['name' => $this->user->name]), null, [
+            'guid' => $this->user->guid,
+            'role' => ['old' => $oldRole, 'new' => $this->user->role],
+            'sites' => ['old' => $oldSites, 'new' => collect($this->permissions)->map(fn ($id) => (int) $id)->unique()->sort()->values()->toArray()],
+        ]);
         // $this->reset();
 
         $this->showModal = false;
@@ -99,7 +105,7 @@ class UserRoleModal extends Component
         $this->showModal = false;
         $this->dispatch('notify-success', message: __('User :user deleted', ['user' => $this->user->name]));
         $this->dispatch('refresh')->to(ShowUsers::class);
-        CLog::info("User", __('User :id deleted', ['id' => $this->user->id]), null, $this->user->name);
+        CLog::info("User", __('User :name deleted', ['name' => $this->user->name]), null, ['guid' => $this->user->guid, 'role' => $this->user->role]);
         $user->delete();
         $this->user = null;
         $this->name = null;

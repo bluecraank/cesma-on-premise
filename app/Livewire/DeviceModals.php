@@ -118,11 +118,12 @@ class DeviceModals extends Component
             $this->device->password = Crypt::encrypt($this->password);
         }
 
+        $changes = CLog::changes($this->device);
         $this->device->save();
         $this->show = false;
         $this->dispatch('notify-success', message: __('Device updated'));
         $this->dispatch('refresh')->to(ShowDevices::class);
-        CLog::info("Device","Device {$this->device->name} updated", $this->device, "Editable information updated.");
+        CLog::info("Device","Device {$this->device->name} updated", $this->device, $changes);
     }
 
     public function create() {

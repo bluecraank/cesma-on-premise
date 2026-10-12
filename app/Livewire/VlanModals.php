@@ -82,11 +82,12 @@ class VlanModals extends Component
         $this->vlan->site_id = $this->site_id;
         $this->vlan->is_synced = (bool) $this->is_synced;
         $this->vlan->is_client_vlan = (bool) $this->is_client_vlan;
+        $changes = CLog::changes($this->vlan);
         $this->vlan->save();
         $this->show = false;
         $this->dispatch('notify-success', message: __('Vlan updated'));
         $this->dispatch('refresh')->to(ShowVlans::class);
-        CLog::info("Vlan", __('Vlan :name updated', ['name' => $this->name]));
+        CLog::info("Vlan", __('Vlan :name updated', ['name' => $this->name]), null, array_merge(['vid' => $this->vlan->vid, 'site_id' => $this->vlan->site_id], $changes));
     }
 
     public function render()

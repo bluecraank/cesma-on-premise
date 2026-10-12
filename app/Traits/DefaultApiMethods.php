@@ -3,9 +3,16 @@
 
 use App\Models\Device;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
     trait DefaultApiMethods
     {
+        protected static function logApiFailure($method, $hostname, $api, $reason): void
+        {
+            // The cookie is not logged, it is a valid session
+            Log::warning("[API] {$method} {$api} on {$hostname} failed: " . mb_strimwidth((string) $reason, 0, 500, '...'));
+        }
+
         static function getApiData($device): array
         {
             return [];
@@ -37,9 +44,11 @@ use Illuminate\Support\Facades\Http;
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
+                    self::logApiFailure('PUT', $hostname, $api, $response->status() . ' ' . $response->body());
                     return ['success' => false, 'data' => $response->json()];
                 }
             } catch (\Exception $e) {
+                self::logApiFailure('PUT', $hostname, $api, $e->getMessage());
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }
@@ -64,9 +73,11 @@ use Illuminate\Support\Facades\Http;
                 if ($response->successful()) {
                     return ['success' => true, 'data' => ($plain) ? $response->body() : $response->json()];
                 } else {
+                    self::logApiFailure('GET', $hostname, $api, $response->status() . ' ' . $response->body());
                     return ['success' => false, 'data' => $response->json()];
                 }
             } catch (\Exception $e) {
+                self::logApiFailure('GET', $hostname, $api, $e->getMessage());
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }
@@ -83,9 +94,11 @@ use Illuminate\Support\Facades\Http;
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
+                    self::logApiFailure('PATCH', $hostname, $api, $response->status() . ' ' . $response->body());
                     return ['success' => false, 'data' => $response->json()];
                 }
             } catch (\Exception $e) {
+                self::logApiFailure('PATCH', $hostname, $api, $e->getMessage());
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }
@@ -103,9 +116,11 @@ use Illuminate\Support\Facades\Http;
                 if ($response->successful()) {
                     return ['success' => true, 'data' => $response->json()];
                 } else {
+                    self::logApiFailure('DELETE', $hostname, $api, $response->status() . ' ' . $response->body());
                     return ['success' => false, 'data' => $response->json()];
                 }
             } catch (\Exception $e) {
+                self::logApiFailure('DELETE', $hostname, $api, $e->getMessage());
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }
@@ -122,9 +137,11 @@ use Illuminate\Support\Facades\Http;
                 if ($response->successful()) {
                     return ['success' => true, 'data' => array($response->status(), $response->json())];
                 } else {
+                    self::logApiFailure('POST', $hostname, $api, $response->status() . ' ' . $response->body());
                     return ['success' => false, 'data' => $response->json()];
                 }
             } catch (\Exception $e) {
+                self::logApiFailure('POST', $hostname, $api, $e->getMessage());
                 return ['success' => false, 'data' => $e->getMessage()];
             }
         }

@@ -26,5 +26,17 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        // Audit log for denied requests (Livewire actions are logged in the ChecksRole trait)
+        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() == 403 && auth()->check() && !$request->is('livewire/*')) {
+                \App\Helper\CLog::warning("Access", "Access denied: " . $request->method() . " /" . $request->path(), null, [
+                    'role' => auth()->user()->role,
+                ]);
+            }
+
+            // Continue with the default rendering
+            return null;
+        });
     }
 }

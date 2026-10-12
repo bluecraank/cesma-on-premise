@@ -7,6 +7,7 @@ use App\Interfaces\DeviceInterface;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
@@ -205,6 +206,7 @@ class ArubaOS implements DeviceInterface
                 return $versionsFound[array_key_last($versionsFound)]['version'];
             }
         } catch (\Exception $e) {
+            Log::debug("[API] Version detection on {$hostname} failed, using v7: " . $e->getMessage());
         }
 
         return "v7";
@@ -232,7 +234,11 @@ class ArubaOS implements DeviceInterface
             if ($response->successful() and !empty($response->json()['cookie'])) {
                 return $response->json()['cookie'] . ";" . $api_version;
             }
+
+            // e.g. 401 wrong password, 503 all sessions in use
+            Log::warning("[API] Login on {$device->hostname} failed: " . $response->status() . " " . mb_strimwidth($response->body(), 0, 300, '...'));
         } catch (\Exception $e) {
+            Log::warning("[API] Login on {$device->hostname} failed: " . $e->getMessage());
         }
 
         return "";
@@ -252,6 +258,7 @@ class ArubaOS implements DeviceInterface
                 return true;
             }
         } catch (\Exception $e) {
+            Log::warning("[API] Logout on {$hostname} failed, the session stays open until it times out: " . $e->getMessage());
             return false;
         }
 
@@ -603,9 +610,16 @@ class ArubaOS implements DeviceInterface
 
         try {
             $sftp = new SFTP($device->hostname);
-            $sftp->login(config('app.ssh_username'), $key);
+            if (!$sftp->login(config('app.ssh_username'), $key)) {
+                Log::warning("[SSH] Public key upload to {$device->hostname} failed: SFTP login as " . config('app.ssh_username') . " failed");
+                return json_encode(['success' => 'false', 'message' => __('SSH login failed')]);
+            }
             $upload = $sftp->put('/ssh/mgr_keys/authorized_keys', $keys);
             $sftp->disconnect();
+
+            if (!$upload) {
+                Log::warning("[SSH] Public key upload to {$device->hostname} failed: could not write /ssh/mgr_keys/authorized_keys");
+            }
 
             if ($upload) {
                 if ($login_info = self::API_LOGIN($device)) {
@@ -636,6 +650,7 @@ class ArubaOS implements DeviceInterface
                 return json_encode(['success' => 'true', 'message' => __('SSH pubkeys successfully synced')]);
             }
         } catch (\Exception $e) {
+            Log::warning("[SSH] Public key upload to {$device->hostname} failed: " . $e->getMessage());
         }
 
         return json_encode(['success' => 'false', 'message' => 'SSH pubkeys sync failed']);

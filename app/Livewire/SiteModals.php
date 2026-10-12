@@ -69,7 +69,7 @@ class SiteModals extends Component
         $this->dispatch('notify-success', message: __('Site updated'));
         $this->dispatch('refresh')->to(ShowSites::class);
 
-        CLog::info("Site", __('Site :name updated', ['id' => $temp]), null, "{$temp} => {$this->name}");
+        CLog::info("Site", __('Site :name updated', ['name' => $temp]), null, "{$temp} => {$this->name}");
     }
 
     public function render()

@@ -6,6 +6,7 @@ use App\Models\Building;
 use App\Models\Device;
 use App\Models\Room;
 use App\Models\Site;
+use App\Helper\CLog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
@@ -127,9 +128,7 @@ class ArpScan extends Command
                 $type = "dell-emc";
             }
 
-            Log::info("[ARP] Found new device: " . $hostname . " (" . $neighbour['ip'] . ") - " . $model . " - " . $type);
-
-            Device::firstOrCreate([
+            $newDevice = Device::firstOrCreate([
                 'name' => $hostname,
             ], [
                 'hostname' => $full_hostname,
@@ -139,6 +138,14 @@ class ArpScan extends Command
                 'site_id' => $site->id,
                 'building_id' => $building->id,
                 'room_id' => $room->id,
+            ]);
+
+            // Automatically added devices get a default password and the first site, so they should be visible in the log
+            CLog::info("Device", "Device {$hostname} found by ARP scan and added", $newDevice, [
+                'ip' => $neighbour['ip'],
+                'mac' => $neighbour['mac'],
+                'model' => $model,
+                'type' => $type,
             ]);
         }
     }

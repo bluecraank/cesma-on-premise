@@ -211,6 +211,7 @@ class ArubaCX implements DeviceInterface
                 return $versionsFound['version'];
             }
         } catch (\Exception $e) {
+            Log::debug("[API] Version detection on {$hostname} failed, using v10.11: " . $e->getMessage());
         }
 
         return "v10.11";
@@ -236,7 +237,11 @@ class ArubaCX implements DeviceInterface
             if ($response->successful() and !empty($response->header('Set-Cookie'))) {
                 return $response->cookies()->toArray()[0]['Name'] . "=" . $response->cookies()->toArray()[0]['Value'] . ";" . $api_version;
             }
+
+            // e.g. 401 wrong password, 503 all sessions in use
+            Log::warning("[API] Login on {$device->hostname} failed: " . $response->status() . " " . mb_strimwidth($response->body(), 0, 300, '...'));
         } catch (\Exception $e) {
+            Log::warning("[API] Login on {$device->hostname} failed: " . $e->getMessage());
         }
 
         return "";
@@ -255,6 +260,7 @@ class ArubaCX implements DeviceInterface
                 return true;
             }
         } catch (\Exception $e) {
+            Log::warning("[API] Logout on {$hostname} failed, the session stays open until it times out: " . $e->getMessage());
             return false;
         }
 

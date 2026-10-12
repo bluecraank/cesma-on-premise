@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('devices', function (Blueprint $table) {
-            $table->longText('password')->change();
-        });
+        // Nothing to do: devices.password is already created as longText in create_devices_table.
+        // change() required doctrine/dbal, which is not installed, so fresh installations failed here.
     }
 
     /**

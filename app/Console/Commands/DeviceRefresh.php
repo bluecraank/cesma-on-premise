@@ -61,6 +61,11 @@ class DeviceRefresh extends Command
                 ]);
 
                 $notification->touch();
+
+                // Only log the change from reachable to unreachable, not every failed refresh
+                if ($notification->wasRecentlyCreated) {
+                    CLog::warning("Device", "Device {$device->name} not reachable ({$this->argument('type')})", $device, ['reason' => $notification->message]);
+                }
             } elseif($this->argument('type') == "snmp" && config('app.write_type')[$device->type] == "snmp") {
                 $notification = Notification::updateOrCreate([
                     'unique-identifier' => "device-refresh-failed-snmp-".$device->id,
@@ -74,13 +79,22 @@ class DeviceRefresh extends Command
                 ]);
 
                 $notification->touch();
+
+                // Only log the change from reachable to unreachable, not every failed refresh
+                if ($notification->wasRecentlyCreated) {
+                    CLog::warning("Device", "Device {$device->name} not reachable ({$this->argument('type')})", $device, ['reason' => $notification->message]);
+                }
             }
             return;
         } else {
             if($this->argument('type') == "api" && config('app.write_type')[$device->type] == "api") {
-                Notification::where('unique-identifier', "device-refresh-failed-api-".$device->id)->delete();
+                if (Notification::where('unique-identifier', "device-refresh-failed-api-".$device->id)->delete() > 0) {
+                    CLog::info("Device", "Device {$device->name} reachable again (api)", $device);
+                }
             } elseif($this->argument('type') == "snmp") {
-                Notification::where('unique-identifier', "device-refresh-failed-snmp-".$device->id)->delete();
+                if (Notification::where('unique-identifier', "device-refresh-failed-snmp-".$device->id)->delete() > 0) {
+                    CLog::info("Device", "Device {$device->name} reachable again (snmp)", $device);
+                }
             }
         }
     }

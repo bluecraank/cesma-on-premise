@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Helper\CLog;
 use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Devices\ArubaCX;
@@ -50,6 +51,7 @@ class DeviceBackup extends Command
             Log::info('Backup for device ' . $device->id . ' created');
         } else {
             Log::error('Backup for device ' . $device->id . ' failed');
+            CLog::error("Backup", "Scheduled backup of switch {$device->name} failed", $device);
         }
     }
 }
