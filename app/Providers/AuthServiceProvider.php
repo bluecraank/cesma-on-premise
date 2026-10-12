@@ -37,6 +37,11 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role === 0;
         });
 
+        // Write access: administrators and super administrators
+        Gate::define('admin', function (User $user) {
+            return $user->role >= 1;
+        });
+
         WindowsAuthenticate::serverKey(config('app.sso_http_header_user_key'));
         WindowsAuthenticate::bypassDomainVerification();
 

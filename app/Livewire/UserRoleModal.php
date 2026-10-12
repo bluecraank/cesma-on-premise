@@ -12,6 +12,7 @@ use Livewire\Component;
 
 class UserRoleModal extends Component
 {
+    use AppTraitsChecksRole;
     public $showModal = false;
     public $type;
     public $user;
@@ -31,41 +32,48 @@ class UserRoleModal extends Component
     #[On('show')]
     public function show($id, $type)
     {
+        $this->requireSuperAdmin();
         $this->user = User::find($id);
 
         $this->type = $type;
 
         if(!$this->user) {
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'error',
-                'message' => 'User not found'
-            ]);
+            $this->dispatch('notify-error', message: __('User not found'));
             return;
         }
 
         $this->name = $this->user->name;
         $this->guid = $this->user->guid;
         $this->role = $this->user->role;
+        $this->permissions = Permission::where('guid', $this->user->guid)->pluck('site_id')->map(fn ($id) => (string) $id)->toArray();
 
         $this->showModal = true;
     }
 
     public function save() {
+        $this->requireSuperAdmin();
         if(Auth::user()->guid == $this->user->guid) {
             $this->dispatch('notify-error', message: __('You cannot update yourself'));
             return;
         }
 
-        $this->user->name = $this->name;
-        $this->user->guid = $this->guid;
-        $this->user->role = $this->role;
+        $this->validate([
+            'role' => 'required|integer|in:0,1,2',
+            'permissions' => 'array',
+            'permissions.*' => 'integer|exists:sites,id',
+        ]);
+
+        // Name and guid come from LDAP and must not be changed by the client
+        $this->user->role = (int) $this->role;
         $this->user->save();
 
-        foreach($this->permissions as $permission) {
-            Permission::updateOrCreate([
+        // Replace the site permissions so unchecked sites are removed
+        Permission::where('guid', $this->user->guid)->delete();
+        foreach(array_unique($this->permissions) as $site_id) {
+            Permission::create([
                 'guid' => $this->user->guid,
-                'site_id' => $permission,
-                'role' => $this->role
+                'site_id' => $site_id,
+                'role' => $this->user->role,
             ]);
         }
 
@@ -79,6 +87,7 @@ class UserRoleModal extends Component
     }
 
     public function delete() {
+        $this->requireSuperAdmin();
         if(Auth::user()->guid == $this->user->guid) {
             $this->dispatch('notify-error', message: __('You cannot delete yourself'));
             return;

@@ -15,6 +15,7 @@ use Livewire\Attributes\Rule;
 
 class DeviceModals extends Component
 {
+    use AppTraitsChecksRole;
     public $show = false;
     public $device;
     public $modal;
@@ -50,8 +51,10 @@ class DeviceModals extends Component
     {
         $this->show = true;
         $this->modal = $modal;
+        // Never carry a typed password over to another device
+        $this->password = "__hidden__";
         if($modal != "create") {
-            $device = Device::where('id', $device)->get(['id', 'name', 'hostname', 'site_id', 'building_id', 'room_id', 'location_description'])->first();
+            $device = Device::where('id', $device)->get(['id', 'name', 'hostname', 'site_id', 'building_id', 'room_id', 'location_description', 'type'])->first();
 
             if(!$device) {
                 $this->dispatch('notify-error', message: __('Device not found'));
@@ -76,6 +79,7 @@ class DeviceModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         $id = $this->device->id;
         DeviceService::deleteDeviceData($id, $this->device->ports()->pluck('id')->toArray());
@@ -89,6 +93,7 @@ class DeviceModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->type = $this->device->type;
 
         $this->validate([
@@ -121,6 +126,7 @@ class DeviceModals extends Component
     }
 
     public function create() {
+        $this->requireAdmin();
         $this->site_id = Auth::user()->currentSite()->id;
 
         $this->validate();
@@ -161,7 +167,7 @@ class DeviceModals extends Component
         }
 
         $rooms = Building::where('id', $this->building_id)->first()?->rooms->pluck('id')->toArray() ?? [];
-        if(!in_array($this->building_id, $rooms)) {
+        if(!in_array($this->room_id, $rooms)) {
             $this->room_id = 0;
         }
 

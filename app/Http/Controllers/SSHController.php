@@ -53,16 +53,16 @@ class SSHController extends Controller
         $return->output = '';
         $return->id = $device->id;
 
+        if (config('app.read-only')[$device->type] ?? true) {
+            $return->status = 'xmark';
+            $return->output = __('This device is read-only');
+            return json_encode($return, true);
+        }
+
         if (Utilities::CheckSSHCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
                 $private_key = Storage::disk('local')->get('ssh.key');
-
-                if(config('app.read-only')[$device->type]) {
-                    $return->status = 'xmark';
-                    $return->output = __('This device is read-only');
-                    return json_encode($return, true);
-                }
 
                 if($private_key === NULL) {
                     $return->status = 'xmark';
@@ -70,9 +70,9 @@ class SSHController extends Controller
                     return json_encode($return, true);
                 }
 
-                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
-
-                if ($decrypt === NULL) {
+                try {
+                    $decrypt = Crypt::decrypt($private_key);
+                } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                     $return->status = 'xmark';
                     $return->output = __('Private key decryption failed');
                     return json_encode($return, true);
@@ -88,7 +88,7 @@ class SSHController extends Controller
             try {
                 if (!$ssh->login(config('app.ssh_username'), $key)) {
                     $return->status = 'xmark';
-                    $return->output = __('Login with private key failed');
+                    $return->output = __('SSH login failed');
                     return json_encode($return, true);
                 }
             } catch (\Exception $e) {

@@ -14,6 +14,7 @@ use Livewire\WithPagination;
 
 class ShowDeviceBackups extends Component
 {
+    use AppTraitsChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -55,12 +56,13 @@ class ShowDeviceBackups extends Component
         CLog::info("Backup", __('Backup :id downloaded', ['id' => $backup->id]), null, __('Device: :name, Backup created: :date', ['name' => $backup->device->name, 'date' => $backup->created_at]));
 
         return response()->streamDownload(function () use ($backup) {
-            echo Crypt::decrypt($backup->data);
+            echo $backup->decryptedData();
         }, $backup->device->name."-backup-{$backup->created_at}.txt");
     }
 
     #[On('delete')]
     public function delete($id) {
+        $this->requireAdmin();
         $backup = DeviceBackup::where('id', $id)->first();
 
         if(!$backup) {

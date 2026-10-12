@@ -52,20 +52,22 @@
         </thead>
         <tbody>
             @foreach ($devices as $device)
-                @if (isset($device->last_backup->created_at))
-                    <tr>
-                        <td class="tg-0lax">{{ $device->name }}</td>
-                        <td class="tg-0lax">{{ $device->last_backup->created_at }}</td>
-                        <td class="tg-0lax">@php
-                            if ($device->success_total == 1 and $device->success != 0) {
-                                echo "<span style='color:green'>" . __('Successfully') . ' (' . $device->success . '/' . $device->success . ')</span>';
-                            } else {
-                                echo "<span style='color:red'>" . __('Failed') . ' (' . $device->fail . '/' . ($device->fail + $device->success) . ')</span>';
-                            }
-                        @endphp</td>
-                        <td class="tg-0lax">{{ $device->site }}</td>
-                    </tr>
-                @endif
+                <tr>
+                    <td class="tg-0lax">{{ $device->name }}</td>
+                    <td class="tg-0lax">{{ $device->last_backup->created_at ?? '-' }}</td>
+                    <td class="tg-0lax">
+                        @if (!$device->supported)
+                            <span style="color:gray">{{ __('Not supported') }}</span>
+                        @elseif ($device->success_total == 1)
+                            <span style="color:green">{{ __('Successfully') }} ({{ $device->success }}/{{ $device->success }})</span>
+                        @elseif ($device->success + $device->fail == 0)
+                            <span style="color:red">{{ __('No backup this week') }}</span>
+                        @else
+                            <span style="color:red">{{ __('Failed') }} ({{ $device->fail }}/{{ $device->fail + $device->success }})</span>
+                        @endif
+                    </td>
+                    <td class="tg-0lax">{{ $device->site }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>

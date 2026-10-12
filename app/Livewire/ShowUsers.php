@@ -8,6 +8,7 @@ use Livewire\Component;
 
 class ShowUsers extends Component
 {
+    use AppTraitsChecksRole;
     public function render()
     {
         $users = User::all();
@@ -28,6 +29,7 @@ class ShowUsers extends Component
     #[On('delete')]
     public function delete($model)
     {
-        $model->delete();
+        $this->requireSuperAdmin();
+        \App\Models\User::where('id', $model)->delete();
     }
 }

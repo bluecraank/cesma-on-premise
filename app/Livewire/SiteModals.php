@@ -10,6 +10,7 @@ use Livewire\Attributes\Rule;
 
 class SiteModals extends Component
 {
+    use AppTraitsChecksRole;
     public $show = false;
     public $site;
     public $modal;
@@ -39,6 +40,7 @@ class SiteModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         if(Site::count() == 1) {
             $this->dispatch('notify-error', message: __('You cannot delete the last site'));
@@ -57,6 +59,7 @@ class SiteModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->validate();
 
         $temp = $this->site->name;

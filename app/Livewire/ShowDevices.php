@@ -18,6 +18,7 @@ use Livewire\Attributes\Url;
 
 class ShowDevices extends Component
 {
+    use AppTraitsChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -77,6 +78,7 @@ class ShowDevices extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         Device::where('id', $model)->delete();
     }
 }

@@ -186,12 +186,13 @@ use Illuminate\Support\Facades\Http;
 
         static function setUntaggedVlanToPort($vlan, $port, $device, $vlans, $need_login, $login_info): bool
         {
-            return [];
+            return false;
         }
 
         static function setTaggedVlansToPort($taggedVlans, $port, $device, $vlans, $need_login, $login_info): array
         {
-            return [];
+            // vlans to set, vlans to remove, successfully set, successfully removed
+            return [[], [], [], []];
         }
 
         static function syncVlans($vlans, $device, Bool $create_vlans, Bool $overwrite_name, Bool $tag_to_uplinks, Bool $delete_vlans,  Bool $test_mode): array

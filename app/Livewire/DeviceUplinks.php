@@ -9,6 +9,7 @@ use Livewire\Component;
 
 class DeviceUplinks extends Component
 {
+    use AppTraitsChecksRole;
     public $uplinks;
     public $device_id;
     public $new_uplink;
@@ -40,6 +41,7 @@ class DeviceUplinks extends Component
     }
 
     public function add() {
+        $this->requireAdmin();
         $port = $this->new_uplink;
 
         if(DevicePort::where('name', $port)->where('device_id', $this->device_id)->exists()) {
@@ -58,6 +60,7 @@ class DeviceUplinks extends Component
     }
 
     public function delete($id) {
+        $this->requireAdmin();
         $device = Device::where('id', $this->device_id)->first();
 
         if(!$device) {

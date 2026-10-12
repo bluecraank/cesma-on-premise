@@ -45,45 +45,26 @@ class DatabaseCleanup extends Command
         \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
         \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(1))->where('type', "link-change")->delete();
 
-        $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();
-
+        // Note: an empty where closure matches every row, so whereIn/whereNotIn with explicit lists are used here
         $sites = \App\Models\Site::all()->keyBy('id')->toArray();
-        $vlans = Vlan::all()->keyBy('vid')->toArray();
 
         foreach($sites as $site) {
-            // Delete clients that are not in the site
-            Client::where('site_id', $site['id'])->where(function($query) use ($vlans, $site) {
-                foreach ($vlans as $vlan) {
-                    if($vlan['site_id'] != $site['id']) {
-                        $query->orWhere('vlan_id', $vlan['vid']);
-                    }
-                }
-            })->delete();
-
-            // Delete clients where the vlan does not exist anymore
-            $siteVlans = Vlan::where('site_id', $site['id'])->get()->keyBy('vid')->toArray();
-            Client::where('site_id', $site['id'])->where(function($query) use ($siteVlans, $site) {
-                foreach ($siteVlans as $vlan) {
-                    $query->whereNot('vlan_id', $vlan['vid']);
-                }
-            })->delete();
+            // Delete clients where the vlan does not belong to the site (anymore).
+            // This also covers vlans of other sites, vlan ids are only unique per site.
+            $siteVlanIds = Vlan::where('site_id', $site['id'])->pluck('vid')->toArray();
+            Client::where('site_id', $site['id'])->whereNotIn('vlan_id', $siteVlanIds)->delete();
         }
 
         $ports = DevicePort::get()->groupBy('device_id')->toArray();
         foreach($ports as $device_id => $device_ports) {
-            Client::where('device_id', $device_id)->where(function($query) use ($device_ports) {
-                foreach ($device_ports as $port) {
-                    $query->whereNot('port_id', $port['name']);
-                }
-            })->delete();
+            Client::where('device_id', $device_id)->whereNotIn('port_id', array_column($device_ports, 'name'))->delete();
         }
 
-        Client::where(function($query) use ($vlans_ignore) {
-            $query->where('vlan_id', 0);
-            foreach ($vlans_ignore as $vlan) {
-                $query->orWhere('vlan_id', $vlan['vid']);
-            }
-        })->delete();
+        // Delete clients without vlan and clients in vlans which are no client vlans (per site)
+        Client::where('vlan_id', 0)->delete();
+        foreach (Vlan::where('is_client_vlan', 0)->get() as $vlan) {
+            Client::where('site_id', $vlan->site_id)->where('vlan_id', $vlan->vid)->delete();
+        }
 
         $array_uplinks = [];
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();

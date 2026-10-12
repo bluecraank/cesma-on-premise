@@ -100,6 +100,10 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'message' => __('Error creating backup')]);
         }
 
+        if (!(config('app.backup_support')[$device->type] ?? false)) {
+            return json_encode(['success' => 'false', 'message' => __('This device type does not support backups')]);
+        }
+
         $class = config('app.types')[$device->type];
         $backup = $class::createBackup($device);
 
@@ -117,13 +121,21 @@ class DeviceController extends Controller
     {
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
+        $failed = 0;
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(config('app.types')))) {
+            if (!in_array($device->type, array_keys(config('app.types'))) || !(config('app.backup_support')[$device->type] ?? false)) {
                 continue;
             }
 
             $class = config('app.types')[$device->type];
-            $class::createBackup($device);
+            if (!$class::createBackup($device)) {
+                $failed++;
+            }
+        }
+
+        if ($failed > 0) {
+            CLog::error("Device", "Backup for all switches created, {$failed} failed");
+            return json_encode(['success' => 'false', 'message' => __(':count backups could not be created', ['count' => $failed])]);
         }
 
         CLog::info("Device", "Backup for all switches created");
@@ -138,7 +150,7 @@ class DeviceController extends Controller
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        if (count($pubkeys) <= 2 || empty($pubkeys)) {
+        if (count($pubkeys) < 2) {
             CLog::error("Pubkey", "Not enough public keys to upload to switch {$device->name}", $device, $device->id);
             return json_encode(['success' => 'false', 'message' => __('Not enough public keys to upload to switch')]);
         }
@@ -154,7 +166,7 @@ class DeviceController extends Controller
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
-        if (count($pubkeys) >= 2 && !empty($pubkeys)) {
+        if (count($pubkeys) >= 2) {
             foreach ($devices as $device) {
                 $class = config('app.types')[$device->type];
 
@@ -198,16 +210,22 @@ class DeviceController extends Controller
         $vlans = $request->input('vlans') ?? '{}';
         $vlans = json_decode($vlans, true);
 
-        $create = $request->input('createVlans') == "false" ? false : true;
-        $rename = $request->input('renameVlans') == "false" ? false : true;
-        $tagToUplink = $request->input('tagToUplink') == "false" ? false : true;
-        $testmode = $request->input('testmode') == "false" ? false : true;
-        $delete = $request->input('deleteVlans') == "false" ? false : true;
+        // Only an explicit "true" enables an option, testmode is only disabled by an explicit "false"
+        $create = $request->input('createVlans') === "true";
+        $rename = $request->input('renameVlans') === "true";
+        $tagToUplink = $request->input('tagToUplink') === "true";
+        $testmode = $request->input('testmode') !== "false";
+        $delete = $request->input('deleteVlans') === "true";
 
-        // // For security!
-        // $testmode = true;
+        if ($delete && ($create || $rename || $tagToUplink)) {
+            return json_encode(['success' => 'false', 'message' => __('You can\'t delete and create/rename/tag at the same time. Action cancelled.')]);
+        }
 
         if ($device and $vlans) {
+            if (config('app.read-only')[$device->type] ?? true) {
+                return json_encode(['success' => 'false', 'message' => __('This device is read-only')]);
+            }
+
             $class = config('app.types')[$device->type];
             $sync = $class::syncVlans($vlans, $device, $create, $rename, $tagToUplink, $delete, $testmode);
 

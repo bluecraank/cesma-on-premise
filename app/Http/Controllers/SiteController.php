@@ -29,10 +29,10 @@ class SiteController extends Controller
             Cookie::queue(cookie('currentSite', $request->site_id, $minute = 525600));
             sleep(1);
 
-            $url = url()->previous();
-            $url = explode('/', $url)[3];
+            // Go back to the overview page of the previous section (detail pages may not exist in the new site)
+            $segment = explode('/', trim(parse_url(url()->previous(), PHP_URL_PATH) ?? '', '/'))[0];
 
-            return redirect()->route($url != "" ? $url : 'dashboard');
+            return redirect()->route(\Illuminate\Support\Facades\Route::has($segment) ? $segment : 'dashboard');
         }
 
         return redirect()->back();

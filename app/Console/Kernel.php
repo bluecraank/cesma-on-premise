@@ -28,6 +28,12 @@ class Kernel extends ConsoleKernel
         // SNMP refresh every minute cause it's fast
         // $schedule->command('device:refresh-all')->everyMinute();
 
+        // Ping clients of vlans with scanning enabled (fills the ARP caches)
+        $schedule->command('clients:nmap-scan')
+            ->everyFiveMinutes()
+            ->runInBackground()
+            ->withoutOverlapping();
+
         // Get clients from providers
         $schedule->command('clients:query-providers')
             ->everyMinute();

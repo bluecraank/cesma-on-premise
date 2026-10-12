@@ -184,13 +184,14 @@
                     <span class="menu-item-label">Logs</span>
                 </a>
             </li>
+            {{-- Reports component does not exist yet
             <li>
                 <a href="{{ route('reports') }}"
                     class="@if (Route::currentRouteName() == 'reports') is-active @endif has-icon">
                     <span class="icon"><i class="mdi mdi-file-chart-outline"></i></span>
                     <span class="menu-item-label">Reports</span>
                 </a>
-            </li>
+            </li> --}}
             {{-- <li>
                 <a href="{{ route('settings') }}"
                     class="@if (Route::currentRouteName() == 'settings') is-active @endif has-icon">

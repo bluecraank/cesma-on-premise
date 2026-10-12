@@ -12,12 +12,14 @@ use Livewire\Component;
 
 class ShowNotifications extends Component
 {
+    use AppTraitsChecksRole;
     use WithLogin;
     use NumberOfEntries;
 
     public $numberOfEntries = 50;
 
     public function accept($id) {
+        $this->requireAdmin();
         $notification = \App\Models\Notification::find($id);
 
         if(!$notification) {
@@ -51,6 +53,7 @@ class ShowNotifications extends Component
     }
 
     public function decline($id) {
+        $this->requireAdmin();
         $notification = \App\Models\Notification::find($id);
 
         if(!$notification) {

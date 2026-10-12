@@ -15,6 +15,7 @@ use Livewire\WithPagination;
 
 class ShowVlans extends Component
 {
+    use AppTraitsChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -60,6 +61,7 @@ class ShowVlans extends Component
     }
 
     public function updateSlider($vlan_id, $type, $initialState = false) {
+        $this->requireAdmin();
         $vlan = Vlan::where('id', $vlan_id)->first();
 
         if(!$vlan) {
@@ -85,6 +87,7 @@ class ShowVlans extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         Vlan::where('id', $model)->delete();
         CLog::info("Vlan", __('Vlan :name deleted', ['name' => $model]));
     }

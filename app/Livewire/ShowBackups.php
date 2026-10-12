@@ -15,6 +15,7 @@ use Livewire\Attributes\Url;
 
 class ShowBackups extends Component
 {
+    use AppTraitsChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -54,6 +55,7 @@ class ShowBackups extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         DeviceBackup::where('id', $model)->delete();
     }
 }

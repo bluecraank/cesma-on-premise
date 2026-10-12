@@ -72,7 +72,7 @@ class Device extends Model
     }
 
     public function getPortById($id) {
-        return $this->ports()->where('id', $id)->first()->name;
+        return $this->ports()->where('id', $id)->first()?->name;
     }
 
     public function clients() {

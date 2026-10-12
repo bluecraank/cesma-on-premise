@@ -42,7 +42,7 @@ class UpdateDeviceData
 
             // Notify on link status change
             if (isset($existingPorts[$port['id']]) && $existingPorts[$port['id']]['link'] != $port['link']) {
-                DevicePort::where('name', $port['id'])->first()->touch('last_admin_status');
+                DevicePort::where('name', $port['id'])->where('device_id', $device->id)->first()?->touch('last_admin_status');
                 Notification::link_change($port['id'], $device, $port['link']);
                 $link_changed = true;
             }
@@ -74,12 +74,13 @@ class UpdateDeviceData
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
+        // An empty list means the vlans could not be fetched, do not delete everything
+        if (empty($vlans)) {
+            return;
+        }
+
         // Delete vlans that are not in the list
-        DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
-            foreach ($vlans as $vid => $unused) {
-                $query->where('vlan_id', '!=', $vid);
-            }
-        })->delete();
+        DeviceVlan::where('device_id', $device->id)->whereNotIn('vlan_id', array_keys($vlans))->delete();
     }
 
     static function updateVlanPorts($vlanports, $device)

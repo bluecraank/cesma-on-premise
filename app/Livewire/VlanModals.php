@@ -10,6 +10,7 @@ use Livewire\Component;
 
 class VlanModals extends Component
 {
+    use AppTraitsChecksRole;
     public $show = false;
     public $vlan;
     public $modal;
@@ -59,6 +60,7 @@ class VlanModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         $id = $this->vlan->id;
         $this->dispatch('delete', model: $id)->to(ShowVlans::class);
@@ -71,6 +73,7 @@ class VlanModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->validate();
 
         $this->vlan->name = $this->name;
