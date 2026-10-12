@@ -1,4 +1,4 @@
-<tr id="{{ $id }}">
+<tr id="{{ $id }}" style="padding-top:40px;margin-top:-40px;">
     <td class="has-text-centered">
         <i class="mdi mdi-circle is-size-5 {{ $link ? 'has-text-success' : 'has-text-danger' }}"
             wire:loading.class="is-hidden"></i>

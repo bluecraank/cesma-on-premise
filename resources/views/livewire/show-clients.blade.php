@@ -148,7 +148,8 @@
                                 <td><a class="dark-fix-color"
                                         href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                                 </td>
-                                <td colspan="2" style="width:100px">{{ trim($client->port_id) }}</a>
+                                <td colspan="2" style="width:100px">
+                                    <a href="{{ route('show-device', $client->device_id) }}#{{ $devices[$client->device_id]->getPortIdByName($client->port_id) }}">{{ trim($client->port_id) }}</a>
                                 </td>
                                 {{-- <td class="has-text-centered">{{ trim($client->updated_at->format('d.m.Y H:i:s')) }}
                                 </td> --}}

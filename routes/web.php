@@ -28,6 +28,7 @@ use App\Models\Device;
 use App\Models\Vlan;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 

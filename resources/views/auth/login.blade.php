@@ -34,9 +34,9 @@
                                     <div class="field-body">
                                         <div class="field">
                                             <p class="control is-expanded has-icons-left">
-                                                <input value="{{ old('username') }}" placeholder="{{ __('Username') }}"
+                                                <input value="{{ old('username') }}" placeholder="{{ __('E-Mail') }}"
                                                     class="input @error('username') is-danger @enderror" type="text"
-                                                    placeholder="" name="username" autocomplete="username" required
+                                                    placeholder="" name="username" autocomplete="email" required
                                                     autofocus>
                                                 <span class="icon is-small is-left"><i class="mdi mdi-account"></i></span>
                                             </p>

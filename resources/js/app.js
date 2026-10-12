@@ -3,16 +3,16 @@ import $ from 'jquery';
 import 'multiselect/js/jquery.multi-select.js';
 import 'file-saver/dist/FileSaver.min.js';
 
-setTimeout(function () {
+setTimeout(function() {
     $(".notification.is-response").slideUp(250);
 }, 4000)
 
 // $.fn.data() replacement, because empty data attributes are not returned
-$.fn.info = function () {
+$.fn.info = function() {
     var data = {};
-    [].forEach.call(this.get(0).attributes, function (attr) {
+    [].forEach.call(this.get(0).attributes, function(attr) {
         if (/^data-/.test(attr.name)) {
-            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function($0, $1) {
                 return $1.toUpperCase();
             });
             data[camelCaseName] = attr.value;
@@ -22,7 +22,7 @@ $.fn.info = function () {
 }
 
 // Listen on buttons, toggle modals and fill them with data
-$("button").on('click', function () {
+$("button").on('click', function() {
 
     // Form-Submit
     if ($(this).hasClass("no-prevent") || $(this).hasClass("submit")) {
@@ -39,7 +39,7 @@ $("button").on('click', function () {
 
     if ($(this).is(':visible')) {
         // Get data-attributes and put them into classes in modal
-        $.each($(this).info(), function (data_key, data_value) {
+        $.each($(this).info(), function(data_key, data_value) {
             if (data_key !== "modal") {
                 let element = $(modal).find("." + data_key)
                 if (element.is("input[type=checkbox]")) {
@@ -66,7 +66,7 @@ $("button").on('click', function () {
 
                 if (data_key == "sites") {
                     let data = JSON.parse(data_value);
-                    $.each(data, function (key, value) {
+                    $.each(data, function(key, value) {
                         console.log(value);
                         $(modal).find(".checkbox input[value=" + value + "]").prop("checked", true);
                     });
@@ -78,7 +78,7 @@ $("button").on('click', function () {
 });
 
 // Show loading animation in submit button
-$(document).on('submit', 'form', function () {
+$(document).on('submit', 'form', function() {
     $(this).find('button[type=submit]').addClass('is-loading');
     $(this).find('button.submit').addClass('is-loading');
 });
@@ -91,27 +91,27 @@ window.addEventListener("scroll", () => {
     }
 });
 
-$(document).on('keydown', function (e) {
+$(document).on('keydown', function(e) {
     if (e.keyCode === 27) {
         $('.modal').hide();
     }
 });
 
-$(document).mouseup(function (e) {
+$(document).mouseup(function(e) {
     var container = $(".dropdown.is-active");
     if (!container.is(e.target) && container.has(e.target).length === 0) {
         container.removeClass('is-active');
     }
 });
 
-$("#actionLogout").on('click', function (element) {
+$("#actionLogout").on('click', function(element) {
     $("#logoutForm").submit();
 });
 
 function exportCSV(table, name) {
     let csv = [];
     let rows = $(table).find("tr")
-    rows.each(function (index, row) {
+    rows.each(function(index, row) {
         let cells = [];
         if (table.hasClass("without-header")) {
             cells = $(row).find("td");
@@ -121,7 +121,7 @@ function exportCSV(table, name) {
 
 
         let rowText = [];
-        cells.each(function (index, cell) {
+        cells.each(function(index, cell) {
             let text = $(cell).text();
             if (text == "") {
                 text = $(cell).find("span").text();
@@ -138,19 +138,19 @@ function exportCSV(table, name) {
     saveAs(csvFile, name + ".csv");
 }
 
-$(".export-csv-button").on('click', function () {
+$(".export-csv-button").on('click', function() {
     let table = $(this).attr("data-table");
     let name = $(this).attr("data-file-name");
     exportCSV($("." + table), name);
 });
 
-$(".change-site-link").on('click', function () {
+$(".change-site-link").on('click', function() {
     let site = $(this).attr("data-id");
     $(".change-site-input").val(site);
     $("#change-site").submit();
 });
 
-$(".menu-is-dropdown").on('click', '.has-dropdown-icon', function () {
+$(".menu-is-dropdown").on('click', '.has-dropdown-icon', function() {
     let dropdown = $(this).parent();
     dropdown.toggleClass('is-active');
 
@@ -164,8 +164,8 @@ $(".menu-is-dropdown").on('click', '.has-dropdown-icon', function () {
 });
 
 // Execute SSH command
-document.addEventListener('exec-ssh-command', function (e) {
-    setTimeout(function () {
+document.addEventListener('exec-ssh-command', function(e) {
+    setTimeout(function() {
         $(".results .card-content").append(`<button class='is-small is-loading button show-result-button' data-id='${e.detail.id}'>${e.detail.name}</button>`);
     }, 100);
 
@@ -176,8 +176,7 @@ document.addEventListener('exec-ssh-command', function (e) {
     formData.append("id", e.detail.id);
 
     fetch(
-        '/devices/' + e.detail.id + '/execute',
-        {
+        '/devices/' + e.detail.id + '/execute', {
             method: 'POST',
             body: formData
         }
@@ -200,22 +199,22 @@ document.addEventListener('exec-ssh-command', function (e) {
 });
 
 
-$(".results").on('click', '.show-result-button', function () {
+$(".results").on('click', '.show-result-button', function() {
     let id = $(this).attr("data-id");
     $(".output-item").addClass('is-hidden');
     $(".output-item[data-id='" + id + "']").toggleClass('is-hidden');
 });
 
-$(".is-collapsable-button").on('click', function () {
+$(".is-collapsable-button").on('click', function() {
     $(this).parent().parent().siblings('.card-content').toggleClass('is-hidden');
     $(this).find("i").toggleClass('mdi-chevron-down').toggleClass('mdi-chevron-up');
 });
 
 // Sync Vlans
-document.addEventListener('sync-vlan-to-device', function (e) {
+document.addEventListener('sync-vlan-to-device', function(e) {
     console.log(e.detail);
 
-    setTimeout(function () {
+    setTimeout(function() {
         $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
     }, 100);
 
@@ -232,17 +231,16 @@ document.addEventListener('sync-vlan-to-device', function (e) {
 
 
     fetch(
-        '/devices/' + e.detail.device + '/sync-vlans',
-        {
+        '/devices/' + e.detail.device + '/sync-vlans', {
             method: 'POST',
             body: formData
         }
     ).then((resp) => resp.json()).then(response => {
         let testmode = response.test ? " (Testmode)" : "";
 
-        let element = "<span class='has-text-success'>"+response.message+testmode+"</span>";
+        let element = "<span class='has-text-success'>" + response.message + testmode + "</span>";
         if (response.status == "error") {
-            element = "<span class='has-text-danger'>"+response.message+testmode+"</span>";
+            element = "<span class='has-text-danger'>" + response.message + testmode + "</span>";
         }
         let data = `<td>${e.detail.name}</td><td>${element}</td><td>${response.created}</td><td>${response.renamed}</td><td>${response.deleted}</td><td>${response.tagged_to_uplink}</td>`
         $("tbody.results").find(`tr[data-id='${e.detail.device}']`).html(data);
@@ -250,8 +248,9 @@ document.addEventListener('sync-vlan-to-device', function (e) {
 });
 
 function comparer(index) {
-    return function (a, b) {
-        var valA = getCellValue(a, index), valB = getCellValue(b, index)
+    return function(a, b) {
+        var valA = getCellValue(a, index),
+            valB = getCellValue(b, index)
         return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
     }
 }
@@ -261,9 +260,9 @@ function getCellValue(row, index) {
 }
 
 // Table Sorting
-$(document).ready(function () {
-    $('.table thead tr th').click(function (e) {
-        if($(e).children().length > 0) {
+$(document).ready(function() {
+    $('.table thead tr th').click(function(e) {
+        if ($(e).children().length > 0) {
             return;
         }
 
@@ -275,7 +274,7 @@ $(document).ready(function () {
         for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
     });
 
-    $('th label').click(function (e) {
+    $('th label').click(function(e) {
         var table = $(this).parents('table').eq(0)
         var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).attr('data-row')))
 
@@ -291,7 +290,7 @@ $(document).ready(function () {
     })
 });
 
-$(".action").on('click', function () {
+$(".action").on('click', function() {
 
     let action = $(this).attr("data-action");
     let id = $(this).attr("data-id");
@@ -300,19 +299,18 @@ $(".action").on('click', function () {
 
     let url;
 
-    if(action == "backup") {
-        url = "/devices/"+id+"/backup";
-    } else if(action == "update") {
-        url = "/devices/"+id+"/update";
-    } else if(action == "sync-pubkeys") {
-        url = "/devices/"+id+"/sync-pubkeys";
-    } else if(action == "backup-all") {
+    if (action == "backup") {
+        url = "/devices/" + id + "/backup";
+    } else if (action == "update") {
+        url = "/devices/" + id + "/update";
+    } else if (action == "sync-pubkeys") {
+        url = "/devices/" + id + "/sync-pubkeys";
+    } else if (action == "backup-all") {
         url = "/devices/backups";
     }
 
     fetch(
-        url,
-        {
+        url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -320,18 +318,18 @@ $(".action").on('click', function () {
             }
         }
     ).then((resp) => resp.json()).then(response => {
-        var event = new CustomEvent('notify-error', { detail: { message: response.message}})
-        var event2 = new CustomEvent('notify-success', { detail: { message: response.message}})
+        var event = new CustomEvent('notify-error', { detail: { message: response.message } })
+        var event2 = new CustomEvent('notify-success', { detail: { message: response.message } })
 
         $(this).removeClass("is-loading");
 
 
-        if(response.success == "true") {
+        if (response.success == "true") {
             window.dispatchEvent(event2);
-            if(action == "update") {
+            if (action == "update") {
                 setTimeout(() => {
                     document.location.reload();
-                  }, 1000);
+                }, 1000);
             }
             return;
         }
@@ -341,9 +339,25 @@ $(".action").on('click', function () {
 });
 
 
-$(".show-details-of-log").on('click', function () {
+$(".show-details-of-log").on('click', function() {
     console.log("click");
     let data = $(this).attr("data-text");
     $(".modal-log-detail").show();
     $(".modal-log-detail .modal-card-body .content").html(data);
 });
+
+// If div id is set in uri, mark it
+let uri = window.location.href;
+let uriParts = uri.split("#");
+if (uriParts.length > 1) {
+    console.log("triggered");
+    // Blink two times yellow
+    let id = uriParts[1];
+
+    console.log(id);
+
+    element.style.backgroundColor = "yellow";
+    setTimeout(() => {
+        element.style.backgroundColor = "";
+    }, 1500);
+}

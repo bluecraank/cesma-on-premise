@@ -202,28 +202,37 @@
                     <p class="modal-card-title">{{ __('Notification') }}</p>
                 </header>
                 <section class="modal-card-body">
-                    <div class="is-size-3">Patchnotes</div>
-                    <div class="is-size-4 ml-1">
-                        v4.2
+                    <div class="is-inline is-size-3">Patchnotes</div>
+                    <div class="is-inline is-size-4 ml-1">
+                        v4.3
                     </div>
                     <div class="ml-4">
-                        <label class="label">Fixed</label>
+                        <label class="label">NEU!</label>
                         <ul style="list-style: square;" class="ml-5">
-                            <li>Logging beim taggen / untaggen von Vlans hat Fehler geworfen</li>
-                            <li>Bessere Logübersicht</li>
-                            <li>Vlan 1 wird bei der Sync-vlan Übersicht bei Aruba-CX Switchen ignoriert</li>
-                            <li>Doppeltes Logging beim taggen von Vlans entfernt</li>
-                            <li>Vlan erstellen Popup war fehlerhaft</li>
+                            <li>Shortcuts: Strg + Shift + S/C/E = Speichern/Abbrechen/Bearbeiten in der Switch-Portübersicht</li>
+                            <li>Aus der Clients-Übersicht kann nun direkt zum Switch-Port navigiert werden (Klick rechts auf den Switchport)</li>
                         </ul>
-                        <label class="label mt-5">Features</label>
+                    </div>
+
+                    <div class="ml-4">
+                        <label class="label">Änderungen</label>
                         <ul style="list-style: square;" class="ml-5">
-                            <li>Uplinkübersicht aus cesma entfernt</li>
+                            <li>Statt Benutzername wird nun E-Mail-Adresse für den Login verwendet</li>
+                            <li>Kein eigener Scrollbereich mehr in der Portübersicht</li>
+                        </ul>
+                    </div>
+
+                    <div class="ml-4">
+                        <label class="label">Entfernt</label>
+                        <ul style="list-style: square;" class="ml-5">
+                            <li>SSH Konsole</li>
+                            <li>SSO Login</li>
                         </ul>
                     </div>
 
                 </section>
                 <footer class="modal-card-foot">
-                    <button onclick="setCookie('patchnotes', '4.2', 365);" type="button"
+                    <button onclick="setCookie('patchnotes', '4.3', 365);" type="button"
                         class="button">{{ __('Close') }}</button>
                 </footer>
             </div>
@@ -256,7 +265,7 @@
             return "";
         }
 
-        let version = "4.2";
+        let version = "4.3";
         let cookie = getCookie("patchnotes");
         if (cookie != version) {
             $(".patchnotes").show();

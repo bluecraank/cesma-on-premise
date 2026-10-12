@@ -75,6 +75,10 @@ class Device extends Model
         return $this->ports()->where('id', $id)->first()->name;
     }
 
+    public function getPortIdByName($name) {
+        return $this->ports()->where('name', $name)->first()->id;
+    }
+
     public function clients() {
         return $this->hasMany(Client::class);
     }

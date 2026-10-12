@@ -38,11 +38,11 @@ class DatabaseCleanup extends Command
     {
         Mac::whereDate('created_at', '<=', now()->subWeek(1))->delete();
         Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
-        DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
+        DeviceBackup::whereDate('created_at', '<=', now()->subWeek(4))->delete();
         DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
-        SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
-        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
+        SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(3))->delete();
+        \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(6))->where('status', '!=', "declined")->delete();
         \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(1))->where('type', "link-change")->delete();
 
         $vlans_ignore = Vlan::where('is_client_vlan', 0)->get()->keyBy('vid')->toArray();

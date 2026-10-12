@@ -110,20 +110,6 @@
                 </a>
             </li>
         </ul>
-        <p class="menu-label">{{ __('Action') }}</p>
-        <ul class="menu-list">
-            <li>
-                <div
-                    style="position: absolute;width:100%;height:42.5px;line-height:42.5px;text-align:center;color:white;background:rgba(0,0,0,.5)">
-                    Not available
-                </div>
-                <a href="{{ route('ssh') }}" class="@if (Route::currentRouteName() == 'ssh') is-active @endif has-icon">
-                    {{-- has-update-mark --}}
-                    <span class="icon"><i class="mdi mdi-ssh"></i></span>
-                    <span class="menu-item-label">{{ __('Execute SSH') }}</span>
-                </a>
-            </li>
-        </ul>
 
         <p class="menu-label">{{ __('Data') }}</p>
         <ul class="menu-list">

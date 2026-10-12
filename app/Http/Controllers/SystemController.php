@@ -27,7 +27,7 @@ class SystemController extends Controller
         // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
 
         // Check if data is in cache
-        if (Cache::has('deviceStatus')) {
+        if (Cache::has('deviceStatus') && Cache::has('site_id') && Cache::get('site_id') == Auth::user()->currentSite()->id) {
             $deviceStatus = Cache::get('deviceStatus');
             $syncableVlans = Cache::get('syncableVlans');
             $portsToVlans = Cache::get('portsToVlans');
@@ -67,6 +67,10 @@ class SystemController extends Controller
             $deviceStatus[$device->id]['name'] = $device->name;
 
             foreach($devVlans as $vlan) {
+                if(!isset($vlans[$vlan->vlan_id])) {
+                    continue;
+                }
+
                 if($vlan->name == $vlans[$vlan->vlan_id]->name) {
                     $deviceStatus[$device->id]['correctNames']++;
                 } elseif($vlan->vlan_id == 1 && $device->type != 'aruba-os') {
@@ -91,6 +95,7 @@ class SystemController extends Controller
         Cache::put('clients', $clients, 300);
         Cache::put('vlans', $vlans, 300);
         Cache::put('ports', $ports, 300);
+        Cache::put('site_id', Auth::user()->currentSite()->id, 300);
 
         return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
     }
