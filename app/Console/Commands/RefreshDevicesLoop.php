@@ -20,7 +20,7 @@ class RefreshDevicesLoop extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh all devices continuously (SNMP, every 5 minutes API), runs as service';
 
     /**
      * Execute the console command.

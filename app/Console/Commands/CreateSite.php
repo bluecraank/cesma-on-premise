@@ -18,7 +18,7 @@ class CreateSite extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create a new site';
 
     /**
      * Execute the console command.
