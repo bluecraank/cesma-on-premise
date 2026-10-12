@@ -23,76 +23,53 @@ class SystemController extends Controller
 {
     public function dashboard()
     {
-        $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
-        // $notifications = \App\Models\Notification::where('site_id', Auth::user()->currentSite()->id)->orderBy('updated_at', 'DESC')->get();
+        $site_id = Auth::user()->currentSite()->id;
 
-        // Check if data is in cache
-        if (Cache::has('deviceStatus')) {
-            $deviceStatus = Cache::get('deviceStatus');
-            $syncableVlans = Cache::get('syncableVlans');
-            $portsToVlans = Cache::get('portsToVlans');
-            $clientsToVlans = Cache::get('clientsToVlans');
-            $portsOnline = Cache::get('portsOnline');
-            $devicesOnline = Cache::get('devicesOnline');
-            $clients = Cache::get('clients');
-            $vlans = Cache::get('vlans');
-            $ports = Cache::get('ports');
+        $notifications = \App\Models\Notification::where('site_id', $site_id)->where('type', '!=', 'uplink')->orderBy('updated_at', 'DESC')->take(10)->get();
+        // $notifications = \App\Models\Notification::where('site_id', $site_id)->orderBy('updated_at', 'DESC')->get();
 
-            return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
-        }
+        // Cache these data for 5 minutes, separately for every site
+        $data = Cache::remember('dashboard-site-' . $site_id, 300, function () use ($site_id) {
+            $devices = Device::where('site_id', $site_id)->get();
+            $devices = $devices->sort(function ($a, $b) {
+                return strnatcmp($a['name'], $b['name']);
+            });
 
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get();
-        $devices = $devices->sort(function ($a, $b) {
-            return strnatcmp($a['name'], $b['name']);
-        });
+            $vlans = Vlan::where('site_id', $site_id)->get()->keyBy('vid');
+            $clients = Client::where('site_id', $site_id)->get();
+            $ports = DevicePort::whereIn('device_id', $devices->pluck('id'))->get();
 
-        // $vlans = Vlan::all()->count();
-        $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('vid');
-        // $clients = Client::all()->count();
-        $clients = Client::where('site_id', Auth::user()->currentSite()->id)->get();
-        // $ports = DevicePort::all()->count();
-        $ports = DevicePort::whereIn('device_id', $devices->pluck('id'))->get();
+            $deviceStatus = [];
+            foreach($devices as $device) {
+                $deviceStatus[$device->id] = [];
+                $devVlans = $device->vlans()->get();
+                $deviceStatus[$device->id]['correctNames'] = 0;
+                $deviceStatus[$device->id]['vlans'] = $devVlans->count();
+                $deviceStatus[$device->id]['name'] = $device->name;
 
-        $portsToVlans = ChartService::portsToVlans($devices, $vlans);
-        $clientsToVlans = ChartService::clientsToVlans($clients, $vlans);
-        $portsOnline = ChartService::portsOnline($ports);
-        $devicesOnline = ChartService::devicesOnline($devices);
-
-        $deviceStatus = [];
-        foreach($devices as $device) {
-            $deviceStatus[$device->id] = [];
-            $devVlans = $device->vlans()->get();
-            $deviceStatus[$device->id]['correctNames'] = 0;
-            $deviceStatus[$device->id]['vlans'] = $devVlans->count();
-            $deviceStatus[$device->id]['name'] = $device->name;
-
-            foreach($devVlans as $vlan) {
-                if($vlan->name == $vlans[$vlan->vlan_id]->name) {
-                    $deviceStatus[$device->id]['correctNames']++;
-                } elseif($vlan->vlan_id == 1 && $device->type != 'aruba-os') {
-                    $deviceStatus[$device->id]['correctNames']++;
+                foreach($devVlans as $vlan) {
+                    if($vlan->name == ($vlans[$vlan->vlan_id]->name ?? null)) {
+                        $deviceStatus[$device->id]['correctNames']++;
+                    } elseif($vlan->vlan_id == 1 && $device->type != 'aruba-os') {
+                        $deviceStatus[$device->id]['correctNames']++;
+                    }
                 }
             }
-        }
 
-        $ports = $ports->count();
-        $vlans = $vlans->count();
-        $clients = $clients->count();
+            return [
+                'deviceStatus' => $deviceStatus,
+                'syncableVlans' => Vlan::where('site_id', $site_id)->where('is_synced', true)->count(),
+                'portsToVlans' => ChartService::portsToVlans($devices, $vlans),
+                'clientsToVlans' => ChartService::clientsToVlans($clients, $vlans),
+                'portsOnline' => ChartService::portsOnline($ports),
+                'devicesOnline' => ChartService::devicesOnline($devices),
+                'clients' => $clients->count(),
+                'vlans' => $vlans->count(),
+                'ports' => $ports->count(),
+            ];
+        });
 
-        $syncableVlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where('is_synced', true)->get()->count();
-
-        // Cache these data for 5 minutes
-        Cache::put('deviceStatus', $deviceStatus, 300);
-        Cache::put('syncableVlans', $syncableVlans, 300);
-        Cache::put('portsToVlans', $portsToVlans, 300);
-        Cache::put('clientsToVlans', $clientsToVlans, 300);
-        Cache::put('portsOnline', $portsOnline, 300);
-        Cache::put('devicesOnline', $devicesOnline, 300);
-        Cache::put('clients', $clients, 300);
-        Cache::put('vlans', $vlans, 300);
-        Cache::put('ports', $ports, 300);
-
-        return view('dashboard', compact('deviceStatus', 'syncableVlans', 'notifications', 'portsToVlans', 'clientsToVlans', 'portsOnline', 'devicesOnline', 'clients', 'vlans', 'ports'));
+        return view('dashboard', array_merge($data, compact('notifications')));
     }
 
     public function index_usersettings()

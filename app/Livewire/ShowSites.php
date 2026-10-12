@@ -20,6 +20,11 @@ class ShowSites extends Component
     public $numberOfEntries = 25;
     public $search;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $site = Site::where('name', 'LIKE', "%".$this->search."%")->where('id', Auth::user()->currentSite()->id)->firstOrFail();

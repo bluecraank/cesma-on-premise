@@ -20,6 +20,11 @@ class ShowBuildings extends Component
     public $numberOfEntries = 25;
     public $search;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $buildings = Building::orderBy('name')->where('name', 'LIKE', "%".$this->search."%")->where('site_id', Auth::user()->currentSite()->id)->paginate($this->numberOfEntries ?? 25);

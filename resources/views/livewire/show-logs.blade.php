@@ -14,8 +14,8 @@
                 </pre>
             </section>
             <footer class="modal-card-foot">
-                <button data-modal="log-detail" type="button"
-                    class="is-cancel button">{{ __('Close') }}</button>
+                <button onclick="this.closest('.modal').style.display = 'none'" type="button"
+                    class="is-cancel button no-prevent">{{ __('Close') }}</button>
             </footer>
         </div>
     </div>
@@ -93,7 +93,7 @@
             color: #868eeb;
         }
 
-        log-warning {
+        .log-warning {
             color: #d1bf84;
         }
 

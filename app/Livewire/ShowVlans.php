@@ -29,6 +29,11 @@ class ShowVlans extends Component
         $this->checkLogin();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $search = '%' . $this->search . '%';

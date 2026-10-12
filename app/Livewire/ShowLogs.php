@@ -23,6 +23,11 @@ class ShowLogs extends Component
         $this->checkLogin();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         return view('livewire.show-logs',[

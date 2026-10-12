@@ -70,6 +70,10 @@ class BackupController extends Controller
     }
 
     static function sendMail() {
+        if (empty(config('app.backup_mail_address'))) {
+            CLog::error("Backup", 'Backup status mail not sent, BACKUP_MAIL_ADDRESS is not set');
+            return;
+        }
 
         // Do not load the (large) backup contents
         $backups = DeviceBackup::get(['id', 'device_id', 'status', 'created_at']);

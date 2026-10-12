@@ -86,15 +86,17 @@ class Device extends Model
     }
 
     public function active() {
-        try {
-            if ($fp = fsockopen($this->hostname, 22, $errCode, $errStr, 0.2)) {
-                fclose($fp);
-                return true;
+        // Cached, the check is called several times per page and for every device in lists
+        return \Illuminate\Support\Facades\Cache::remember('device-active-' . $this->id, 60, function () {
+            try {
+                if ($fp = fsockopen($this->hostname, 22, $errCode, $errStr, 0.2)) {
+                    fclose($fp);
+                    return true;
+                }
+            } catch (\Exception $e) {
             }
-            fclose($fp);
-        } catch (\Exception $e) {
-        }
 
-        return false;
+            return false;
+        });
     }
 }

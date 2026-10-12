@@ -181,9 +181,11 @@
                             </table>
                         </div>
                     </div>
+                    @if (Auth::user()->role >= 1)
                     <div class="has-text-centered m-3">
                         <a href="{{ route('sync-vlans') }}" class="has-text-centered">{{ __('Go to vlan sync') }}</a>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

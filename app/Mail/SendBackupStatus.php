@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Device;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -42,7 +41,7 @@ class SendBackupStatus extends Mailable
         }
 
         return new Envelope(
-            subject: 'Backup report for ' . Device::count() . ' devices - ' . $title . ' - '. date('d.m.Y'),
+            subject: 'Backup report for ' . count($this->devices) . ' devices - ' . $title . ' - '. date('d.m.Y'),
         );
     }
 

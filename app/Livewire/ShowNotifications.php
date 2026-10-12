@@ -24,6 +24,7 @@ class ShowNotifications extends Component
 
         if(!$notification) {
             $this->dispatch('notify-error', message: 'Notification not found');
+            return;
         }
 
 
@@ -33,10 +34,12 @@ class ShowNotifications extends Component
 
         if(!$port) {
             $this->dispatch('notify-error', message: 'Port not found');
+            return;
         }
 
         if(!$device) {
             $this->dispatch('notify-error', message: 'Device not found');
+            return;
         }
 
         $notification->status = 'accepted';
@@ -58,25 +61,19 @@ class ShowNotifications extends Component
 
         if(!$notification) {
             $this->dispatch('notify-error', message: 'Notification not found');
+            return;
         }
 
+        // Declining also works if the port or device does not exist anymore
         $data = json_decode($notification->data, true);
-        $port = DevicePort::where('device_id', $notification->device_id)->where('name', $data['port'])->first();
-        $device = \App\Models\Device::find($notification->device_id);
-
-        if(!$port) {
-            $this->dispatch('notify-error', message: 'Port not found');
-        }
-
-        if(!$device) {
-            $this->dispatch('notify-error', message: 'Device not found');
-        }
+        $port_name = $data['port'] ?? '?';
+        $device_name = \App\Models\Device::find($notification->device_id)?->name ?? 'unknown';
 
         $notification->status = 'declined';
         $notification->save();
 
-        CLog::info("Device", "Declined Port {$data['port']} as uplink for device {$device->name}");
-        $this->dispatch('notify-success', message: "Declined Port {$data['port']} as uplink for device {$device->name}");
+        CLog::info("Device", "Declined Port {$port_name} as uplink for device {$device_name}");
+        $this->dispatch('notify-success', message: "Declined Port {$port_name} as uplink for device {$device_name}");
     }
 
     public function render()
