@@ -60,8 +60,8 @@ class ShowLogs extends Component
             }
         });
 
-        if ($this->search !== "") {
-            $search = '%' . $this->search . '%';
+        if (trim($this->search) !== "") {
+            $search = \App\Helper\Utilities::like($this->search);
             $logs->where(function ($query) use ($search) {
                 $query->where('description', 'like', $search)
                     ->orWhere('device_name', 'like', $search)

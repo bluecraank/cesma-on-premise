@@ -36,17 +36,15 @@ class ShowVlans extends Component
 
     public function render()
     {
-        $search = '%' . $this->search . '%';
+        $search = \App\Helper\Utilities::like($this->search);
 
+        // vid is numeric, the database order is already correct
         $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($search) {
             $query->where('name', 'like', $search)
             ->orWhere('vid', 'like', $search)
-            ->orWhere('description', 'like', $search);
+            ->orWhere('description', 'like', $search)
+            ->orWhere('ip_range', 'like', $search);
         })->orderBy('vid')->paginate($this->numberOfEntries ?? 25);
-
-        $vlans->sort(function ($a, $b) {
-            return strnatcmp($a->vid, $b->vid);
-        });
 
 
         return view('livewire.show-vlans', [

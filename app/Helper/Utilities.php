@@ -4,6 +4,27 @@ namespace App\Helper;
 
 class Utilities
 {
+    /**
+     * Search term for a "like" query: % and _ in the input are searched literally
+     * instead of acting as wildcards, surrounding whitespace is ignored.
+     */
+    public static function like($value): string
+    {
+        return '%' . addcslashes(trim((string) $value), '%_\\') . '%';
+    }
+
+    /**
+     * Natural sort ("Room 2" before "Room 10") of the current page of a paginator.
+     */
+    public static function sortPageNaturally($paginator, string $attribute)
+    {
+        $paginator->setCollection($paginator->getCollection()->sort(function ($a, $b) use ($attribute) {
+            return strnatcasecmp((string) $a[$attribute], (string) $b[$attribute]);
+        })->values());
+
+        return $paginator;
+    }
+
     public static function CheckSSHCommand($command)
     {
         if (!is_string($command) || trim($command) === '') {
