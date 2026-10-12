@@ -15,6 +15,7 @@ use Livewire\Attributes\Url;
 
 class ShowBackups extends Component
 {
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -29,15 +30,22 @@ class ShowBackups extends Component
         $this->checkLogin();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where('name', 'LIKE', '%'.$this->search.'%')->orderBy('name')->paginate($this->numberOfEntries ?? 25);
+        $search = \App\Helper\Utilities::like($this->search);
+
+        $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($search) {
+            $query->where('name', 'like', $search)->orWhere('hostname', 'like', $search);
+        })->orderBy('name')->paginate($this->numberOfEntries ?? 25);
 
         // Big performance improve if we only get the last backup for each device
         foreach ($devices as $device) {
-            $backup = DeviceBackup::where('device_id', $device->id)->latest()->first();
-            $backups[] = $backup;
-            $device->last_backup = $backup;
+            $device->last_backup = DeviceBackup::where('device_id', $device->id)->latest()->first();
         }
 
         $newDevices = $devices->sort(function ($a, $b) {
@@ -54,6 +62,7 @@ class ShowBackups extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         DeviceBackup::where('id', $model)->delete();
     }
 }

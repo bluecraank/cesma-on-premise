@@ -11,6 +11,8 @@ class Log extends Model
         'level',
         'user',
         'user_id',
+        'ip',
+        'site_id',
         'device_id',
         'device_name',
         'description',

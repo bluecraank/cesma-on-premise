@@ -64,12 +64,14 @@ class DeviceService
         }
 
         // Update device vlan ports
-        if(isset($data['vlans'])) {
+        $uplinks = $data['uplinks'] ?? [];
+        if(isset($data['vlanports'])) {
             $new_uplinks = UpdateDeviceData::updateVlanPorts($data['vlanports'], $device);
-            $uplinks = array_merge($data['uplinks'], $new_uplinks['uplinks']);
+            $uplinks = array_merge($uplinks, $new_uplinks['uplinks']);
         }
 
         // Update device uplinks
+        $found_uplinks = [];
         if(isset($data['uplinks'])) {
             $found_uplinks = UpdateDeviceData::updateDeviceUplinks($data['uplinks'], $uplinks, $device);
         }
@@ -84,7 +86,7 @@ class DeviceService
             UpdateDeviceData::updateMacData($data['macs'], $found_uplinks, $device);
         }
         // Check for uplinks
-        if(isset($found_uplinks)) {
+        if(isset($data['uplinks'])) {
             UpdateDeviceData::checkForUplinks($device, $found_uplinks);
         }
 
@@ -97,11 +99,8 @@ class DeviceService
         DeviceUplink::where('device_id', $id)->delete();
         Notification::where('unique-identifier', 'LIKE', '%-'.$id.'-%')->delete();
         DeviceVlanPort::where('device_id', $id)->delete();
-        DevicePortStat::where(function ($query) use ($ports) {
-            foreach ($ports as $port) {
-                $query->orWhere('device_port_id', $port);
-            }
-        })->delete();
+        // whereIn with an empty list matches nothing (an empty where closure would match every row)
+        DevicePortStat::whereIn('device_port_id', $ports)->delete();
         DevicePort::where('device_id', $id)->delete();
         DeviceVlan::where('device_id', $id)->delete();
         Client::where('device_id', $id)->delete();
@@ -175,6 +174,6 @@ class DeviceService
         }
         $class = config('app.types')[$device->type];
         list($cookie, $api_version) = explode(";", $cookie);
-        $class::API_LOGOUT($device, $cookie, $api_version);
+        $class::API_LOGOUT($device->hostname, $cookie, $api_version);
     }
 }

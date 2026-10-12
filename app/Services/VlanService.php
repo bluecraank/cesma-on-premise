@@ -37,7 +37,7 @@ class VlanService
         $vlan = Vlan::where('vid', $request['vid'])->where('site_id', Auth::user()->currentSite()->id)->first();
         
         if(!$vlan) {
-            CLog::error("VLAN", "VLAN {$request->input('name')} ({$request->input('vid')}) not found");
+            CLog::error("VLAN", "VLAN {$request['name']} ({$request['vid']}) not found");
             return false;
         }
 
@@ -49,9 +49,11 @@ class VlanService
             'is_client_vlan' => $is_client_vlan,
         ]);
         
-        return $updated;
+        if ($updated) {
+            CLog::info("VLAN", "VLAN {$request['name']} ({$vlan->vid}) updated");
+        }
 
-        CLog::info("VLAN", "VLAN {$request->input('name')} ({$vlan->vid}) updated");
+        return $updated;
 
     }
 

@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => env('APP_LOCALE', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -213,6 +213,14 @@ return [
         'dell-emc-powerswitch' => true,
     ],
 
+    // Device types which implement createBackup()
+    'backup_support' => [
+        'aruba-os' => true,
+        'aruba-cx' => true,
+        'dell-emc' => false,
+        'dell-emc-powerswitch' => false,
+    ],
+
     'write_type' => [
         'aruba-os' => 'api',
         'aruba-cx' => 'api',
@@ -221,8 +229,8 @@ return [
     ],
 
     'api_username' => env('API_USERNAME', 'admin'),
-    'ssh_private_key' => env('SSH_PRIVATEKEY', 'false'),
-    'ssh_username' => env('SSH_USERNAME', 'false'),
+    'ssh_private_key' => env('SSH_PRIVATEKEY', false),
+    'ssh_username' => env('SSH_USERNAME', 'admin'),
 
     'https' => (env('API_HTTPS') == "true") ? "https://" : "http://",
 

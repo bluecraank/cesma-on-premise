@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Helper\CLog;
 use App\Models\Device;
 use Illuminate\Console\Command;
 use App\Devices\ArubaCX;
@@ -39,9 +40,18 @@ class DeviceBackup extends Command
             return;
         }
 
-        $class = config('app.types')[$device->type];
-        $class::createBackup($device);
+        if (!(config('app.backup_support')[$device->type] ?? false)) {
+            Log::info('Backup for device ' . $device->id . ' skipped, device type does not support backups');
+            return;
+        }
 
-        Log::info('Backup for device ' . $device->id . ' created');
+        $class = config('app.types')[$device->type];
+
+        if ($class::createBackup($device)) {
+            Log::info('Backup for device ' . $device->id . ' created');
+        } else {
+            Log::error('Backup for device ' . $device->id . ' failed');
+            CLog::error("Backup", "Scheduled backup of switch {$device->name} failed", $device);
+        }
     }
 }

@@ -21,6 +21,20 @@ $.fn.info = function () {
     return data;
 }
 
+// Escape text before it is inserted as HTML
+function escapeHtml(text) {
+    return $('<div>').text(text ?? '').html();
+}
+
+// Parse a JSON response, also for errors like 403 (no permission), 419 (session expired) or 500
+function parseResponse(resp) {
+    if (!resp.ok) {
+        let message = resp.status == 403 ? 'No permission' : (resp.status == 419 ? 'Session expired, please reload the page' : 'Request failed (' + resp.status + ')');
+        return Promise.reject(new Error(message));
+    }
+    return resp.json();
+}
+
 // Listen on buttons, toggle modals and fill them with data
 $("button").on('click', function () {
 
@@ -38,6 +52,8 @@ $("button").on('click', function () {
     $(modal).toggle();
 
     if ($(this).is(':visible')) {
+        $(modal).find(".site-permission").prop("checked", false);
+
         // Get data-attributes and put them into classes in modal
         $.each($(this).info(), function (data_key, data_value) {
             if (data_key !== "modal") {
@@ -45,29 +61,25 @@ $("button").on('click', function () {
                 if (element.is("input[type=checkbox]")) {
                     let negate = element.attr("data-negate");
 
+                    let checked = data_value == 1;
+
                     if (negate) {
-                        data_value = !data_value;
+                        checked = !checked;
                     }
 
-                    if (data_value == 1) {
-                        element.prop("checked", true);
-                    } else {
-                        element.prop("checked", false);
-                    }
+                    element.prop("checked", checked);
                 } else if (element.is("select")) {
-                    element.find("option[value=" + data_value + "]").attr("selected", "selected");
+                    element.val(data_value);
                 } else if (element.is("textarea")) {
-                    element.html(data_value);
+                    element.val(data_value);
                 } else if (element.is("input")) {
                     element.val(data_value);
                 }
 
-                $(modal).find(".site-permission").prop("checked", false);
 
                 if (data_key == "sites") {
                     let data = JSON.parse(data_value);
                     $.each(data, function (key, value) {
-                        console.log(value);
                         $(modal).find(".checkbox input[value=" + value + "]").prop("checked", true);
                     });
                 }
@@ -128,7 +140,8 @@ function exportCSV(table, name) {
             }
             text = text.trim();
 
-            rowText.push(text);
+            // Quote fields so separators, quotes and line breaks in the content do not break the file
+            rowText.push('"' + text.replace(/"/g, '""') + '"');
         });
 
         csv.push(rowText.join(';'));
@@ -166,7 +179,7 @@ $(".menu-is-dropdown").on('click', '.has-dropdown-icon', function () {
 // Execute SSH command
 document.addEventListener('exec-ssh-command', function (e) {
     setTimeout(function () {
-        $(".results .card-content").append(`<button class='is-small is-loading button show-result-button' data-id='${e.detail.id}'>${e.detail.name}</button>`);
+        $(".results .card-content").append(`<button class='is-small is-loading button show-result-button' data-id='${e.detail.id}'>${escapeHtml(e.detail.name)}</button>`);
     }, 100);
 
     let formData = new FormData();
@@ -181,12 +194,9 @@ document.addEventListener('exec-ssh-command', function (e) {
             method: 'POST',
             body: formData
         }
-    ).then((resp) => resp.json()).then(response => {
-        console.log("Result!")
-        console.log(response);
-
+    ).then(parseResponse).catch(error => ({ status: 'xmark', output: error.message })).then(response => {
         let button = $(".results .card-content").find(`button[data-id='${e.detail.id}']`);
-        button.html(e.detail.name);
+        button.text(e.detail.name);
         if (response.status == "check") {
             button.addClass('is-success');
         } else {
@@ -195,7 +205,7 @@ document.addEventListener('exec-ssh-command', function (e) {
 
         button.removeClass('is-loading');
 
-        $(".output-data").append(`<div data-id='${e.detail.id}' class='output-item is-hidden'><pre>${response.output}</pre></div>`);
+        $(".output-data").append(`<div data-id='${e.detail.id}' class='output-item is-hidden'><pre>${escapeHtml(response.output)}</pre></div>`);
     });
 });
 
@@ -216,7 +226,7 @@ document.addEventListener('sync-vlan-to-device', function (e) {
     console.log(e.detail);
 
     setTimeout(function () {
-        $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${e.detail.name}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
+        $("tbody.results").append(`<tr data-id='${e.detail.device}'><td>${escapeHtml(e.detail.name)}</td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td><td><button class='is-white button is-loading'></button></td></tr>`);
     }, 100);
 
     let formData = new FormData();
@@ -237,14 +247,13 @@ document.addEventListener('sync-vlan-to-device', function (e) {
             method: 'POST',
             body: formData
         }
-    ).then((resp) => resp.json()).then(response => {
+    ).then(parseResponse).catch(error => ({ status: 'error', message: error.message })).then(response => {
         let testmode = response.test ? " (Testmode)" : "";
+        let failed = response.status == "error" || response.success == "false";
+        let value = (v) => escapeHtml(v ?? '-');
 
-        let element = "<span class='has-text-success'>"+response.message+testmode+"</span>";
-        if (response.status == "error") {
-            element = "<span class='has-text-danger'>"+response.message+testmode+"</span>";
-        }
-        let data = `<td>${e.detail.name}</td><td>${element}</td><td>${response.created}</td><td>${response.renamed}</td><td>${response.deleted}</td><td>${response.tagged_to_uplink}</td>`
+        let element = `<span class='${failed ? 'has-text-danger' : 'has-text-success'}'>${value(response.message)}${testmode}</span>`;
+        let data = `<td>${escapeHtml(e.detail.name)}</td><td>${element}</td><td>${value(response.created)}</td><td>${value(response.renamed)}</td><td>${value(response.deleted)}</td><td>${value(response.tagged_to_uplink)}</td>`
         $("tbody.results").find(`tr[data-id='${e.detail.device}']`).html(data);
     });
 });
@@ -296,6 +305,11 @@ $(".action").on('click', function () {
     let action = $(this).attr("data-action");
     let id = $(this).attr("data-id");
 
+    // Disabled links (e.g. device offline) have no action
+    if (!action || $(this).is('[disabled]') || $(this).hasClass('is-loading')) {
+        return false;
+    }
+
     $(this).addClass("is-loading");
 
     let url;
@@ -319,7 +333,7 @@ $(".action").on('click', function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
             }
         }
-    ).then((resp) => resp.json()).then(response => {
+    ).then(parseResponse).catch(error => ({ success: 'false', message: error.message })).then(response => {
         var event = new CustomEvent('notify-error', { detail: { message: response.message}})
         var event2 = new CustomEvent('notify-success', { detail: { message: response.message}})
 
@@ -341,9 +355,8 @@ $(".action").on('click', function () {
 });
 
 
-$(".show-details-of-log").on('click', function () {
-    console.log("click");
+$(document).on('click', '.show-details-of-log', function () {
     let data = $(this).attr("data-text");
     $(".modal-log-detail").show();
-    $(".modal-log-detail .modal-card-body .content").html(data);
+    $(".modal-log-detail .modal-card-body .content").text(data);
 });

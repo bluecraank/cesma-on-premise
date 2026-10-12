@@ -14,10 +14,10 @@ class Router implements ClientProviderInterface
 
         $routers = RouterModel::all()->pluck('ip')->toArray();
 
-        foreach($routers as $router) {
+        foreach($routers as $router_ip) {
                 try {
-                    $snmp_data = snmp2_real_walk($router, 'public', '.1.3.6.1.2.1.4.22.1.2', 5000000, 1);
-                    $router = RouterModel::where('ip', $router)->first();
+                    $snmp_data = snmp2_real_walk($router_ip, 'public', '.1.3.6.1.2.1.4.22.1.2', 5000000, 1);
+                    $router = RouterModel::where('ip', $router_ip)->first();
                     foreach($snmp_data as $ip => $mac) {
                         if(count($snmp_data) > 1) {
                             $router->check = true;
@@ -27,8 +27,8 @@ class Router implements ClientProviderInterface
                             continue;
                         }
 
-                        $filtered_ip = explode(".", $ip);
-                        $filtered_ip = $filtered_ip[11] . "." . $filtered_ip[12] . "." . $filtered_ip[13] . "." . $filtered_ip[14];
+                        // The ip address is the last part of the oid, independent of the oid output format
+                        $filtered_ip = implode(".", array_slice(explode(".", $ip), -4));
                         $filtered_mac = strtolower(str_replace(" ", "", strstr($mac, " ")));
 
                         $ip_to_mac[$filtered_mac] = [
@@ -42,9 +42,9 @@ class Router implements ClientProviderInterface
                         $router->save();
                     }
                 } catch(\Exception $e) {
-                    RouterModel::where('ip', $router)->update(['check' => false]);
+                    RouterModel::where('ip', $router_ip)->update(['check' => false]);
 
-                    Log::error("Could not fetch snmp from $router (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
+                    Log::error("Could not fetch snmp from $router_ip (No response, Port blocked?, Wrong community?, Wrong IP?, Not allowed?)");
                 }
         }
 

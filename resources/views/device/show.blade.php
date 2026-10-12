@@ -13,7 +13,7 @@
                     </a>
                 </p>
                 <p class="subtitle">
-                    {{ Illuminate\Support\Carbon::parse($device->last_seen)?->diffForHumans() ?? 'Never' }}</p>
+                    {{ $device->last_seen ? Illuminate\Support\Carbon::parse($device->last_seen)->diffForHumans() : __('Never') }}</p>
             </div>
         </div>
 
@@ -21,9 +21,11 @@
         <div class="column">
             <div class="box">
                 <p class="heading"><strong>Vlans</strong>
+                    @if (Auth::user()->role >= 1)
                     <a href="{{ route('sync-vlans') }}" class="is-pulled-right is-fullwidth is-small is-success">
                         <i class="is-hidden-touch mr-1 mdi mdi-network"></i> Sync Vlans
                     </a>
+                    @endif
                 </p>
                 <p class="subtitle">{{ $device->vlans->count() }}</p>
             </div>
@@ -42,7 +44,8 @@
             <div class="box">
                 <p class="heading"><strong>Ports online</strong></p>
                 <p class="subtitle">
-                    {{ $device->ports->where('link', true)->count() }}/{{ $device->ports->count() - $device->uplinks->groupBy('name')->count() }}
+                    @php($uplinkPorts = $device->uplinks->pluck('name')->unique())
+                    {{ $device->ports->where('link', true)->whereNotIn('name', $uplinkPorts)->count() }}/{{ $device->ports->whereNotIn('name', $uplinkPorts)->count() }}
                 </p>
             </div>
         </div>
@@ -66,6 +69,7 @@
                     ->diffInMinutes($endDate);
             @endphp
 
+            @if (Auth::user()->role >= 1)
             <div class="columns">
 
                 <div class="column">
@@ -92,6 +96,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <div x-cloak class="card has-table" x-data="{ open: true }">
                 <header class="card-header">

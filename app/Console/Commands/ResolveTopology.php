@@ -104,7 +104,7 @@ class ResolveTopology extends Command
                             $mac_data[$device->id][$key[12]]['is_switch'] = true;
                             $mac_data[$device->id][$key[12]]['local_device'] = $device->id;
                             $mac_data[$device->id][$key[12]]['local_port'] = $ifIndexesKey[$key[12]] ?? 0;
-                            $portName = DevicePort::where('device_id', $device->id)->where('snmp_if_index', $ifIndexesKey[$key[12]])->get('name');
+                            $portName = DevicePort::where('device_id', $device->id)->where('snmp_if_index', $ifIndexesKey[$key[12]] ?? null)->get('name');
                             if($portName && isset($portName[0])) {
                                 $mac_data[$device->id][$key[12]]['local_port'] = $portName[0]->name;
                             } else {
@@ -122,8 +122,13 @@ class ResolveTopology extends Command
 
         foreach($mac_data as $data) {
             foreach($data as $knoten) {
-                if(str_contains($knoten['remote_port'], " ") || empty($knoten['remote_port'])) {
-                    $remote_port = $knoten['remote_port_2'];
+                // Only neighbours which were identified as switch (local device and port are set)
+                if(!isset($knoten['local_device'])) {
+                    continue;
+                }
+
+                if(empty($knoten['remote_port']) || str_contains($knoten['remote_port'], " ")) {
+                    $remote_port = $knoten['remote_port_2'] ?? '';
                 } else {
                     $remote_port = $knoten['remote_port'];
                 }
@@ -137,7 +142,7 @@ class ResolveTopology extends Command
                     'local_port' => $knoten['local_port'] ?? 0,
                     'remote_device' => $knoten['remote_device'] ?? 0,
                     'remote_port' => $remote_port,
-                    'remote_mac' => $knoten['mac_address'],
+                    'remote_mac' => $knoten['mac_address'] ?? '',
                 ]);
             }
         }

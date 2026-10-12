@@ -10,6 +10,7 @@ use Livewire\Attributes\Rule;
 
 class RoomModals extends Component
 {
+    use \App\Traits\ChecksRole;
 
     public $show = false;
     public $room;
@@ -41,6 +42,7 @@ class RoomModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         if($this->room->devices()->count() >= 1) {
             $this->dispatch('notify-error', message: __('You cannot delete a room with devices'));
@@ -59,6 +61,7 @@ class RoomModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->validate();
 
         $temp = $this->room->name;

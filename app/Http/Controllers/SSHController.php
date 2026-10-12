@@ -53,28 +53,31 @@ class SSHController extends Controller
         $return->output = '';
         $return->id = $device->id;
 
+        if (config('app.read-only')[$device->type] ?? true) {
+            $return->status = 'xmark';
+            $return->output = __('This device is read-only');
+            CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command]);
+            return json_encode($return, true);
+        }
+
         if (Utilities::CheckSSHCommand($command)) {
             $ssh = new SSH2($device->hostname);
             if (config('app.ssh_private_key')) {
                 $private_key = Storage::disk('local')->get('ssh.key');
 
-                if(config('app.read-only')[$device->type]) {
-                    $return->status = 'xmark';
-                    $return->output = __('This device is read-only');
-                    return json_encode($return, true);
-                }
-
                 if($private_key === NULL) {
                     $return->status = 'xmark';
                     $return->output = __('Use private key enabled, but no key found');
+                    CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command]);
                     return json_encode($return, true);
                 }
 
-                $decrypt = Crypt::decrypt(Storage::disk('local')->get('ssh.key'));
-
-                if ($decrypt === NULL) {
+                try {
+                    $decrypt = Crypt::decrypt($private_key);
+                } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                     $return->status = 'xmark';
                     $return->output = __('Private key decryption failed');
+                    CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command]);
                     return json_encode($return, true);
                 }
 
@@ -88,12 +91,14 @@ class SSHController extends Controller
             try {
                 if (!$ssh->login(config('app.ssh_username'), $key)) {
                     $return->status = 'xmark';
-                    $return->output = __('Login with private key failed');
+                    $return->output = __('SSH login failed');
+                    CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command]);
                     return json_encode($return, true);
                 }
             } catch (\Exception $e) {
                 $return->status = 'xmark';
                 $return->output = __('No connection to device');
+                CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command, 'reason' => $e->getMessage()]);
                 return json_encode($return, true);
             }
 
@@ -148,7 +153,8 @@ class SSHController extends Controller
                     $return->output = $output;
                 }
 
-                CLog::info("SSH", "SSH Command executed", $device, $command);
+                // The switch reported an error (e.g. "Invalid input") for the command
+                CLog::write("SSH", $return->status == 'check' ? 'info' : 'warning', "SSH command executed" . ($return->status == 'check' ? '' : ' with errors'), $device, ['command' => $command, 'output' => mb_strimwidth($return->output, 0, 2000, '...')]);
 
                 return json_encode($return, true);
             }
@@ -156,10 +162,11 @@ class SSHController extends Controller
             $return->status = 'xmark';
             $return->output = 'Connection Failed';
 
+            CLog::error("SSH", "SSH command failed: " . $return->output, $device, ['command' => $command]);
             return json_encode($return, true);
         }
 
-        CLog::error("SSH", "SSH Command not allowed", $device, $command);
+        CLog::warning("SSH", "SSH command not allowed", $device, ['command' => $command]);
 
         $return->output = "Command not allowed";
         $return->status = 'xmark';

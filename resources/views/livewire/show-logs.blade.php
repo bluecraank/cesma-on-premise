@@ -14,8 +14,8 @@
                 </pre>
             </section>
             <footer class="modal-card-foot">
-                <button data-modal="log-detail" type="button"
-                    class="is-cancel button">{{ __('Close') }}</button>
+                <button onclick="this.closest('.modal').style.display = 'none'" type="button"
+                    class="is-cancel button no-prevent">{{ __('Close') }}</button>
             </footer>
         </div>
     </div>
@@ -31,9 +31,32 @@
                 <x-export-button :filename="__('Logs')" table="table" />
 
                 <div class="is-inline-block">
+                    <div class="select is-small">
+                        <select wire:model.live="level">
+                            <option value="">{{ __('All levels') }}</option>
+                            <option value="error">ERROR</option>
+                            <option value="warning">WARNING</option>
+                            <option value="info">INFO</option>
+                            <option value="debug">DEBUG</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="is-inline-block">
+                    <div class="select is-small">
+                        <select wire:model.live="category">
+                            <option value="">{{ __('All categories') }}</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category }}">{{ $category }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="is-inline-block">
                     <div class="field">
                         <div class="control has-icons-right">
-                            <input class="input is-small" type="text" wire:model.live="search"
+                            <input class="input is-small" type="text" wire:model.live.debounce.400ms="search"
                                 placeholder="{{ __('Search for logs') }}">
                             <span class="icon is-small is-right">
                                 <i class="mdi mdi-search-web"></i>
@@ -61,9 +84,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($logs as $log)
+                            @if ($logs->count() == 0)
                                 <tr>
-                                    <td>{{ $log->created_at->format('m/d/Y H:i:s') }}</td>
+                                    <td colspan="7" class="has-text-centered">{{ __('No logs found') }}</td>
+                                </tr>
+                            @endif
+                            @foreach ($logs as $log)
+                                @php
+                                    // Readable details: pretty printed json and where the action came from
+                                    $info = json_decode($log->additional_info ?? '', true);
+                                    $details = is_array($info) ? json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : ($log->additional_info ?? '');
+                                    if ($log->ip) {
+                                        $details = trim($details . "\n\nIP: " . $log->ip);
+                                    }
+                                @endphp
+                                <tr wire:key="log-{{ $log->id }}">
+                                    <td>{{ $log->created_at->format('d.m.Y H:i:s') }}</td>
                                     <td>{{ $log->user ?? 'No User' }}</td>
                                     <td style="width:100px;"><span
                                             class="log-{{ strtolower($log->level) }}">{{ strtoupper($log->level) }}</span>
@@ -76,7 +112,9 @@
                                     </td>
                                     <td>{{ $log->description }}</td>
                                     <td class="is-pulled-right">
-                                        <button data-text='{{ $log->additional_info }}' class="show-details-of-log is-info button is-small">{{ __('Details') }}</button>
+                                        @if ($details !== '')
+                                            <button data-text="{{ $details }}" class="show-details-of-log is-info button is-small no-prevent">{{ __('Details') }}</button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -93,7 +131,7 @@
             color: #868eeb;
         }
 
-        log-warning {
+        .log-warning {
             color: #d1bf84;
         }
 

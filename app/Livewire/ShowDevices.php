@@ -18,6 +18,7 @@ use Livewire\Attributes\Url;
 
 class ShowDevices extends Component
 {
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -33,13 +34,24 @@ class ShowDevices extends Component
         $this->checkLogin();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $search = '%' . $this->search . '%';
+        $search = \App\Helper\Utilities::like($this->search);
         $https = config('app.https', 'http://');
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use($search) {
-            $query->where('name', 'like', $search)->orWhere('hostname', 'like', $search);
+            $query->where('name', 'like', $search)
+                ->orWhere('hostname', 'like', $search)
+                ->orWhere('named', 'like', $search)
+                ->orWhere('model', 'like', $search)
+                ->orWhere('serial', 'like', $search)
+                ->orWhere('firmware', 'like', $search)
+                ->orWhere('mac_address', 'like', \App\Helper\Utilities::like(str_replace([':', '-', '.', ' '], '', strtolower($this->search))));
         })->orderBy('name', 'asc');
 
         $devices = $devices->paginate($this->numberOfEntries);
@@ -77,6 +89,7 @@ class ShowDevices extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         Device::where('id', $model)->delete();
     }
 }

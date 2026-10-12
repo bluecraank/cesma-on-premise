@@ -8,6 +8,7 @@ use Livewire\Component;
 
 class DeviceExecuteSSH extends Component
 {
+    use \App\Traits\ChecksRole;
     public $type;
     public $devices = [];
     public $command;
@@ -21,6 +22,7 @@ class DeviceExecuteSSH extends Component
 
     public function execute()
     {
+        $this->requireAdmin();
         if (!$this->devices || count($this->devices) == 0) {
             $this->dispatch('notify-error', message: __('No devices selected'));
             return;
@@ -33,6 +35,7 @@ class DeviceExecuteSSH extends Component
 
         if (!Utilities::CheckSSHCommand($this->command)) {
             $this->dispatch('notify-error', message: __('This ssh command is not allowed'));
+            return;
         }
 
         foreach($this->devices as $device) {

@@ -17,10 +17,8 @@ use App\Livewire\ShowClients;
 use App\Livewire\ShowDeviceBackups;
 use App\Livewire\ShowDevices;
 use App\Livewire\ShowLogs;
-use App\Livewire\ShowReports;
 use App\Livewire\ShowRooms;
 use App\Livewire\ShowSites;
-use App\Livewire\ShowUplinks;
 use App\Livewire\ShowUsers;
 use App\Livewire\ShowVlans;
 use App\Livewire\SyncVlans;
@@ -60,10 +58,6 @@ Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
         $trail->push(__('Logs'), route('logs'));
     })->name('logs');
 
-    Route::get('reports', ShowReports::class)->breadcrumbs(function (Trail $trail) {
-        $trail->push(__('Reports'), route('reports'));
-    })->name('reports');
-
     Route::get('topology', [SystemController::class, 'index_topology'])->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Topology'), route('topology'));
     })->name('topology');
@@ -88,17 +82,17 @@ Route::prefix('devices')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Devices'), route('devices'));
     })->name('devices');
 
-    Route::post('/{device}/execute', [SSHController::class, 'performSSH'])->name('perform-ssh');
-    Route::post('/{device}/backup', [DeviceController::class, 'createBackup'])->name('create-backup');
-    Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->name('sync-pubkeys');
-    Route::post('/{device}/sync-vlans', [DeviceController::class, 'syncVlansToDevice'])->name('sync-vlans');
+    Route::post('/{device}/execute', [SSHController::class, 'performSSH'])->middleware('can:admin')->name('perform-ssh');
+    Route::post('/{device}/backup', [DeviceController::class, 'createBackup'])->middleware('can:admin')->name('create-backup');
+    Route::post('/{device}/sync-pubkeys', [DeviceController::class, 'syncPubkeys'])->middleware('can:admin')->name('sync-pubkeys');
+    Route::post('/{device}/sync-vlans', [DeviceController::class, 'syncVlansToDevice'])->middleware('can:admin')->name('sync-vlans');
     Route::post('/{device}/update', [DeviceService::class, 'refreshDevice'])->name('update-device');
 
     Route::get('/backups', ShowBackups::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Backups'), route('backups'));
     })->name('backups');
 
-    Route::post('/backups', [DeviceController::class, 'createBackupAllDevices'])->breadcrumbs(function (Trail $trail) {
+    Route::post('/backups', [DeviceController::class, 'createBackupAllDevices'])->middleware('can:admin')->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Backups'), route('backups'));
     })->name('create-backups');
 
@@ -144,7 +138,7 @@ Route::prefix('vlans')->middleware(['auth:sanctum'])->group(function () {
     })->name('show-vlan');
 
 
-    Route::post('/', [VlanController::class, 'store'])->name('create-vlan');
+    Route::post('/', [VlanController::class, 'store'])->middleware('can:admin')->name('create-vlan');
 });
 
 Route::prefix('sites')->middleware(['auth:sanctum'])->group(function () {
@@ -153,7 +147,7 @@ Route::prefix('sites')->middleware(['auth:sanctum'])->group(function () {
     })->name('sites');
 
     Route::put('/', [SiteController::class, 'changeSite'])->name('change-site');
-    Route::post('/', [SiteController::class, 'store'])->name('create-site');
+    Route::post('/', [SiteController::class, 'store'])->middleware('can:admin')->name('create-site');
 });
 
 Route::prefix('settings/snmp-gateways')->middleware(['auth:sanctum'])->group(function () {
@@ -161,8 +155,8 @@ Route::prefix('settings/snmp-gateways')->middleware(['auth:sanctum'])->group(fun
         $trail->push(__('SNMP Gateways'), route('snmp'));
     })->name('snmp');
 
-    Route::post('/', [SystemController::class, 'createGateway'])->name('create-gateway');
-    Route::delete('/', [SystemController::class, 'deleteGateway'])->name('delete-gateway');
+    Route::post('/', [SystemController::class, 'createGateway'])->middleware('can:admin')->name('create-gateway');
+    Route::delete('/', [SystemController::class, 'deleteGateway'])->middleware('can:admin')->name('delete-gateway');
 });
 
 Route::prefix('settings/privatekey')->middleware(['auth:sanctum'])->group(function () {
@@ -170,7 +164,7 @@ Route::prefix('settings/privatekey')->middleware(['auth:sanctum'])->group(functi
         $trail->push(__('SSH Privatekey'), route('privatekey'));
     })->name('privatekey');
 
-    Route::post('/', [SSHController::class, 'store_privatekey'])->name('create-private-key');
+    Route::post('/', [SSHController::class, 'store_privatekey'])->middleware('can:admin')->name('create-private-key');
 });
 
 Route::prefix('settings/publickeys')->middleware(['auth:sanctum'])->group(function () {
@@ -178,8 +172,8 @@ Route::prefix('settings/publickeys')->middleware(['auth:sanctum'])->group(functi
         $trail->push(__('SSH Publickeys'), route('publickeys'));
     })->name('publickeys');
 
-    Route::post('/', [PublicKeyController::class, 'store'])->name('create-public-key');
-    Route::delete('/', [PublicKeyController::class, 'destroy'])->name('delete-public-key');
+    Route::post('/', [PublicKeyController::class, 'store'])->middleware('can:admin')->name('create-public-key');
+    Route::delete('/', [PublicKeyController::class, 'destroy'])->middleware('can:admin')->name('delete-public-key');
 });
 
 
@@ -188,9 +182,9 @@ Route::prefix('settings/mac-types')->middleware(['auth:sanctum'])->group(functio
         $trail->push(__('MAC Prefix Icons'), route('mac-types'));
     })->name('mac-types');
 
-    Route::post('/', [MacTypeController::class, 'store'])->name('create-mac-type');
-    Route::put('/icon', [MacTypeController::class, 'update'])->name('update-mac-type-icon');
-    Route::delete('/', [MacTypeController::class, 'destroy'])->name('delete-mac-type');
+    Route::post('/', [MacTypeController::class, 'store'])->middleware('can:admin')->name('create-mac-type');
+    Route::put('/icon', [MacTypeController::class, 'update'])->middleware('can:admin')->name('update-mac-type-icon');
+    Route::delete('/', [MacTypeController::class, 'destroy'])->middleware('can:admin')->name('delete-mac-type');
 });
 
 
@@ -199,7 +193,7 @@ Route::prefix('buildings')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Buildings'), route('buildings'));
     })->name('buildings');
 
-    Route::post('/', [BuildingController::class, 'store'])->name('create-building');
+    Route::post('/', [BuildingController::class, 'store'])->middleware('can:admin')->name('create-building');
 });
 
 Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
@@ -207,7 +201,7 @@ Route::prefix('rooms')->middleware(['auth:sanctum'])->group(function () {
         $trail->push(__('Rooms'), route('rooms'));
     })->name('rooms');
 
-    Route::post('/', [RoomController::class, 'store'])->name('create-room');
+    Route::post('/', [RoomController::class, 'store'])->middleware('can:admin')->name('create-room');
 });
 
 Route::get('/home', function() {

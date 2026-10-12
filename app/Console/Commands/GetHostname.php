@@ -33,20 +33,24 @@ class GetHostname extends Command
 
         foreach ($clients as $client) {
 
+            // Do not update stale clients (last updated older than 24 hours ago)
+            if($client->updated_at < now()->subDay()) {
+                continue;
+            }
+
+            if(!filter_var($client->ip_address, FILTER_VALIDATE_IP)) {
+                continue;
+            }
+
             // DNS lookup for ip address of client
-            $output = "";
-            exec('timeout 0.35 host '.$client->ip_address, $output, $errors);
+            $output = [];
+            exec('timeout 0.35 host ' . escapeshellarg($client->ip_address), $output, $errors);
             $result = $output[0] ?? "";
             $found = strstr($result, "pointer");
             $hostname = str_replace(["pointer", " "], "", $found);
 
             // Skip if no hostname was found
             if(!$hostname or $hostname == null or $hostname == "") {
-                continue;
-            }
-            
-            // Do not update stale clients (last updated older than 24 hours ago)
-            if($client->updated_at < now()->subDay()) {
                 continue;
             }
             

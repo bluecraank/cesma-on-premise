@@ -10,6 +10,7 @@ use Livewire\Component;
 
 class VlanModals extends Component
 {
+    use \App\Traits\ChecksRole;
     public $show = false;
     public $vlan;
     public $modal;
@@ -39,7 +40,7 @@ class VlanModals extends Component
         $vlan = Vlan::where('id', $vlan)->first();
 
         if(!$vlan) {
-            $this->dispatchBrowserEvent('notify', ['type' => 'error', 'message' => __('Vlan not found')]);
+            $this->dispatch('notify-error', message: __('Vlan not found'));
             return;
         }
 
@@ -59,6 +60,7 @@ class VlanModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         $id = $this->vlan->id;
         $this->dispatch('delete', model: $id)->to(ShowVlans::class);
@@ -71,19 +73,21 @@ class VlanModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->validate();
 
         $this->vlan->name = $this->name;
         $this->vlan->ip_range = $this->ip_range;
         $this->vlan->description = $this->description;
         $this->vlan->site_id = $this->site_id;
-        $this->vlan->is_synced = $this->is_synced == "On" ? true : false;
-        $this->vlan->is_client_vlan = $this->is_client_vlan == "On" ? true : false;
+        $this->vlan->is_synced = (bool) $this->is_synced;
+        $this->vlan->is_client_vlan = (bool) $this->is_client_vlan;
+        $changes = CLog::changes($this->vlan);
         $this->vlan->save();
         $this->show = false;
         $this->dispatch('notify-success', message: __('Vlan updated'));
         $this->dispatch('refresh')->to(ShowVlans::class);
-        CLog::info("Vlan", __('Vlan :name updated', ['name' => $this->name]));
+        CLog::info("Vlan", __('Vlan :name updated', ['name' => $this->name]), null, array_merge(['vid' => $this->vlan->vid, 'site_id' => $this->vlan->site_id], $changes));
     }
 
     public function render()

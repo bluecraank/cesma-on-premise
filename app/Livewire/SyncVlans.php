@@ -11,6 +11,7 @@ use Livewire\Component;
 
 class SyncVlans extends Component
 {
+    use \App\Traits\ChecksRole;
     public $someIsEmpty = true;
 
     public $vlans;
@@ -28,14 +29,13 @@ class SyncVlans extends Component
     public $deleteVlans = false;
 
     public function mount() {
-        if(Auth::user()->role <= 1) {
-            abort(403);
-        }
+        $this->requireAdmin();
     }
 
     #[On('update')]
     #[Renderless]
     public function update($vlans, $devices) {
+        $this->requireAdmin();
         $this->selectedDevices = $devices;
         $this->selectedVlans = $vlans;
 
@@ -57,6 +57,7 @@ class SyncVlans extends Component
 
     #[On('start')]
     public function start() {
+        $this->requireAdmin();
         $this->testmode = false;
 
         foreach($this->selectedDevices as $device) {

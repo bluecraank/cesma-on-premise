@@ -43,10 +43,14 @@ class User extends Authenticatable
 
         $cookie = Cookie::get('currentSite');
 
-        if($cookie) {
-            $site = Site::where('id', $cookie)->first();
-        } else {
-            $site = Site::first();
+        $site = $cookie ? Site::where('id', $cookie)->first() : null;
+
+        // Fall back to the first site if the cookie points to a deleted site
+        $site = $site ?? Site::first();
+
+        if(!$site) {
+            // No site exists yet
+            abort(403, __('No site exists yet, create one with "php artisan site:create <name>"'));
         }
 
         $permission = Permission::where('guid', $this->guid)->where('site_id', $site->id)->first();
@@ -75,7 +79,9 @@ class User extends Authenticatable
         $name = explode(" ", $name);
         $initials = "";
         foreach ($name as $n) {
-            $initials .= $n[0];
+            if ($n !== "") {
+                $initials .= mb_substr($n, 0, 1);
+            }
         }
         return $initials;
     }

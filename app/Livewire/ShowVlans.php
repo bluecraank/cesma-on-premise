@@ -15,6 +15,7 @@ use Livewire\WithPagination;
 
 class ShowVlans extends Component
 {
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;
@@ -28,19 +29,22 @@ class ShowVlans extends Component
         $this->checkLogin();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $search = '%' . $this->search . '%';
+        $search = \App\Helper\Utilities::like($this->search);
 
+        // vid is numeric, the database order is already correct
         $vlans = Vlan::where('site_id', Auth::user()->currentSite()->id)->where(function ($query) use ($search) {
             $query->where('name', 'like', $search)
             ->orWhere('vid', 'like', $search)
-            ->orWhere('description', 'like', $search);
+            ->orWhere('description', 'like', $search)
+            ->orWhere('ip_range', 'like', $search);
         })->orderBy('vid')->paginate($this->numberOfEntries ?? 25);
-
-        $vlans->sort(function ($a, $b) {
-            return strnatcmp($a->vid, $b->vid);
-        });
 
 
         return view('livewire.show-vlans', [
@@ -60,6 +64,7 @@ class ShowVlans extends Component
     }
 
     public function updateSlider($vlan_id, $type, $initialState = false) {
+        $this->requireAdmin();
         $vlan = Vlan::where('id', $vlan_id)->first();
 
         if(!$vlan) {
@@ -85,6 +90,7 @@ class ShowVlans extends Component
     #[On('delete')]
     public function delete($model)
     {
+        $this->requireAdmin();
         Vlan::where('id', $model)->delete();
         CLog::info("Vlan", __('Vlan :name deleted', ['name' => $model]));
     }

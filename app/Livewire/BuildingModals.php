@@ -10,6 +10,7 @@ use Livewire\Attributes\Rule;
 
 class BuildingModals extends Component
 {
+    use \App\Traits\ChecksRole;
 
     public $show = false;
     public $building;
@@ -35,6 +36,7 @@ class BuildingModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         if($this->building->devices()->count() >= 1) {
             $this->dispatch('notify-error', message: __('You cannot delete a building with devices'));
@@ -53,6 +55,7 @@ class BuildingModals extends Component
 
     public function update()
     {
+        $this->requireAdmin();
         $this->validate();
 
         $temp = $this->building->name;

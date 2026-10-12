@@ -13,6 +13,7 @@ use Livewire\Component;
 
 class DevicePort extends Component
 {
+    use \App\Traits\ChecksRole;
     public $description;
     public $untagged = null;
     public $tagged = [];
@@ -86,6 +87,7 @@ class DevicePort extends Component
     #[Renderless]
     #[On('save_current_data')]
     public function save_current_data($device_id, $cookie) {
+        $this->requireAdmin();
         $this->device_id = $device_id;
         $this->id = $this->id;
         $port = \App\Models\DevicePort::find($this->id);

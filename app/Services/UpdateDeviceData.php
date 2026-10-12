@@ -42,7 +42,7 @@ class UpdateDeviceData
 
             // Notify on link status change
             if (isset($existingPorts[$port['id']]) && $existingPorts[$port['id']]['link'] != $port['link']) {
-                DevicePort::where('name', $port['id'])->first()->touch('last_admin_status');
+                DevicePort::where('name', $port['id'])->where('device_id', $device->id)->first()?->touch('last_admin_status');
                 Notification::link_change($port['id'], $device, $port['link']);
                 $link_changed = true;
             }
@@ -74,17 +74,23 @@ class UpdateDeviceData
             VlanService::createIfNotExists($device, $vid, $vname);
         }
 
+        // An empty list means the vlans could not be fetched, do not delete everything
+        if (empty($vlans)) {
+            return;
+        }
+
         // Delete vlans that are not in the list
-        DeviceVlan::where('device_id', $device->id)->where(function ($query) use ($vlans) {
-            foreach ($vlans as $vid => $unused) {
-                $query->where('vlan_id', '!=', $vid);
-            }
-        })->delete();
+        DeviceVlan::where('device_id', $device->id)->whereNotIn('vlan_id', array_keys($vlans))->delete();
     }
 
     static function updateVlanPorts($vlanports, $device)
     {
         $return = ['uplinks' => []];
+
+        // An empty list means the data could not be fetched, do not delete all vlan ports
+        if (empty($vlanports)) {
+            return $return;
+        }
 
         // $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->get()->toArray();
         $ports = $device->ports()->get()->keyBy('name')->toArray();
@@ -286,6 +292,9 @@ class UpdateDeviceData
         $vlans = $device->vlans()->get()->toArray();
         foreach ($vlanports as $portId => $vlanport) {
             $cur_port = DevicePort::where('id', $portId)->first();
+            if (!$cur_port) {
+                continue;
+            }
             $port = $cur_port->name;
             if (count($vlanport) > (count($vlans) * 0.65) && count($cur_port->tagged) != 0 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::uplink($port, $device, [
@@ -316,7 +325,7 @@ class UpdateDeviceData
             $local_port = str_replace(["ethernet"], "", $port_combination['local_port']);
             $remote_port = str_replace(["ethernet"], "", $port_combination['remote_port']);
 
-            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
+            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($local_port, "port-channel")) {
                 $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', $local_port)->first();
 
                 if (!$uplink) {

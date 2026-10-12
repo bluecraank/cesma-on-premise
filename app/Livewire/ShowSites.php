@@ -20,19 +20,23 @@ class ShowSites extends Component
     public $numberOfEntries = 25;
     public $search;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $site = Site::where('name', 'LIKE', "%".$this->search."%")->where('id', Auth::user()->currentSite()->id)->firstOrFail();
-        $sites = Site::orderBy('name')->paginate($this->numberOfEntries ?? 25);
-        $sites->sortBy('name');
+        // Only sites the user has access to, filtered by the search
+        $sites = Site::whereIn('id', Auth::user()->availableSites()->pluck('id'))
+            ->where('name', 'like', \App\Helper\Utilities::like($this->search))
+            ->orderBy('name')
+            ->paginate($this->numberOfEntries ?? 25);
 
         // Sort sites by name in natural order
-        $sites->sort(function ($a, $b) {
-            return strnatcmp($a['name'], $b['name']);
-        });
+        \App\Helper\Utilities::sortPageNaturally($sites, 'name');
 
         return view('livewire.show-sites', [
-            'site' => $site,
             'sites' => $sites,
         ]);
     }

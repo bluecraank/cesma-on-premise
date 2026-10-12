@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Helper\CLog;
 use App\Models\Device;
 use App\Models\DeviceUplink;
 use App\Models\DevicePort;
@@ -9,6 +10,7 @@ use Livewire\Component;
 
 class DeviceUplinks extends Component
 {
+    use \App\Traits\ChecksRole;
     public $uplinks;
     public $device_id;
     public $new_uplink;
@@ -40,6 +42,7 @@ class DeviceUplinks extends Component
     }
 
     public function add() {
+        $this->requireAdmin();
         $port = $this->new_uplink;
 
         if(DevicePort::where('name', $port)->where('device_id', $this->device_id)->exists()) {
@@ -48,8 +51,10 @@ class DeviceUplinks extends Component
                 'device_id' => $this->device_id,
                 'device_port_id' => DevicePort::where('name', $port)->where('device_id', $this->device_id)->first()->id
             ]);
+            $device = Device::where('id', $this->device_id)->first();
+            CLog::info("Device", "Port {$port} added as uplink for device {$device->name}", $device);
             $this->dispatch('notify-success', message: 'Uplink added');
-            $this->mount(Device::where('id', $this->device_id)->first());
+            $this->mount($device);
             return true;
         }
 
@@ -58,13 +63,19 @@ class DeviceUplinks extends Component
     }
 
     public function delete($id) {
+        $this->requireAdmin();
         $device = Device::where('id', $this->device_id)->first();
 
         if(!$device) {
             $this->dispatch('notify-error', message: 'Device not found');
+            return;
         }
 
-        $device->uplinks()->where('id', $id)->delete();
+        $uplink = $device->uplinks()->where('id', $id)->first();
+        if ($uplink) {
+            $uplink->delete();
+            CLog::info("Device", "Uplink {$uplink->name} removed from device {$device->name}", $device);
+        }
         $this->dispatch('notify-success', message: 'Uplink deleted');
         $this->mount($device);
     }

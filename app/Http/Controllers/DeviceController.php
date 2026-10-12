@@ -100,6 +100,10 @@ class DeviceController extends Controller
             return json_encode(['success' => 'false', 'message' => __('Error creating backup')]);
         }
 
+        if (!(config('app.backup_support')[$device->type] ?? false)) {
+            return json_encode(['success' => 'false', 'message' => __('This device type does not support backups')]);
+        }
+
         $class = config('app.types')[$device->type];
         $backup = $class::createBackup($device);
 
@@ -117,13 +121,21 @@ class DeviceController extends Controller
     {
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
+        $failed = 0;
         foreach ($devices as $device) {
-            if (!in_array($device->type, array_keys(config('app.types')))) {
+            if (!in_array($device->type, array_keys(config('app.types'))) || !(config('app.backup_support')[$device->type] ?? false)) {
                 continue;
             }
 
             $class = config('app.types')[$device->type];
-            $class::createBackup($device);
+            if (!$class::createBackup($device)) {
+                $failed++;
+            }
+        }
+
+        if ($failed > 0) {
+            CLog::error("Device", "Backup for all switches created, {$failed} failed");
+            return json_encode(['success' => 'false', 'message' => __(':count backups could not be created', ['count' => $failed])]);
         }
 
         CLog::info("Device", "Backup for all switches created");
@@ -138,14 +150,29 @@ class DeviceController extends Controller
 
         $pubkeys = PublicKeyService::getPublicKeysAsArray();
 
-        if (count($pubkeys) <= 2 || empty($pubkeys)) {
+        if (count($pubkeys) < 2) {
             CLog::error("Pubkey", "Not enough public keys to upload to switch {$device->name}", $device, $device->id);
             return json_encode(['success' => 'false', 'message' => __('Not enough public keys to upload to switch')]);
         }
 
         $class = config('app.types')[$device->type];
-        CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, "device-id: " . $device->id. ", Count: ".count($pubkeys));
-        return $class::syncPubkeys($device, $pubkeys);
+        $result = $class::syncPubkeys($device, $pubkeys);
+        self::logPubkeySync($device, $result, count($pubkeys));
+        return $result;
+    }
+
+    private static function logPubkeySync(Device $device, $result, int $count): bool
+    {
+        $result = json_decode($result, true) ?? [];
+        $success = ($result['success'] ?? 'false') == 'true';
+
+        if ($success) {
+            CLog::info("Pubkey", "Public keys uploaded to switch {$device->name}", $device, ['keys' => $count]);
+        } else {
+            CLog::error("Pubkey", "Public keys could not be uploaded to switch {$device->name}", $device, ['keys' => $count, 'reason' => $result['message'] ?? null]);
+        }
+
+        return $success;
     }
 
     static function uploadPubkeysAllDevices()
@@ -154,16 +181,22 @@ class DeviceController extends Controller
 
         $devices = Device::where('site_id', Auth::user()->currentSite()->id)->get()->keyBy('id');
 
-        if (count($pubkeys) >= 2 && !empty($pubkeys)) {
+        if (count($pubkeys) >= 2) {
+            $failed = 0;
             foreach ($devices as $device) {
                 $class = config('app.types')[$device->type];
 
-                CLog::info("Pubkey", "Uploading public keys to switch {$device->name}", $device, "device-id: " . $device->id. ", Count: ".count($pubkeys));
-
-                $class::syncPubkeys($device, $pubkeys);
+                if (!self::logPubkeySync($device, $class::syncPubkeys($device, $pubkeys), count($pubkeys))) {
+                    $failed++;
+                }
             }
 
-            CLog::info("Pubkey", "Uploading public keys to all switches", null, "Count devices: ".count($devices)." ,Count: ".count($pubkeys));
+            if ($failed > 0) {
+                CLog::error("Pubkey", "Public keys uploaded to all switches, {$failed} failed", null, ['devices' => count($devices), 'failed' => $failed, 'keys' => count($pubkeys)]);
+                return json_encode(['success' => 'false', 'message' => __(':count switches could not be synced', ['count' => $failed])]);
+            }
+
+            CLog::info("Pubkey", "Public keys uploaded to all switches", null, ['devices' => count($devices), 'keys' => count($pubkeys)]);
             return json_encode(['success' => 'true', 'message' => __('Successfully synced public keys to all switches')]);
         }
 
@@ -198,26 +231,32 @@ class DeviceController extends Controller
         $vlans = $request->input('vlans') ?? '{}';
         $vlans = json_decode($vlans, true);
 
-        $create = $request->input('createVlans') == "false" ? false : true;
-        $rename = $request->input('renameVlans') == "false" ? false : true;
-        $tagToUplink = $request->input('tagToUplink') == "false" ? false : true;
-        $testmode = $request->input('testmode') == "false" ? false : true;
-        $delete = $request->input('deleteVlans') == "false" ? false : true;
+        // Only an explicit "true" enables an option, testmode is only disabled by an explicit "false"
+        $create = $request->input('createVlans') === "true";
+        $rename = $request->input('renameVlans') === "true";
+        $tagToUplink = $request->input('tagToUplink') === "true";
+        $testmode = $request->input('testmode') !== "false";
+        $delete = $request->input('deleteVlans') === "true";
 
-        // // For security!
-        // $testmode = true;
+        if ($delete && ($create || $rename || $tagToUplink)) {
+            return json_encode(['success' => 'false', 'message' => __('You can\'t delete and create/rename/tag at the same time. Action cancelled.')]);
+        }
 
         if ($device and $vlans) {
+            if (config('app.read-only')[$device->type] ?? true) {
+                return json_encode(['success' => 'false', 'message' => __('This device is read-only')]);
+            }
+
             $class = config('app.types')[$device->type];
             $sync = $class::syncVlans($vlans, $device, $create, $rename, $tagToUplink, $delete, $testmode);
 
             if(!$testmode) {
-                CLog::info("Vlan", "Vlans for switch {$device->name} synced", $device,
-                "create_vlans => ".json_encode($create) .
-                ", rename_vlans => ".json_encode($rename) .
-                ", tag_to_uplink => ".json_encode($tagToUplink) .
-                ", delete_vlans => ".json_encode($delete) .
-                ", data =>" . json_encode($vlans));
+                $failed = ($sync['status'] ?? '') == 'error';
+                CLog::write("Vlan", $failed ? 'error' : 'info', "Vlans for switch {$device->name} " . ($failed ? "could not be synced" : "synced"), $device, [
+                    'options' => ['create' => $create, 'rename' => $rename, 'tag_to_uplink' => $tagToUplink, 'delete' => $delete],
+                    'vlans' => array_values($vlans),
+                    'result' => array_intersect_key($sync, array_flip(['message', 'created', 'renamed', 'deleted', 'tagged_to_uplink'])),
+                ]);
             }
 
             return json_encode($sync);

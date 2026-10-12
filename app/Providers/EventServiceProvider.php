@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helper\CLog;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,7 +26,30 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Audit log for authentication (the user is passed explicitly, it is not set in the guard yet)
+        Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            CLog::write("Auth", "info", "User {$event->user->name} logged in", null, [
+                'guid' => $event->user->guid ?? null,
+                'sso' => request()->server(config('app.sso_http_header_user_key')) !== null,
+            ], $event->user->name);
+        });
+
+        Event::listen(\Illuminate\Auth\Events\Logout::class, function ($event) {
+            if ($event->user) {
+                CLog::write("Auth", "info", "User {$event->user->name} logged out", null, null, $event->user->name);
+            }
+        });
+
+        Event::listen(\Illuminate\Auth\Events\Failed::class, function ($event) {
+            // Never log the password
+            $username = $event->credentials['samaccountname'] ?? $event->credentials['username'] ?? 'unknown';
+            CLog::write("Auth", "warning", "Failed login for {$username}", null, null, $username);
+        });
+
+        Event::listen(\LdapRecord\Laravel\Events\Auth\Rejected::class, function ($event) {
+            $username = $event->object->getName();
+            CLog::write("Auth", "warning", "Login of {$username} denied, not member of LDAP_ADMIN_GROUP", null, null, $username);
+        });
     }
 
     /**

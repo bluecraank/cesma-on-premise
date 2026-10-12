@@ -21,16 +21,24 @@ class ShowRooms extends Component
     public $numberOfEntries = 25;
     public $search;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $buildings = Building::where('name', 'LIKE', "%".$this->search."%")->where('site_id', Auth::user()->currentSite()->id)->get();
-        $rooms = Room::orderBy('name')->whereIn('building_id', $buildings->pluck('id')->toArray())->paginate($this->numberOfEntries ?? 25);
-        $rooms->sortBy('name');
+        $search = \App\Helper\Utilities::like($this->search);
+        $buildings = Building::where('site_id', Auth::user()->currentSite()->id)->get();
+
+        // Search in the room name and in the name of its building
+        $rooms = Room::with('building')->whereIn('building_id', $buildings->pluck('id')->toArray())->where(function ($query) use ($search) {
+            $query->where('name', 'like', $search)
+                ->orWhereHas('building', fn ($building) => $building->where('name', 'like', $search));
+        })->orderBy('name')->paginate($this->numberOfEntries ?? 25);
 
         // Sort rooms by name in natural order
-        $rooms->sort(function ($a, $b) {
-            return strnatcmp($a['name'], $b['name']);
-        });
+        \App\Helper\Utilities::sortPageNaturally($rooms, 'name');
 
 
         return view('livewire.show-rooms', [

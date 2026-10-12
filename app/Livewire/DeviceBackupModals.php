@@ -11,6 +11,7 @@ use Livewire\Component;
 
 class DeviceBackupModals extends Component
 {
+    use \App\Traits\ChecksRole;
     public $show = false;
     public $backup;
     public $modal;
@@ -40,6 +41,7 @@ class DeviceBackupModals extends Component
     }
 
     public function delete() {
+        $this->requireAdmin();
         $this->show = false;
         $this->dispatch('delete', id: $this->backup->id)->to(ShowDeviceBackups::class);
         $this->backup = null;

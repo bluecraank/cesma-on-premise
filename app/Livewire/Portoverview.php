@@ -8,11 +8,13 @@ use Livewire\Component;
 
 class Portoverview extends Component
 {
+    use \App\Traits\ChecksRole;
     public $device;
     public $ports;
 
     #[Renderless]
     public function save() {
+        $this->requireAdmin();
         $class = config('app.types')[$this->device->type];
 
         if($login_info = $class::API_LOGIN($this->device)) {
