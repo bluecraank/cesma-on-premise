@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class UserRoleModal extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $showModal = false;
     public $type;
     public $user;

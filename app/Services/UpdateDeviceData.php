@@ -87,6 +87,11 @@ class UpdateDeviceData
     {
         $return = ['uplinks' => []];
 
+        // An empty list means the data could not be fetched, do not delete all vlan ports
+        if (empty($vlanports)) {
+            return $return;
+        }
+
         // $currentVlanPorts = DeviceVlanPort::where('device_id', $device->id)->get()->toArray();
         $ports = $device->ports()->get()->keyBy('name')->toArray();
         $vlans = $device->vlans()->get()->keyBy('vlan_id')->toArray();
@@ -287,6 +292,9 @@ class UpdateDeviceData
         $vlans = $device->vlans()->get()->toArray();
         foreach ($vlanports as $portId => $vlanport) {
             $cur_port = DevicePort::where('id', $portId)->first();
+            if (!$cur_port) {
+                continue;
+            }
             $port = $cur_port->name;
             if (count($vlanport) > (count($vlans) * 0.65) && count($cur_port->tagged) != 0 && !isset($currentUplinks[$port]) && !str_contains($port, "port-channel")) {
                 Notification::uplink($port, $device, [
@@ -317,7 +325,7 @@ class UpdateDeviceData
             $local_port = str_replace(["ethernet"], "", $port_combination['local_port']);
             $remote_port = str_replace(["ethernet"], "", $port_combination['remote_port']);
 
-            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($port, "port-channel")) {
+            if ($port_combination['local_device'] == $device->id && !isset($currentUplinks[$local_port]) && !str_contains($local_port, "port-channel")) {
                 $uplink = DevicePort::where('device_id', $port_combination['local_device'])->where('name', $local_port)->first();
 
                 if (!$uplink) {

@@ -15,7 +15,7 @@ use Livewire\Attributes\Rule;
 
 class DeviceModals extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $show = false;
     public $device;
     public $modal;

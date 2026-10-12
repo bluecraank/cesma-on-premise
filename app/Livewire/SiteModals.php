@@ -10,7 +10,7 @@ use Livewire\Attributes\Rule;
 
 class SiteModals extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $show = false;
     public $site;
     public $modal;

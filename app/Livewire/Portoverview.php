@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Portoverview extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $device;
     public $ports;
 

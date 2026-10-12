@@ -15,7 +15,7 @@ use Livewire\WithPagination;
 
 class ShowVlans extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;

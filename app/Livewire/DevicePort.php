@@ -13,7 +13,7 @@ use Livewire\Component;
 
 class DevicePort extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $description;
     public $untagged = null;
     public $tagged = [];

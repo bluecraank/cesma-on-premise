@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class ShowNotifications extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use NumberOfEntries;
 

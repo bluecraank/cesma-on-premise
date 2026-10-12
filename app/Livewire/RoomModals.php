@@ -10,7 +10,7 @@ use Livewire\Attributes\Rule;
 
 class RoomModals extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
 
     public $show = false;
     public $room;

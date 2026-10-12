@@ -29,11 +29,14 @@
         }
 
         protected static function foreachAssignedVlansToPort($data, $vlan_array) : array {
+            $allVlans = $vlan_array;
+
             foreach($data as $key => $value) {
                 $vlan_id = explode(".", $key);
                 $vlan_id = $vlan_id[count($vlan_id) - 1];
                 $value = str_replace("Hex-STRING: ", "", $value);
-                $value = explode(" ", $value);
+                // net-snmp wraps long hex strings, so split on any whitespace (not only spaces)
+                $value = preg_split('/\s+/', trim($value));
                 $i = 1;
 
                 $ports = [];
@@ -45,18 +48,21 @@
                 }
                 $ports = implode("", $ports);
                 $ports = str_split($ports);
-                $allVlans[$vlan_id] = array_merge($vlan_array[$vlan_id], ['ports' => $ports]);
+                $allVlans[$vlan_id] = array_merge($vlan_array[$vlan_id] ?? [], ['ports' => $ports]);
             }
 
             return $allVlans;
         }
 
         protected static function foreachAssignedUntaggedVlansToPort($data, $vlan_array) {
+            $allVlans = $vlan_array;
+
             foreach($data as $key => $value) {
                 $vlan_id = explode(".", $key);
                 $vlan_id = $vlan_id[count($vlan_id) - 1];
                 $value = str_replace("Hex-STRING: ", "", $value);
-                $value = explode(" ", $value);
+                // net-snmp wraps long hex strings, so split on any whitespace (not only spaces)
+                $value = preg_split('/\s+/', trim($value));
                 $i = 1;
 
                 $ports = [];
@@ -68,7 +74,7 @@
                 }
                 $ports = implode("", $ports);
                 $ports = str_split($ports);
-                $allVlans[$vlan_id] = array_merge($vlan_array[$vlan_id], ['untagged_ports' => $ports]);
+                $allVlans[$vlan_id] = array_merge($vlan_array[$vlan_id] ?? [], ['untagged_ports' => $ports]);
             }
 
             return $allVlans;
@@ -95,7 +101,7 @@
 
         protected static function foreachSetVlansToPorts($allVlans, $allPorts, $portExtendedIndex) {
             foreach($allVlans as $vlan_id => $value) {
-                $portsAssigned = $value['ports'];
+                $portsAssigned = $value['ports'] ?? [];
                 foreach($portsAssigned as $key => $port) {
                     if($port == 1) {
                         if(isset($portExtendedIndex[$key+1]) && isset($allPorts[$portExtendedIndex[$key+1]])) {
@@ -189,7 +195,7 @@
             }
 
             foreach ($vlans as $key => $vlan) {
-                if ($vlan['description'] != "") {
+                if (!empty($vlan['description'])) {
                     $return[$key] = $vlan['description'];
                 }
             }

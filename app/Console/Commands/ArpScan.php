@@ -37,25 +37,28 @@ class ArpScan extends Command
         $devices = Device::all()->keyBy('hostname')->toArray();
 
         $site = Site::first();
-        $building = Building::where('site_id', $site->id)->first();
-        $room = Room::where('building_id', $building->id)->first();
+        $building = $site ? Building::where('site_id', $site->id)->first() : null;
+        $room = $building ? Room::where('building_id', $building->id)->first() : null;
+
+        if (!$room) {
+            Log::warning("[ARP] No site, building and room exist yet, new devices can not be added");
+            return;
+        }
 
         $hosts = [];
 
-        foreach ($array as $key => $value) {
-            if ($key == 0) {
-                continue;
-            }
+        // Lines look like "10.0.0.1 dev eth0 lladdr aa:bb:cc:dd:ee:ff REACHABLE", there is no header line
+        foreach ($array as $value) {
+            $value = preg_split('/\s+/', trim($value));
+            $lladdr = array_search('lladdr', $value);
 
-            $value = explode(" ", $value);
-
-            if (!isset($value[2]) || !isset($value[0]) || $value[4] == "(incomplete)" || !str_contains($value[4], ":")) {
+            if ($lladdr === false || !isset($value[$lladdr + 1]) || !filter_var($value[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                 continue;
             }
 
             $hosts[] = [
                 'ip' => $value[0],
-                'mac' => $value[4],
+                'mac' => $value[$lladdr + 1],
             ];
         }
 
@@ -94,17 +97,23 @@ class ArpScan extends Command
 
 
             $hostname = gethostbyaddr($neighbour['ip']);
-            $full_hostname = $hostname;
 
-            if($hostname == "") {
-                $hostname = $neighbour['ip'];
+            // gethostbyaddr returns the ip itself if no name was found
+            if(!$hostname || $hostname == $neighbour['ip']) {
+                $hostname = $full_hostname = $neighbour['ip'];
             } else {
+                $full_hostname = $hostname;
                 $hostname = explode(".", $hostname)[0] ?? $hostname;
             }
 
             $hostname = strtoupper($hostname);
 
             if(isset($devices[$full_hostname]) || isset($devices[$hostname]) || isset($devices[$neighbour['ip']])) {
+                continue;
+            }
+
+            // name, hostname and mac address are unique, an existing device would make the insert fail
+            if(Device::where('name', $hostname)->orWhere('hostname', $full_hostname)->orWhere('mac_address', $neighbour['mac'])->exists()) {
                 continue;
             }
 

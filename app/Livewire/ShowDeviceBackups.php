@@ -14,7 +14,7 @@ use Livewire\WithPagination;
 
 class ShowDeviceBackups extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;

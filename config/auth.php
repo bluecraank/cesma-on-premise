@@ -63,7 +63,9 @@ return [
         'users' => [
             'driver' => 'ldap',
             'model' => LdapRecord\Models\ActiveDirectory\User::class,
-            'rules' => [],
+            'rules' => [
+                App\Ldap\Rules\OnlyAllowedGroups::class,
+            ],
             'scopes' => [],
             'database' => [
                 'model' => App\Models\User::class,

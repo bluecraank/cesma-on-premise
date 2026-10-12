@@ -43,7 +43,10 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         WindowsAuthenticate::serverKey(config('app.sso_http_header_user_key'));
-        WindowsAuthenticate::bypassDomainVerification();
+
+        if (config('app.sso_bypass_domain_verification')) {
+            WindowsAuthenticate::bypassDomainVerification();
+        }
 
     }
 }

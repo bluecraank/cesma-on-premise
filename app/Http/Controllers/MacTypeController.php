@@ -66,7 +66,7 @@ class MacTypeController extends Controller
             'mac_type' => 'required',
         ])->validate();
 
-        $old = MacTypeIcon::where('mac_type', $request->input('mac_type'))->first()->mac_icon;
+        $old = MacTypeIcon::where('mac_type', $request->input('mac_type'))->first()?->mac_icon ?? 'none';
 
         MacTypeIcon::updateOrCreate(
             ['mac_type' => $request->input('mac_type')],
@@ -91,7 +91,7 @@ class MacTypeController extends Controller
         }
 
         $icon = MacTypeIcon::where('mac_type', $mac_type->type)->first();
-        if($icon->prefixes->count() == 1) {
+        if($icon && $icon->prefixes->count() == 1) {
             $icon->delete();
         }
 

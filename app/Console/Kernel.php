@@ -22,7 +22,8 @@ class Kernel extends ConsoleKernel
         // Scan for new devices
         $schedule->command('device:arp-scan')
             ->everyFiveMinutes()
-            ->runInBackground();
+            ->runInBackground()
+            ->withoutOverlapping();
 
         // MOVED TO REFRESH DEVICES LOOP
         // SNMP refresh every minute cause it's fast
@@ -41,12 +42,14 @@ class Kernel extends ConsoleKernel
         // Update clients
         $schedule->command('clients:update')
             ->everyFiveMinutes()
-            ->runInBackground();
+            ->runInBackground()
+            ->withoutOverlapping();
 
         // Resolve dns hostnames of clients
         $schedule->command('clients:dns-lookup')
             ->everyFiveMinutes()
-            ->runInBackground();
+            ->runInBackground()
+            ->withoutOverlapping();
 
         // Resolve mac vendors of clients
         $schedule->command('clients:resolve-mac-vendors')
@@ -56,7 +59,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('device:resolve-topology')
             ->hourly()
-            ->runInBackground();
+            ->runInBackground()
+            ->withoutOverlapping();
 
         // Create backups of every device
         $schedule->command('device:backup-all')

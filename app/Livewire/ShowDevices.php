@@ -18,7 +18,7 @@ use Livewire\Attributes\Url;
 
 class ShowDevices extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     use WithLogin;
     use WithPagination;
     use NumberOfEntries;

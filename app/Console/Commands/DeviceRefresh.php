@@ -49,25 +49,27 @@ class DeviceRefresh extends Command
 
         if($refreshStatus['success'] == "false") {
             if($this->argument('type') == "api" && config('app.write_type')[$device->type] == "api") {
-                $notification = Notification::firstOrCreate([
+                $notification = Notification::updateOrCreate([
                     'unique-identifier' => "device-refresh-failed-api-".$device->id,
                 ],[
                     'title' => $device->name,
                     'type' => 'error',
                     'message' => "Login failed or no connection (api/".(config('app.https') == 'https://' ? 'https' : 'http').")",
                     'device_id' => $device->id,
+                    'site_id' => $device->site_id,
                     'data' => "Login failed or no connection",
                 ]);
 
                 $notification->touch();
             } elseif($this->argument('type') == "snmp" && config('app.write_type')[$device->type] == "snmp") {
-                $notification = Notification::firstOrCreate([
+                $notification = Notification::updateOrCreate([
                     'unique-identifier' => "device-refresh-failed-snmp-".$device->id,
                 ],[
                     'title' => $device->name,
                     'type' => 'error',
                     'message' => "SNMP failed or no connection",
                     'device_id' => $device->id,
+                    'site_id' => $device->site_id,
                     'data' => "SNMP failed or no connection",
                 ]);
 

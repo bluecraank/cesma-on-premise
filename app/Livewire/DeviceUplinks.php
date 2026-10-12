@@ -9,7 +9,7 @@ use Livewire\Component;
 
 class DeviceUplinks extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $uplinks;
     public $device_id;
     public $new_uplink;
@@ -65,6 +65,7 @@ class DeviceUplinks extends Component
 
         if(!$device) {
             $this->dispatch('notify-error', message: 'Device not found');
+            return;
         }
 
         $device->uplinks()->where('id', $id)->delete();

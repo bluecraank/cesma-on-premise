@@ -23,6 +23,8 @@ class ClientService {
         $endpoints = SnmpMacData::all();
         $devices = Device::all()->keyBy('id')->toArray();
         $uplinks = DeviceUplink::all()->keyBy('id')->groupBy('device_id')->toArray();
+        // Load once instead of once per client
+        $mac_types = MacType::all()->keyBy('mac_prefix')->toArray();
 
         // $macs = Mac::where('port_id', '52')->where('device_id', 22)->get()->keyBy('mac_address')->toArray();
 
@@ -93,7 +95,7 @@ class ClientService {
                 'device_id' => $macs[$mac]['device_id'],
                 'vlan_id' => $macs[$mac]['vlan_id'],
                 'ip_address' => $client['ip_address'],
-                'type' => self::getClientType($mac),
+                'type' => self::getClientType($mac, $mac_types),
                 'site_id' => $devices[$macs[$mac]['device_id']]['site_id'],
             ]);
 
@@ -109,7 +111,7 @@ class ClientService {
 
     static function getClientType($mac, $types = null)
     {
-        if(!$types) {
+        if($types === null) {
             $types = MacType::all()->keyBy('mac_prefix')->toArray();
         }
 

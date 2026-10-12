@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class DeviceBackupModals extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $show = false;
     public $backup;
     public $modal;

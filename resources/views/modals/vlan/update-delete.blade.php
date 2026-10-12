@@ -56,10 +56,10 @@
                         </div>
                         <div class="field">
                             <label class="checkbox">
+                                {{-- wire:model sets the checked state from is_client_vlan, so the label must not be inverted --}}
                                 <input wire:model="is_client_vlan" type="checkbox" name="is_client_vlan"
-                                    class="is_client_vlan @error('is_synced') is-danger @enderror"
-                                    @if (!$is_client_vlan) checked @endif>
-                                {{ __('Has no clients') }}
+                                    class="is_client_vlan @error('is_client_vlan') is-danger @enderror">
+                                {{ __('Has clients') }}
                             </label>
                             @error('is_client_vlan')
                                 <p class="help is-danger">{{ $message }}</p>

@@ -27,11 +27,17 @@ class RefreshDevicesLoop extends Command
      */
     public function handle()
     {
-        $devices = Device::all();
-
         $timeUntilNextApiPull = time();
 
         while(true) {
+
+            // Reload every round, so new devices are refreshed and deleted ones are skipped
+            $devices = Device::all();
+
+            if(count($devices) == 0) {
+                sleep(30);
+                continue;
+            }
 
             $type = "snmp";
 

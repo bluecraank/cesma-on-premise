@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class ShowUsers extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public function render()
     {
         $users = User::all();

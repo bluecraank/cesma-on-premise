@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class SyncVlans extends Component
 {
-    use AppTraitsChecksRole;
+    use \App\Traits\ChecksRole;
     public $someIsEmpty = true;
 
     public $vlans;
