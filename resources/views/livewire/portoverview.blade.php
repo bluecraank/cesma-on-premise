@@ -1,4 +1,6 @@
-@php($canEdit = Auth::user()->role >= 1 && !config('app.read-only')[$device->type] && $device->active())
+@php
+    $canEdit = Auth::user()->role >= 1 && !config('app.read-only')[$device->type] && $device->active();
+@endphp
 {{-- Shortcuts (only if the port data can be edited): Ctrl+Shift+E edit, Ctrl+Shift+S save, Ctrl+Shift+C cancel --}}
 <div x-cloak class="card has-table" x-data="{ open: true, editable: false, notify(text) { window.dispatchEvent(new CustomEvent('notify-success', { detail: text })) } }"
     @if ($canEdit)

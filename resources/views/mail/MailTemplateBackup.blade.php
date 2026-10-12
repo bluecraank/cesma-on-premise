@@ -8,7 +8,9 @@
 
 <body style="font-family: Arial, sans-serif; font-size: 14px;">
     {{-- Inline styles only, many mail clients remove <style> blocks --}}
-    @php($cell = 'border: 1px solid black; padding: 10px 5px; text-align: left; vertical-align: top; font-family: Arial, sans-serif; font-size: 14px;')
+    @php
+        $cell = 'border: 1px solid black; padding: 10px 5px; text-align: left; vertical-align: top; font-family: Arial, sans-serif; font-size: 14px;';
+    @endphp
     <h1 style="font-family: Arial, sans-serif;">{{ __('Weekly Backup Report') }}</h1>
     <table style="border-collapse: collapse; border-spacing: 0;">
         <thead>

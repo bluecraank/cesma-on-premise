@@ -149,7 +149,9 @@
                                         href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                                 </td>
                                 <td colspan="2" style="width:100px">
-                                    @php($portId = $devices[$client->device_id]->getPortIdByName($client->port_id))
+                                    @php
+                                        $portId = $devices[$client->device_id]->getPortIdByName($client->port_id);
+                                    @endphp
                                     {{-- Link to the port in the port overview, plain text if the port does not exist anymore --}}
                                     @if ($portId)
                                         <a href="{{ route('show-device', $client->device_id) }}#{{ $portId }}">{{ trim($client->port_id) }}</a>

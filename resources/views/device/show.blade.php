@@ -44,7 +44,9 @@
             <div class="box">
                 <p class="heading"><strong>Ports online</strong></p>
                 <p class="subtitle">
-                    @php($uplinkPorts = $device->uplinks->pluck('name')->unique())
+                    @php
+                        $uplinkPorts = $device->uplinks->pluck('name')->unique();
+                    @endphp
                     {{ $device->ports->where('link', true)->whereNotIn('name', $uplinkPorts)->count() }}/{{ $device->ports->whereNotIn('name', $uplinkPorts)->count() }}
                 </p>
             </div>

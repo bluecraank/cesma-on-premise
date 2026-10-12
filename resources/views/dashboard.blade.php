@@ -80,9 +80,14 @@
 
         <div class="column is-3">
             @php
-                $time = Illuminate\Support\Carbon::parse(File::get(storage_path('logs/worker.log')));
+                // Written by every device refresh, missing until the refresh service ran once
+                $workerLog = storage_path('logs/worker.log');
+                $time = File::exists($workerLog) ? Illuminate\Support\Carbon::parse(trim(File::get($workerLog))) : null;
             @endphp
-            @if ($time->diffInMinutes() > 5)
+            @if (!$time)
+                <div class="notification is-danger">
+                    {{ __('Check service! The refresh service has not run yet.') }}</div>
+            @elseif ($time->diffInMinutes() > 5)
                 <div class="notification is-danger">
                     {{ __('Check service! Last service run: ') . $time->diffForHumans() }}</div>
             @endif
