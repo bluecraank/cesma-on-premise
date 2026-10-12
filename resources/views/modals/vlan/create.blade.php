@@ -11,7 +11,7 @@
                     <input type="hidden" class="vlan-id" name="id">
                     <label class="label">Name</label
                     <p class="control">
-                        <input class="input vlan-name" name="name" placeholder="Name des VLANs">
+                        <input class="input vlan-name" name="name" placeholder="Name of VLAN">
                     </p>
                 </div>
                 <div class="field">
@@ -23,7 +23,7 @@
                 <div class="field">
                     <label class="label">{{ __('Description') }}</label>
                     <p class="control">
-                        <input class="input vlan-desc" name="description" placeholder="VLAN Beschreibung">
+                        <input class="input vlan-desc" name="description" placeholder="VLAN Description (internal)">
                     </p>
                 </div>
 

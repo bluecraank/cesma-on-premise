@@ -34,7 +34,7 @@
                                     <div class="field-body">
                                         <div class="field">
                                             <p class="control is-expanded has-icons-left">
-                                                <input value="{{ old('username') }}" placeholder="{{ __('Username') }}"
+                                                <input value="{{ old('username') }}" placeholder="{{ __('E-Mail or username') }}"
                                                     class="input @error('username') is-danger @enderror" type="text"
                                                     placeholder="" name="username" autocomplete="username" required
                                                     autofocus>

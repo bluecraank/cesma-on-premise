@@ -46,8 +46,12 @@ class LoginController extends Controller
 
     protected function credentials(Request $request)
     {
+        // Login with the mail address or the windows username (sAMAccountName),
+        // the first attribute is used to find the user in the directory
+        $attribute = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'mail' : 'samaccountname';
+
         return [
-            'samaccountname' => $request->username,
+            $attribute => $request->username,
             'password' => $request->password,
         ];
     }

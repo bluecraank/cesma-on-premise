@@ -41,11 +41,11 @@ class DatabaseCleanup extends Command
 
         $deleted['old_macs'] = ($deleted['old_macs'] ?? 0) + Mac::whereDate('created_at', '<=', now()->subWeek(1))->delete();
         $deleted['stale_clients'] = ($deleted['stale_clients'] ?? 0) + Client::whereDate('updated_at', '<=', now()->subWeek(8))->delete();
-        $deleted['old_backups'] = ($deleted['old_backups'] ?? 0) + DeviceBackup::whereDate('created_at', '<=', now()->subYear(2))->delete();
+        $deleted['old_backups'] = ($deleted['old_backups'] ?? 0) + DeviceBackup::whereDate('created_at', '<=', now()->subWeek(4))->delete();
         $deleted['old_port_stats'] = ($deleted['old_port_stats'] ?? 0) + DevicePortStat::whereDate('created_at', '<=', now()->subWeek(2))->delete();
         $deleted['old_logs'] = ($deleted['old_logs'] ?? 0) + Log::whereDate('created_at', '<=', now()->subWeek(8))->delete();
-        $deleted['old_snmp_mac_data'] = ($deleted['old_snmp_mac_data'] ?? 0) + SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(4))->delete();
-        $deleted['old_notifications'] = ($deleted['old_notifications'] ?? 0) + \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(8))->where('status', '!=', "declined")->delete();
+        $deleted['old_snmp_mac_data'] = ($deleted['old_snmp_mac_data'] ?? 0) + SnmpMacData::whereDate('updated_at', '<=', now()->subWeek(3))->delete();
+        $deleted['old_notifications'] = ($deleted['old_notifications'] ?? 0) + \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(6))->where('status', '!=', "declined")->delete();
         $deleted['old_link_notifications'] = ($deleted['old_link_notifications'] ?? 0) + \App\Models\Notification::whereDate('created_at', '<=', now()->subWeek(1))->where('type', "link-change")->delete();
 
         // Note: an empty where closure matches every row, so whereIn/whereNotIn with explicit lists are used here

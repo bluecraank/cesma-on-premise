@@ -9,7 +9,7 @@ A self-hosted web tool to manage the switches of a network: VLANs, ports, backup
 - **Backups:** daily configuration backups, download per backup, weekly status mail
 - **Clients:** find a client by hostname, IP, MAC, VLAN, switch or port (IP → MAC → port)
 - **Topology:** map of the switch connections (LLDP), uplink detection with suggestions
-- **SSH keys:** push SSH public keys to switches (running SSH commands on several switches is in the menu, but marked as not available)
+- **SSH keys:** push SSH public keys to switches
 - **MAC types:** assign types and icons to MAC prefixes (e.g. printers, phones)
 - **Sites:** several sites with buildings and rooms, users get access per site
 - **Audit log:** who changed what (old and new values), logins, failures, devices going offline
@@ -67,7 +67,7 @@ Create the first site, then log in:
 php artisan site:create "Headquarters"
 ```
 
-The **first user who logs in becomes super administrator**. Every further user starts as read-only user, a super administrator assigns roles and sites in *Global settings → Users*.
+Users log in with their **e-mail address** (LDAP attribute `mail`) or their **Windows username** (`sAMAccountName`) and their directory password. The **first user who logs in becomes super administrator**. Every further user starts as read-only user, a super administrator assigns roles and sites in *Global settings → Users*.
 
 ### Background services
 
@@ -149,10 +149,10 @@ API_USERNAME=admin
 # true = https, false = http
 API_HTTPS=true
 
-# SSH login for the public key upload (and "Execute SSH")
+# SSH login for the public key upload (Aruba OS)
 SSH_USERNAME=admin
 # true  = log in with the private key of CESMA
-# false = log in with the device password ("Execute SSH" needs the private key)
+# false = log in with the device password
 SSH_PRIVATEKEY=true
 ```
 
@@ -195,7 +195,7 @@ CESMA writes two logs:
 | Role | Value | Permissions |
 |---|---|---|
 | Read-only user | 0 | View everything of the assigned sites |
-| Administrator | 1 | Additionally change devices, VLANs, ports, sites, run SSH commands, sync VLANs |
+| Administrator | 1 | Additionally change devices, VLANs, ports and sites, sync VLANs, create backups, push SSH keys |
 | Super administrator | 2 | Additionally manage users and roles, access to all sites |
 
 Roles can also be set on the command line:
@@ -219,7 +219,7 @@ Run by `cesma-worker`:
 | `clients:resolve-mac-vendors` | daily 05:00 | Look up the vendors of MAC prefixes (api.macvendors.com) |
 | `device:resolve-topology` | hourly | Read LLDP neighbours, build the topology |
 | `device:backup-all` | daily 10:30 | Back up all switches that support backups |
-| `database:cleanup` | daily 04:00 | Delete old data (MACs, clients, port statistics, logs, notifications) |
+| `database:cleanup` | daily 04:00 | Delete old data: backups after 4 weeks, port statistics after 2 weeks, audit log and clients after 8 weeks, notifications after 6 weeks |
 | `backup:mail` | Sunday 22:00 | Send the weekly backup mail |
 
 **ARP scan:** switches found in the ARP table of the server (SNMP answers as switch, not known yet) are added automatically to the first room of the first building of the first site, with the password `public`. Set the correct room and password for these devices; they are listed in the audit log.

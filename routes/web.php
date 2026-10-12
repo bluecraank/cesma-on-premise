@@ -17,6 +17,7 @@ use App\Livewire\ShowClients;
 use App\Livewire\ShowDeviceBackups;
 use App\Livewire\ShowDevices;
 use App\Livewire\ShowLogs;
+use App\Livewire\ShowReports;
 use App\Livewire\ShowRooms;
 use App\Livewire\ShowSites;
 use App\Livewire\ShowUsers;
@@ -26,6 +27,7 @@ use App\Models\Device;
 use App\Models\Vlan;
 use App\Services\DeviceService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
@@ -57,6 +59,10 @@ Route::middleware(['auth:sanctum', 'check-first-admin'])->group(function () {
     Route::get('logs', ShowLogs::class)->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Logs'), route('logs'));
     })->name('logs');
+
+    Route::get('reports', ShowReports::class)->breadcrumbs(function (Trail $trail) {
+        $trail->push(__('Reports'), route('reports'));
+    })->name('reports');
 
     Route::get('topology', [SystemController::class, 'index_topology'])->breadcrumbs(function (Trail $trail) {
         $trail->push(__('Topology'), route('topology'));

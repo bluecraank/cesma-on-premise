@@ -42,7 +42,8 @@ class EventServiceProvider extends ServiceProvider
 
         Event::listen(\Illuminate\Auth\Events\Failed::class, function ($event) {
             // Never log the password
-            $username = $event->credentials['samaccountname'] ?? $event->credentials['username'] ?? 'unknown';
+            // Login is done with the mail address (see LoginController::credentials)
+            $username = $event->credentials['mail'] ?? $event->credentials['samaccountname'] ?? $event->credentials['username'] ?? 'unknown';
             CLog::write("Auth", "warning", "Failed login for {$username}", null, null, $username);
         });
 

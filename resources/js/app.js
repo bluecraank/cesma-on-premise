@@ -360,3 +360,16 @@ $(document).on('click', '.show-details-of-log', function () {
     $(".modal-log-detail").show();
     $(".modal-log-detail .modal-card-body .content").text(data);
 });
+
+// Highlight the element from the url hash, e.g. the port when coming from the client list
+if (window.location.hash.length > 1) {
+    let element = document.getElementById(decodeURIComponent(window.location.hash.substring(1)));
+
+    if (element) {
+        element.scrollIntoView({ block: 'center' });
+        element.style.backgroundColor = "yellow";
+        setTimeout(() => {
+            element.style.backgroundColor = "";
+        }, 1500);
+    }
+}

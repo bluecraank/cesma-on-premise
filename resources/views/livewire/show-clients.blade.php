@@ -148,7 +148,14 @@
                                 <td><a class="dark-fix-color"
                                         href="{{ route('show-device', $client->device_id) }}">{{ trim($devices[$client->device_id]->name) }}</a>
                                 </td>
-                                <td colspan="2" style="width:100px">{{ trim($client->port_id) }}</a>
+                                <td colspan="2" style="width:100px">
+                                    @php($portId = $devices[$client->device_id]->getPortIdByName($client->port_id))
+                                    {{-- Link to the port in the port overview, plain text if the port does not exist anymore --}}
+                                    @if ($portId)
+                                        <a href="{{ route('show-device', $client->device_id) }}#{{ $portId }}">{{ trim($client->port_id) }}</a>
+                                    @else
+                                        {{ trim($client->port_id) }}
+                                    @endif
                                 </td>
                                 {{-- <td class="has-text-centered">{{ trim($client->updated_at->format('d.m.Y H:i:s')) }}
                                 </td> --}}

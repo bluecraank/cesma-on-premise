@@ -1,5 +1,16 @@
 window.addEventListener('notify-success', message => {
-    $.notify(message.detail.message, {
+
+    let data = message.detail.message;
+    if (message.detail.message === undefined) {
+        // Check if message.detail has data
+        if (message.detail === undefined) {
+            return;
+        } else {
+            data = message.detail;
+        }
+    }
+
+    $.notify(data, {
         style: 'bulma-success',
         autoHideDelay: 8000
     });
@@ -12,7 +23,7 @@ window.addEventListener('notify-error', message => {
     });
 });
 
-$(document).ready(function () {
+$(document).ready(function() {
     $.notify.addStyle('bulma-success', {
         html: "<div><div class='notification is-success'><i class='fa-solid fa-check mr-3'></i><span data-notify-text/></div></div>",
         classes: {
